@@ -1,0 +1,29 @@
+﻿namespace DatabaseReader.Enums
+{
+    public enum EndMemberAttributeType
+    {
+        name,
+        comp,
+        enthalpy,
+        entropy,
+        volume,
+        cpa,
+        cpb,
+        cpc,
+        cpd,
+        alpha0,
+        theta,
+        kappa0,
+        kappa0p,
+        kappa0pp,
+        landaut,
+        smax,
+        vmax,
+        sfdh,
+        sfdhv,
+        sfw,
+        sfwv,
+        sfn,
+        sffac
+    }
+}
