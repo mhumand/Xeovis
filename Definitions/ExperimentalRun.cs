@@ -22,6 +22,7 @@ namespace DatabaseReader.Definitions
         public string Method { get; set; }
         public string MyProperty { get; set; }
         public int Index {  get; set; }
+        public int ReadingIndex {  get; set; }
 
         public ExperimentalRun()
         {
@@ -32,7 +33,7 @@ namespace DatabaseReader.Definitions
 
         public override string ToString()
         {
-            return Index.ToString() + " - " + Name + $"({Pressure} Kbar, {Temperature} °C)";
+            return Index.ToString() + " - " + Name + $" ({Pressure} Kbar, {Temperature} °C)";
         }
     }
 }

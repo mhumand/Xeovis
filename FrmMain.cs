@@ -59,7 +59,7 @@ namespace DatabaseReader
                 {
                     var info = new DirectoryInfo(folder);
                     if (!info.Name.Any(char.IsDigit)) continue;
-                    var files = info.GetFiles("*.xls", SearchOption.AllDirectories);
+                    var files = info.GetFiles("*.xls", ckbxSubDirectory.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
                     if (!files.Any()) continue;
 
                     Experiment experiment = new Experiment(info.Name);
@@ -84,6 +84,7 @@ namespace DatabaseReader
                 var exp = item as Experiment;
                 if (exp == null) continue;
                 ReadExperiment(exp);
+                ReadPhasesData(exp);
 
                 if (exp.Runs.Any())
                     cmbxExperiments.Items.Add(exp);
@@ -97,25 +98,40 @@ namespace DatabaseReader
                 tcExperiment.ClearTable();
                 tcPhases.ClearTable();
             }
+
+            PrepareAdvancedDataManagerUI();
         }
 
         private void ReadExperiment(Experiment experiment)
         {
             DirectoryInfo info = experiment.DirectoryInfo;
             if (info == null) return;
-            var files = info.GetFiles("*.xls", SearchOption.TopDirectoryOnly).ToList();
-            if (files == null || files.Count == 0) return;
-            files.Remove(files.FirstOrDefault(f => Path.GetFileNameWithoutExtension(f.FullName) == info.Name));
-            experiment.Files = files;
-            var file = files.FirstOrDefault(f => f.Name.ToLower().Contains("experiment"));
-            if (file == null) return;
-            using (var stream = File.Open(file.FullName, FileMode.Open, FileAccess.Read))
+            List<FileInfo> subFiles = info.GetFiles("*.xls", SearchOption.TopDirectoryOnly).ToList();
+            if (ckbxSubDirectory.Checked)
+            {
+                string subPath = info.FullName + $"\\{txtSubDirectory.Text}";
+                if (Directory.Exists(subPath))
+                {
+                    var filePaths = Directory.GetFiles(subPath, "*.xls").ToList();
+                    subFiles.Clear();
+                    foreach (var path in filePaths)
+                        subFiles.Add(new FileInfo(path));
+                }
+            }
+
+            if (subFiles == null || subFiles.Count == 0) return;
+            subFiles.Remove(subFiles.FirstOrDefault(f => Path.GetFileNameWithoutExtension(f.FullName) == info.Name));
+            experiment.Files = subFiles;
+            var expFile = subFiles.FirstOrDefault(f => f.Name.ToLower().Contains("experiment"));
+            if (expFile == null) return;
+            using (var stream = File.Open(expFile.FullName, FileMode.Open, FileAccess.Read))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     var result = reader.AsDataSet();
                     var table = result.Tables[0];
                     var headerRow = table.Rows[0].ItemArray.ToList();
+                    int indexIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Index")));
                     int nameIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Experiment")));
                     int pressureIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("P (GPa)")));
                     int temperatureIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("T (C)")));
@@ -129,6 +145,10 @@ namespace DatabaseReader
                     {
                         var cells = table.Rows[i].ItemArray;
                         ExperimentalRun run = new ExperimentalRun();
+
+                        if (indexIndex >= 0)
+                            run.ReadingIndex = (int)GetDoubleValueFromText(cells[indexIndex].ToString());
+
                         run.Name = cells[nameIndex].ToString();
                         if (string.IsNullOrEmpty(run.Name)) continue;
 
@@ -203,19 +223,23 @@ namespace DatabaseReader
             }
 
             tcExperiment.FillTable(columns, values);
-            ReadPhasesData();
+
+            cmbxPhases.Items.Clear();
+            foreach (var phase in exp.PhasesWithData)
+                cmbxPhases.Items.Add(EnumExtensions.GetDescriptionFromValue(phase));
+
+            if (cmbxPhases.Items.Count > 0)
+                cmbxPhases.SelectedIndex = 0;
         }
 
-        private void ReadPhasesData()
+        private void ReadPhasesData(Experiment experiment)
         {
-            cmbxPhases.Items.Clear();
-
-            var exp = cmbxExperiments.SelectedItem as Experiment;
+            var exp = experiment;
             var info = exp.DirectoryInfo;
-            var phasesFiles = exp.Files.Except(exp.Files.Where(f => Path.GetFileNameWithoutExtension(f.FullName).ToLower().Contains("experiment")));
-            if (phasesFiles == null || phasesFiles.Count() == 0) return;
+            var phaseFiles = exp.Files.Except(exp.Files.Where(f => Path.GetFileNameWithoutExtension(f.FullName).ToLower().Contains("experiment")));
+            if (phaseFiles == null || phaseFiles.Count() == 0) return;
             exp.PhasesWithData.Clear();
-            foreach (var file in phasesFiles)
+            foreach (var file in phaseFiles)
             {
                 string phaseName = Path.GetFileNameWithoutExtension(file.FullName);
                 var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(phaseName.ToLower());
@@ -240,7 +264,8 @@ namespace DatabaseReader
                             var cells = table.Rows[i].ItemArray;
                             var experimentName = cells[experimentIndex].ToString();
                             if (string.IsNullOrEmpty(experimentName)) continue;
-                            var run = exp.Runs.FirstOrDefault(r => r.Name == experimentName);
+                            int.TryParse(experimentName, out int intName); // some runs are read by their index in experiment.xls file
+                            var run = exp.Runs.FirstOrDefault(r => r.Name == experimentName || r.ReadingIndex == intName);
                             if (run == null) continue;
                             var runPhase = run.Phases.FirstOrDefault(ph => ph.Type == phaseType);
                             if (runPhase == null) continue;
@@ -265,13 +290,6 @@ namespace DatabaseReader
                     }
                 }
             }
-
-
-            foreach (var phase in exp.PhasesWithData)
-                cmbxPhases.Items.Add(EnumExtensions.GetDescriptionFromValue(phase));
-
-            if (cmbxPhases.Items.Count > 0)
-                cmbxPhases.SelectedIndex = 0;
         }
 
         private void cmbxPhases_SelectedIndexChanged(object sender, EventArgs e)
@@ -340,12 +358,24 @@ namespace DatabaseReader
                 var list = new List<string>()
                 {
                     "Auzanneauetal2006",
+                    "Elazaretal2019",
+                    "Foleyetal2009",
+                    "Greenetal2014",
+                    "HermannSpandler2008",
+                    "JokobssonHolloway2007",
+                    "Mauriceetal2020",
+                    "PatinoDouce2005",
                     "PatinoDouceBeard1995",
+                    "RappWatson1995",
+                    "SenDunn1994",
                     "SkjerlieJohnston1993",
                     "SkjerlieJohnston1996",
-                    "SkjerliePatinoDouce1995",
                     "SkjerliePatinoDouce2002",
+                    "Skoraetal2015",
+                    "Spandleretal2010",
                     "SpringerSeck1997",
+                    "VielzeufMontel1994",
+                    "Wangetal2010",
                     "WolfWyllie1994",
                     "Ziaja2012"
                 };
@@ -575,6 +605,73 @@ namespace DatabaseReader
                 var runs = new List<ExperimentalRun>();
 
             }
+        }
+
+        private void PrepareAdvancedDataManagerUI()
+        {
+            var phaseList = GetListOfPhaseTypes();
+            cmbxDMAdvancedPhaseList.Items.Clear();
+            cklbxDMAdvancedOxides.Items.Clear();
+            if (phaseList.Count == 0) return;
+            foreach (var phase in phaseList)
+                cmbxDMAdvancedPhaseList.Items.Add(EnumExtensions.GetDescriptionFromValue(phase));
+
+            cmbxDMAdvancedPhaseList.SelectedIndexChanged -= CmbxDMAdvancedPhaseList_SelectedIndexChanged;
+            cmbxDMAdvancedPhaseList.SelectedIndexChanged += CmbxDMAdvancedPhaseList_SelectedIndexChanged;
+            cmbxDMAdvancedPhaseList.SelectedIndex = 0;
+
+            cklbxDMAdvancedOxides.ContextMenu = _contextMenu;
+            cklbxDMAdvancedOxides.ColumnWidth = 60;
+            var oxides = Enum.GetValues(typeof(OxideType));
+            foreach (var oxide in oxides)
+                cklbxDMAdvancedOxides.Items.Add(oxide);
+        }
+
+        private void CmbxDMAdvancedPhaseList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            tcAdvancedDataManager.ClearTable();
+
+            var Columns = new List<string>() { "#", "Experiment", "Run" };
+            var oxides = Enum.GetValues(typeof(OxideType));
+            foreach (var oxide in oxides)
+                Columns.Add(oxide.ToString());
+
+            var Rows = new List<List<object>>();
+            int counter = 1;
+            foreach (var item in cmbxExperiments.Items)
+            {
+                var exp = item as Experiment;
+                var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(cmbxDMAdvancedPhaseList.SelectedItem.ToString());
+
+                var allInstances = new List<Phase>();
+                foreach (var run in exp.Runs.Where(r => r.Phases.Any(ph => ph.Type == phaseType)))
+                    allInstances.Add(run.Phases.FirstOrDefault(ph => ph.Type == phaseType));
+
+                if (!allInstances.Any()) continue;
+
+                foreach (var phaseInstance in allInstances.Where(x => x.Composition.Any()))
+                {
+                    var row = new List<object>
+                    {
+                        counter++.ToString("00"),
+                        phaseInstance.ExperimentalRun.Experiment,
+                        phaseInstance.ExperimentalRun
+                    };
+
+                    foreach (var oxide in oxides)
+                    {
+                        var index = phaseInstance.Oxides.IndexOf((OxideType)oxide);
+                        if (index >= 0)
+                            row.Add(phaseInstance.Composition[index].Round(4));
+                        else
+                            row.Add(0.0);
+                    }
+
+                    Rows.Add(row);
+                }
+            }
+
+            tcAdvancedDataManager.FillTable(Columns, Rows);
         }
     }
 }

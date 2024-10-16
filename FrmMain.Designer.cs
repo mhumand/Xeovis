@@ -41,9 +41,7 @@
             this.ckbxSubDirectory = new System.Windows.Forms.CheckBox();
             this.txtSubDirectory = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.tcExperiment = new DatabaseReader.CustomControls.TableControl();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.tcPhases = new DatabaseReader.CustomControls.TableControl();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPageDataManager = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -54,7 +52,16 @@
             this.btnGenerateRuns = new System.Windows.Forms.Button();
             this.flpFilters = new System.Windows.Forms.FlowLayoutPanel();
             this.btnAddRunFilterType = new System.Windows.Forms.Button();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPageDataManager_General = new System.Windows.Forms.TabPage();
+            this.tabPageDataManager_Advanced = new System.Windows.Forms.TabPage();
+            this.cmbxDMAdvancedPhaseList = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.tcExperiment = new DatabaseReader.CustomControls.TableControl();
+            this.tcPhases = new DatabaseReader.CustomControls.TableControl();
+            this.tcAdvancedDataManager = new DatabaseReader.CustomControls.TableControl();
             this.tcFilteredRuns = new DatabaseReader.CustomControls.TableControl();
+            this.cklbxDMAdvancedOxides = new System.Windows.Forms.CheckedListBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -66,13 +73,16 @@
             this.splitContainer1.SuspendLayout();
             this.tabPageSubselectRuns.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPageDataManager_General.SuspendLayout();
+            this.tabPageDataManager_Advanced.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnReadExperiments
             // 
             this.btnReadExperiments.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnReadExperiments.Location = new System.Drawing.Point(5, 559);
+            this.btnReadExperiments.Location = new System.Drawing.Point(5, 565);
             this.btnReadExperiments.Name = "btnReadExperiments";
             this.btnReadExperiments.Size = new System.Drawing.Size(181, 23);
             this.btnReadExperiments.TabIndex = 2;
@@ -140,7 +150,7 @@
             this.groupBox1.Controls.Add(this.cklbxExperiments);
             this.groupBox1.Location = new System.Drawing.Point(3, 6);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(195, 588);
+            this.groupBox1.Size = new System.Drawing.Size(195, 594);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Studies with data";
@@ -151,7 +161,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbxManualSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbxManualSelection.FormattingEnabled = true;
-            this.cmbxManualSelection.Location = new System.Drawing.Point(5, 532);
+            this.cmbxManualSelection.Location = new System.Drawing.Point(5, 538);
             this.cmbxManualSelection.Name = "cmbxManualSelection";
             this.cmbxManualSelection.Size = new System.Drawing.Size(181, 21);
             this.cmbxManualSelection.TabIndex = 7;
@@ -162,7 +172,7 @@
             this.ckbxManualSelection.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ckbxManualSelection.AutoSize = true;
-            this.ckbxManualSelection.Location = new System.Drawing.Point(7, 509);
+            this.ckbxManualSelection.Location = new System.Drawing.Point(7, 515);
             this.ckbxManualSelection.Name = "ckbxManualSelection";
             this.ckbxManualSelection.Size = new System.Drawing.Size(115, 17);
             this.ckbxManualSelection.TabIndex = 7;
@@ -208,21 +218,10 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1039, 279);
+            this.groupBox2.Size = new System.Drawing.Size(1019, 262);
             this.groupBox2.TabIndex = 9;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Overview";
-            // 
-            // tcExperiment
-            // 
-            this.tcExperiment.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tcExperiment.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tcExperiment.Location = new System.Drawing.Point(6, 49);
-            this.tcExperiment.Name = "tcExperiment";
-            this.tcExperiment.Size = new System.Drawing.Size(1027, 224);
-            this.tcExperiment.TabIndex = 5;
             // 
             // groupBox3
             // 
@@ -231,21 +230,10 @@
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(0, 0);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(1039, 276);
+            this.groupBox3.Size = new System.Drawing.Size(1019, 260);
             this.groupBox3.TabIndex = 10;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Phases";
-            // 
-            // tcPhases
-            // 
-            this.tcPhases.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tcPhases.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tcPhases.Location = new System.Drawing.Point(6, 48);
-            this.tcPhases.Name = "tcPhases";
-            this.tcPhases.Size = new System.Drawing.Size(1027, 222);
-            this.tcPhases.TabIndex = 5;
             // 
             // tabControl
             // 
@@ -257,19 +245,18 @@
             this.tabControl.Location = new System.Drawing.Point(16, 41);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(1257, 632);
+            this.tabControl.Size = new System.Drawing.Size(1257, 629);
             this.tabControl.TabIndex = 10;
             this.tabControl.Visible = false;
             // 
             // tabPageDataManager
             // 
-            this.tabPageDataManager.Controls.Add(this.splitContainer1);
-            this.tabPageDataManager.Controls.Add(this.btnSubselectRuns);
+            this.tabPageDataManager.Controls.Add(this.tabControl1);
             this.tabPageDataManager.Controls.Add(this.groupBox1);
             this.tabPageDataManager.Location = new System.Drawing.Point(4, 22);
             this.tabPageDataManager.Name = "tabPageDataManager";
             this.tabPageDataManager.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageDataManager.Size = new System.Drawing.Size(1249, 606);
+            this.tabPageDataManager.Size = new System.Drawing.Size(1249, 603);
             this.tabPageDataManager.TabIndex = 0;
             this.tabPageDataManager.Text = "Data Manager";
             this.tabPageDataManager.UseVisualStyleBackColor = true;
@@ -279,7 +266,7 @@
             this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer1.Location = new System.Drawing.Point(204, 6);
+            this.splitContainer1.Location = new System.Drawing.Point(6, 3);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -290,14 +277,14 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.groupBox3);
-            this.splitContainer1.Size = new System.Drawing.Size(1039, 559);
-            this.splitContainer1.SplitterDistance = 279;
+            this.splitContainer1.Size = new System.Drawing.Size(1019, 526);
+            this.splitContainer1.SplitterDistance = 262;
             this.splitContainer1.TabIndex = 12;
             // 
             // btnSubselectRuns
             // 
             this.btnSubselectRuns.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSubselectRuns.Location = new System.Drawing.Point(1107, 571);
+            this.btnSubselectRuns.Location = new System.Drawing.Point(889, 535);
             this.btnSubselectRuns.Name = "btnSubselectRuns";
             this.btnSubselectRuns.Size = new System.Drawing.Size(136, 23);
             this.btnSubselectRuns.TabIndex = 11;
@@ -312,7 +299,7 @@
             this.tabPageSubselectRuns.Location = new System.Drawing.Point(4, 22);
             this.tabPageSubselectRuns.Name = "tabPageSubselectRuns";
             this.tabPageSubselectRuns.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSubselectRuns.Size = new System.Drawing.Size(1249, 606);
+            this.tabPageSubselectRuns.Size = new System.Drawing.Size(1249, 603);
             this.tabPageSubselectRuns.TabIndex = 1;
             this.tabPageSubselectRuns.Text = "Subselect Runs";
             this.tabPageSubselectRuns.UseVisualStyleBackColor = true;
@@ -327,7 +314,7 @@
             this.groupBox4.Controls.Add(this.btnAddRunFilterType);
             this.groupBox4.Location = new System.Drawing.Point(6, 6);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(213, 594);
+            this.groupBox4.Size = new System.Drawing.Size(213, 591);
             this.groupBox4.TabIndex = 6;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Add Filters";
@@ -370,6 +357,97 @@
             this.btnAddRunFilterType.UseVisualStyleBackColor = true;
             this.btnAddRunFilterType.Click += new System.EventHandler(this.btnAddRunFilterType_Click);
             // 
+            // tabControl1
+            // 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControl1.Controls.Add(this.tabPageDataManager_General);
+            this.tabControl1.Controls.Add(this.tabPageDataManager_Advanced);
+            this.tabControl1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.tabControl1.Location = new System.Drawing.Point(204, 6);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(1039, 591);
+            this.tabControl1.TabIndex = 13;
+            // 
+            // tabPageDataManager_General
+            // 
+            this.tabPageDataManager_General.Controls.Add(this.splitContainer1);
+            this.tabPageDataManager_General.Controls.Add(this.btnSubselectRuns);
+            this.tabPageDataManager_General.Location = new System.Drawing.Point(4, 22);
+            this.tabPageDataManager_General.Name = "tabPageDataManager_General";
+            this.tabPageDataManager_General.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageDataManager_General.Size = new System.Drawing.Size(1031, 565);
+            this.tabPageDataManager_General.TabIndex = 0;
+            this.tabPageDataManager_General.Text = "General";
+            this.tabPageDataManager_General.UseVisualStyleBackColor = true;
+            // 
+            // tabPageDataManager_Advanced
+            // 
+            this.tabPageDataManager_Advanced.Controls.Add(this.cklbxDMAdvancedOxides);
+            this.tabPageDataManager_Advanced.Controls.Add(this.tcAdvancedDataManager);
+            this.tabPageDataManager_Advanced.Controls.Add(this.label1);
+            this.tabPageDataManager_Advanced.Controls.Add(this.cmbxDMAdvancedPhaseList);
+            this.tabPageDataManager_Advanced.Location = new System.Drawing.Point(4, 22);
+            this.tabPageDataManager_Advanced.Name = "tabPageDataManager_Advanced";
+            this.tabPageDataManager_Advanced.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageDataManager_Advanced.Size = new System.Drawing.Size(1031, 565);
+            this.tabPageDataManager_Advanced.TabIndex = 1;
+            this.tabPageDataManager_Advanced.Text = "Advanced";
+            this.tabPageDataManager_Advanced.UseVisualStyleBackColor = true;
+            // 
+            // cmbxDMAdvancedPhaseList
+            // 
+            this.cmbxDMAdvancedPhaseList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbxDMAdvancedPhaseList.FormattingEnabled = true;
+            this.cmbxDMAdvancedPhaseList.Location = new System.Drawing.Point(49, 6);
+            this.cmbxDMAdvancedPhaseList.Name = "cmbxDMAdvancedPhaseList";
+            this.cmbxDMAdvancedPhaseList.Size = new System.Drawing.Size(145, 21);
+            this.cmbxDMAdvancedPhaseList.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 10);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(37, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Phase";
+            // 
+            // tcExperiment
+            // 
+            this.tcExperiment.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tcExperiment.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tcExperiment.Location = new System.Drawing.Point(6, 49);
+            this.tcExperiment.Name = "tcExperiment";
+            this.tcExperiment.Size = new System.Drawing.Size(1007, 207);
+            this.tcExperiment.TabIndex = 5;
+            // 
+            // tcPhases
+            // 
+            this.tcPhases.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tcPhases.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tcPhases.Location = new System.Drawing.Point(6, 48);
+            this.tcPhases.Name = "tcPhases";
+            this.tcPhases.Size = new System.Drawing.Size(1007, 206);
+            this.tcPhases.TabIndex = 5;
+            // 
+            // tcAdvancedDataManager
+            // 
+            this.tcAdvancedDataManager.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tcAdvancedDataManager.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tcAdvancedDataManager.Location = new System.Drawing.Point(9, 50);
+            this.tcAdvancedDataManager.Name = "tcAdvancedDataManager";
+            this.tcAdvancedDataManager.Size = new System.Drawing.Size(1016, 487);
+            this.tcAdvancedDataManager.TabIndex = 2;
+            // 
             // tcFilteredRuns
             // 
             this.tcFilteredRuns.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -379,14 +457,24 @@
             this.tcFilteredRuns.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tcFilteredRuns.Location = new System.Drawing.Point(225, 26);
             this.tcFilteredRuns.Name = "tcFilteredRuns";
-            this.tcFilteredRuns.Size = new System.Drawing.Size(1018, 539);
+            this.tcFilteredRuns.Size = new System.Drawing.Size(1018, 536);
             this.tcFilteredRuns.TabIndex = 1;
+            // 
+            // cklbxDMAdvancedOxides
+            // 
+            this.cklbxDMAdvancedOxides.CheckOnClick = true;
+            this.cklbxDMAdvancedOxides.FormattingEnabled = true;
+            this.cklbxDMAdvancedOxides.Location = new System.Drawing.Point(200, 6);
+            this.cklbxDMAdvancedOxides.MultiColumn = true;
+            this.cklbxDMAdvancedOxides.Name = "cklbxDMAdvancedOxides";
+            this.cklbxDMAdvancedOxides.Size = new System.Drawing.Size(825, 38);
+            this.cklbxDMAdvancedOxides.TabIndex = 3;
             // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1285, 686);
+            this.ClientSize = new System.Drawing.Size(1285, 696);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.txtSubDirectory);
             this.Controls.Add(this.ckbxSubDirectory);
@@ -409,6 +497,10 @@
             this.splitContainer1.ResumeLayout(false);
             this.tabPageSubselectRuns.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
+            this.tabControl1.ResumeLayout(false);
+            this.tabPageDataManager_General.ResumeLayout(false);
+            this.tabPageDataManager_Advanced.ResumeLayout(false);
+            this.tabPageDataManager_Advanced.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -442,6 +534,13 @@
         private System.Windows.Forms.Button btnGenerateRuns;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPageDataManager_General;
+        private System.Windows.Forms.TabPage tabPageDataManager_Advanced;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox cmbxDMAdvancedPhaseList;
+        private CustomControls.TableControl tcAdvancedDataManager;
+        private System.Windows.Forms.CheckedListBox cklbxDMAdvancedOxides;
     }
 }
 
