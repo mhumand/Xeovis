@@ -12,6 +12,8 @@ namespace DatabaseReader.CustomControls
 {
     public partial class TableControl : UserControl
     {
+        public DataTable Table;
+
         public TableControl()
         {
             InitializeComponent();
@@ -25,25 +27,25 @@ namespace DatabaseReader.CustomControls
             if (columns == null || columns.Count == 0) return;
             if (values == null || values.Count == 0) return;
 
-            var dt = new DataTable();
+            Table = new DataTable();
             int index = 0;
             foreach (var column in columns)
             {
                 bool isDouble = values[0][index] is double;
-                dt.Columns.Add(column, isDouble ? typeof(double) : typeof(string));
+                Table.Columns.Add(column, isDouble ? typeof(double) : typeof(string));
                 index++;
             }
 
             foreach (var objects in values)
             {
-                var row = dt.NewRow();
+                var row = Table.NewRow();
                 for (int i = 0; i < objects.Count; i++)
                     row[i] = objects[i];
 
-                dt.Rows.Add(row);
+                Table.Rows.Add(row);
             }
 
-            dgvTable.DataSource = dt;
+            dgvTable.DataSource = Table;
             dgvTable.ClearSelection();
         }
 

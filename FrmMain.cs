@@ -4,6 +4,7 @@ using DatabaseReader.Helpers;
 using ExcelDataReader;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -613,8 +614,14 @@ namespace DatabaseReader
             cmbxDMAdvancedPhaseList.Items.Clear();
             cklbxDMAdvancedOxides.Items.Clear();
             if (phaseList.Count == 0) return;
+
+            var phaseNames = new List<string>();
             foreach (var phase in phaseList)
-                cmbxDMAdvancedPhaseList.Items.Add(EnumExtensions.GetDescriptionFromValue(phase));
+                phaseNames.Add(EnumExtensions.GetDescriptionFromValue(phase));
+
+            phaseNames.Sort();
+            foreach (var phase in phaseNames)
+                cmbxDMAdvancedPhaseList.Items.Add(phase);
 
             cmbxDMAdvancedPhaseList.SelectedIndexChanged -= CmbxDMAdvancedPhaseList_SelectedIndexChanged;
             cmbxDMAdvancedPhaseList.SelectedIndexChanged += CmbxDMAdvancedPhaseList_SelectedIndexChanged;
@@ -631,13 +638,14 @@ namespace DatabaseReader
         {
             tcAdvancedDataManager.ClearTable();
 
-            var Columns = new List<string>() { "#", "Experiment", "Run" };
+            var Columns = new List<string>() { "#", "Experiment", "Run" , "T (°C)", "P (kbar)" };
             var oxides = Enum.GetValues(typeof(OxideType));
             foreach (var oxide in oxides)
                 Columns.Add(oxide.ToString());
 
             var Rows = new List<List<object>>();
             int counter = 1;
+            int expCounter = 0;
             foreach (var item in cmbxExperiments.Items)
             {
                 var exp = item as Experiment;
@@ -648,14 +656,16 @@ namespace DatabaseReader
                     allInstances.Add(run.Phases.FirstOrDefault(ph => ph.Type == phaseType));
 
                 if (!allInstances.Any()) continue;
-
+                bool hasData = false;
                 foreach (var phaseInstance in allInstances.Where(x => x.Composition.Any()))
                 {
                     var row = new List<object>
                     {
                         counter++.ToString("00"),
                         phaseInstance.ExperimentalRun.Experiment,
-                        phaseInstance.ExperimentalRun
+                        phaseInstance.ExperimentalRun.Name,
+                        phaseInstance.ExperimentalRun.Temperature,
+                        phaseInstance.ExperimentalRun.Pressure
                     };
 
                     foreach (var oxide in oxides)
@@ -668,10 +678,58 @@ namespace DatabaseReader
                     }
 
                     Rows.Add(row);
+                    hasData = true;
                 }
+
+                if (hasData) expCounter++;
             }
 
             tcAdvancedDataManager.FillTable(Columns, Rows);
+            lblPhaseDetail.Text = $"{expCounter} studies \t {counter - 1} runs.";
+
+            // composition summary
+            var table = tcAdvancedDataManager.Table;
+            double avg, max, min;
+            var rowNames = new string[] { "Average", "Max", "Min" };
+
+            var rows = new List<List<object>>();
+            var preparation = new List<object>
+            {
+                "",
+                "",
+                "",
+                "",
+                ""
+            };
+
+            List<object> avgRow = new List<object>();
+            avgRow.AddRange(preparation);
+            avgRow[1] = "Average";
+
+            List<object> maxRow= new List<object>();
+            maxRow.AddRange(preparation);
+            maxRow[1] = "Maximum";
+
+            List<object> minRow = new List<object>();
+            minRow.AddRange(preparation);
+            minRow[1] = "Minimum";
+
+            int preIndex = avgRow.Count;
+            for (int i = 0; i < oxides.Length; i++)
+            {
+                var vals = new List<double>();
+                for (int j = 0; j < Rows.Count; j++)
+                    vals.Add((double)Rows[j][i + preIndex]);
+
+                avgRow.Add(vals.Average().Round(4));
+                maxRow.Add(vals.Max().Round(4));
+                minRow.Add(vals.Min().Round(4));
+            }
+
+            rows.Add(avgRow);
+            rows.Add(maxRow);
+            rows.Add(minRow);
+            tcADPhaseCompSummary.FillTable(Columns, rows);
         }
     }
 }
