@@ -26,7 +26,6 @@ namespace DatabaseReader.Enums
 
         [Description("clinopyroxene")]
         cpx,
-        cpx2,
 
         [Description("pigeonite")]
         pig,
@@ -52,7 +51,7 @@ namespace DatabaseReader.Enums
         [Description("potassium feldspar")]
         ksp,
 
-        [Description]
+        [Description("magnetite")]
         mt,
 
         [Description("muscovite")]
@@ -76,7 +75,7 @@ namespace DatabaseReader.Enums
         [Description("rutile")]
         ru,
 
-        [Description]
+        [Description("sphene")]
         sph,
 
         [Description("kyanite")]
@@ -88,27 +87,89 @@ namespace DatabaseReader.Enums
         [Description("andalusite")]
         and,
 
-        [Description]
-        pren,
-
         [Description("liquid")]
         L,
+
+        [Description("fluid")]
+        fl,
+
+        [Description("supercritical fluid")]
+        scfl,
 
         [Description("phengite")]
         phe,
 
-        [Description]
+        [Description("zoisite")]
         zo,
 
         [Description("cordierite")]
         cd,
+
+        [Description("magnesite")]
+        mag,
+
+        [Description("dolomite")]
+        dol,
+
+        [Description("calcite")]
+        cc,
+
+        [Description("zircon")]
+        zrc,
+
+        [Description("chloritoid")]
+        ctd,
+
+        [Description("graphite")]
+        gph,
+
+        [Description("antigorie")]
+        atg,
+
+        [Description("hematite")]
+        hem,
+
+        [Description("hercynite")]
+        herc,
+
+        [Description("pyrrhotite")]
+        trov,
+
+        [Description("gedrite")]
+        ged,
+
+        [Description("staurolite")]
+        st,
+
+        // not in ds636 - dummy phases
+        [Description("allanite")]
+        allan,
+
+        [Description("apatite")]
+        apat,
+
+        [Description("monazite")]
+        monaz,
+
+        [Description("quench")]
+        quench,
+
+        [Description("carbonatite")]
+        crbt,
+
+        [Description("sulphite")]
+        slpht,
+
+        [Description("opaque")]
+        opaque,
+
     }
 
     public static class PhaseTypeExtensions
     {
         public static PhaseType GetPhaseTypeByName(string name)
         {
-            switch (name)
+            switch (name.ToLower())
             {
                 case "amp":
                 case "amph":
@@ -126,11 +187,12 @@ namespace DatabaseReader.Enums
                 case "opx":
                 case "orthopyroxene":
                 case "ortho-pyroxene":
+                case "en":
+                case "enstatite":
                     return PhaseType.opx;
                 case "l":
                 case "liq":
                 case "liquid":
-                case "fluid":
                 case "melt":
                     return PhaseType.L;
                 case "q":
@@ -142,6 +204,8 @@ namespace DatabaseReader.Enums
                 case "bi":
                 case "bt":
                 case "biotite":
+                case "phl":
+                case "phlogopite":
                     return PhaseType.bi;
                 case "pl":
                 case "plag":
@@ -185,16 +249,24 @@ namespace DatabaseReader.Enums
                 case "hbl":
                 case "hornb":
                 case "hornblende":
+                case "al-hbl":
+                case "ca-hbl":
+                case "parg":
+                case "pargasite":
                     return PhaseType.hb;
                 case "h2o":
                 case "water":
                     return PhaseType.H2O;
                 case "mt":
+                case "magnetite":
+                case "timag":
+                case "ti-mag":
                     return PhaseType.mt;
                 case "ilm":
                 case "ilmenite":
                     return PhaseType.ilm;
                 case "mu":
+                case "ms":
                 case "mus":
                 case "musc":
                 case "muscovite":
@@ -205,7 +277,10 @@ namespace DatabaseReader.Enums
                 case "spn":
                 case "spinel":
                     return PhaseType.spn;
+                case "sp":
                 case "sph":
+                case "sphene":
+                case "titanie":
                     return PhaseType.sph;
                 case "ky":
                 case "kyanite":
@@ -217,21 +292,93 @@ namespace DatabaseReader.Enums
                 case "and":
                 case "andalusite":
                     return PhaseType.and;
-                case "pren":
-                    return PhaseType.pren;
                 case "phe":
                 case "phen":
                 case "phengite":
                     return PhaseType.phe;
                 case "zo":
+                case "zoisite":
                     return PhaseType.zo;
                 case "cd":
                 case "crd":
                 case "cord":
                 case "cordierite":
                     return PhaseType.cd;
-                default:
-                    break;
+                case "mag":
+                case "magnesite":
+                    return PhaseType.mag;
+                case "dol":
+                case "dolomite":
+                    return PhaseType.dol;
+                case "cc":
+                case "calcite":
+                    return PhaseType.cc;
+                case "fl":
+                case "fluid":
+                    return PhaseType.fl;
+                case "scfl":
+                case "scfluid":
+                case "sc fluid":
+                case "sc-fluid":
+                case "supercritical fluid":
+                case "supercritical-fluid":
+                case "supercriticalfluid":
+                    return PhaseType.scfl;
+                case "zr":
+                case "zrc":
+                case "zir":
+                case "zircon":
+                    return PhaseType.zrc;
+                case "ctd":
+                case "chloritoid":
+                    return PhaseType.ctd;
+                case "gph":
+                case "graph":
+                case "graphite":
+                    return PhaseType.gph;
+                case "atg":
+                case "ant":
+                case "antigorite":
+                    return PhaseType.atg;
+                case "hem":
+                case "hematite":
+                    return PhaseType.hem;
+                case "hc":
+                case "hercynite":
+                    return PhaseType.herc;
+                case "po":
+                case "pyrrhotite":
+                    return PhaseType.trov;
+                case "ged":
+                case "gedrite":
+                    return PhaseType.ged;
+                case "st":
+                case "staurolite":
+                    return PhaseType.st;
+
+                // not found in ds636 - dummy phases
+                case "allan":
+                case "allanite":
+                    return PhaseType.allan;
+                case "ap":
+                case "apat":
+                case "apatite":
+                    return PhaseType.apat;
+                case "mon":
+                case "monaz":
+                case "monazite":
+                    return PhaseType.monaz;
+                case "quench":
+                    return PhaseType.quench;
+                case "carbonatite":
+                    return PhaseType.crbt;
+                case "sulph":
+                case "sulphite":
+                case "fe-sulph":
+                    return PhaseType.slpht;
+                case "op":
+                case "opaque":
+                    return PhaseType.opaque;
             };
 
             return PhaseType.NULL;
