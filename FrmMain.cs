@@ -206,19 +206,16 @@ namespace DatabaseReader
             {
                 var vals = new List<object>
                 {
-                    run.Index.ToString("00"),
+                    run.Index.ToString("000"),
                     run.Name,
                     run.Pressure,
                     run.Temperature,
                     run.Duration
                 };
 
-                string phases = "";
-                foreach (var phase in run.Phases) phases += phase.ToString() + "+";
-                vals.Add(phases.TrimEnd('+'));
-
+                vals.Add(run.GetPhaseAssemblageString());
                 foreach (var comp in run.BulkComposition)
-                    vals.Add(comp);
+                    vals.Add(comp.Round(4));
 
                 values.Add(vals);
             }
@@ -346,7 +343,7 @@ namespace DatabaseReader
                 if (exp == null) return;
                 Process.Start(exp.DirectoryInfo.FullName);
             }
-            
+
         }
 
         private void cmbxManualSelection_SelectedIndexChanged(object sender, EventArgs e)
@@ -637,8 +634,9 @@ namespace DatabaseReader
         private void CmbxDMAdvancedPhaseList_SelectedIndexChanged(object sender, EventArgs e)
         {
             tcAdvancedDataManager.ClearTable();
+            tcADPhaseCompSummary.ClearTable();
 
-            var Columns = new List<string>() { "#", "Experiment", "Run" , "T (°C)", "P (kbar)" };
+            var Columns = new List<string>() { "#", "Study", "Run", "T (°C)", "P (kbar)", "Coexisting Phases" };
             var oxides = Enum.GetValues(typeof(OxideType));
             foreach (var oxide in oxides)
                 Columns.Add(oxide.ToString());
@@ -661,11 +659,12 @@ namespace DatabaseReader
                 {
                     var row = new List<object>
                     {
-                        counter++.ToString("00"),
-                        phaseInstance.ExperimentalRun.Experiment,
+                        counter++.ToString("000"),
+                        phaseInstance.ExperimentalRun.Experiment.ShortName,
                         phaseInstance.ExperimentalRun.Name,
                         phaseInstance.ExperimentalRun.Temperature,
-                        phaseInstance.ExperimentalRun.Pressure
+                        phaseInstance.ExperimentalRun.Pressure,
+                        phaseInstance.ExperimentalRun.GetPhaseAssemblageString(new List<Phase> { phaseInstance })
                     };
 
                     foreach (var oxide in oxides)
@@ -688,38 +687,30 @@ namespace DatabaseReader
             lblPhaseDetail.Text = $"{expCounter} studies \t {counter - 1} runs.";
 
             // composition summary
+            if (Rows.Count == 0) return;
             var table = tcAdvancedDataManager.Table;
-            double avg, max, min;
-            var rowNames = new string[] { "Average", "Max", "Min" };
 
             var rows = new List<List<object>>();
-            var preparation = new List<object>
-            {
-                "",
-                "",
-                "",
-                "",
-                ""
-            };
+            var preparation = new List<object> { "" };
 
             List<object> avgRow = new List<object>();
             avgRow.AddRange(preparation);
-            avgRow[1] = "Average";
+            avgRow[0] = "Average";
 
-            List<object> maxRow= new List<object>();
+            List<object> maxRow = new List<object>();
             maxRow.AddRange(preparation);
-            maxRow[1] = "Maximum";
+            maxRow[0] = "Maximum";
 
             List<object> minRow = new List<object>();
             minRow.AddRange(preparation);
-            minRow[1] = "Minimum";
+            minRow[0] = "Minimum";
 
             int preIndex = avgRow.Count;
             for (int i = 0; i < oxides.Length; i++)
             {
                 var vals = new List<double>();
                 for (int j = 0; j < Rows.Count; j++)
-                    vals.Add((double)Rows[j][i + preIndex]);
+                    vals.Add((double)Rows[j][i + 6]);
 
                 avgRow.Add(vals.Average().Round(4));
                 maxRow.Add(vals.Max().Round(4));
@@ -729,7 +720,10 @@ namespace DatabaseReader
             rows.Add(avgRow);
             rows.Add(maxRow);
             rows.Add(minRow);
-            tcADPhaseCompSummary.FillTable(Columns, rows);
+
+            var columns = Columns.GetRange(6, oxides.Length);
+            columns.Insert(0, " ");
+            tcADPhaseCompSummary.FillTable(columns, rows);
         }
     }
 }

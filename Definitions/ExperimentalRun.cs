@@ -1,5 +1,6 @@
 ﻿using DatabaseReader.Enums;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DatabaseReader.Definitions
 {
@@ -29,6 +30,18 @@ namespace DatabaseReader.Definitions
             Phases = new List<Phase>();
             BulkComposition = new List<double>();
             BulkOxides = new List<OxideType>();
+        }
+
+        public string GetPhaseAssemblageString(List<Phase> excludingPhases = null)
+        {
+            string phaseString = string.Empty;
+            if (excludingPhases == null) 
+                excludingPhases = new List<Phase>();
+
+            foreach (var phase in Phases.Except(excludingPhases))
+                phaseString += phase + "+";
+
+            return phaseString.TrimEnd('+');
         }
 
         public override string ToString()
