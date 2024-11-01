@@ -26,7 +26,7 @@
         ZrO2,
         V2O3,
         Re2O3,
-        //O
+        O
     }
 
     public static class OxideTypeExtensions

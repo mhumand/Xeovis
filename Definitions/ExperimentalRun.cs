@@ -46,7 +46,9 @@ namespace DatabaseReader.Definitions
 
         public override string ToString()
         {
-            return Index.ToString() + " - " + Name + $" ({Pressure} Kbar, {Temperature} °C)";
+            string indexStr = Index != 0 ? Index.ToString() + " - " : string.Empty;
+            string ptStr = (Pressure != 0 && Temperature != 0) ? $" ({Pressure} Kbar, {Temperature} °C)" : string.Empty;
+            return indexStr + Name + ptStr;
         }
     }
 }

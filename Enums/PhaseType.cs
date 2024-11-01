@@ -123,7 +123,7 @@ namespace DatabaseReader.Enums
         [Description("graphite")]
         gph,
 
-        [Description("antigorie")]
+        [Description("antigorite")]
         atg,
 
         [Description("hematite")]
@@ -133,7 +133,7 @@ namespace DatabaseReader.Enums
         herc,
 
         [Description("pyrrhotite")]
-        trov,
+        pyrr,
 
         [Description("gedrite")]
         ged,
@@ -348,7 +348,7 @@ namespace DatabaseReader.Enums
                     return PhaseType.herc;
                 case "po":
                 case "pyrrhotite":
-                    return PhaseType.trov;
+                    return PhaseType.pyrr;
                 case "ged":
                 case "gedrite":
                     return PhaseType.ged;
