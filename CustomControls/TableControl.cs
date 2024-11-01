@@ -47,12 +47,42 @@ namespace DatabaseReader.CustomControls
 
             dgvTable.DataSource = Table;
             dgvTable.ClearSelection();
+            FastAutoSizeColumns();
         }
 
         public void ClearTable()
         {
             dgvTable.DataSource = null;
             dgvTable.Columns.Clear();
+        }
+
+        public void FastAutoSizeColumns()
+        {
+            DataGridView targetGrid = dgvTable;
+
+            var gridTable = (DataTable)targetGrid.DataSource;
+            using (var gfx = targetGrid.CreateGraphics())
+            {
+                for (int i = 0; i < gridTable.Columns.Count; i++)
+                {
+                    string[] colStringCollection = gridTable.AsEnumerable().Where(r => r.Field<object>(i) != null).Select(r => r.Field<object>(i).ToString()).ToArray();
+
+                    colStringCollection = colStringCollection.OrderBy((x) => x.Length).ToArray();
+                    if (colStringCollection.Length == 0) continue;
+                    string longestColString = colStringCollection.Last();
+                    var colWidth = gfx.MeasureString(longestColString, targetGrid.Font);
+                    var colHeaderWidth = gfx.MeasureString(gridTable.Columns[i].ToString(), targetGrid.Font);
+
+                    if (colWidth.Width > colHeaderWidth.Width)
+                    {
+                        targetGrid.Columns[i].Width = (int)colWidth.Width + 10;
+                    }
+                    else
+                    {
+                        targetGrid.Columns[i].Width = (int)colHeaderWidth.Width + 15;
+                    }
+                }
+            }
         }
     }
 }

@@ -35,7 +35,7 @@
             // label
             // 
             this.label.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label.Location = new System.Drawing.Point(3, 2);
+            this.label.Location = new System.Drawing.Point(-3, 0);
             this.label.Name = "label";
             this.label.Size = new System.Drawing.Size(152, 22);
             this.label.TabIndex = 0;
@@ -45,7 +45,7 @@
             // txtInput
             // 
             this.txtInput.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtInput.Location = new System.Drawing.Point(161, 2);
+            this.txtInput.Location = new System.Drawing.Point(155, 0);
             this.txtInput.Name = "txtInput";
             this.txtInput.Size = new System.Drawing.Size(130, 22);
             this.txtInput.TabIndex = 1;
@@ -57,7 +57,7 @@
             this.Controls.Add(this.txtInput);
             this.Controls.Add(this.label);
             this.Name = "LabelInputControl";
-            this.Size = new System.Drawing.Size(294, 27);
+            this.Size = new System.Drawing.Size(286, 22);
             this.ResumeLayout(false);
             this.PerformLayout();
 
