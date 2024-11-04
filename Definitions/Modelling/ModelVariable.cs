@@ -12,7 +12,13 @@ namespace DatabaseReader.Definitions
 
         public override string ToString()
         {
-            return $"{Name}({Phase})-b{Batch.Index}";
+            return $"{Name}({Phase})";
+        }
+
+        public string ToString(bool includeBatchNumber)
+        {
+            var batchStr = includeBatchNumber ? $"-b{Batch.Index}" : string.Empty;
+            return $"{Name}({Phase})" + batchStr;
         }
     }
 }

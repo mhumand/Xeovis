@@ -51,6 +51,7 @@
             this.dgvTable.ShowEditingIcon = false;
             this.dgvTable.Size = new System.Drawing.Size(596, 595);
             this.dgvTable.TabIndex = 0;
+            this.dgvTable.SelectionChanged += new System.EventHandler(this.dgvTable_SelectionChanged);
             // 
             // TableControl
             // 

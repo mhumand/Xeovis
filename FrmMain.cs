@@ -19,18 +19,18 @@ namespace DatabaseReader
 
         private void btnDataManager_Click(object sender, EventArgs e)
         {
-            Hide();
+            btnDataManager.Enabled = false;
             var frm = new FrmDataManager();
-            frm.FormClosed += (s, args) => this.Close();
+            frm.FormClosed += (s, args) => btnDataManager.Enabled = true;
             frm.Show();
 
         }
 
         private void btnReadMctc_Click(object sender, EventArgs e)
         {
-            Hide();
+            btnReadMctc.Enabled = false;
             var frm = new FrmReadMctc();
-            frm.FormClosed += (s, args) => this.Close();
+            frm.FormClosed += (s, args) => btnReadMctc.Enabled = true;
             frm.Show();
         }
     }

@@ -29,5 +29,14 @@ namespace DatabaseReader.Definitions
         {
             return Name;
         }
+
+        public string GetPhaseAssemblageString(string spacer = " ")
+        {
+            var str = string.Empty;
+            foreach (var phase in Phases)
+                str += phase + spacer;
+
+            return str.TrimEnd(spacer.ToCharArray());
+        }
     }
 }

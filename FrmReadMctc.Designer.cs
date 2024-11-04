@@ -29,45 +29,158 @@
         private void InitializeComponent()
         {
             this.btnReadMctc = new System.Windows.Forms.Button();
-            this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
+            this.tvCaseSelection = new System.Windows.Forms.TreeView();
+            this.btnPlot = new System.Windows.Forms.Button();
+            this.ckbxIncludeBatches = new System.Windows.Forms.CheckBox();
+            this.ccMctcPlot = new DatabaseReader.CustomControls.ChartControl();
+            this.cmbxModelVariable = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.nudTransparency = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tcPlotInfo = new DatabaseReader.CustomControls.TableControl();
+            ((System.ComponentModel.ISupportInitialize)(this.nudTransparency)).BeginInit();
             this.SuspendLayout();
             // 
             // btnReadMctc
             // 
-            this.btnReadMctc.Location = new System.Drawing.Point(25, 57);
+            this.btnReadMctc.Location = new System.Drawing.Point(22, 21);
             this.btnReadMctc.Name = "btnReadMctc";
-            this.btnReadMctc.Size = new System.Drawing.Size(95, 23);
+            this.btnReadMctc.Size = new System.Drawing.Size(212, 23);
             this.btnReadMctc.TabIndex = 0;
-            this.btnReadMctc.Text = "Read Mctc";
+            this.btnReadMctc.Text = "Read Mctc Results";
             this.btnReadMctc.UseVisualStyleBackColor = true;
-            this.btnReadMctc.Click += new System.EventHandler(this.ReadMctc_Click);
+            this.btnReadMctc.Click += new System.EventHandler(this.btnReadMctc_Click);
             // 
-            // checkedListBox1
+            // tvCaseSelection
             // 
-            this.checkedListBox1.FormattingEnabled = true;
-            this.checkedListBox1.Location = new System.Drawing.Point(25, 101);
-            this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(204, 446);
-            this.checkedListBox1.TabIndex = 1;
+            this.tvCaseSelection.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.tvCaseSelection.CheckBoxes = true;
+            this.tvCaseSelection.FullRowSelect = true;
+            this.tvCaseSelection.Location = new System.Drawing.Point(22, 72);
+            this.tvCaseSelection.Name = "tvCaseSelection";
+            this.tvCaseSelection.Size = new System.Drawing.Size(212, 631);
+            this.tvCaseSelection.TabIndex = 1;
+            this.tvCaseSelection.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.tvCaseSelection_AfterCheck);
+            this.tvCaseSelection.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tvCaseSelection_MouseClick);
+            // 
+            // btnPlot
+            // 
+            this.btnPlot.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnPlot.Location = new System.Drawing.Point(22, 731);
+            this.btnPlot.Name = "btnPlot";
+            this.btnPlot.Size = new System.Drawing.Size(212, 23);
+            this.btnPlot.TabIndex = 2;
+            this.btnPlot.Text = "Plot Selected Cases";
+            this.btnPlot.UseVisualStyleBackColor = true;
+            this.btnPlot.Click += new System.EventHandler(this.btnPlot_Click);
+            // 
+            // ckbxIncludeBatches
+            // 
+            this.ckbxIncludeBatches.AutoSize = true;
+            this.ckbxIncludeBatches.Location = new System.Drawing.Point(22, 49);
+            this.ckbxIncludeBatches.Name = "ckbxIncludeBatches";
+            this.ckbxIncludeBatches.Size = new System.Drawing.Size(107, 17);
+            this.ckbxIncludeBatches.TabIndex = 3;
+            this.ckbxIncludeBatches.Text = "Include batches";
+            this.ckbxIncludeBatches.UseVisualStyleBackColor = true;
+            // 
+            // chartControl
+            // 
+            this.ccMctcPlot.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ccMctcPlot.Location = new System.Drawing.Point(243, 103);
+            this.ccMctcPlot.Name = "chartControl";
+            this.ccMctcPlot.Size = new System.Drawing.Size(600, 600);
+            this.ccMctcPlot.TabIndex = 4;
+            this.ccMctcPlot.Resize += new System.EventHandler(this.ccMctcPlot_Resize);
+            // 
+            // cmbxModelVariable
+            // 
+            this.cmbxModelVariable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbxModelVariable.FormattingEnabled = true;
+            this.cmbxModelVariable.Location = new System.Drawing.Point(330, 72);
+            this.cmbxModelVariable.Name = "cmbxModelVariable";
+            this.cmbxModelVariable.Size = new System.Drawing.Size(121, 21);
+            this.cmbxModelVariable.TabIndex = 5;
+            this.cmbxModelVariable.SelectedIndexChanged += new System.EventHandler(this.cmbxModelVariable_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(240, 75);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(84, 13);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "Model Variable";
+            // 
+            // nudTransparency
+            // 
+            this.nudTransparency.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.nudTransparency.Location = new System.Drawing.Point(157, 706);
+            this.nudTransparency.Name = "nudTransparency";
+            this.nudTransparency.Size = new System.Drawing.Size(77, 22);
+            this.nudTransparency.TabIndex = 7;
+            this.nudTransparency.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(19, 708);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(132, 13);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "Point color transparency";
+            // 
+            // tcPlotInfo
+            // 
+            this.tcPlotInfo.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tcPlotInfo.Location = new System.Drawing.Point(849, 103);
+            this.tcPlotInfo.Name = "tcPlotInfo";
+            this.tcPlotInfo.Size = new System.Drawing.Size(376, 651);
+            this.tcPlotInfo.TabIndex = 8;
             // 
             // FrmReadMctc
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1242, 769);
-            this.Controls.Add(this.checkedListBox1);
+            this.ClientSize = new System.Drawing.Size(1237, 766);
+            this.Controls.Add(this.tcPlotInfo);
+            this.Controls.Add(this.nudTransparency);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.cmbxModelVariable);
+            this.Controls.Add(this.ccMctcPlot);
+            this.Controls.Add(this.ckbxIncludeBatches);
+            this.Controls.Add(this.btnPlot);
+            this.Controls.Add(this.tvCaseSelection);
             this.Controls.Add(this.btnReadMctc);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "FrmReadMctc";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Read Mctc";
+            ((System.ComponentModel.ISupportInitialize)(this.nudTransparency)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.Button btnReadMctc;
-        private System.Windows.Forms.CheckedListBox checkedListBox1;
+        private System.Windows.Forms.TreeView tvCaseSelection;
+        private System.Windows.Forms.Button btnPlot;
+        private System.Windows.Forms.CheckBox ckbxIncludeBatches;
+        private CustomControls.ChartControl ccMctcPlot;
+        private System.Windows.Forms.ComboBox cmbxModelVariable;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NumericUpDown nudTransparency;
+        private System.Windows.Forms.Label label2;
+        private CustomControls.TableControl tcPlotInfo;
     }
 }

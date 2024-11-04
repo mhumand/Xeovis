@@ -120,24 +120,28 @@
     <Compile Include="CustomControls\LabelInputControl.Designer.cs">
       <DependentUpon>LabelInputControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Definitions\Batch.cs" />
-    <Compile Include="Definitions\EndMember.cs" />
-    <Compile Include="Definitions\Experiment.cs" />
-    <Compile Include="Definitions\ExperimentalRun.cs" />
-    <Compile Include="Definitions\ModelVariable.cs" />
-    <Compile Include="Definitions\SubsetRun.cs" />
-    <Compile Include="Definitions\SubsetSettings.cs" />
-    <Compile Include="Enums\EndMemberAttributeType.cs" />
-    <Compile Include="Enums\EndMemberType.cs" />
-    <Compile Include="Enums\OxideType.cs" />
-    <Compile Include="Definitions\Parameter.cs" />
-    <Compile Include="Definitions\Phase.cs" />
-    <Compile Include="Definitions\ThermoProperties.cs" />
-    <Compile Include="Enums\ParameterType.cs" />
-    <Compile Include="Enums\PhaseAttribute.cs" />
-    <Compile Include="Enums\PhaseType.cs" />
-    <Compile Include="Enums\PhaseState.cs" />
-    <Compile Include="Enums\RunFilterType.cs" />
+    <Compile Include="Definitions\Modelling\Batch.cs" />
+    <Compile Include="Definitions\Modelling\EndMember.cs" />
+    <Compile Include="Definitions\Modelling\Experiment.cs" />
+    <Compile Include="Definitions\Modelling\ExperimentalRun.cs" />
+    <Compile Include="Definitions\Modelling\ModelVariable.cs" />
+    <Compile Include="Definitions\Modelling\SubsetRun.cs" />
+    <Compile Include="Definitions\Modelling\SubsetSettings.cs" />
+    <Compile Include="Definitions\UI\ChartModel.cs" />
+    <Compile Include="Definitions\UI\Curve.cs" />
+    <Compile Include="Enums\Modelling\EndMemberAttributeType.cs" />
+    <Compile Include="Enums\Modelling\EndMemberType.cs" />
+    <Compile Include="Enums\Modelling\OxideType.cs" />
+    <Compile Include="Definitions\Modelling\Parameter.cs" />
+    <Compile Include="Definitions\Modelling\Phase.cs" />
+    <Compile Include="Definitions\Modelling\ThermoProperties.cs" />
+    <Compile Include="Enums\Modelling\ParameterType.cs" />
+    <Compile Include="Enums\Modelling\PhaseAttribute.cs" />
+    <Compile Include="Enums\Modelling\PhaseType.cs" />
+    <Compile Include="Enums\Modelling\PhaseState.cs" />
+    <Compile Include="Enums\Modelling\RunFilterType.cs" />
+    <Compile Include="Events\ChartPointSelectedEventArgs.cs" />
+    <Compile Include="Events\TableRowSelectedEventArgs.cs" />
     <Compile Include="FrmDataManager.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -156,8 +160,11 @@
     <Compile Include="FrmReadMctc.Designer.cs">
       <DependentUpon>FrmReadMctc.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ChartUtilities.cs" />
     <Compile Include="Helpers\DoubleExtensions.cs" />
     <Compile Include="Helpers\EnumExtensions.cs" />
+    <Compile Include="Helpers\IntExtensions.cs" />
+    <Compile Include="Helpers\TreeViewExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="CustomControls\ChartControl.resx">
@@ -225,6 +232,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ZoomReset32x32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Enums\UI\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
