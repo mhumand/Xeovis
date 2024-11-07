@@ -55,13 +55,9 @@ namespace DatabaseReader.Helpers
                 Color.Brown,
                 Color.Magenta,
                 Color.DeepSkyBlue,
-                Color.ForestGreen,
-                Color.Orchid,
                 Color.Black,
                 Color.Pink,
-                Color.DarkBlue,
-                Color.DarkGreen,
-                Color.DarkTurquoise
+                Color.Olive,
             };
 
             if (index >= colors.Count)
@@ -74,9 +70,9 @@ namespace DatabaseReader.Helpers
         {
             var symbols = new List<SymbolType>()
             {
-                SymbolType.Circle,
                 SymbolType.Square,
                 SymbolType.Triangle,
+                SymbolType.Circle,
                 SymbolType.TriangleDown,
                 SymbolType.Plus,
                 SymbolType.Star,

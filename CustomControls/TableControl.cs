@@ -136,9 +136,13 @@ namespace DatabaseReader.CustomControls
         public void SelectRow(int rowIndex)
         {
             ClearSelection();
-            dgvTable.Sort(dgvTable.Columns[0], ListSortDirection.Ascending);
-            dgvTable.Rows[rowIndex].Selected = true;
-            dgvTable.FirstDisplayedScrollingRowIndex = rowIndex;
+
+            if (rowIndex >= 0)
+            {
+                dgvTable.Sort(dgvTable.Columns[0], ListSortDirection.Ascending);
+                dgvTable.Rows[rowIndex].Selected = true;
+                dgvTable.FirstDisplayedScrollingRowIndex = rowIndex;
+            }
         }
     }
 }

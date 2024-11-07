@@ -1,17 +1,18 @@
 ﻿using DatabaseReader.Definitions;
+using DatabaseReader.Definitions.Persistence;
 using DatabaseReader.Definitions.UI;
 using DatabaseReader.Enums;
 using DatabaseReader.Events;
 using DatabaseReader.Helpers;
 using DevExpress.Utils.Extensions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace DatabaseReader
 {
@@ -22,6 +23,7 @@ namespace DatabaseReader
         private List<Batch> _batches;
         private List<ModelVariable> _modelVariables;
         private ContextMenu _contextMenu;
+        private DataFile _dataFile;
 
         public FrmReadMctc()
         {
@@ -41,17 +43,20 @@ namespace DatabaseReader
         {
             var table = tcPlotInfo.Table;
             int index = -1;
-            for (int i = 0; i < table.Rows.Count; i++)
+
+            if (!double.IsNaN(e.X) && !double.IsNaN(e.Y))
             {
-                if ((double)table.Rows[i][1] == e.X && (double)table.Rows[i][2] == e.Y)
+                for (int i = 0; i < table.Rows.Count; i++)
                 {
-                    index = i;
-                    break;
+                    if ((double)table.Rows[i][1] == e.X && (double)table.Rows[i][2] == e.Y)
+                    {
+                        index = i;
+                        break;
+                    }
                 }
             }
 
-            if (index >= 0)
-                tcPlotInfo.SelectRow(index);
+            tcPlotInfo.SelectRow(index);
         }
 
         private void tcPlotInfo_RowSelected(object sender, TableRowSelectedEventArgs e)
@@ -94,6 +99,12 @@ namespace DatabaseReader
 
         private void btnReadMctc_Click(object sender, EventArgs e)
         {
+            tcPlotInfo.ClearTable();
+            ccMctcPlot.ClearPlot();
+            _batches = null;
+            _modelVariables = null;
+            _dataFile = null;
+
             directory = "H:\\My Drive\\PhD @ Unimelb\\PhD\\PhD - Project\\Project - Calculations\\set_up_fitting\\TC RUN";
             if (!Directory.Exists(directory))
             {
@@ -101,19 +112,57 @@ namespace DatabaseReader
                 return;
             }
             else
+            {
+                //RunThermocalc();
                 _files = Directory.GetFiles(directory).ToList();
+            }
 
             Cursor = Cursors.WaitCursor;
             ReadBatchLines();
             ReadBatchBulks();
-            ReadModelVariables();
-            ReadMctcResults();
+
+            if (_batches != null)
+                ReadModelVariables();
+            
+            if (_modelVariables != null)
+                ReadMctcResults();
+
             Cursor = Cursors.Default;
 
-            _batches.Remove(b => b.IsFailed);
-            _modelVariables.Remove(mv => mv.Batch.IsFailed);
+            _batches?.Remove(b => b.IsFailed);
+            _modelVariables?.Remove(mv => mv.Batch.IsFailed);
+
+            _dataFile = new DataFile();
+            _dataFile.Batches = _batches;
+            _dataFile.ModelVariables = _modelVariables;
 
             PopulateUI();
+        }
+
+        private void RunThermocalc()
+        {
+            // Use ProcessStartInfo class
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.CreateNoWindow = false;
+            startInfo.UseShellExecute = true;
+            startInfo.FileName = directory + "\\tc355aWin.exe";
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            //startInfo.Verb = "runas";
+
+            try
+            {
+                // Start the process with the info we specified.
+                // Call WaitForExit and then the using statement will close.
+                using (Process exeProcess = Process.Start(startInfo))
+                {
+                    exeProcess.WaitForExit();
+                    //string output = exeProcess.StandardOutput.ReadToEnd();
+                }
+            }
+            catch
+            {
+                // Log error.
+            }
         }
 
         private void PopulateUI()
@@ -127,6 +176,7 @@ namespace DatabaseReader
         private void PopulateTreeView_IncludeBatches()
         {
             tvCaseSelection.Nodes.Clear();
+            if (_batches == null) return;
             foreach (var batch in _batches)
             {
                 var batchNode = new TreeNode(batch.Name);
@@ -156,7 +206,7 @@ namespace DatabaseReader
         private void PopulateTreeView_PhaseModelsOnly()
         {
             tvCaseSelection.Nodes.Clear();
-
+            if (_modelVariables == null) return;
             var allPhases = _modelVariables.Select(v => v.Phase).ToList();
             var phases = allPhases.Distinct();
 
@@ -190,7 +240,7 @@ namespace DatabaseReader
             for (int i = 0; i < lines.Count; i++)
             {
                 // batch name
-                var Line1 = ReadAndSplitLine(lines[i]);
+                var Line1 = CleanAndSplitLine(lines[i]);
 
                 var batch = new Batch();
                 int.TryParse(Line1[0], out int index);
@@ -200,7 +250,7 @@ namespace DatabaseReader
 
                 //batch data
                 i++;
-                var Line2 = ReadAndSplitLine(lines[i]);
+                var Line2 = CleanAndSplitLine(lines[i], includeDot: false);
 
                 int varianceIndex = 0;
                 for (int j = 0; j < Line2.Count; j++)
@@ -228,14 +278,14 @@ namespace DatabaseReader
             var lines = ReadFileLines("batchbulks");
             if (lines == null || lines.Count == 0) return;
 
-            var oxidesStr = ReadAndSplitLine(lines[0]);
+            var oxidesStr = CleanAndSplitLine(lines[0]);
             var oxides = new List<OxideType>();
             foreach (var oxideStr in oxidesStr)
                 oxides.Add(EnumExtensions.GetValueFromDescription<OxideType>(oxideStr));
 
             for (int i = 1; i < lines.Count; i++)
             {
-                var compStr = ReadAndSplitLine(lines[i], includeDot: false);
+                var compStr = CleanAndSplitLine(lines[i], includeDot: false);
                 var composition = new List<double>();
                 for (int j = 1; j <= oxides.Count; j++)
                     composition.Add(DoubleExtensions.GetDoubleValueFromText(compStr[j]));
@@ -250,7 +300,7 @@ namespace DatabaseReader
             var lines = ReadFileLines("observations");
             if (lines == null || lines.Count == 0) return;
 
-            lines = ReadAndSplitLine(lines[0], includeDot: false);
+            lines = CleanAndSplitLine(lines[0], includeDot: false);
             _modelVariables = new List<ModelVariable>();
             for (int i = 0; i < lines.Count; i++)
             {
@@ -286,7 +336,7 @@ namespace DatabaseReader
                 var nextBatchLinesIndx = Enumerable.Range(0, lines.Count).Where(j => lines[j].Contains(nextBatchKey)).ToList();
                 if (batchLinesIndx.Count != 2) continue;
                 if (nextBatchLinesIndx.Count == 0)
-                    nextBatchLinesIndx = new List<int>() { batchLinesIndx[0] + 2, batchLinesIndx[1] + 1 };
+                    nextBatchLinesIndx = new List<int>() { batchLinesIndx[0] + 2, lines.Count };
 
                 var splitters = new char[] { '{', '}', '*', '(', ')', '\t', '"', ',', ';' };
 
@@ -338,6 +388,7 @@ namespace DatabaseReader
         private List<string> ReadFileLines(string filePartialName)
         {
             var file = _files.FirstOrDefault(s => s.Contains(filePartialName));
+            if (file == null) return null;
             var fileInfo = new FileInfo(file);
             if (file == null || fileInfo.Extension != ".txt")
             {
@@ -345,13 +396,21 @@ namespace DatabaseReader
                 return null;
             }
 
-            var lines = File.ReadAllLines(file).ToList();
-            lines.Remove(l => string.IsNullOrWhiteSpace(l));
+            var lines = new List<string>();
+            using (FileStream fs = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (var sr = new StreamReader(fs))
+                {
+                    while (!sr.EndOfStream)
+                        lines.Add(sr.ReadLine());
+                }
+            }
 
+            lines.Remove(l => string.IsNullOrWhiteSpace(l));
             return lines;
         }
 
-        private List<string> ReadAndSplitLine(string line, bool includeDot = true)
+        private List<string> CleanAndSplitLine(string line, bool includeDot = true)
         {
             string cleaned = line.Trim().TrimStart('%').Trim();
             var chars = includeDot ? new char[] { ' ', '.' } : new char[] { ' ' };
@@ -376,7 +435,7 @@ namespace DatabaseReader
             }
         }
 
-        private void btnPlot_Click(object sender, EventArgs e)
+        private void btnPlotAndTabulate_Click(object sender, EventArgs e)
         {
             if (_modelVariables == null) return;
             var nodes = tvCaseSelection.GetAllNodes();
@@ -399,6 +458,14 @@ namespace DatabaseReader
 
         private void cmbxModelVariable_SelectedIndexChanged(object sender, EventArgs e)
         {
+            PlotAndTabulate();
+        }
+
+        private void PlotAndTabulate()
+        {
+            ccMctcPlot.ClearPlot();
+            tcPlotInfo.ClearTable();
+
             var selectedModelVar = cmbxModelVariable.SelectedItem as ModelVariable;
             if (selectedModelVar == null) return;
 
@@ -418,7 +485,7 @@ namespace DatabaseReader
             int markerIndex = 0;
             foreach (var group in groups)
             {
-                var curve = new Curve();
+                var curve = new CurveModel();
                 curve.Name = group.FirstOrDefault().Batch.GetPhaseAssemblageString();
 
                 curve.Xvals = group.Select(mv => mv.ObsVal).ToList();
@@ -428,8 +495,8 @@ namespace DatabaseReader
                 var color = ChartUtilities.GetColor(colorIndex++);
                 if (color == Color.Transparent)
                 {
-                    colorIndex %= 10;
-                    color = ChartUtilities.GetColor(colorIndex);
+                    colorIndex = (colorIndex - 1) % 10;
+                    color = ChartUtilities.GetColor(colorIndex++);
                     markerIndex++;
                 }
 
@@ -439,7 +506,7 @@ namespace DatabaseReader
                 curve.MarkerType = ChartUtilities.GetMarkerType(markerIndex); ;
             }
 
-            var xyCurve = new Curve();
+            var xyCurve = new CurveModel();
             double minVal = Math.Min(chartModel.Curves.Min(c => c.Xvals.Min()), chartModel.Curves.Min(c => c.Yvals.Min()));
             double maxVal = Math.Max(chartModel.Curves.Max(c => c.Xvals.Max()), chartModel.Curves.Max(c => c.Yvals.Max()));
             double difference = maxVal - minVal;
@@ -448,8 +515,7 @@ namespace DatabaseReader
             xyCurve.Xvals = new List<double>() { minVal, maxVal };
             xyCurve.Yvals = new List<double>() { minVal, maxVal };
             xyCurve.IsMarkerVisible = false;
-            xyCurve.LineType = System.Drawing.Drawing2D.DashStyle.Dash;
-            xyCurve.LineColor = Color.Gray;
+            xyCurve.LineWidth = 1;
             chartModel.Curves.Add(xyCurve);
 
             ccMctcPlot.Plot(chartModel);
@@ -460,10 +526,12 @@ namespace DatabaseReader
             var axisY = ccMctcPlot.Chart.GraphPane.YAxis;
             axisY.Scale.Min = minVal;
             axisY.Scale.Max = maxVal;
+            axisY.MajorGrid.IsZeroLine = false;
             ccMctcPlot.Chart.Refresh();
 
+
             // tabulating
-            var columns = new List<string>() { "#", "Obs", "Calc", "Assemblage", "Batch" };
+            var columns = new List<string>() { "#", "Obs", "Calc", "Assemblage", "Batch", "P [kbar]", "T [°C]" };
 
             var rows = new List<List<object>>();
             int counter = 1;
@@ -475,7 +543,9 @@ namespace DatabaseReader
                     mvar.ObsVal,
                     mvar.CalcVal,
                     mvar.Batch.GetPhaseAssemblageString(),
-                    mvar.Batch
+                    mvar.Batch,
+                    mvar.Batch.ExperimentalRun.Pressure,
+                    mvar.Batch.ExperimentalRun.Temperature
                 };
 
                 rows.Add(row);
@@ -487,9 +557,43 @@ namespace DatabaseReader
             tcPlotInfo.MultiSelect = false;
         }
 
-        private void ccMctcPlot_Resize(object sender, EventArgs e)
+        private void btnSave_Click(object sender, EventArgs e)
         {
-            tcPlotInfo.Location = new Point(ccMctcPlot.Bounds.Right + 5, tcPlotInfo.Location.Y);
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            saveDialog.Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt";
+            DialogResult result = saveDialog.ShowDialog();
+            if (result == DialogResult.OK)
+                SaveAsJSON(saveDialog.FileName);
+        }
+
+        private void SaveAsJSON(string fileName)
+        {
+            var jsonSettings = new JsonSerializerSettings();
+            jsonSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            jsonSettings.NullValueHandling = NullValueHandling.Ignore;
+            jsonSettings.Formatting = Formatting.Indented;
+            jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
+            var json = JsonConvert.SerializeObject(_dataFile, jsonSettings);
+            File.WriteAllText(fileName, json);
+        }
+
+        private void btnOpen_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openDialog = new OpenFileDialog();
+            openDialog.Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt";
+            DialogResult result = openDialog.ShowDialog();
+            if (result == DialogResult.OK)
+                OpenJSON(openDialog.FileName);
+        }
+
+        private void OpenJSON(string fileName)
+        {
+            var json = File.ReadAllText(fileName);
+            _dataFile = JsonConvert.DeserializeObject<DataFile>(json);
+            _batches = _dataFile.Batches;
+            _modelVariables = _dataFile.ModelVariables;
+
+            PopulateUI();
         }
     }
 }

@@ -30,15 +30,22 @@
         {
             this.btnReadMctc = new System.Windows.Forms.Button();
             this.tvCaseSelection = new System.Windows.Forms.TreeView();
-            this.btnPlot = new System.Windows.Forms.Button();
+            this.btnPlotAndTabulate = new System.Windows.Forms.Button();
             this.ckbxIncludeBatches = new System.Windows.Forms.CheckBox();
-            this.ccMctcPlot = new DatabaseReader.CustomControls.ChartControl();
             this.cmbxModelVariable = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.nudTransparency = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.ccMctcPlot = new DatabaseReader.CustomControls.ChartControl();
             this.tcPlotInfo = new DatabaseReader.CustomControls.TableControl();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.btnOpen = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.nudTransparency)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnReadMctc
@@ -59,21 +66,21 @@
             this.tvCaseSelection.FullRowSelect = true;
             this.tvCaseSelection.Location = new System.Drawing.Point(22, 72);
             this.tvCaseSelection.Name = "tvCaseSelection";
-            this.tvCaseSelection.Size = new System.Drawing.Size(212, 631);
+            this.tvCaseSelection.Size = new System.Drawing.Size(212, 628);
             this.tvCaseSelection.TabIndex = 1;
             this.tvCaseSelection.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.tvCaseSelection_AfterCheck);
             this.tvCaseSelection.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tvCaseSelection_MouseClick);
             // 
-            // btnPlot
+            // btnPlotAndTabulate
             // 
-            this.btnPlot.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnPlot.Location = new System.Drawing.Point(22, 731);
-            this.btnPlot.Name = "btnPlot";
-            this.btnPlot.Size = new System.Drawing.Size(212, 23);
-            this.btnPlot.TabIndex = 2;
-            this.btnPlot.Text = "Plot Selected Cases";
-            this.btnPlot.UseVisualStyleBackColor = true;
-            this.btnPlot.Click += new System.EventHandler(this.btnPlot_Click);
+            this.btnPlotAndTabulate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnPlotAndTabulate.Location = new System.Drawing.Point(22, 731);
+            this.btnPlotAndTabulate.Name = "btnPlotAndTabulate";
+            this.btnPlotAndTabulate.Size = new System.Drawing.Size(212, 23);
+            this.btnPlotAndTabulate.TabIndex = 2;
+            this.btnPlotAndTabulate.Text = "Plot and Tabulate";
+            this.btnPlotAndTabulate.UseVisualStyleBackColor = true;
+            this.btnPlotAndTabulate.Click += new System.EventHandler(this.btnPlotAndTabulate_Click);
             // 
             // ckbxIncludeBatches
             // 
@@ -85,21 +92,11 @@
             this.ckbxIncludeBatches.Text = "Include batches";
             this.ckbxIncludeBatches.UseVisualStyleBackColor = true;
             // 
-            // chartControl
-            // 
-            this.ccMctcPlot.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.ccMctcPlot.Location = new System.Drawing.Point(243, 103);
-            this.ccMctcPlot.Name = "chartControl";
-            this.ccMctcPlot.Size = new System.Drawing.Size(600, 600);
-            this.ccMctcPlot.TabIndex = 4;
-            this.ccMctcPlot.Resize += new System.EventHandler(this.ccMctcPlot_Resize);
-            // 
             // cmbxModelVariable
             // 
             this.cmbxModelVariable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbxModelVariable.FormattingEnabled = true;
-            this.cmbxModelVariable.Location = new System.Drawing.Point(330, 72);
+            this.cmbxModelVariable.Location = new System.Drawing.Point(95, 3);
             this.cmbxModelVariable.Name = "cmbxModelVariable";
             this.cmbxModelVariable.Size = new System.Drawing.Size(121, 21);
             this.cmbxModelVariable.TabIndex = 5;
@@ -108,7 +105,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(240, 75);
+            this.label1.Location = new System.Drawing.Point(5, 6);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(84, 13);
             this.label1.TabIndex = 6;
@@ -122,7 +119,7 @@
             this.nudTransparency.Size = new System.Drawing.Size(77, 22);
             this.nudTransparency.TabIndex = 7;
             this.nudTransparency.Value = new decimal(new int[] {
-            50,
+            40,
             0,
             0,
             0});
@@ -137,27 +134,79 @@
             this.label2.TabIndex = 6;
             this.label2.Text = "Point color transparency";
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer1.Location = new System.Drawing.Point(243, 72);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.label1);
+            this.splitContainer1.Panel1.Controls.Add(this.cmbxModelVariable);
+            this.splitContainer1.Panel1.Controls.Add(this.ccMctcPlot);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.tcPlotInfo);
+            this.splitContainer1.Size = new System.Drawing.Size(1027, 682);
+            this.splitContainer1.SplitterDistance = 563;
+            this.splitContainer1.TabIndex = 9;
+            // 
+            // ccMctcPlot
+            // 
+            this.ccMctcPlot.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ccMctcPlot.Location = new System.Drawing.Point(3, 30);
+            this.ccMctcPlot.Name = "ccMctcPlot";
+            this.ccMctcPlot.Size = new System.Drawing.Size(557, 555);
+            this.ccMctcPlot.TabIndex = 4;
+            // 
             // tcPlotInfo
             // 
+            this.tcPlotInfo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcPlotInfo.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tcPlotInfo.Location = new System.Drawing.Point(849, 103);
+            this.tcPlotInfo.Location = new System.Drawing.Point(0, 0);
+            this.tcPlotInfo.MultiSelect = true;
             this.tcPlotInfo.Name = "tcPlotInfo";
-            this.tcPlotInfo.Size = new System.Drawing.Size(376, 651);
+            this.tcPlotInfo.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
+            this.tcPlotInfo.Size = new System.Drawing.Size(460, 682);
             this.tcPlotInfo.TabIndex = 8;
+            // 
+            // btnSave
+            // 
+            this.btnSave.Location = new System.Drawing.Point(240, 21);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(92, 23);
+            this.btnSave.TabIndex = 10;
+            this.btnSave.Text = "Save as JSON";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // btnOpen
+            // 
+            this.btnOpen.Location = new System.Drawing.Point(338, 21);
+            this.btnOpen.Name = "btnOpen";
+            this.btnOpen.Size = new System.Drawing.Size(92, 23);
+            this.btnOpen.TabIndex = 10;
+            this.btnOpen.Text = "Open a JSON";
+            this.btnOpen.UseVisualStyleBackColor = true;
+            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
             // 
             // FrmReadMctc
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1237, 766);
-            this.Controls.Add(this.tcPlotInfo);
+            this.ClientSize = new System.Drawing.Size(1282, 766);
+            this.Controls.Add(this.btnOpen);
+            this.Controls.Add(this.btnSave);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.nudTransparency);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.cmbxModelVariable);
-            this.Controls.Add(this.ccMctcPlot);
             this.Controls.Add(this.ckbxIncludeBatches);
-            this.Controls.Add(this.btnPlot);
+            this.Controls.Add(this.btnPlotAndTabulate);
             this.Controls.Add(this.tvCaseSelection);
             this.Controls.Add(this.btnReadMctc);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -165,6 +214,11 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Read Mctc";
             ((System.ComponentModel.ISupportInitialize)(this.nudTransparency)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -174,7 +228,7 @@
 
         private System.Windows.Forms.Button btnReadMctc;
         private System.Windows.Forms.TreeView tvCaseSelection;
-        private System.Windows.Forms.Button btnPlot;
+        private System.Windows.Forms.Button btnPlotAndTabulate;
         private System.Windows.Forms.CheckBox ckbxIncludeBatches;
         private CustomControls.ChartControl ccMctcPlot;
         private System.Windows.Forms.ComboBox cmbxModelVariable;
@@ -182,5 +236,8 @@
         private System.Windows.Forms.NumericUpDown nudTransparency;
         private System.Windows.Forms.Label label2;
         private CustomControls.TableControl tcPlotInfo;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnOpen;
     }
 }

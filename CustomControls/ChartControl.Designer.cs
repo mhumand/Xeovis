@@ -51,7 +51,9 @@
             this.zgChart.Size = new System.Drawing.Size(500, 500);
             this.zgChart.TabIndex = 0;
             this.zgChart.UseExtendedPrintDialog = true;
-            this.zgChart.MouseClick += new System.Windows.Forms.MouseEventHandler(this.zgChart_MouseClick);
+            this.zgChart.ZoomEvent += new ZedGraph.ZedGraphControl.ZoomEventHandler(this.zgChart_ZoomEvent);
+            this.zgChart.MouseClick += zgChart_MouseClick;
+            this.zgChart.KeyDown += zgChart_KeyDown;
             // 
             // imglistToolbar
             // 

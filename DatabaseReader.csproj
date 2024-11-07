@@ -49,6 +49,9 @@
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -120,15 +123,16 @@
     <Compile Include="CustomControls\LabelInputControl.Designer.cs">
       <DependentUpon>LabelInputControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Definitions\Modelling\Batch.cs" />
+    <Compile Include="Definitions\Persistence\Batch.cs" />
     <Compile Include="Definitions\Modelling\EndMember.cs" />
     <Compile Include="Definitions\Modelling\Experiment.cs" />
     <Compile Include="Definitions\Modelling\ExperimentalRun.cs" />
-    <Compile Include="Definitions\Modelling\ModelVariable.cs" />
+    <Compile Include="Definitions\Persistence\ModelVariable.cs" />
     <Compile Include="Definitions\Modelling\SubsetRun.cs" />
     <Compile Include="Definitions\Modelling\SubsetSettings.cs" />
+    <Compile Include="Definitions\Persistence\DataFile.cs" />
     <Compile Include="Definitions\UI\ChartModel.cs" />
-    <Compile Include="Definitions\UI\Curve.cs" />
+    <Compile Include="Definitions\UI\CurveModel.cs" />
     <Compile Include="Enums\Modelling\EndMemberAttributeType.cs" />
     <Compile Include="Enums\Modelling\EndMemberType.cs" />
     <Compile Include="Enums\Modelling\OxideType.cs" />

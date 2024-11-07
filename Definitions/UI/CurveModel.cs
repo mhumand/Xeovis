@@ -9,7 +9,7 @@ using ZedGraph;
 
 namespace DatabaseReader.Definitions.UI
 {
-    public class Curve
+    public class CurveModel
     {
         public string Name { get; set; }
         public List<double> Xvals { get; set; }
@@ -26,7 +26,7 @@ namespace DatabaseReader.Definitions.UI
         public bool IsMarkerVisible { get; set; }
         public bool IsHidden { get; set; }
 
-        public Curve()
+        public CurveModel()
         {
             Xvals = new List<double>();
             Yvals = new List<double>();
@@ -35,7 +35,7 @@ namespace DatabaseReader.Definitions.UI
             MarkerType = SymbolType.Circle;
             LineColor = Color.Black;
             MarkerColor = Color.Black;
-            MarkerSize = 8;
+            MarkerSize = 6;
             LineWidth = 2;
             IsLineVisible = true;
             IsMarkerVisible = true;

@@ -9,15 +9,15 @@ namespace DatabaseReader.Events
 {
     public class ChartPointSelectedEventArgs : EventArgs
     {
-        public Curve Curve;
+        public CurveModel Curve;
         public double X;
         public double Y;
 
-        public ChartPointSelectedEventArgs(Curve curve, int index)
+        public ChartPointSelectedEventArgs(CurveModel curve, int index)
         {
             Curve = curve;
-            X = Curve.Xvals[index];
-            Y = Curve.Yvals[index];
+            X = index >= 0 ? Curve.Xvals[index] : double.NaN;
+            Y = index >= 0 ? Curve.Yvals[index] : double.NaN;
         }
     }
 }

@@ -7,7 +7,7 @@ namespace DatabaseReader.Definitions.UI
     public class ChartModel
     {
         public string Title { get; set; }
-        public List<Curve> Curves { get; set; }
+        public List<CurveModel> Curves { get; set; }
         public Guid ID { get; set; }
         public string XAxisLabel { get; set; }
         public string YAxisLabel { get; set; }
@@ -20,7 +20,7 @@ namespace DatabaseReader.Definitions.UI
 
         public ChartModel()
         {
-            Curves = new List<Curve>();
+            Curves = new List<CurveModel>();
             ID = Guid.NewGuid();
 
             IsLegendVisible = true;
