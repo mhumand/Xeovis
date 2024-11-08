@@ -1,10 +1,8 @@
-﻿using System;
+﻿using DatabaseReader.Enums.UI;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ZedGraph;
 
 namespace DatabaseReader.Definitions.UI
@@ -25,6 +23,8 @@ namespace DatabaseReader.Definitions.UI
         public bool IsLineVisible { get; set; }
         public bool IsMarkerVisible { get; set; }
         public bool IsHidden { get; set; }
+        public int Transparency { get; set; }
+        public CurveType CurveType { get; set; }
 
         public CurveModel()
         {
@@ -39,6 +39,8 @@ namespace DatabaseReader.Definitions.UI
             LineWidth = 2;
             IsLineVisible = true;
             IsMarkerVisible = true;
+            Transparency = 0;
+            CurveType = CurveType.Normal;
         }
     }
 }

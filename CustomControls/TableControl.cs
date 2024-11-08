@@ -3,10 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace DatabaseReader.CustomControls
@@ -30,6 +28,10 @@ namespace DatabaseReader.CustomControls
         public TableControl()
         {
             InitializeComponent();
+
+            var dgvType = dgvTable.GetType();
+            PropertyInfo info = dgvType.GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance);
+            info.SetValue(dgvTable, true);
         }
 
         public EventHandler<TableRowSelectedEventArgs> TableRowSelected;

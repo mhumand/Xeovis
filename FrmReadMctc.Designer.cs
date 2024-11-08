@@ -37,10 +37,10 @@
             this.nudTransparency = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.ccMctcPlot = new DatabaseReader.CustomControls.ChartControl();
-            this.tcPlotInfo = new DatabaseReader.CustomControls.TableControl();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnOpen = new System.Windows.Forms.Button();
+            this.ccMctcPlot = new DatabaseReader.CustomControls.ChartControl();
+            this.tcPlotInfo = new DatabaseReader.CustomControls.TableControl();
             ((System.ComponentModel.ISupportInitialize)(this.nudTransparency)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -52,7 +52,7 @@
             // 
             this.btnReadMctc.Location = new System.Drawing.Point(22, 21);
             this.btnReadMctc.Name = "btnReadMctc";
-            this.btnReadMctc.Size = new System.Drawing.Size(212, 23);
+            this.btnReadMctc.Size = new System.Drawing.Size(173, 23);
             this.btnReadMctc.TabIndex = 0;
             this.btnReadMctc.Text = "Read Mctc Results";
             this.btnReadMctc.UseVisualStyleBackColor = true;
@@ -66,7 +66,7 @@
             this.tvCaseSelection.FullRowSelect = true;
             this.tvCaseSelection.Location = new System.Drawing.Point(22, 72);
             this.tvCaseSelection.Name = "tvCaseSelection";
-            this.tvCaseSelection.Size = new System.Drawing.Size(212, 628);
+            this.tvCaseSelection.Size = new System.Drawing.Size(173, 628);
             this.tvCaseSelection.TabIndex = 1;
             this.tvCaseSelection.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.tvCaseSelection_AfterCheck);
             this.tvCaseSelection.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tvCaseSelection_MouseClick);
@@ -76,7 +76,7 @@
             this.btnPlotAndTabulate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnPlotAndTabulate.Location = new System.Drawing.Point(22, 731);
             this.btnPlotAndTabulate.Name = "btnPlotAndTabulate";
-            this.btnPlotAndTabulate.Size = new System.Drawing.Size(212, 23);
+            this.btnPlotAndTabulate.Size = new System.Drawing.Size(173, 23);
             this.btnPlotAndTabulate.TabIndex = 2;
             this.btnPlotAndTabulate.Text = "Plot and Tabulate";
             this.btnPlotAndTabulate.UseVisualStyleBackColor = true;
@@ -114,9 +114,9 @@
             // nudTransparency
             // 
             this.nudTransparency.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.nudTransparency.Location = new System.Drawing.Point(157, 706);
+            this.nudTransparency.Location = new System.Drawing.Point(135, 706);
             this.nudTransparency.Name = "nudTransparency";
-            this.nudTransparency.Size = new System.Drawing.Size(77, 22);
+            this.nudTransparency.Size = new System.Drawing.Size(60, 22);
             this.nudTransparency.TabIndex = 7;
             this.nudTransparency.Value = new decimal(new int[] {
             40,
@@ -128,18 +128,18 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(19, 708);
+            this.label2.Location = new System.Drawing.Point(25, 708);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(132, 13);
+            this.label2.Size = new System.Drawing.Size(104, 13);
             this.label2.TabIndex = 6;
-            this.label2.Text = "Point color transparency";
+            this.label2.Text = "Color transparency";
             // 
             // splitContainer1
             // 
             this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer1.Location = new System.Drawing.Point(243, 72);
+            this.splitContainer1.Location = new System.Drawing.Point(201, 72);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -151,9 +151,29 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tcPlotInfo);
-            this.splitContainer1.Size = new System.Drawing.Size(1027, 682);
-            this.splitContainer1.SplitterDistance = 563;
+            this.splitContainer1.Size = new System.Drawing.Size(1150, 682);
+            this.splitContainer1.SplitterDistance = 630;
             this.splitContainer1.TabIndex = 9;
+            // 
+            // btnSave
+            // 
+            this.btnSave.Location = new System.Drawing.Point(209, 21);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(92, 23);
+            this.btnSave.TabIndex = 10;
+            this.btnSave.Text = "Save as JSON";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // btnOpen
+            // 
+            this.btnOpen.Location = new System.Drawing.Point(307, 21);
+            this.btnOpen.Name = "btnOpen";
+            this.btnOpen.Size = new System.Drawing.Size(92, 23);
+            this.btnOpen.TabIndex = 10;
+            this.btnOpen.Text = "Open a JSON";
+            this.btnOpen.UseVisualStyleBackColor = true;
+            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
             // 
             // ccMctcPlot
             // 
@@ -161,7 +181,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ccMctcPlot.Location = new System.Drawing.Point(3, 30);
             this.ccMctcPlot.Name = "ccMctcPlot";
-            this.ccMctcPlot.Size = new System.Drawing.Size(557, 555);
+            this.ccMctcPlot.Size = new System.Drawing.Size(624, 625);
             this.ccMctcPlot.TabIndex = 4;
             // 
             // tcPlotInfo
@@ -172,34 +192,14 @@
             this.tcPlotInfo.MultiSelect = true;
             this.tcPlotInfo.Name = "tcPlotInfo";
             this.tcPlotInfo.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
-            this.tcPlotInfo.Size = new System.Drawing.Size(460, 682);
+            this.tcPlotInfo.Size = new System.Drawing.Size(516, 682);
             this.tcPlotInfo.TabIndex = 8;
-            // 
-            // btnSave
-            // 
-            this.btnSave.Location = new System.Drawing.Point(240, 21);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(92, 23);
-            this.btnSave.TabIndex = 10;
-            this.btnSave.Text = "Save as JSON";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
-            // btnOpen
-            // 
-            this.btnOpen.Location = new System.Drawing.Point(338, 21);
-            this.btnOpen.Name = "btnOpen";
-            this.btnOpen.Size = new System.Drawing.Size(92, 23);
-            this.btnOpen.TabIndex = 10;
-            this.btnOpen.Text = "Open a JSON";
-            this.btnOpen.UseVisualStyleBackColor = true;
-            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
             // 
             // FrmReadMctc
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1282, 766);
+            this.ClientSize = new System.Drawing.Size(1363, 766);
             this.Controls.Add(this.btnOpen);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.splitContainer1);

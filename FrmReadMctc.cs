@@ -4,7 +4,6 @@ using DatabaseReader.Definitions.UI;
 using DatabaseReader.Enums;
 using DatabaseReader.Events;
 using DatabaseReader.Helpers;
-using DevExpress.Utils.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -129,8 +128,8 @@ namespace DatabaseReader
 
             Cursor = Cursors.Default;
 
-            _batches?.Remove(b => b.IsFailed);
-            _modelVariables?.Remove(mv => mv.Batch.IsFailed);
+            _batches?.RemoveAll(b => b.IsFailed);
+            _modelVariables?.RemoveAll(mv => mv.Batch.IsFailed);
 
             _dataFile = new DataFile();
             _dataFile.Batches = _batches;
@@ -176,7 +175,7 @@ namespace DatabaseReader
         private void PopulateTreeView_IncludeBatches()
         {
             tvCaseSelection.Nodes.Clear();
-            if (_batches == null) return;
+            if (_batches == null || _batches.Count == 0) return;
             foreach (var batch in _batches)
             {
                 var batchNode = new TreeNode(batch.Name);
@@ -206,7 +205,7 @@ namespace DatabaseReader
         private void PopulateTreeView_PhaseModelsOnly()
         {
             tvCaseSelection.Nodes.Clear();
-            if (_modelVariables == null) return;
+            if (_modelVariables == null || _modelVariables.Count == 0 || _batches.Count == 0) return;
             var allPhases = _modelVariables.Select(v => v.Phase).ToList();
             var phases = allPhases.Distinct();
 
@@ -305,7 +304,7 @@ namespace DatabaseReader
             for (int i = 0; i < lines.Count; i++)
             {
                 var varData = lines[i].Split(new char[] { '(', ')', 'b', '-' }).ToList();
-                varData.Remove(l => string.IsNullOrWhiteSpace(l));
+                varData.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
                 var modelVariable = new ModelVariable();
                 modelVariable.Name = varData[0];
@@ -346,14 +345,14 @@ namespace DatabaseReader
                     modVarNameLine += lines[j + 1];
 
                 var modVarNameLines = modVarNameLine.Split(splitters).ToList();
-                modVarNameLines.Remove(l => string.IsNullOrWhiteSpace(l));
+                modVarNameLines.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
                 string modVarValueLine = string.Empty;
                 for (int j = batchLinesIndx[1]; j < nextBatchLinesIndx[1]; j++)
                     modVarValueLine += lines[j];
 
                 var modVarValueLines = modVarValueLine.Split(splitters).ToList();
-                modVarValueLines.Remove(l => string.IsNullOrWhiteSpace(l));
+                modVarValueLines.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
                 if (modVarValueLines.Count <= 3)
                 {
@@ -388,9 +387,7 @@ namespace DatabaseReader
         private List<string> ReadFileLines(string filePartialName)
         {
             var file = _files.FirstOrDefault(s => s.Contains(filePartialName));
-            if (file == null) return null;
-            var fileInfo = new FileInfo(file);
-            if (file == null || fileInfo.Extension != ".txt")
+            if (file == null || new FileInfo(file).Extension != ".txt")
             {
                 MessageBox.Show($"Couldn't fine {filePartialName}.txt");
                 return null;
@@ -406,7 +403,7 @@ namespace DatabaseReader
                 }
             }
 
-            lines.Remove(l => string.IsNullOrWhiteSpace(l));
+            lines.RemoveAll(l => string.IsNullOrWhiteSpace(l));
             return lines;
         }
 
@@ -415,7 +412,7 @@ namespace DatabaseReader
             string cleaned = line.Trim().TrimStart('%').Trim();
             var chars = includeDot ? new char[] { ' ', '.' } : new char[] { ' ' };
             var splitted = cleaned.Split(chars).ToList();
-            splitted.Remove(l => string.IsNullOrWhiteSpace(l));
+            splitted.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
             return splitted;
         }
@@ -474,7 +471,7 @@ namespace DatabaseReader
             if (modelVars.Count == 0) return;
 
             // categorizing based on batch phase assemblage
-            var groups = modelVars.GroupBy(mv => mv.Batch.GetPhaseAssemblageString()).ToList();
+            var modelVarGroups = modelVars.GroupBy(mv => mv.Batch.GetPhaseAssemblageString()).ToList();
             var chartModel = new ChartModel();
             chartModel.Title = "title test";
             chartModel.XAxisLabel = $"Observed {selectedModelVar}";
@@ -483,13 +480,13 @@ namespace DatabaseReader
 
             int colorIndex = 0;
             int markerIndex = 0;
-            foreach (var group in groups)
+            foreach (var modelVarGroup in modelVarGroups)
             {
                 var curve = new CurveModel();
-                curve.Name = group.FirstOrDefault().Batch.GetPhaseAssemblageString();
+                curve.Name = modelVarGroup.FirstOrDefault().Batch.GetPhaseAssemblageString();
 
-                curve.Xvals = group.Select(mv => mv.ObsVal).ToList();
-                curve.Yvals = group.Select(mv => mv.CalcVal).ToList();
+                curve.Xvals = modelVarGroup.Select(mv => mv.ObsVal).ToList();
+                curve.Yvals = modelVarGroup.Select(mv => mv.CalcVal).ToList();
                 curve.IsLineVisible = false;
 
                 var color = ChartUtilities.GetColor(colorIndex++);
@@ -500,12 +497,14 @@ namespace DatabaseReader
                     markerIndex++;
                 }
 
-                int transparency = (int)(255 * (1 - (int)nudTransparency.Value / 100.0));
-                curve.MarkerColor = Color.FromArgb(transparency, color);
+                curve.Transparency = (int)nudTransparency.Value;
+                curve.MarkerColor = color;
                 chartModel.Curves.Add(curve);
-                curve.MarkerType = ChartUtilities.GetMarkerType(markerIndex); ;
+                curve.MarkerType = ChartUtilities.GetMarkerType(markerIndex);
+                curve.MarkerSize = 8;
             }
 
+            // x = y line
             var xyCurve = new CurveModel();
             double minVal = Math.Min(chartModel.Curves.Min(c => c.Xvals.Min()), chartModel.Curves.Min(c => c.Yvals.Min()));
             double maxVal = Math.Max(chartModel.Curves.Max(c => c.Xvals.Max()), chartModel.Curves.Max(c => c.Yvals.Max()));
@@ -516,10 +515,11 @@ namespace DatabaseReader
             xyCurve.Yvals = new List<double>() { minVal, maxVal };
             xyCurve.IsMarkerVisible = false;
             xyCurve.LineWidth = 1;
+            xyCurve.CurveType = Enums.UI.CurveType.FixedLine;
             chartModel.Curves.Add(xyCurve);
-
             ccMctcPlot.Plot(chartModel);
 
+            // scaling
             var axisX = ccMctcPlot.Chart.GraphPane.XAxis;
             axisX.Scale.Min = minVal;
             axisX.Scale.Max = maxVal;
@@ -529,6 +529,8 @@ namespace DatabaseReader
             axisY.MajorGrid.IsZeroLine = false;
             ccMctcPlot.Chart.Refresh();
 
+            // settings
+            ccMctcPlot.UseVisibilityFilterWithCurveLabel = true;
 
             // tabulating
             var columns = new List<string>() { "#", "Obs", "Calc", "Assemblage", "Batch", "P [kbar]", "T [°C]" };
@@ -579,11 +581,15 @@ namespace DatabaseReader
 
         private void btnOpen_Click(object sender, EventArgs e)
         {
+            Cursor = Cursors.WaitCursor;
+
             OpenFileDialog openDialog = new OpenFileDialog();
             openDialog.Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt";
             DialogResult result = openDialog.ShowDialog();
             if (result == DialogResult.OK)
                 OpenJSON(openDialog.FileName);
+
+            Cursor = Cursors.Default;
         }
 
         private void OpenJSON(string fileName)

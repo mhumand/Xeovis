@@ -644,6 +644,8 @@ namespace DatabaseReader
 
         private void CmbxDMAdvancedPhaseList_SelectedIndexChanged(object sender, EventArgs e)
         {
+            Cursor = Cursors.WaitCursor;
+
             tcAdvancedDataManager.ClearTable();
             tcADPhaseCompSummary.ClearTable();
 
@@ -735,6 +737,8 @@ namespace DatabaseReader
             var columns = Columns.GetRange(6, oxides.Length);
             columns.Insert(0, " ");
             tcADPhaseCompSummary.FillTable(columns, rows);
+
+            Cursor = Cursors.Default;
         }
     }
 }

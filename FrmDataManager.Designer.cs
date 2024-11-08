@@ -41,6 +41,7 @@
             this.ckbxSubDirectory = new System.Windows.Forms.CheckBox();
             this.txtSubDirectory = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.lblAllPhases = new System.Windows.Forms.Label();
             this.tcExperiment = new DatabaseReader.CustomControls.TableControl();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tcPhases = new DatabaseReader.CustomControls.TableControl();
@@ -64,7 +65,6 @@
             this.flpFilters = new System.Windows.Forms.FlowLayoutPanel();
             this.btnAddRunFilterType = new System.Windows.Forms.Button();
             this.tcFilteredRuns = new DatabaseReader.CustomControls.TableControl();
-            this.lblAllPhases = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -227,6 +227,15 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Overview";
             // 
+            // lblAllPhases
+            // 
+            this.lblAllPhases.AutoSize = true;
+            this.lblAllPhases.Location = new System.Drawing.Point(213, 25);
+            this.lblAllPhases.Name = "lblAllPhases";
+            this.lblAllPhases.Size = new System.Drawing.Size(62, 13);
+            this.lblAllPhases.TabIndex = 6;
+            this.lblAllPhases.Text = "All phases:";
+            // 
             // tcExperiment
             // 
             this.tcExperiment.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -234,7 +243,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcExperiment.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tcExperiment.Location = new System.Drawing.Point(6, 49);
+            this.tcExperiment.MultiSelect = true;
             this.tcExperiment.Name = "tcExperiment";
+            this.tcExperiment.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
             this.tcExperiment.Size = new System.Drawing.Size(1007, 207);
             this.tcExperiment.TabIndex = 5;
             // 
@@ -257,7 +268,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcPhases.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tcPhases.Location = new System.Drawing.Point(6, 48);
+            this.tcPhases.MultiSelect = true;
             this.tcPhases.Name = "tcPhases";
+            this.tcPhases.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
             this.tcPhases.Size = new System.Drawing.Size(1007, 206);
             this.tcPhases.TabIndex = 5;
             // 
@@ -366,7 +379,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcADPhaseCompSummary.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tcADPhaseCompSummary.Location = new System.Drawing.Point(6, 455);
+            this.tcADPhaseCompSummary.MultiSelect = true;
             this.tcADPhaseCompSummary.Name = "tcADPhaseCompSummary";
+            this.tcADPhaseCompSummary.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
             this.tcADPhaseCompSummary.Size = new System.Drawing.Size(1019, 107);
             this.tcADPhaseCompSummary.TabIndex = 5;
             // 
@@ -414,7 +429,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcAdvancedDataManager.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tcAdvancedDataManager.Location = new System.Drawing.Point(6, 50);
+            this.tcAdvancedDataManager.MultiSelect = true;
             this.tcAdvancedDataManager.Name = "tcAdvancedDataManager";
+            this.tcAdvancedDataManager.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
             this.tcAdvancedDataManager.Size = new System.Drawing.Size(1019, 399);
             this.tcAdvancedDataManager.TabIndex = 2;
             // 
@@ -491,18 +508,11 @@
             this.tcFilteredRuns.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tcFilteredRuns.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tcFilteredRuns.Location = new System.Drawing.Point(225, 26);
+            this.tcFilteredRuns.MultiSelect = true;
             this.tcFilteredRuns.Name = "tcFilteredRuns";
+            this.tcFilteredRuns.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
             this.tcFilteredRuns.Size = new System.Drawing.Size(1018, 536);
             this.tcFilteredRuns.TabIndex = 1;
-            // 
-            // lblAllPhases
-            // 
-            this.lblAllPhases.AutoSize = true;
-            this.lblAllPhases.Location = new System.Drawing.Point(213, 25);
-            this.lblAllPhases.Name = "lblAllPhases";
-            this.lblAllPhases.Size = new System.Drawing.Size(62, 13);
-            this.lblAllPhases.TabIndex = 6;
-            this.lblAllPhases.Text = "All phases:";
             // 
             // FrmDataManager
             // 
