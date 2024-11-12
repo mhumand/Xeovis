@@ -701,7 +701,7 @@ namespace DatabaseReader
 
             // composition summary
             if (Rows.Count == 0) return;
-            var table = tcAdvancedDataManager.Table;
+            var table = tcAdvancedDataManager.DataTable;
 
             var rows = new List<List<object>>();
             var preparation = new List<object> { "" };

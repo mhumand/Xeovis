@@ -8,6 +8,7 @@ namespace DatabaseReader.Enums
 {
     public enum PhaseState
     {
+        NotSet,
         Pure,
         Solution
     }

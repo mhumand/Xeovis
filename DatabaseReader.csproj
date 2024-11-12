@@ -145,6 +145,7 @@
     <Compile Include="Enums\Modelling\PhaseState.cs" />
     <Compile Include="Enums\Modelling\RunFilterType.cs" />
     <Compile Include="Enums\UI\CurveType.cs" />
+    <Compile Include="Enums\UI\FilterType.cs" />
     <Compile Include="Events\ChartPointSelectedEventArgs.cs" />
     <Compile Include="Events\TableRowSelectedEventArgs.cs" />
     <Compile Include="FrmDataManager.cs">

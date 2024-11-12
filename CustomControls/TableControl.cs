@@ -11,7 +11,11 @@ namespace DatabaseReader.CustomControls
 {
     public partial class TableControl : UserControl
     {
-        public DataTable Table;
+        private ContextMenuStrip _columnContextMenu;
+        private DataColumn _idColumn;
+
+        public DataColumn IDColumn { get { return _idColumn; } }
+        public DataTable DataTable;
 
         public DataGridViewSelectionMode SelectionMode
         {
@@ -44,25 +48,48 @@ namespace DatabaseReader.CustomControls
             if (columns == null || columns.Count == 0) return;
             if (values == null || values.Count == 0) return;
 
-            Table = new DataTable();
+            DataTable = new DataTable();
             int index = 0;
             foreach (var column in columns)
             {
                 bool isDouble = values[0][index] is double;
-                Table.Columns.Add(column, isDouble ? typeof(double) : typeof(string));
+                bool isBool = values[0][index] is bool;
+
+                if (isDouble)
+                {
+                    var col = DataTable.Columns.Add(column, typeof(double));
+                    col.ReadOnly = true;
+                }
+                else if (isBool)
+                {
+                    var col = DataTable.Columns.Add(column, typeof(bool));
+                    col.ReadOnly = false;
+                }
+                else
+                {
+                    var col = DataTable.Columns.Add(column, typeof(string));
+                    col.ReadOnly = true;
+                }
+
                 index++;
             }
 
             foreach (var objects in values)
             {
-                var row = Table.NewRow();
+                var row = DataTable.NewRow();
                 for (int i = 0; i < objects.Count; i++)
                     row[i] = objects[i];
 
-                Table.Rows.Add(row);
+                DataTable.Rows.Add(row);
             }
 
-            dgvTable.DataSource = Table;
+            _idColumn = DataTable.Columns.Add("ID", typeof(Guid));
+            var idColIndex = DataTable.Columns.IndexOf(_idColumn);
+            foreach (DataRow row in DataTable.Rows)
+                row[_idColumn] = Guid.NewGuid();
+
+            dgvTable.DataSource = DataTable;
+            dgvTable.Columns[idColIndex].Visible = false;
             ClearSelection();
             FastAutoSizeColumns();
         }
@@ -105,20 +132,21 @@ namespace DatabaseReader.CustomControls
             {
                 if (TableRowSelected == null) return;
 
-                var cell = dgvTable.SelectedRows[0].Cells[0].Value;
+                var id = (Guid)dgvTable.SelectedRows[0].Cells[_idColumn.ColumnName].Value;
                 int index = 0;
-                for (int i = 0; i < Table.Rows.Count; i++)
+                for (int i = 0; i < DataTable.Rows.Count; i++)
                 {
-                    if (cell == Table.Rows[i][0].ToString())
+                    if (id == (Guid)DataTable.Rows[i][_idColumn])
                     {
                         index = i;
                         break;
                     }
                 }
-                var tableRow = Table.Rows[index];
+
+                var tableRow = DataTable.Rows[index];
                 var row = new List<object>();
                 var columns = new List<string>();
-                foreach (DataColumn column in Table.Columns)
+                foreach (DataColumn column in DataTable.Columns)
                 {
                     columns.Add(column.ColumnName);
                     row.Add(tableRow[column]);
@@ -135,15 +163,54 @@ namespace DatabaseReader.CustomControls
             TableRowSelected?.Invoke(this, null);
         }
 
-        public void SelectRow(int rowIndex)
+        public void SelectRow(Guid rowID)
         {
+            if (rowID == null) return;
+
             ClearSelection();
+
+            int rowIndex = -1;
+            for (int i = 0; i < DataTable.Rows.Count; i++)
+                if ((Guid)dgvTable.Rows[i].Cells[_idColumn.ColumnName].Value == rowID)
+                    rowIndex = i;
 
             if (rowIndex >= 0)
             {
-                dgvTable.Sort(dgvTable.Columns[0], ListSortDirection.Ascending);
                 dgvTable.Rows[rowIndex].Selected = true;
                 dgvTable.FirstDisplayedScrollingRowIndex = rowIndex;
+            }
+        }
+
+        private void dgvTable_MouseClick(object sender, MouseEventArgs e)
+        {
+            var grid = sender as DataGridView;
+            if (grid == null) return;
+            if (e.Button == MouseButtons.Right)
+            {
+                var columnIndex = dgvTable.HitTest(e.X, e.Y).ColumnIndex;
+                var focusedColumn = dgvTable.Columns[columnIndex];
+
+                if (focusedColumn.ValueType == typeof(bool))
+                {
+                    _columnContextMenu = new ContextMenuStrip();
+                    var selectAllMenuItem = new ToolStripMenuItem("Select All");
+                    selectAllMenuItem.Click += (s, arg) =>
+                    {
+                        foreach (DataRow row in DataTable.Rows)
+                            row[columnIndex] = true;
+                    };
+                    _columnContextMenu.Items.Add(selectAllMenuItem);
+
+                    var deselectAllMenuItem = new ToolStripMenuItem("Deselect All");
+                    deselectAllMenuItem.Click += (s, arg) =>
+                    {
+                        foreach (DataRow row in DataTable.Rows)
+                            row[columnIndex] = false;
+                    };
+                    _columnContextMenu.Items.Add(deselectAllMenuItem);
+
+                    _columnContextMenu.Show(dgvTable, e.Location);
+                }
             }
         }
     }

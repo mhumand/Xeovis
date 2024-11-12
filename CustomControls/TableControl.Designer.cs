@@ -45,13 +45,13 @@
             this.dgvTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvTable.Location = new System.Drawing.Point(0, 0);
             this.dgvTable.Name = "dgvTable";
-            this.dgvTable.ReadOnly = true;
             this.dgvTable.RowHeadersVisible = false;
             this.dgvTable.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dgvTable.ShowEditingIcon = false;
             this.dgvTable.Size = new System.Drawing.Size(596, 595);
             this.dgvTable.TabIndex = 0;
             this.dgvTable.SelectionChanged += new System.EventHandler(this.dgvTable_SelectionChanged);
+            this.dgvTable.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dgvTable_MouseClick);
             // 
             // TableControl
             // 

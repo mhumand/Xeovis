@@ -1,4 +1,5 @@
 ﻿using DatabaseReader.Definitions.UI;
+using DatabaseReader.Enums.UI;
 using DatabaseReader.Events;
 using DatabaseReader.Helpers;
 using System;
@@ -16,21 +17,22 @@ namespace DatabaseReader.CustomControls
         private GraphPane _graphPane;
         private LineObj _lineH;
         private LineObj _lineV;
-        private TextObj _annotation;
-        private string _visibilityFilterType;
+        private string _labelFilterType;
         private List<string> _visibilityFilterKeys;
         private ContextMenuStrip _legendContextMenu;
 
         public ZedGraphControl Chart => zgChart;
         public EventHandler<ChartPointSelectedEventArgs> ChartPointSelected;
         public List<LineObj> LineObjects;
-        public bool UseVisibilityFilterWithCurveLabel {  get; set; }
+        public bool UseLabelFiltering { get; set; }
+        public Dictionary<string, List<string>> SpecialFilters;
 
         public ChartControl()
         {
             InitializeComponent();
             _graphPane = zgChart.GraphPane;
             LineObjects = new List<LineObj>();
+            SpecialFilters = new Dictionary<string, List<string>>();
         }
 
         public void ClearPlot()
@@ -45,6 +47,7 @@ namespace DatabaseReader.CustomControls
         {
             _chartModel = chartmodel;
             _graphPane.CurveList.Clear();
+            _visibilityFilterKeys = null;
 
             foreach (var curveModel in _chartModel.Curves)
             {
@@ -72,7 +75,6 @@ namespace DatabaseReader.CustomControls
                 curve.Label.FontSpec = _graphPane.Legend.FontSpec.Clone();
             }
 
-
             // style the plot
             _graphPane.Title.Text = _chartModel.Title;
             _graphPane.Title.IsVisible = _chartModel.IsTitleVisible;
@@ -94,7 +96,11 @@ namespace DatabaseReader.CustomControls
         {
             if (_chartModel == null || !_chartModel.HasEqualDimensions) return;
 
-            Height = Width;
+            int height = Width;
+            //if (_graphPane.Legend.IsVisible && (int)_graphPane.Legend.Rect.Height > 2 * _graphPane.Margin.Top)
+            //    height += (int)_graphPane.Legend.Rect.Height;
+
+            Height = height;
         }
 
         public void CrosshairSelectPoint(double X = double.NaN, double Y = double.NaN)
@@ -125,17 +131,15 @@ namespace DatabaseReader.CustomControls
 
         private void zgChart_MouseClick(object sender, MouseEventArgs e)
         {
+            _graphPane.FindNearestObject(new PointF(e.X, e.Y), CreateGraphics(), out object nearestObj, out int objIndex);
+            _graphPane.FindNearestPoint(new PointF(e.X, e.Y), out CurveItem nearestCurve, out int pointIndex);
+
             if (e.Button == MouseButtons.Left)
             {
-                // curve visibility
-                _graphPane.FindNearestObject(new PointF(e.X, e.Y), CreateGraphics(), out object nearestObj, out int objIndex);
                 if (nearestObj is Legend && objIndex.IsBetween(0, _graphPane.CurveList.Count - 1))
-                {
                     SwitchCurveVisibility(objIndex);
-                }
 
                 // point selection
-                _graphPane.FindNearestPoint(new PointF(e.X, e.Y), out CurveItem nearestCurve, out int pointIndex);
                 if (nearestCurve != null && nearestCurve.Tag != null && pointIndex >= 0)
                 {
                     var curve = nearestCurve.Tag as CurveModel;
@@ -149,12 +153,18 @@ namespace DatabaseReader.CustomControls
                         ChartPointSelected?.Invoke(this, new ChartPointSelectedEventArgs(null, -1));
                 }
             }
+            else if (e.Button == MouseButtons.Middle)
+            {
+                if (nearestObj is Legend && objIndex.IsBetween(0, _graphPane.CurveList.Count - 1))
+                    ShowSelectedCurveOnly(objIndex);
+            }
 
             zgChart.Refresh();
         }
 
         private void SwitchCurveVisibility(int curveIndex)
         {
+            if (curveIndex < 0 || curveIndex >= _graphPane.CurveList.Count) return;
             var curve = _graphPane.CurveList[curveIndex] as LineItem;
             bool alreadyVisible = curve.IsVisible;
             curve.IsVisible = !alreadyVisible;
@@ -204,7 +214,7 @@ namespace DatabaseReader.CustomControls
             _graphPane.FindNearestObject(mousePt, CreateGraphics(), out object nearestObj, out int objIndex);
 
             if (nearestObj is Legend)
-                MakeLegendContextMenu(menuStrip);
+                MakeLegendContextMenu(menuStrip, objIndex);
             else
                 MakeChartContexMenu(menuStrip);
         }
@@ -213,7 +223,7 @@ namespace DatabaseReader.CustomControls
         {
             menuStrip.ShowImageMargin = true;
 
-            var toBeRemovedNames = new List<string>() { "print", "page_setup", "unzoom", "undo_all" };
+            var toBeRemovedNames = new List<string>() { "print", "page_setup", "unzoom", "undo_all", "set_default" };
             var toBeRemovedItems = new List<ToolStripItem>();
             foreach (ToolStripItem item in menuStrip.Items)
                 if (toBeRemovedNames.Contains(item.Name))
@@ -222,72 +232,156 @@ namespace DatabaseReader.CustomControls
             foreach (var item in toBeRemovedItems)
                 menuStrip.Items.Remove(item);
 
-            var showLegendMenuItem = new ToolStripMenuItem("Show Legend", null, ShowLegendMenuItem_Clicked);
+            var showLegendMenuItem = new ToolStripMenuItem("Show Legend");
             showLegendMenuItem.Checked = _graphPane.Legend.IsVisible;
-
+            showLegendMenuItem.Click += (e, arg) =>
+            {
+                _graphPane.Legend.IsVisible = !_graphPane.Legend.IsVisible;
+                zgChart.Refresh();
+            };
             menuStrip.Items.Add(showLegendMenuItem);
+
+            menuStrip.Items.Add(new ToolStripSeparator());
+            var resetZoomMenuItem = new ToolStripMenuItem("Reset Zoom");
+            resetZoomMenuItem.Click += (e, arg) => zgChart.ZoomOutAll(_graphPane);
+            menuStrip.Items.Add(resetZoomMenuItem);
         }
 
-        private void ShowLegendMenuItem_Clicked(object sender, EventArgs e)
-        {
-            _graphPane.Legend.IsVisible = !_graphPane.Legend.IsVisible;
-            zgChart.Refresh();
-        }
-
-        private void MakeLegendContextMenu(ContextMenuStrip menuStrip)
+        private void MakeLegendContextMenu(ContextMenuStrip menuStrip, int objIndex)
         {
             menuStrip.Items.Clear();
             menuStrip.ShowImageMargin = false;
 
             var showAllItem = new ToolStripMenuItem("Show All", null, ShowAllItem_Click);
+            showAllItem.Enabled = _graphPane.CurveList.Any(c => !c.IsVisible);
             menuStrip.Items.Add(showAllItem);
 
             var hideAllItem = new ToolStripMenuItem("Hide All", null, HideAllItem_Click);
+            hideAllItem.Enabled = _graphPane.CurveList.Any(c => c.IsVisible && (c.Tag as CurveModel).CurveType == Enums.UI.CurveType.Normal);
             menuStrip.Items.Add(hideAllItem);
 
             var invertVisibility = new ToolStripMenuItem("Invert Visibility", null, InvertVisibility_Click);
+            invertVisibility.Enabled = hideAllItem.Enabled && showAllItem.Enabled;
             menuStrip.Items.Add(invertVisibility);
+
+            if (objIndex >= 0 && objIndex < _graphPane.CurveList.Count)
+            {
+                var showThisOnlyItem = new ToolStripMenuItem("Show This Only", null, ShowThisOnlyItem_Click);
+                showThisOnlyItem.Tag = objIndex;
+                menuStrip.Items.Add(showThisOnlyItem);
+            }
+
 
             menuStrip.Items.Add(new ToolStripSeparator());
 
-            if (UseVisibilityFilterWithCurveLabel)
-            {
-                var filterItem = new ToolStripMenuItem("Filter Visitbility");
-                var filterMenu = (filterItem.DropDown as ToolStripDropDownMenu);
-                filterMenu.ShowImageMargin = false;
-                filterMenu.BackColor = menuStrip.BackColor;
-                filterMenu.AutoSize = false;
-                filterMenu.Width = 170;
-                filterMenu.Height = 60;
+            if (UseLabelFiltering)
+                AddFilterLabelsMenuItem(menuStrip);
 
-                var filterTypeCmbx = new ToolStripComboBox();
-                filterTypeCmbx.DropDownStyle = ComboBoxStyle.DropDownList;
-                filterTypeCmbx.FlatStyle = FlatStyle.System;
-                filterTypeCmbx.AutoSize = false;
-                filterTypeCmbx.Width = filterMenu.Width - 20;
-                filterTypeCmbx.Items.Add("Show those containing");
-                filterTypeCmbx.Items.Add("Hide those containing");
-                filterTypeCmbx.SelectedIndexChanged += FilterTypeCmbx_SelectedIndexChanged;
-
-                if (_visibilityFilterType == null)
-                    filterTypeCmbx.SelectedIndex = 0;
-                else
-                    filterTypeCmbx.SelectedItem = _visibilityFilterType;
-
-                filterItem.DropDownItems.Add(filterTypeCmbx);
-
-                var filterTxtBox = new ToolStripTextBox();
-                if (_visibilityFilterKeys != null && _visibilityFilterKeys.Count > 0)
-                    filterTxtBox.Text = string.Join(" ", _visibilityFilterKeys.ToArray());
-
-                filterTxtBox.AutoSize = false;
-                filterTxtBox.Width = filterMenu.Width - 20;
-                filterTxtBox.KeyDown += filterTxtBox_KeyDown;
-                filterItem.DropDownItems.Add(filterTxtBox);
-                menuStrip.Items.Add(filterItem);
-            }
+            if (SpecialFilters != null && SpecialFilters.Count > 0)
+                AddSpecialFiltersMenuItem(menuStrip);
 
             _legendContextMenu = menuStrip;
+        }
+
+        private void ShowThisOnlyItem_Click(object sender, EventArgs e)
+        {
+            var index = (int)(sender as ToolStripMenuItem).Tag;
+            ShowSelectedCurveOnly(index);
+        }
+
+        private void ShowSelectedCurveOnly(int curveIndex)
+        {
+            HideAllCurves(refresh: false);
+            SwitchCurveVisibility(curveIndex);
+            zgChart.Refresh();
+        }
+
+        private void AddFilterLabelsMenuItem(ContextMenuStrip menuStrip)
+        {
+            var filterLabelsItem = new ToolStripMenuItem("Filter Labels");
+            var filterLabelsMenu = filterLabelsItem.DropDown as ToolStripDropDownMenu;
+            filterLabelsMenu.ShowImageMargin = false;
+            filterLabelsMenu.BackColor = menuStrip.BackColor;
+            filterLabelsMenu.AutoSize = false;
+            filterLabelsMenu.Width = 170;
+            filterLabelsMenu.Height = 60;
+
+            var filterLabelTypeCmbx = new ToolStripComboBox();
+            filterLabelTypeCmbx.DropDownStyle = ComboBoxStyle.DropDownList;
+            filterLabelTypeCmbx.FlatStyle = FlatStyle.System;
+            filterLabelTypeCmbx.AutoSize = false;
+            filterLabelTypeCmbx.Width = filterLabelsMenu.Width - 20;
+            filterLabelTypeCmbx.Items.Add("Show those containing");
+            filterLabelTypeCmbx.Items.Add("Hide those containing");
+            filterLabelTypeCmbx.SelectedIndexChanged += FilterLabelTypeCmbx_SelectedIndexChanged;
+
+            if (_labelFilterType == null)
+                filterLabelTypeCmbx.SelectedIndex = 0;
+            else
+                filterLabelTypeCmbx.SelectedItem = _labelFilterType;
+
+            filterLabelsItem.DropDownItems.Add(filterLabelTypeCmbx);
+
+            var filterTxtBox = new ToolStripTextBox();
+            if (_visibilityFilterKeys != null && _visibilityFilterKeys.Count > 0)
+                filterTxtBox.Text = string.Join(" ", _visibilityFilterKeys.ToArray());
+
+            filterTxtBox.AutoSize = false;
+            filterTxtBox.Width = filterLabelsMenu.Width - 20;
+            filterTxtBox.KeyDown += filterLabelTxtBox_KeyDown;
+            filterLabelsItem.DropDownItems.Add(filterTxtBox);
+            menuStrip.Items.Add(filterLabelsItem);
+        }
+
+        private void AddSpecialFiltersMenuItem(ContextMenuStrip menuStrip)
+        {
+            var specialFiltersMenuItem = new ToolStripMenuItem("Special Filters");
+            var filterLabelsMenu = specialFiltersMenuItem.DropDown as ToolStripDropDownMenu;
+            filterLabelsMenu.ShowImageMargin = false;
+            filterLabelsMenu.BackColor = menuStrip.BackColor;
+            filterLabelsMenu.AutoSize = false;
+            filterLabelsMenu.Width = 170;
+            filterLabelsMenu.Height = 60;
+            
+            foreach (var filter in SpecialFilters)
+            {
+                var specialFilterMenuItem = new ToolStripMenuItem(filter.Key);
+                specialFilterMenuItem.Click += SpecialFilterMenuItem_Click;
+                specialFilterMenuItem.Tag = filter.Value;
+                specialFiltersMenuItem.DropDownItems.Add(specialFilterMenuItem);
+            }
+
+            menuStrip.Items.Add(specialFiltersMenuItem);
+        }
+
+        private void SpecialFilterMenuItem_Click(object sender, EventArgs e)
+        {
+            var keys = (sender as ToolStripMenuItem).Tag as List<string>;
+            if (keys == null || keys.Count == 0) return;
+
+            //todo: currently is for show-only. Must be generalized.
+            HideAllCurves(refresh: false);
+            foreach (var curve in _graphPane.CurveList.Where(c => (c.Tag as CurveModel).CurveType == Enums.UI.CurveType.Normal))
+            {
+                string label = curve.Label.Text;
+                var labelParts = label.Split(new char[] { ' ', ',' , '+' }).ToList();
+                labelParts.RemoveAll(p => string.IsNullOrWhiteSpace(p));
+                bool mustBeShown = true;
+                foreach (var part in labelParts)
+                {
+                    if (!keys.Contains(part))
+                    {
+                        mustBeShown = false;
+                        break;
+                    }
+                }
+
+                if (mustBeShown)
+                    SwitchCurveVisibility(_graphPane.CurveList.IndexOf(curve));
+            }
+
+            zgChart.Refresh();
+            _visibilityFilterKeys = null;
         }
 
         private void InvertVisibility_Click(object sender, EventArgs e)
@@ -303,9 +397,9 @@ namespace DatabaseReader.CustomControls
             _visibilityFilterKeys = null;
         }
 
-        private void FilterTypeCmbx_SelectedIndexChanged(object sender, EventArgs e)
+        private void FilterLabelTypeCmbx_SelectedIndexChanged(object sender, EventArgs e)
         {
-            _visibilityFilterType = (sender as ToolStripComboBox).SelectedItem.ToString();
+            _labelFilterType = (sender as ToolStripComboBox).SelectedItem.ToString();
         }
 
         private void HideAllItem_Click(object sender, EventArgs e)
@@ -314,7 +408,7 @@ namespace DatabaseReader.CustomControls
             _visibilityFilterKeys = null;
         }
 
-        private void HideAllCurves()
+        private void HideAllCurves(bool refresh = true)
         {
             for (int i = 0; i < _graphPane.CurveList.Count; i++)
             {
@@ -325,7 +419,8 @@ namespace DatabaseReader.CustomControls
                 SwitchCurveVisibility(i);
             }
 
-            zgChart.Refresh();
+            if (refresh)
+                zgChart.Refresh();
         }
 
         private void ShowAllItem_Click(object sender, EventArgs e)
@@ -334,7 +429,7 @@ namespace DatabaseReader.CustomControls
             _visibilityFilterKeys = null;
         }
 
-        private void ShowAllCurves()
+        private void ShowAllCurves(bool refresh = true)
         {
             for (int i = 0; i < _graphPane.CurveList.Count; i++)
             {
@@ -345,10 +440,11 @@ namespace DatabaseReader.CustomControls
                 SwitchCurveVisibility(i);
             }
 
-            zgChart.Refresh();
+            if (refresh)
+                zgChart.Refresh();
         }
 
-        private void filterTxtBox_KeyDown(object sender, KeyEventArgs e)
+        private void filterLabelTxtBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Return)
             {
@@ -358,23 +454,32 @@ namespace DatabaseReader.CustomControls
                 var separators = new char[] { ' ', ',' };
                 var keys = filterStr.Split(separators).ToList();
                 keys.RemoveAll(l => string.IsNullOrWhiteSpace(l));
-                if (keys.Count == 0) return;
-
-                if (_visibilityFilterType.ToLower().Contains("show"))
-                    HideAllCurves();
-                else
-                    ShowAllCurves();
-
-                for (int i = 0; i < _graphPane.CurveList.Count; i++)
+                if (keys.Count == 0)
                 {
-                    if (keys.Any(k => _graphPane.CurveList[i].Label.Text.Contains(k)))
-                        SwitchCurveVisibility(i);
+                    ShowAllCurves(refresh: false);
+                    _visibilityFilterKeys = null;
+                }
+                else
+                {
+                    if (_labelFilterType.ToLower().Contains("show"))
+                        HideAllCurves(refresh: false);
+                    else
+                        ShowAllCurves(refresh: false);
+
+                    for (int i = 0; i < _graphPane.CurveList.Count; i++)
+                    {
+                        if (keys.Any(k => _graphPane.CurveList[i].Label.Text.Contains(k)))
+                            SwitchCurveVisibility(i);
+                    }
+
+                    _visibilityFilterKeys = keys;
                 }
 
-                _visibilityFilterKeys = keys;
                 _legendContextMenu.Close();
 
                 zgChart.Refresh();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
             }
         }
     }

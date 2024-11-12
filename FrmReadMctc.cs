@@ -40,22 +40,22 @@ namespace DatabaseReader
 
         private void ccMctcPlot_ChartPointSelected(object sender, ChartPointSelectedEventArgs e)
         {
-            var table = tcPlotInfo.Table;
-            int index = -1;
+            var table = tcPlotInfo.DataTable;
+            Guid id = Guid.NewGuid();
 
             if (!double.IsNaN(e.X) && !double.IsNaN(e.Y))
             {
                 for (int i = 0; i < table.Rows.Count; i++)
                 {
-                    if ((double)table.Rows[i][1] == e.X && (double)table.Rows[i][2] == e.Y)
+                    if ((double)table.Rows[i][1] == e.X && (double)table.Rows[i][2] == e.Y)//todo - generalize
                     {
-                        index = i;
+                        id = (Guid)table.Rows[i][tcPlotInfo.IDColumn];
                         break;
                     }
                 }
             }
 
-            tcPlotInfo.SelectRow(index);
+            tcPlotInfo.SelectRow(id);
         }
 
         private void tcPlotInfo_RowSelected(object sender, TableRowSelectedEventArgs e)
@@ -66,7 +66,7 @@ namespace DatabaseReader
                 return;
             }
 
-            double x = (double)e.Row[1];
+            double x = (double)e.Row[1]; //todo - generalize
             double y = (double)e.Row[2];
             ccMctcPlot.CrosshairSelectPoint(x, y);
         }
@@ -122,7 +122,7 @@ namespace DatabaseReader
 
             if (_batches != null)
                 ReadModelVariables();
-            
+
             if (_modelVariables != null)
                 ReadMctcResults();
 
@@ -434,6 +434,9 @@ namespace DatabaseReader
 
         private void btnPlotAndTabulate_Click(object sender, EventArgs e)
         {
+            ccMctcPlot.ClearPlot();
+            tcPlotInfo.ClearTable();
+
             if (_modelVariables == null) return;
             var nodes = tvCaseSelection.GetAllNodes();
             var checkedNodes = nodes.Where(n => n.Checked).ToList();
@@ -460,9 +463,6 @@ namespace DatabaseReader
 
         private void PlotAndTabulate()
         {
-            ccMctcPlot.ClearPlot();
-            tcPlotInfo.ClearTable();
-
             var selectedModelVar = cmbxModelVariable.SelectedItem as ModelVariable;
             if (selectedModelVar == null) return;
 
@@ -470,6 +470,7 @@ namespace DatabaseReader
             var modelVars = _modelVariables.Where(mv => mv.Name == selectedModelVar.Name && mv.Phase == selectedModelVar.Phase).ToList();
             if (modelVars.Count == 0) return;
 
+            #region Plot
             // categorizing based on batch phase assemblage
             var modelVarGroups = modelVars.GroupBy(mv => mv.Batch.GetPhaseAssemblageString()).ToList();
             var chartModel = new ChartModel();
@@ -530,10 +531,35 @@ namespace DatabaseReader
             ccMctcPlot.Chart.Refresh();
 
             // settings
-            ccMctcPlot.UseVisibilityFilterWithCurveLabel = true;
+            ccMctcPlot.UseLabelFiltering = true;
 
-            // tabulating
-            var columns = new List<string>() { "#", "Obs", "Calc", "Assemblage", "Batch", "P [kbar]", "T [°C]" };
+            var filterPureOnly = "Only Pure Phases";
+            var filterSolutionOnly = "Only Solution Phases";
+            var purePhasesOnlyString = new List<string>();
+            var solutionPhasesString = new List<string>();
+            var currentPhase = modelVars.FirstOrDefault().Phase;
+            foreach (PhaseType phase in modelVars.SelectMany(v => v.Batch.Phases).Distinct().Except(new List<PhaseType> { currentPhase }))
+            {
+                var phaseState = PhaseTypeExtensions.GetPhaseStateByPhaseType(phase);
+                if (phaseState == PhaseState.Pure)
+                    purePhasesOnlyString.Add(phase.ToString());
+                else if (phaseState == PhaseState.Solution)
+                    solutionPhasesString.Add(phase.ToString());
+            }
+
+            var specialFilters = new Dictionary<string, List<string>>();
+            if (purePhasesOnlyString.Count > 0 && solutionPhasesString.Count > 0)
+            {
+                purePhasesOnlyString.Add(currentPhase.ToString());
+                solutionPhasesString.Add(currentPhase.ToString());
+                specialFilters.Add(filterPureOnly, purePhasesOnlyString);
+                specialFilters.Add(filterSolutionOnly, solutionPhasesString);
+                ccMctcPlot.SpecialFilters = specialFilters;
+            }
+            #endregion
+
+            #region Table
+            var columns = new List<string>() { "#", "Obs", "Calc", "Assemblage", "Batch", "P [kbar]", "T [°C]", "Visible" };
 
             var rows = new List<List<object>>();
             int counter = 1;
@@ -547,7 +573,8 @@ namespace DatabaseReader
                     mvar.Batch.GetPhaseAssemblageString(),
                     mvar.Batch,
                     mvar.Batch.ExperimentalRun.Pressure,
-                    mvar.Batch.ExperimentalRun.Temperature
+                    mvar.Batch.ExperimentalRun.Temperature,
+                    true
                 };
 
                 rows.Add(row);
@@ -557,6 +584,7 @@ namespace DatabaseReader
             tcPlotInfo.FillTable(columns, rows);
             tcPlotInfo.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             tcPlotInfo.MultiSelect = false;
+            #endregion
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -582,6 +610,12 @@ namespace DatabaseReader
         private void btnOpen_Click(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
+
+            tcPlotInfo.ClearTable();
+            ccMctcPlot.ClearPlot();
+            _batches = null;
+            _modelVariables = null;
+            _dataFile = null;
 
             OpenFileDialog openDialog = new OpenFileDialog();
             openDialog.Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt";

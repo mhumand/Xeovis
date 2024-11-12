@@ -383,5 +383,39 @@ namespace DatabaseReader.Enums
 
             return PhaseType.NULL;
         }
+
+        public static PhaseState GetPhaseStateByPhaseType(PhaseType phaseType)
+        {
+            switch (phaseType)
+            {
+                case PhaseType.g:
+                case PhaseType.opx:
+                case PhaseType.cpx:
+                case PhaseType.ol:
+                case PhaseType.ep:
+                case PhaseType.ilm:
+                case PhaseType.bi:
+                case PhaseType.spn:
+                case PhaseType.amph:
+                case PhaseType.mu:
+                case PhaseType.mt:
+                case PhaseType.ksp:
+                case PhaseType.pl:
+                case PhaseType.L:
+                    return PhaseState.Solution;
+                case PhaseType.q:
+                case PhaseType.coe:
+                case PhaseType.ru:
+                case PhaseType.sill:
+                case PhaseType.sph:
+                case PhaseType.ky:
+                case PhaseType.and:
+                case PhaseType.zo:
+                case PhaseType.H2O:
+                    return PhaseState.Pure;
+                default:
+                    return PhaseState.NotSet;
+            }
+        }
     }
 }

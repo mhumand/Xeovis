@@ -37,10 +37,10 @@
             this.nudTransparency = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.btnOpen = new System.Windows.Forms.Button();
             this.ccMctcPlot = new DatabaseReader.CustomControls.ChartControl();
             this.tcPlotInfo = new DatabaseReader.CustomControls.TableControl();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.btnOpen = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.nudTransparency)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -50,7 +50,7 @@
             // 
             // btnReadMctc
             // 
-            this.btnReadMctc.Location = new System.Drawing.Point(22, 21);
+            this.btnReadMctc.Location = new System.Drawing.Point(22, 41);
             this.btnReadMctc.Name = "btnReadMctc";
             this.btnReadMctc.Size = new System.Drawing.Size(173, 23);
             this.btnReadMctc.TabIndex = 0;
@@ -64,9 +64,9 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.tvCaseSelection.CheckBoxes = true;
             this.tvCaseSelection.FullRowSelect = true;
-            this.tvCaseSelection.Location = new System.Drawing.Point(22, 72);
+            this.tvCaseSelection.Location = new System.Drawing.Point(22, 93);
             this.tvCaseSelection.Name = "tvCaseSelection";
-            this.tvCaseSelection.Size = new System.Drawing.Size(173, 628);
+            this.tvCaseSelection.Size = new System.Drawing.Size(173, 607);
             this.tvCaseSelection.TabIndex = 1;
             this.tvCaseSelection.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.tvCaseSelection_AfterCheck);
             this.tvCaseSelection.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tvCaseSelection_MouseClick);
@@ -85,7 +85,7 @@
             // ckbxIncludeBatches
             // 
             this.ckbxIncludeBatches.AutoSize = true;
-            this.ckbxIncludeBatches.Location = new System.Drawing.Point(22, 49);
+            this.ckbxIncludeBatches.Location = new System.Drawing.Point(28, 70);
             this.ckbxIncludeBatches.Name = "ckbxIncludeBatches";
             this.ckbxIncludeBatches.Size = new System.Drawing.Size(107, 17);
             this.ckbxIncludeBatches.TabIndex = 3;
@@ -139,7 +139,7 @@
             this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer1.Location = new System.Drawing.Point(201, 72);
+            this.splitContainer1.Location = new System.Drawing.Point(201, 12);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -151,29 +151,9 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tcPlotInfo);
-            this.splitContainer1.Size = new System.Drawing.Size(1150, 682);
+            this.splitContainer1.Size = new System.Drawing.Size(1150, 742);
             this.splitContainer1.SplitterDistance = 630;
             this.splitContainer1.TabIndex = 9;
-            // 
-            // btnSave
-            // 
-            this.btnSave.Location = new System.Drawing.Point(209, 21);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(92, 23);
-            this.btnSave.TabIndex = 10;
-            this.btnSave.Text = "Save as JSON";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
-            // btnOpen
-            // 
-            this.btnOpen.Location = new System.Drawing.Point(307, 21);
-            this.btnOpen.Name = "btnOpen";
-            this.btnOpen.Size = new System.Drawing.Size(92, 23);
-            this.btnOpen.TabIndex = 10;
-            this.btnOpen.Text = "Open a JSON";
-            this.btnOpen.UseVisualStyleBackColor = true;
-            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
             // 
             // ccMctcPlot
             // 
@@ -183,6 +163,7 @@
             this.ccMctcPlot.Name = "ccMctcPlot";
             this.ccMctcPlot.Size = new System.Drawing.Size(624, 625);
             this.ccMctcPlot.TabIndex = 4;
+            this.ccMctcPlot.UseLabelFiltering = false;
             // 
             // tcPlotInfo
             // 
@@ -192,8 +173,28 @@
             this.tcPlotInfo.MultiSelect = true;
             this.tcPlotInfo.Name = "tcPlotInfo";
             this.tcPlotInfo.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
-            this.tcPlotInfo.Size = new System.Drawing.Size(516, 682);
+            this.tcPlotInfo.Size = new System.Drawing.Size(516, 742);
             this.tcPlotInfo.TabIndex = 8;
+            // 
+            // btnSave
+            // 
+            this.btnSave.Location = new System.Drawing.Point(113, 12);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(82, 23);
+            this.btnSave.TabIndex = 10;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // btnOpen
+            // 
+            this.btnOpen.Location = new System.Drawing.Point(22, 12);
+            this.btnOpen.Name = "btnOpen";
+            this.btnOpen.Size = new System.Drawing.Size(82, 23);
+            this.btnOpen.TabIndex = 10;
+            this.btnOpen.Text = "Open";
+            this.btnOpen.UseVisualStyleBackColor = true;
+            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
             // 
             // FrmReadMctc
             // 
