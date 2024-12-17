@@ -165,7 +165,7 @@ namespace DatabaseReader
                         var phases = cells[phasesIndex].ToString().Split(new char[] { '+', ',' });
                         foreach (var ph in phases)
                         {
-                            var phase = new Phase(ph);
+                            var phase = new Phase(ph.Trim());
                             phase.ExperimentalRun = run;
                             run.Phases.Add(phase);
                         }
@@ -367,6 +367,7 @@ namespace DatabaseReader
                 var list = new List<string>()
                 {
                     "Auzanneauetal2006",
+                    "Auzanneauetal2010",
                     "Elazaretal2019",
                     "Foleyetal2009",
                     "Greenetal2014",

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZedGraph;
 
 namespace DatabaseReader.Definitions.UI
 {
@@ -14,6 +15,7 @@ namespace DatabaseReader.Definitions.UI
         public int MaxDataCount => Curves.Max(c => c.DataCount);
         public bool HasEqualDimensions { get; set; }
         public bool IsLegendVisible { get; set; }
+        public LegendPos LegendPosition { get; set; }
         public bool IsTitleVisible { get; set; }
         public bool IsXAxisLabelVisible { get; set; }
         public bool IsYAxisLabelVisible { get; set; }
@@ -26,6 +28,7 @@ namespace DatabaseReader.Definitions.UI
             IsLegendVisible = true;
             IsXAxisLabelVisible = true;
             IsYAxisLabelVisible = true;
+            IsTitleVisible = true;
         }
     }
 }

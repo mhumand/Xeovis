@@ -1,7 +1,9 @@
 ﻿using DatabaseReader.Definitions;
+using DatabaseReader.Definitions.Modelling;
 using DatabaseReader.Definitions.Persistence;
 using DatabaseReader.Definitions.UI;
 using DatabaseReader.Enums;
+using DatabaseReader.Enums.Modelling;
 using DatabaseReader.Events;
 using DatabaseReader.Helpers;
 using Newtonsoft.Json;
@@ -307,8 +309,8 @@ namespace DatabaseReader
                 varData.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
                 var modelVariable = new ModelVariable();
-                modelVariable.Name = varData[0];
                 modelVariable.Phase = PhaseTypeExtensions.GetPhaseTypeByName(varData[1]);
+                modelVariable.VariableType = EnumExtensions.GetValueFromDescription<ModelVariableType>(varData[0]);
                 int.TryParse(varData[2], out int batchIndex);
                 modelVariable.Batch = _batches.FirstOrDefault(b => b.Index == batchIndex);
 
@@ -369,7 +371,7 @@ namespace DatabaseReader
                     var varName = modVarNameLines[j];
                     j++;
                     var varPhase = PhaseTypeExtensions.GetPhaseTypeByName(modVarNameLines[j]);
-                    var modelVariable = batch.ModelVariables.FirstOrDefault(v => v.Name == varName && v.Phase == varPhase);
+                    var modelVariable = batch.ModelVariables.FirstOrDefault(v => v.VariableType.ToString() == varName && v.Phase == varPhase);
                     if (modelVariable == null) continue;
                     modelVariable.CalcVal = DoubleExtensions.GetDoubleValueFromText(modVarValueLines[2 + (j + 1) / 2]);
                     modelVarsInResults.Add(modelVariable);
@@ -446,11 +448,14 @@ namespace DatabaseReader
             if (!modelVarNodes.Any()) return;
 
             int currentSelectedIndex = cmbxModelVariable.SelectedIndex;
+            var currentSelectedItem = cmbxModelVariable.SelectedItem as ModelVariable;
             cmbxModelVariable.Items.Clear();
             foreach (var item in modelVarNodes)
                 cmbxModelVariable.Items.Add(item.Tag);
 
-            if (currentSelectedIndex < cmbxModelVariable.Items.Count && currentSelectedIndex >= 0)
+            bool indexCondition = currentSelectedIndex < cmbxModelVariable.Items.Count && currentSelectedIndex >= 0;
+            bool phaseCondition = currentSelectedItem != null && currentSelectedItem.Phase == (modelVarNodes[0].Tag as ModelVariable).Phase;
+            if (indexCondition && phaseCondition)
                 cmbxModelVariable.SelectedIndex = currentSelectedIndex;
             else
                 cmbxModelVariable.SelectedIndex = 0;
@@ -467,21 +472,47 @@ namespace DatabaseReader
             if (selectedModelVar == null) return;
 
             // getting all instances of the selected model variable
-            var modelVars = _modelVariables.Where(mv => mv.Name == selectedModelVar.Name && mv.Phase == selectedModelVar.Phase).ToList();
+            var modelVars = _modelVariables.Where(mv => mv.Name == selectedModelVar.Name).ToList();
             if (modelVars.Count == 0) return;
 
             #region Plot
             // categorizing based on batch phase assemblage
             var modelVarGroups = modelVars.GroupBy(mv => mv.Batch.GetPhaseAssemblageString()).ToList();
             var chartModel = new ChartModel();
-            chartModel.Title = "title test";
+            chartModel.Title = EnumExtensions.GetDescriptionFromValue(modelVars.FirstOrDefault().Phase);
             chartModel.XAxisLabel = $"Observed {selectedModelVar}";
             chartModel.YAxisLabel = $"Calculated {selectedModelVar}";
             chartModel.HasEqualDimensions = true;
 
+            var selectedGroups = new List<IGrouping<string, ModelVariable>>();
+            if (ckbxExcludeIrrelevantBatches.Checked)
+            {
+                foreach (var modelVarGroup in modelVarGroups)
+                {
+                    var modelVar = modelVarGroup.FirstOrDefault();
+                    var phases = modelVar.Batch.Phases.Except(new List<PhaseType>() { modelVar.Phase });
+                    var varType = modelVar.VariableType;
+
+                    var phaseAllCations = new List<CationType>();
+                    foreach (var phase in phases)
+                        phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(phase));
+
+                    var phaseCations = phaseAllCations.Distinct().ToList();
+                    var modelVariableCations = DefaultModelDefinitions.GetCationsFromModelVariable(modelVar.Phase, modelVar.VariableType);
+
+                    if (phaseCations.Count != 0 && modelVariableCations.Count != 0)
+                        if (!phaseCations.Any(c => modelVariableCations.Contains(c)))
+                            continue;
+
+                    selectedGroups.Add(modelVarGroup);
+                }
+            }
+            else
+                selectedGroups = modelVarGroups;
+
             int colorIndex = 0;
             int markerIndex = 0;
-            foreach (var modelVarGroup in modelVarGroups)
+            foreach (var modelVarGroup in selectedGroups)
             {
                 var curve = new CurveModel();
                 curve.Name = modelVarGroup.FirstOrDefault().Batch.GetPhaseAssemblageString();
@@ -502,7 +533,7 @@ namespace DatabaseReader
                 curve.MarkerColor = color;
                 chartModel.Curves.Add(curve);
                 curve.MarkerType = ChartUtilities.GetMarkerType(markerIndex);
-                curve.MarkerSize = 8;
+                curve.MarkerSize = 10;
             }
 
             // x = y line
@@ -515,7 +546,7 @@ namespace DatabaseReader
             xyCurve.Xvals = new List<double>() { minVal, maxVal };
             xyCurve.Yvals = new List<double>() { minVal, maxVal };
             xyCurve.IsMarkerVisible = false;
-            xyCurve.LineWidth = 1;
+            xyCurve.LineWidth = 2;
             xyCurve.CurveType = Enums.UI.CurveType.FixedLine;
             chartModel.Curves.Add(xyCurve);
             ccMctcPlot.Plot(chartModel);
@@ -634,6 +665,11 @@ namespace DatabaseReader
             _modelVariables = _dataFile.ModelVariables;
 
             PopulateUI();
+        }
+
+        private void ckbxExcludeIrrelevantBatches_CheckedChanged(object sender, EventArgs e)
+        {
+            PlotAndTabulate();
         }
     }
 }

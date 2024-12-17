@@ -1,5 +1,4 @@
 ﻿using DatabaseReader.Definitions.UI;
-using DatabaseReader.Enums.UI;
 using DatabaseReader.Events;
 using DatabaseReader.Helpers;
 using System;
@@ -75,14 +74,7 @@ namespace DatabaseReader.CustomControls
                 curve.Label.FontSpec = _graphPane.Legend.FontSpec.Clone();
             }
 
-            // style the plot
-            _graphPane.Title.Text = _chartModel.Title;
-            _graphPane.Title.IsVisible = _chartModel.IsTitleVisible;
-            _graphPane.XAxis.Title.Text = _chartModel.XAxisLabel;
-            _graphPane.YAxis.Title.Text = _chartModel.YAxisLabel;
-
-            _graphPane.Legend.IsVisible = _chartModel.IsLegendVisible;
-            _graphPane.Legend.Border.IsVisible = false;
+            SetPlotStyle();
 
             zgChart.IsShowPointValues = true;
 
@@ -90,6 +82,55 @@ namespace DatabaseReader.CustomControls
             _graphPane.XAxis.ResetAutoScale(_graphPane, CreateGraphics());
             _graphPane.YAxis.ResetAutoScale(_graphPane, CreateGraphics());
             zgChart.Refresh();
+        }
+
+        private void SetPlotStyle()
+        {
+            string fontFamily = "Segoe UI";
+
+            _graphPane.Border.Width = 3;
+            _graphPane.Border.IsAntiAlias = true;
+            _graphPane.Chart.Border.Width = 2;
+
+            _graphPane.Title.Text = _chartModel.Title;
+            _graphPane.Title.IsVisible = _chartModel.IsTitleVisible;
+
+            _graphPane.XAxis.Title.Text = _chartModel.XAxisLabel;
+            _graphPane.YAxis.Title.Text = _chartModel.YAxisLabel;
+
+            // legend
+            _graphPane.Legend.IsVisible = _chartModel.IsLegendVisible;
+            _graphPane.Legend.Position = _chartModel.LegendPosition;
+            _graphPane.Legend.IsHStack = true;
+            _graphPane.Legend.Border.IsVisible = false;
+            _graphPane.Legend.Fill.Color = Color.Transparent;
+
+            // tics
+            _graphPane.XAxis.MajorTic.IsOpposite = false;
+            _graphPane.XAxis.MinorTic.IsOpposite = false;
+            _graphPane.YAxis.MajorTic.IsOpposite = false;
+            _graphPane.YAxis.MinorTic.IsOpposite = false;
+            _graphPane.XAxis.MinorTic.IsOutside = false;
+            _graphPane.YAxis.MinorTic.IsOutside = false;
+            _graphPane.XAxis.MajorTic.PenWidth = 2;
+            _graphPane.XAxis.MinorTic.PenWidth = 2;
+            _graphPane.YAxis.MajorTic.PenWidth = 2;
+            _graphPane.YAxis.MinorTic.PenWidth = 2;
+
+            // scale
+            _graphPane.XAxis.Scale.FontSpec.IsBold = true;
+            _graphPane.XAxis.Scale.FontSpec.Family = fontFamily;
+            _graphPane.YAxis.Scale.FontSpec.IsBold = true;
+            _graphPane.YAxis.Scale.FontSpec.Family = fontFamily;
+            _graphPane.XAxis.Title.FontSpec.Family = fontFamily;
+            _graphPane.YAxis.Title.FontSpec.Family = fontFamily;
+
+            foreach (var curve in _graphPane.CurveList)
+            {
+                curve.Label.FontSpec.IsBold = true;
+                curve.Label.FontSpec.Family = fontFamily;
+            }
+
         }
 
         private void ChartControl_Resize(object sender, System.EventArgs e)
@@ -252,26 +293,9 @@ namespace DatabaseReader.CustomControls
             menuStrip.Items.Clear();
             menuStrip.ShowImageMargin = false;
 
-            var showAllItem = new ToolStripMenuItem("Show All", null, ShowAllItem_Click);
-            showAllItem.Enabled = _graphPane.CurveList.Any(c => !c.IsVisible);
-            menuStrip.Items.Add(showAllItem);
-
-            var hideAllItem = new ToolStripMenuItem("Hide All", null, HideAllItem_Click);
-            hideAllItem.Enabled = _graphPane.CurveList.Any(c => c.IsVisible && (c.Tag as CurveModel).CurveType == Enums.UI.CurveType.Normal);
-            menuStrip.Items.Add(hideAllItem);
-
-            var invertVisibility = new ToolStripMenuItem("Invert Visibility", null, InvertVisibility_Click);
-            invertVisibility.Enabled = hideAllItem.Enabled && showAllItem.Enabled;
-            menuStrip.Items.Add(invertVisibility);
-
-            if (objIndex >= 0 && objIndex < _graphPane.CurveList.Count)
-            {
-                var showThisOnlyItem = new ToolStripMenuItem("Show This Only", null, ShowThisOnlyItem_Click);
-                showThisOnlyItem.Tag = objIndex;
-                menuStrip.Items.Add(showThisOnlyItem);
-            }
-
-
+            AddGeneralVisibilityMenuItems(menuStrip, objIndex);
+            menuStrip.Items.Add(new ToolStripSeparator());
+            AddLegendSettingsMenuItems(menuStrip);
             menuStrip.Items.Add(new ToolStripSeparator());
 
             if (UseLabelFiltering)
@@ -283,7 +307,68 @@ namespace DatabaseReader.CustomControls
             _legendContextMenu = menuStrip;
         }
 
-        private void ShowThisOnlyItem_Click(object sender, EventArgs e)
+        private void AddGeneralVisibilityMenuItems(ContextMenuStrip menuStrip, int objIndex)
+        {
+            var showAllMenuItem = new ToolStripMenuItem("Show All", null, ShowAllMenuItem_Click);
+            showAllMenuItem.Enabled = _graphPane.CurveList.Any(c => !c.IsVisible);
+            menuStrip.Items.Add(showAllMenuItem);
+
+            var hideAllMenuItem = new ToolStripMenuItem("Hide All", null, HideAllMenuItem_Click);
+            hideAllMenuItem.Enabled = _graphPane.CurveList.Any(c => c.IsVisible && (c.Tag as CurveModel).CurveType == Enums.UI.CurveType.Normal);
+            menuStrip.Items.Add(hideAllMenuItem);
+
+            var invertVisibilityMenuItem = new ToolStripMenuItem("Invert Visibility", null, InvertVisibilityMenuItem_Click);
+            invertVisibilityMenuItem.Enabled = hideAllMenuItem.Enabled && showAllMenuItem.Enabled;
+            menuStrip.Items.Add(invertVisibilityMenuItem);
+
+            if (objIndex >= 0 && objIndex < _graphPane.CurveList.Count)
+            {
+                var showThisOnlyMenuItem = new ToolStripMenuItem("Show This Only", null, ShowThisOnlyMenuItem_Click);
+                showThisOnlyMenuItem.Tag = objIndex;
+                menuStrip.Items.Add(showThisOnlyMenuItem);
+            }
+
+            if (_graphPane.CurveList.Any(c => !c.IsVisible))
+            {
+                var removeHiddenCurvesMenuItem = new ToolStripMenuItem("Remove Hidden Curves");
+                removeHiddenCurvesMenuItem.Click += (e, arg) =>
+                {
+                    _graphPane.CurveList.RemoveAll(c => !c.IsVisible);
+                    zgChart.Refresh();
+                };
+
+                menuStrip.Items.Add(removeHiddenCurvesMenuItem);
+            }
+        }
+
+        private void AddLegendSettingsMenuItems(ContextMenuStrip menuStrip)
+        {
+            var legendPositionMenuItem = new ToolStripMenuItem("Legend Position", null, ShowAllMenuItem_Click);
+            var legendPositionMenu = legendPositionMenuItem.DropDown as ToolStripDropDownMenu;
+            legendPositionMenu.BackColor = menuStrip.BackColor;
+
+            var positions = Enum.GetValues(typeof(LegendPos));
+            foreach (LegendPos position in positions)
+            {
+                var positionMenuItem = new ToolStripMenuItem(position.ToString());
+                positionMenuItem.Tag = position;
+                positionMenuItem.Checked = _graphPane.Legend.Position == position;
+                positionMenuItem.Click += PositionMenuItem_Click;
+                legendPositionMenuItem.DropDownItems.Add(positionMenuItem);
+            }
+
+            menuStrip.Items.Add(legendPositionMenuItem);
+        }
+
+        private void PositionMenuItem_Click(object sender, EventArgs e)
+        {
+            var position = (LegendPos)(sender as ToolStripMenuItem).Tag;
+            _chartModel.LegendPosition = position;
+            _graphPane.Legend.Position = position;
+            zgChart.Refresh();
+        }
+
+        private void ShowThisOnlyMenuItem_Click(object sender, EventArgs e)
         {
             var index = (int)(sender as ToolStripMenuItem).Tag;
             ShowSelectedCurveOnly(index);
@@ -339,9 +424,6 @@ namespace DatabaseReader.CustomControls
             var filterLabelsMenu = specialFiltersMenuItem.DropDown as ToolStripDropDownMenu;
             filterLabelsMenu.ShowImageMargin = false;
             filterLabelsMenu.BackColor = menuStrip.BackColor;
-            filterLabelsMenu.AutoSize = false;
-            filterLabelsMenu.Width = 170;
-            filterLabelsMenu.Height = 60;
             
             foreach (var filter in SpecialFilters)
             {
@@ -384,7 +466,7 @@ namespace DatabaseReader.CustomControls
             _visibilityFilterKeys = null;
         }
 
-        private void InvertVisibility_Click(object sender, EventArgs e)
+        private void InvertVisibilityMenuItem_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < _graphPane.CurveList.Count; i++)
             {
@@ -402,7 +484,7 @@ namespace DatabaseReader.CustomControls
             _labelFilterType = (sender as ToolStripComboBox).SelectedItem.ToString();
         }
 
-        private void HideAllItem_Click(object sender, EventArgs e)
+        private void HideAllMenuItem_Click(object sender, EventArgs e)
         {
             HideAllCurves();
             _visibilityFilterKeys = null;
@@ -423,7 +505,7 @@ namespace DatabaseReader.CustomControls
                 zgChart.Refresh();
         }
 
-        private void ShowAllItem_Click(object sender, EventArgs e)
+        private void ShowAllMenuItem_Click(object sender, EventArgs e)
         {
             ShowAllCurves();
             _visibilityFilterKeys = null;

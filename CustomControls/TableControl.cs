@@ -118,7 +118,7 @@ namespace DatabaseReader.CustomControls
                     var colHeaderWidth = gfx.MeasureString(gridTable.Columns[i].ToString(), targetGrid.Font);
 
                     if (colWidth.Width > colHeaderWidth.Width)
-                        targetGrid.Columns[i].Width = (int)colWidth.Width + 10;
+                        targetGrid.Columns[i].Width = (int)colWidth.Width + 15;
                     else
                         targetGrid.Columns[i].Width = (int)colHeaderWidth.Width + 15;
                 }

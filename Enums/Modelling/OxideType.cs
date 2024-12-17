@@ -1,7 +1,10 @@
-﻿namespace DatabaseReader.Enums
+﻿using DatabaseReader.Enums.Modelling;
+
+namespace DatabaseReader.Enums
 {
     public enum OxideType
     {
+        None,
         SiO2,
         TiO2,
         Al2O3,
@@ -24,72 +27,44 @@
         Li2O,
         Rb2O,
         ZrO2,
-        V2O3,
-        Re2O3,
         O
     }
 
     public static class OxideTypeExtensions
     {
-        public static string GetElementFromOxideType(OxideType oxide)
+        public static CationType GetCationType(this OxideType oxide)
         {
             switch (oxide)
             {
                 case OxideType.SiO2:
-                    return "Si";
+                    return CationType.Si;
                 case OxideType.TiO2:
-                    return "Ti";
+                    return CationType.Ti;
                 case OxideType.Al2O3:
-                    return "Al";
+                    return CationType.Al;
                 case OxideType.Fe2O3:
-                    return "Fe";
+                    return CationType.Fe3;
                 case OxideType.Cr2O3:
-                    return "Cr";
+                    return CationType.Cr;
                 case OxideType.FeO:
-                    return "Fe";
+                    return CationType.Fe2;
                 case OxideType.MnO:
-                    return "Mn";
+                    return CationType.Mn;
                 case OxideType.MgO:
-                    return "Mg";
+                    return CationType.Mg;
                 case OxideType.NiO:
-                    return "Ni";
-                case OxideType.CoO:
-                    return "Co";
+                    return CationType.Ni;
                 case OxideType.CaO:
-                    return "Ca";
+                    return CationType.Ca;
                 case OxideType.Na2O:
-                    return "Na";
+                    return CationType.Na;
                 case OxideType.K2O:
-                    return "K";
+                    return CationType.K;
                 case OxideType.P2O5:
-                    return "P";
-                case OxideType.SrO:
-                    return "Sr";
-                case OxideType.BaO:
-                    return "Ba";
-                case OxideType.H2O:
-                    return "H";
-                case OxideType.CO2:
-                    return "C";
-                case OxideType.SO3:
-                    return "S";
-                case OxideType.Li2O:
-                    return "Li";
-                case OxideType.Rb2O:
-                    return "Rb";
-                case OxideType.ZrO2:
-                    return "Zr";
-                case OxideType.V2O3:
-                    break;
-                case OxideType.Re2O3:
-                    break;
-                //case OxideType.O:
-                //    return "O";
+                    return CationType.P;
                 default:
-                    break;
+                    return CationType.None;
             }
-
-            return null;
         }
     }
 }

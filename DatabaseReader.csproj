@@ -123,6 +123,8 @@
     <Compile Include="CustomControls\LabelInputControl.Designer.cs">
       <DependentUpon>LabelInputControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Definitions\Modelling\DefaultModelDefinitions.cs" />
+    <Compile Include="Definitions\Modelling\DefaultPhaseCompositions.cs" />
     <Compile Include="Definitions\Persistence\Batch.cs" />
     <Compile Include="Definitions\Modelling\EndMember.cs" />
     <Compile Include="Definitions\Modelling\Experiment.cs" />
@@ -133,8 +135,10 @@
     <Compile Include="Definitions\Persistence\DataFile.cs" />
     <Compile Include="Definitions\UI\ChartModel.cs" />
     <Compile Include="Definitions\UI\CurveModel.cs" />
+    <Compile Include="Enums\Modelling\CationType.cs" />
     <Compile Include="Enums\Modelling\EndMemberAttributeType.cs" />
     <Compile Include="Enums\Modelling\EndMemberType.cs" />
+    <Compile Include="Enums\Modelling\ModelVariableType.cs" />
     <Compile Include="Enums\Modelling\OxideType.cs" />
     <Compile Include="Definitions\Modelling\Parameter.cs" />
     <Compile Include="Definitions\Modelling\Phase.cs" />

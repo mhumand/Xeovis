@@ -37,10 +37,11 @@
             this.nudTransparency = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.ccMctcPlot = new DatabaseReader.CustomControls.ChartControl();
-            this.tcPlotInfo = new DatabaseReader.CustomControls.TableControl();
+            this.ckbxExcludeIrrelevantBatches = new System.Windows.Forms.CheckBox();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnOpen = new System.Windows.Forms.Button();
+            this.ccMctcPlot = new DatabaseReader.CustomControls.ChartControl();
+            this.tcPlotInfo = new DatabaseReader.CustomControls.TableControl();
             ((System.ComponentModel.ISupportInitialize)(this.nudTransparency)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -144,6 +145,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.ckbxExcludeIrrelevantBatches);
             this.splitContainer1.Panel1.Controls.Add(this.label1);
             this.splitContainer1.Panel1.Controls.Add(this.cmbxModelVariable);
             this.splitContainer1.Panel1.Controls.Add(this.ccMctcPlot);
@@ -154,6 +156,37 @@
             this.splitContainer1.Size = new System.Drawing.Size(1150, 742);
             this.splitContainer1.SplitterDistance = 630;
             this.splitContainer1.TabIndex = 9;
+            // 
+            // ckbxExcludeIrrelevantBatches
+            // 
+            this.ckbxExcludeIrrelevantBatches.AutoSize = true;
+            this.ckbxExcludeIrrelevantBatches.Location = new System.Drawing.Point(222, 6);
+            this.ckbxExcludeIrrelevantBatches.Name = "ckbxExcludeIrrelevantBatches";
+            this.ckbxExcludeIrrelevantBatches.Size = new System.Drawing.Size(158, 17);
+            this.ckbxExcludeIrrelevantBatches.TabIndex = 7;
+            this.ckbxExcludeIrrelevantBatches.Text = "Exclude Irrelevant Batches";
+            this.ckbxExcludeIrrelevantBatches.UseVisualStyleBackColor = true;
+            this.ckbxExcludeIrrelevantBatches.CheckedChanged += new System.EventHandler(this.ckbxExcludeIrrelevantBatches_CheckedChanged);
+            // 
+            // btnSave
+            // 
+            this.btnSave.Location = new System.Drawing.Point(113, 12);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(82, 23);
+            this.btnSave.TabIndex = 10;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // btnOpen
+            // 
+            this.btnOpen.Location = new System.Drawing.Point(22, 12);
+            this.btnOpen.Name = "btnOpen";
+            this.btnOpen.Size = new System.Drawing.Size(82, 23);
+            this.btnOpen.TabIndex = 10;
+            this.btnOpen.Text = "Open";
+            this.btnOpen.UseVisualStyleBackColor = true;
+            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
             // 
             // ccMctcPlot
             // 
@@ -175,26 +208,6 @@
             this.tcPlotInfo.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
             this.tcPlotInfo.Size = new System.Drawing.Size(516, 742);
             this.tcPlotInfo.TabIndex = 8;
-            // 
-            // btnSave
-            // 
-            this.btnSave.Location = new System.Drawing.Point(113, 12);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(82, 23);
-            this.btnSave.TabIndex = 10;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
-            // btnOpen
-            // 
-            this.btnOpen.Location = new System.Drawing.Point(22, 12);
-            this.btnOpen.Name = "btnOpen";
-            this.btnOpen.Size = new System.Drawing.Size(82, 23);
-            this.btnOpen.TabIndex = 10;
-            this.btnOpen.Text = "Open";
-            this.btnOpen.UseVisualStyleBackColor = true;
-            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
             // 
             // FrmReadMctc
             // 
@@ -240,5 +253,6 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnOpen;
+        private System.Windows.Forms.CheckBox ckbxExcludeIrrelevantBatches;
     }
 }
