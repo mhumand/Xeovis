@@ -1,7 +1,6 @@
 ﻿using DatabaseReader.Events;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Reflection;
@@ -16,6 +15,7 @@ namespace DatabaseReader.CustomControls
 
         public DataColumn IDColumn { get { return _idColumn; } }
         public DataTable DataTable;
+        public EventHandler<TableCellDoubleClickedEventArgs> TableCellDoubleClicked;
 
         public DataGridViewSelectionMode SelectionMode
         {
@@ -212,6 +212,15 @@ namespace DatabaseReader.CustomControls
                     _columnContextMenu.Show(dgvTable, e.Location);
                 }
             }
+        }
+
+        private void dgvTable_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            var args = new TableCellDoubleClickedEventArgs();
+            args.RowIndex = e.RowIndex;
+            args.ColumnIndex = e.ColumnIndex;
+            args.CellValue = DataTable.Rows[e.RowIndex][e.ColumnIndex];
+            TableCellDoubleClicked?.Invoke(this, args);
         }
     }
 }

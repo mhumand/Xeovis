@@ -40,6 +40,8 @@
     <Reference Include="DevExpress.Drawing.v23.2, Version=23.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     <Reference Include="DevExpress.Printing.v23.2.Core, Version=23.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     <Reference Include="DevExpress.Utils.v23.2, Version=23.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraBars.v23.2, Version=23.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraEditors.v23.2, Version=23.2.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     <Reference Include="ExcelDataReader, Version=3.7.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
       <HintPath>packages\ExcelDataReader.3.7.0\lib\net462\ExcelDataReader.dll</HintPath>
     </Reference>
@@ -129,6 +131,7 @@
     <Compile Include="Definitions\Modelling\EndMember.cs" />
     <Compile Include="Definitions\Modelling\Experiment.cs" />
     <Compile Include="Definitions\Modelling\ExperimentalRun.cs" />
+    <Compile Include="Definitions\Persistence\MctcVariable.cs" />
     <Compile Include="Definitions\Persistence\ModelVariable.cs" />
     <Compile Include="Definitions\Modelling\SubsetRun.cs" />
     <Compile Include="Definitions\Modelling\SubsetSettings.cs" />
@@ -147,10 +150,12 @@
     <Compile Include="Enums\Modelling\PhaseAttribute.cs" />
     <Compile Include="Enums\Modelling\PhaseType.cs" />
     <Compile Include="Enums\Modelling\PhaseState.cs" />
+    <Compile Include="Enums\Modelling\RockType.cs" />
     <Compile Include="Enums\Modelling\RunFilterType.cs" />
     <Compile Include="Enums\UI\CurveType.cs" />
     <Compile Include="Enums\UI\FilterType.cs" />
     <Compile Include="Events\ChartPointSelectedEventArgs.cs" />
+    <Compile Include="Events\TableCellDoubleClickedEventArgs.cs" />
     <Compile Include="Events\TableRowSelectedEventArgs.cs" />
     <Compile Include="FrmDataManager.cs">
       <SubType>Form</SubType>
@@ -163,6 +168,12 @@
     </Compile>
     <Compile Include="FrmMain.Designer.cs">
       <DependentUpon>FrmMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmMctcPlotSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmMctcPlotSettings.Designer.cs">
+      <DependentUpon>FrmMctcPlotSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="FrmReadMctc.cs">
       <SubType>Form</SubType>
@@ -191,6 +202,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmMain.resx">
       <DependentUpon>FrmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmMctcPlotSettings.resx">
+      <DependentUpon>FrmMctcPlotSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmReadMctc.resx">
       <DependentUpon>FrmReadMctc.cs</DependentUpon>

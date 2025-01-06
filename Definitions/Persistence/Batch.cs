@@ -1,7 +1,6 @@
 ﻿using DatabaseReader.Enums;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DatabaseReader.Definitions
 {
@@ -14,7 +13,7 @@ namespace DatabaseReader.Definitions
         public ExperimentalRun ExperimentalRun { get; set; }
         public List<double> BulkComposition { get; set; }
         public List<OxideType> BulkOxides { get; set; }
-        public bool IsFailed { get; set; }
+        public Dictionary<int, bool> IsFailed { get; set; } // int being the index of the results group => shows in which run group the batch has failed
         public List<ModelVariable> ModelVariables { get; set; }
 
         public Batch()
@@ -23,6 +22,7 @@ namespace DatabaseReader.Definitions
             BulkComposition = new List<double>();
             BulkOxides = new List<OxideType>();
             ModelVariables = new List<ModelVariable>();
+            IsFailed = new Dictionary<int, bool>();
         }
 
         public override string ToString()
@@ -37,6 +37,11 @@ namespace DatabaseReader.Definitions
                 str += phase + spacer;
 
             return str.TrimEnd(spacer.ToCharArray());
+        }
+
+        public bool IsAllFailed()
+        {
+            return IsFailed.All(i => i.Value == true);
         }
     }
 }

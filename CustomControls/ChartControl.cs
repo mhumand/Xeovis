@@ -39,6 +39,9 @@ namespace DatabaseReader.CustomControls
             _graphPane.CurveList.Clear();
             _graphPane.XAxis.ResetAutoScale(_graphPane, CreateGraphics());
             _graphPane.YAxis.ResetAutoScale(_graphPane, CreateGraphics());
+            _graphPane.Title.Text = null;
+            _graphPane.XAxis.Title.Text = null;
+            _graphPane.YAxis.Title.Text = null;
             zgChart.Refresh();
         }
 

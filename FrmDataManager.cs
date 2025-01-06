@@ -1,5 +1,8 @@
-﻿using DatabaseReader.Definitions;
+﻿using DatabaseReader.CustomControls;
+using DatabaseReader.Definitions;
 using DatabaseReader.Enums;
+using DatabaseReader.Enums.Modelling;
+using DatabaseReader.Events;
 using DatabaseReader.Helpers;
 using ExcelDataReader;
 using System;
@@ -39,6 +42,7 @@ namespace DatabaseReader
             cmbxManualSelection.Enabled = false;
             tabPageSubselectRuns.Hide();
             MakeContextMenu();
+            tcStudiesOverview.TableCellDoubleClicked += tcStudiesOverview_TableCellDoubleClicked;
         }
 
         private void btnScanDirectory_Click(object sender, EventArgs e)
@@ -70,7 +74,7 @@ namespace DatabaseReader
                 }
             }
 
-            tabControl.Visible = true;
+            tabControlMain.Visible = true;
             cklbxExperiments.ContextMenu = _contextMenu;
         }
 
@@ -80,11 +84,10 @@ namespace DatabaseReader
             cmbxPhases.Items.Clear();
 
             Cursor = Cursors.WaitCursor;
-            foreach (var item in cklbxExperiments.CheckedItems)
+            foreach (Experiment exp in cklbxExperiments.CheckedItems)
             {
-                var exp = item as Experiment;
                 if (exp == null) continue;
-                ReadExperiment(exp);
+                ReadExperimentFile(exp);
                 ReadPhasesData(exp);
 
                 if (exp.Runs.Any())
@@ -101,9 +104,10 @@ namespace DatabaseReader
             }
 
             PrepareAdvancedDataManagerUI();
+            PrepareStudiesOverviewUI();
         }
 
-        private void ReadExperiment(Experiment experiment)
+        private void ReadExperimentFile(Experiment experiment)
         {
             DirectoryInfo info = experiment.DirectoryInfo;
             if (info == null) return;
@@ -123,7 +127,7 @@ namespace DatabaseReader
             if (subFiles == null || subFiles.Count == 0) return;
             subFiles.Remove(subFiles.FirstOrDefault(f => Path.GetFileNameWithoutExtension(f.FullName) == info.Name));
             experiment.Files = subFiles;
-            var expFile = subFiles.FirstOrDefault(f => f.Name.ToLower().Contains("experiment"));
+            var expFile = subFiles.FirstOrDefault(f => f.Name.ToLower().Contains("experiment.xls"));
             if (expFile == null) return;
             using (var stream = File.Open(expFile.FullName, FileMode.Open, FileAccess.Read))
             {
@@ -138,6 +142,7 @@ namespace DatabaseReader
                     int temperatureIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("T (C)")));
                     int durationIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Duration")));
                     int phasesIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Phases")));
+                    int rocktypeIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Rocktype")));
 
                     if (nameIndex < 0 || pressureIndex < 0 || temperatureIndex < 0 || durationIndex < 0 || pressureIndex < 0) return;
 
@@ -161,6 +166,9 @@ namespace DatabaseReader
                         if (double.IsNaN(run.Temperature)) continue;
 
                         run.Duration = GetDoubleValueFromText(cells[durationIndex].ToString());
+
+                        if (rocktypeIndex >= 0)
+                            run.Rocktype = RockTypeExtensions.GetRockType(cells[rocktypeIndex].ToString());
 
                         var phases = cells[phasesIndex].ToString().Split(new char[] { '+', ',' });
                         foreach (var ph in phases)
@@ -198,7 +206,7 @@ namespace DatabaseReader
             int indx = cklbxExperiments.FindString(exp.Name);
             cklbxExperiments.SelectedIndex = indx;
 
-            var columns = new List<string>() { "#", "Name", "P [Kbar]", "T [°C]", "t [hr]", "Phases" };
+            var columns = new List<string>() { "#", "Name", "P [Kbar]", "T [°C]", "t [hr]", "Rocktype", "Phases" };
             foreach (var oxide in exp.Runs[0].BulkOxides)
                 columns.Add(oxide.ToString());
 
@@ -212,6 +220,7 @@ namespace DatabaseReader
                     run.Pressure,
                     run.Temperature,
                     run.Duration,
+                    run.Rocktype,
                     run.GetPhaseAssemblageString()
                 };
 
@@ -230,14 +239,11 @@ namespace DatabaseReader
             if (cmbxPhases.Items.Count > 0)
                 cmbxPhases.SelectedIndex = 0;
 
-            var phaseTypes = exp.Runs.SelectMany(r => r.Phases.Select(p => p.Type.ToString()));
-            var dist = phaseTypes.Distinct().ToList();
-            dist.Sort();
-            string str = "All phases: ";
-            foreach (var phase in dist)
+            string str = "";
+            foreach (var phase in exp.GetAllPhaseTypes())
                 str += phase + "+";
 
-            lblAllPhases.Text = str.TrimEnd('+');
+            txtAllPhases.Text = str.TrimEnd('+');
         }
 
         private void ReadPhasesData(Experiment experiment)
@@ -412,7 +418,7 @@ namespace DatabaseReader
             }
 
             tabPageSubselectRuns.Show();
-            tabControl.SelectedTab = tabPageSubselectRuns;
+            tabControlMain.SelectedTab = tabPageSubselectRuns;
             var filterTypes = Enum.GetValues(typeof(RunFilterType));
             cmbxRunFilterType.Items.Clear();
             foreach (var filter in filterTypes)
@@ -650,7 +656,7 @@ namespace DatabaseReader
             tcAdvancedDataManager.ClearTable();
             tcADPhaseCompSummary.ClearTable();
 
-            var Columns = new List<string>() { "#", "Study", "Run", "T (°C)", "P (kbar)", "Coexisting Phases" };
+            var Columns = new List<string>() { "#", "Study", "Run", "T (°C)", "P (kbar)", "All Phases" };
             var oxides = Enum.GetValues(typeof(OxideType));
             foreach (var oxide in oxides)
                 Columns.Add(oxide.ToString());
@@ -678,7 +684,7 @@ namespace DatabaseReader
                         phaseInstance.ExperimentalRun.Name,
                         phaseInstance.ExperimentalRun.Temperature,
                         phaseInstance.ExperimentalRun.Pressure,
-                        phaseInstance.ExperimentalRun.GetPhaseAssemblageString(new List<Phase> { phaseInstance })
+                        phaseInstance.ExperimentalRun.GetPhaseAssemblageString()
                     };
 
                     foreach (var oxide in oxides)
@@ -740,6 +746,55 @@ namespace DatabaseReader
             tcADPhaseCompSummary.FillTable(columns, rows);
 
             Cursor = Cursors.Default;
+        }
+
+        private void PrepareStudiesOverviewUI()
+        {
+            tcStudiesOverview.ClearTable();
+
+            var columns = new List<string>() { "#", "Study", "T range [C]", "P range [kbar]", "Rocktype", "Phases with composition", "Pure Phases" };
+            var rows = new List<List<object>>();
+            int counter = 1;
+            foreach (Experiment exp in cklbxExperiments.CheckedItems)
+            {
+                if (exp == null) return;
+                var minT = exp.Runs.Min(r => r.Temperature);
+                var maxT = exp.Runs.Max(r => r.Temperature);
+                var minP = exp.Runs.Min(r => r.Pressure);
+                var maxP = exp.Runs.Max(r => r.Pressure);
+                var rockTypes = exp.GetAllRockTypes().Except(new List<RockType>() { RockType.None }).ToList().ConvertAll(x => x.ToString());
+                var phasesWithComp = exp.PhasesWithData.ConvertAll(x => x.ToString());
+                var allPhases = exp.GetAllPhaseTypes();
+                var purePhases = allPhases.Except(allPhases.Where(p => p.GetPhaseState() != PhaseState.Pure));
+
+                var row = new List<object>
+                {
+                    counter.ToString("000"),
+                    ckbxShortNameForStudies.Checked? exp.ShortName : exp.Name,
+                    minT == maxT ? $"{minT}" : $"{minT} - {maxT}",
+                    minP == maxP ? $"{minP}" : $"{minP} - {maxP}",
+                    string.Join(", ", rockTypes),
+                    string.Join(", ", phasesWithComp),
+                    string.Join(", ", purePhases)
+                };
+
+                rows.Add(row);
+                counter++;
+            }
+
+            tcStudiesOverview.FillTable(columns, rows);
+        }
+
+        private void ckbxShortNameForStudies_CheckedChanged(object sender, EventArgs e)
+        {
+            PrepareStudiesOverviewUI();
+        }
+
+        private void tcStudiesOverview_TableCellDoubleClicked(object sender, TableCellDoubleClickedEventArgs e)
+        {
+            var studyIndex = e.RowIndex;
+            cmbxExperiments.SelectedIndex = studyIndex;
+            tabControlDataManager.SelectedTab = tabPageDataManager_General;
         }
     }
 }

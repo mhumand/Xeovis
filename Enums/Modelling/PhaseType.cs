@@ -384,7 +384,7 @@ namespace DatabaseReader.Enums
             return PhaseType.NULL;
         }
 
-        public static PhaseState GetPhaseStateByPhaseType(PhaseType phaseType)
+        public static PhaseState GetPhaseState(this PhaseType phaseType)
         {
             switch (phaseType)
             {

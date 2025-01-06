@@ -1,4 +1,5 @@
 ﻿using DatabaseReader.Enums;
+using DatabaseReader.Enums.Modelling;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,6 +25,8 @@ namespace DatabaseReader.Definitions
         public string MyProperty { get; set; }
         public int Index {  get; set; }
         public int ReadingIndex {  get; set; }
+        public RockType Rocktype { get; set; }
+
 
         public ExperimentalRun()
         {

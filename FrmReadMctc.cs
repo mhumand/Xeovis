@@ -19,12 +19,14 @@ namespace DatabaseReader
 {
     public partial class FrmReadMctc : Form
     {
-        private string directory;
+        private string _directory;
         private List<string> _files;
         private List<Batch> _batches;
         private List<ModelVariable> _modelVariables;
         private ContextMenu _contextMenu;
         private DataFile _dataFile;
+        private MctcPlotSettings _mctcPlotSettings;
+        private List<MctcVariable> _mctcVariables;
 
         public FrmReadMctc()
         {
@@ -35,14 +37,16 @@ namespace DatabaseReader
         private void PrepareUI()
         {
             MakeContextMenu();
+            _mctcPlotSettings = new MctcPlotSettings();
             tvCaseSelection.ContextMenu = _contextMenu;
-            tcPlotInfo.TableRowSelected += tcPlotInfo_RowSelected;
+            tcBatchDetails.TableRowSelected += tcPlotInfo_RowSelected;
             ccMctcPlot.ChartPointSelected += ccMctcPlot_ChartPointSelected;
+            ccMctcPlot.ClearPlot();
         }
 
         private void ccMctcPlot_ChartPointSelected(object sender, ChartPointSelectedEventArgs e)
         {
-            var table = tcPlotInfo.DataTable;
+            var table = tcBatchDetails.DataTable;
             Guid id = Guid.NewGuid();
 
             if (!double.IsNaN(e.X) && !double.IsNaN(e.Y))
@@ -51,13 +55,13 @@ namespace DatabaseReader
                 {
                     if ((double)table.Rows[i][1] == e.X && (double)table.Rows[i][2] == e.Y)//todo - generalize
                     {
-                        id = (Guid)table.Rows[i][tcPlotInfo.IDColumn];
+                        id = (Guid)table.Rows[i][tcBatchDetails.IDColumn];
                         break;
                     }
                 }
             }
 
-            tcPlotInfo.SelectRow(id);
+            tcBatchDetails.SelectRow(id);
         }
 
         private void tcPlotInfo_RowSelected(object sender, TableRowSelectedEventArgs e)
@@ -98,25 +102,41 @@ namespace DatabaseReader
             tvCaseSelection.SelectedNode = null;
         }
 
-        private void btnReadMctc_Click(object sender, EventArgs e)
+        private void tsmReadMCTC_Click(object sender, EventArgs e)
         {
-            tcPlotInfo.ClearTable();
-            ccMctcPlot.ClearPlot();
+            if (!tsmFixedUIOnReading.Checked)
+            {
+                tcBatchDetails.ClearTable();
+                ccMctcPlot.ClearPlot();
+            }
+
             _batches = null;
             _modelVariables = null;
+            _mctcVariables = null;
             _dataFile = null;
 
-            directory = "H:\\My Drive\\PhD @ Unimelb\\PhD\\PhD - Project\\Project - Calculations\\set_up_fitting\\TC RUN";
-            if (!Directory.Exists(directory))
+            if (string.IsNullOrWhiteSpace(_directory))
+            {
+                var dialog = new FolderBrowserDialog();
+                dialog.Description = "Select the directory that contains THERMOCALC MTCT output txt files.";
+                dialog.SelectedPath = "H:\\My Drive\\PhD @ Unimelb\\PhD\\PhD - Project\\Project - Calculations\\set_up_fitting\\TC RUN";
+                if (dialog.ShowDialog() == DialogResult.Cancel)
+                {
+                    return;
+                }
+
+                _directory = dialog.SelectedPath;
+            }
+
+            if (!Directory.Exists(_directory))
             {
                 MessageBox.Show("Directory does not exist.");
+                _directory = null;
                 return;
             }
-            else
-            {
-                //RunThermocalc();
-                _files = Directory.GetFiles(directory).ToList();
-            }
+
+            //RunThermocalc();
+            _files = Directory.GetFiles(_directory).ToList();
 
             Cursor = Cursors.WaitCursor;
             ReadBatchLines();
@@ -130,8 +150,8 @@ namespace DatabaseReader
 
             Cursor = Cursors.Default;
 
-            _batches?.RemoveAll(b => b.IsFailed);
-            _modelVariables?.RemoveAll(mv => mv.Batch.IsFailed);
+            _modelVariables?.RemoveAll(mv => mv.Batch.IsAllFailed());
+            _batches?.RemoveAll(b => b.IsAllFailed());
 
             _dataFile = new DataFile();
             _dataFile.Batches = _batches;
@@ -146,7 +166,7 @@ namespace DatabaseReader
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.CreateNoWindow = false;
             startInfo.UseShellExecute = true;
-            startInfo.FileName = directory + "\\tc355aWin.exe";
+            startInfo.FileName = _directory + "\\tc355aWin.exe";
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             //startInfo.Verb = "runas";
 
@@ -168,10 +188,26 @@ namespace DatabaseReader
 
         private void PopulateUI()
         {
-            if (ckbxIncludeBatches.Checked)
-                PopulateTreeView_IncludeBatches();
-            else
-                PopulateTreeView_PhaseModelsOnly();
+            var checkedNodesIndex = tvCaseSelection.GetCheckedNodesIndex();
+            var selectedModelVar = cmbxModelVariable.SelectedIndex;
+
+            PopulateTreeView_PhaseModelsOnly();
+
+            nudMctcRunNumber.Maximum = _mctcVariables.FirstOrDefault().Values.Count;
+            nudMctcRunNumber.Value = 1;
+
+            // keeping UI Fixed
+            var allNodes = tvCaseSelection.GetAllNodes();
+            if (tsmFixedUIOnReading.Checked && checkedNodesIndex.Count <= allNodes.Count)
+            {
+                tvCaseSelection.AfterCheck -= tvCaseSelection_AfterCheck;
+                foreach (int index in checkedNodesIndex)
+                    allNodes[index].Checked = true;
+
+                tvCaseSelection.AfterCheck += tvCaseSelection_AfterCheck;
+
+                RefreshPlotAndTable();
+            }
         }
 
         private void PopulateTreeView_IncludeBatches()
@@ -327,63 +363,114 @@ namespace DatabaseReader
             var lines = ReadFileLines("-dr");
             if (lines == null || lines.Count == 0) return;
 
+            var splitters = new char[] { '{', '}', '*', '(', ')', '\t', '"', ',', ';' };
+            var allRange = Enumerable.Range(0, lines.Count);
+
+            _mctcVariables = GetMctcVariables(lines);
+            if (_mctcVariables == null || _mctcVariables.Count == 0) return;
+
+            var resultsStartIndex = allRange.Where(i => lines[i].Contains("cw")).ToList();
+            for (int i = 0; i < resultsStartIndex.Count; i++)
+            {
+                var line = lines[resultsStartIndex[i]].Split(splitters).ToList();
+                line.RemoveAll(l => string.IsNullOrWhiteSpace(l));
+
+                for (int j = 1; j < line.Count; j++)
+                    _mctcVariables.FirstOrDefault(v => v.Index == j - 1).Values.Add(DoubleExtensions.GetDoubleValueFromText(line[j].Trim()));
+            }
+
             for (int i = 0; i < _batches.Count; i++)
             {
                 var batch = _batches[i];
 
                 string batchKey = $"(* {batch.Index} *)";
                 string nextBatchKey = $"(* {batch.Index + 1} *)";
-                var batchLinesIndx = Enumerable.Range(0, lines.Count).Where(j => lines[j].Contains(batchKey)).ToList();
-                var nextBatchLinesIndx = Enumerable.Range(0, lines.Count).Where(j => lines[j].Contains(nextBatchKey)).ToList();
-                if (batchLinesIndx.Count != 2) continue;
-                if (nextBatchLinesIndx.Count == 0)
-                    nextBatchLinesIndx = new List<int>() { batchLinesIndx[0] + 2, lines.Count };
-
-                var splitters = new char[] { '{', '}', '*', '(', ')', '\t', '"', ',', ';' };
+                var batchLineIndexes = allRange.Where(j => lines[j].Contains(batchKey)).ToList();
+                var nextBatchLineIndexes = allRange.Where(j => lines[j].Contains(nextBatchKey)).ToList();
 
                 // what data is in lines[batchLinesIndx[0]]? phase proportions?
                 string modVarNameLine = string.Empty;
-                for (int j = batchLinesIndx[0]; j < nextBatchLinesIndx[0] - 1; j++)
+                int cutoff = nextBatchLineIndexes.Count == 0 ? resultsStartIndex[0] - 2 : nextBatchLineIndexes[0] - 1;
+                for (int j = batchLineIndexes[0]; j < cutoff; j++)
                     modVarNameLine += lines[j + 1];
 
                 var modVarNameLines = modVarNameLine.Split(splitters).ToList();
                 modVarNameLines.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
-                string modVarValueLine = string.Empty;
-                for (int j = batchLinesIndx[1]; j < nextBatchLinesIndx[1]; j++)
-                    modVarValueLine += lines[j];
-
-                var modVarValueLines = modVarValueLine.Split(splitters).ToList();
-                modVarValueLines.RemoveAll(l => string.IsNullOrWhiteSpace(l));
-
-                if (modVarValueLines.Count <= 3)
+                for (int k = 0; k < resultsStartIndex.Count; k++)
                 {
-                    batch.IsFailed = true;
-                    foreach (var modelVar in batch.ModelVariables)
+                    string modVarValueLine = string.Empty;
+
+                    if (nextBatchLineIndexes.Count == 0)
+                        cutoff = resultsStartIndex.Count == k + 1 ? lines.Count - 1 : resultsStartIndex[k + 1];
+                    else
+                        cutoff = nextBatchLineIndexes[1 + k];
+
+                    for (int j = batchLineIndexes[1 + k]; j < cutoff; j++)
+                        modVarValueLine += lines[j];
+
+                    var modVarValueLines = modVarValueLine.Split(splitters).ToList();
+                    modVarValueLines.RemoveAll(l => string.IsNullOrWhiteSpace(l));
+
+                    // in the -dr file, last line of each result section has an extra element of "0"
+                    if (nextBatchLineIndexes.Count == 0)
+                        modVarValueLines.RemoveAt(modVarValueLines.Count - 1);
+
+                    if (modVarValueLines.Count <= 3)
+                    {
+                        batch.IsFailed.Add(k, true);
+                        continue;
+                    }
+                    else
+                        batch.IsFailed.Add(k, false);
+
+                    var modelVarsInResults = new List<ModelVariable>();
+                    for (int j = 0; j < modVarNameLines.Count; j++)
+                    {
+                        var varName = modVarNameLines[j];
+                        j++;
+                        var varPhase = PhaseTypeExtensions.GetPhaseTypeByName(modVarNameLines[j]);
+                        var modelVariable = batch.ModelVariables.FirstOrDefault(v => v.VariableType.ToString() == varName && v.Phase == varPhase);
+                        if (modelVariable == null) continue;
+                        modelVariable.CalcVals.Add(k, DoubleExtensions.GetDoubleValueFromText(modVarValueLines[2 + (j + 1) / 2]));
+                        modelVarsInResults.Add(modelVariable);
+                    }
+
+                    var otherModelVars = batch.ModelVariables.Except(modelVarsInResults).ToList();
+                    foreach (var modelVar in otherModelVars)
+                    {
                         _modelVariables.Remove(modelVar);
-
-                    continue;
-                }
-
-                var modelVarsInResults = new List<ModelVariable>();
-                for (int j = 0; j < modVarNameLines.Count; j++)
-                {
-                    var varName = modVarNameLines[j];
-                    j++;
-                    var varPhase = PhaseTypeExtensions.GetPhaseTypeByName(modVarNameLines[j]);
-                    var modelVariable = batch.ModelVariables.FirstOrDefault(v => v.VariableType.ToString() == varName && v.Phase == varPhase);
-                    if (modelVariable == null) continue;
-                    modelVariable.CalcVal = DoubleExtensions.GetDoubleValueFromText(modVarValueLines[2 + (j + 1) / 2]);
-                    modelVarsInResults.Add(modelVariable);
-                }
-
-                var otherModelVars = batch.ModelVariables.Except(modelVarsInResults).ToList();
-                foreach (var modelVar in otherModelVars)
-                {
-                    _modelVariables.Remove(modelVar);
-                    batch.ModelVariables.Remove(modelVar);
+                        batch.ModelVariables.Remove(modelVar);
+                    }
                 }
             }
+        }
+
+        private List<MctcVariable> GetMctcVariables(List<string> lines)
+        {
+            var allRange = Enumerable.Range(0, lines.Count);
+            var splitters = new char[] { '{', '}', '*', '(', ')', '\t', '"', ',', ';' };
+
+            var mcinfoIndex = allRange.Where(i => lines[i].Contains("mcinfo")).ToList()[0];
+            var mcrangeIndex = allRange.Where(i => lines[i].Contains("mcrange")).ToList()[0];
+            var mctcVarLineCount = mcrangeIndex - mcinfoIndex;
+            var mctcVariables = new List<MctcVariable>();
+            for (int i = 0; i < mctcVarLineCount; i++)
+            {
+                var line = lines[mcinfoIndex + i];
+                var parts = line.Split(new char[] { '{', '}', '\\', '"' }).ToList();
+                parts.RemoveAll(l => string.IsNullOrWhiteSpace(l) || l == "," || l == ";");
+                if (parts.Count == 3) parts.RemoveAt(0);
+                var name = parts[0];
+                var valuesString = parts[1].Split(splitters).ToList();
+                valuesString.RemoveAll(l => string.IsNullOrWhiteSpace(l));
+                var startingVal = DoubleExtensions.GetDoubleValueFromText(valuesString[0].Trim());
+                var rangeVal = DoubleExtensions.GetDoubleValueFromText(valuesString[1].Trim());
+                var mctcVariable = new MctcVariable() { Index = i, Name = name, StartingValue = startingVal, Range = rangeVal };
+                mctcVariables.Add(mctcVariable);
+            }
+
+            return mctcVariables;
         }
 
         private List<string> ReadFileLines(string filePartialName)
@@ -437,11 +524,10 @@ namespace DatabaseReader
         private void btnPlotAndTabulate_Click(object sender, EventArgs e)
         {
             ccMctcPlot.ClearPlot();
-            tcPlotInfo.ClearTable();
+            tcBatchDetails.ClearTable();
 
             if (_modelVariables == null) return;
-            var nodes = tvCaseSelection.GetAllNodes();
-            var checkedNodes = nodes.Where(n => n.Checked).ToList();
+            var checkedNodes = tvCaseSelection.GetCheckedNodes();
             if (!checkedNodes.Any()) return;
 
             var modelVarNodes = checkedNodes.Where(n => n.Tag is ModelVariable).ToList();
@@ -463,13 +549,23 @@ namespace DatabaseReader
 
         private void cmbxModelVariable_SelectedIndexChanged(object sender, EventArgs e)
         {
+            RefreshPlotAndTable();
+        }
+
+        private void RefreshPlotAndTable()
+        {
+            tcBatchDetails.TableRowSelected -= tcPlotInfo_RowSelected;
+            ccMctcPlot.ChartPointSelected -= ccMctcPlot_ChartPointSelected;
+
             PlotAndTabulate();
+
+            tcBatchDetails.TableRowSelected += tcPlotInfo_RowSelected;
+            ccMctcPlot.ChartPointSelected += ccMctcPlot_ChartPointSelected;
         }
 
         private void PlotAndTabulate()
         {
-            var selectedModelVar = cmbxModelVariable.SelectedItem as ModelVariable;
-            if (selectedModelVar == null) return;
+            if (!(cmbxModelVariable.SelectedItem is ModelVariable selectedModelVar)) return;
 
             // getting all instances of the selected model variable
             var modelVars = _modelVariables.Where(mv => mv.Name == selectedModelVar.Name).ToList();
@@ -510,15 +606,23 @@ namespace DatabaseReader
             else
                 selectedGroups = modelVarGroups;
 
+            if (selectedGroups.Count == 0)
+            {
+                ccMctcPlot.ClearPlot();
+                tcBatchDetails.ClearTable();
+                return;
+            }
+
             int colorIndex = 0;
             int markerIndex = 0;
+            int mctcRunIndex = (int)nudMctcRunNumber.Value - 1;
             foreach (var modelVarGroup in selectedGroups)
             {
                 var curve = new CurveModel();
                 curve.Name = modelVarGroup.FirstOrDefault().Batch.GetPhaseAssemblageString();
 
-                curve.Xvals = modelVarGroup.Select(mv => mv.ObsVal).ToList();
-                curve.Yvals = modelVarGroup.Select(mv => mv.CalcVal).ToList();
+                curve.Xvals = modelVarGroup.Where(mv => mv.CalcVals.ContainsKey(mctcRunIndex)).Select(mv => mv.ObsVal).ToList();
+                curve.Yvals = modelVarGroup.Where(mv => mv.CalcVals.ContainsKey(mctcRunIndex)).Select(mv => mv.CalcVals[mctcRunIndex]).ToList();
                 curve.IsLineVisible = false;
 
                 var color = ChartUtilities.GetColor(colorIndex++);
@@ -529,11 +633,18 @@ namespace DatabaseReader
                     markerIndex++;
                 }
 
-                curve.Transparency = (int)nudTransparency.Value;
+                curve.Transparency = _mctcPlotSettings.ColorTransparencyIn100;
                 curve.MarkerColor = color;
-                chartModel.Curves.Add(curve);
                 curve.MarkerType = ChartUtilities.GetMarkerType(markerIndex);
                 curve.MarkerSize = 10;
+                chartModel.Curves.Add(curve);
+            }
+
+            if (!chartModel.Curves.Any())
+            {
+                ccMctcPlot.ClearPlot();
+                tcBatchDetails.ClearTable();
+                return;
             }
 
             // x = y line
@@ -571,7 +682,7 @@ namespace DatabaseReader
             var currentPhase = modelVars.FirstOrDefault().Phase;
             foreach (PhaseType phase in modelVars.SelectMany(v => v.Batch.Phases).Distinct().Except(new List<PhaseType> { currentPhase }))
             {
-                var phaseState = PhaseTypeExtensions.GetPhaseStateByPhaseType(phase);
+                var phaseState = phase.GetPhaseState();
                 if (phaseState == PhaseState.Pure)
                     purePhasesOnlyString.Add(phase.ToString());
                 else if (phaseState == PhaseState.Solution)
@@ -590,41 +701,48 @@ namespace DatabaseReader
             #endregion
 
             #region Table
-            var columns = new List<string>() { "#", "Obs", "Calc", "Assemblage", "Batch", "P [kbar]", "T [°C]", "Visible" };
+            var columns = new List<string>() { "#", "Obs", "Calc", "Err%", "Assemblage", "Batch", "P [kbar]", "T [°C]" };
 
             var rows = new List<List<object>>();
             int counter = 1;
             foreach (var mvar in modelVars)
             {
+                if (!mvar.CalcVals.ContainsKey(mctcRunIndex))
+                    continue;
+
                 var row = new List<object>
                 {
                     counter++.ToString("000"),
                     mvar.ObsVal,
-                    mvar.CalcVal,
+                    mvar.CalcVals[mctcRunIndex],
+                    Math.Round(100.0 * Math.Abs(1.0 - mvar.CalcVals[mctcRunIndex] / mvar.ObsVal), 1),
                     mvar.Batch.GetPhaseAssemblageString(),
                     mvar.Batch,
                     mvar.Batch.ExperimentalRun.Pressure,
-                    mvar.Batch.ExperimentalRun.Temperature,
-                    true
+                    mvar.Batch.ExperimentalRun.Temperature
                 };
 
                 rows.Add(row);
             }
 
-            tcPlotInfo.ClearTable();
-            tcPlotInfo.FillTable(columns, rows);
-            tcPlotInfo.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            tcPlotInfo.MultiSelect = false;
-            #endregion
-        }
+            tcBatchDetails.ClearTable();
+            tcBatchDetails.FillTable(columns, rows);
+            tcBatchDetails.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            tcBatchDetails.MultiSelect = false;
 
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog saveDialog = new SaveFileDialog();
-            saveDialog.Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt";
-            DialogResult result = saveDialog.ShowDialog();
-            if (result == DialogResult.OK)
-                SaveAsJSON(saveDialog.FileName);
+            // mctc details
+            columns = new List<string>();
+            var _row = new List<object>();
+
+            foreach (var mctcVar in _mctcVariables)
+            {
+                columns.Add(mctcVar.Name);
+                _row.Add(mctcVar.Values[mctcRunIndex]);
+            }
+
+            tcMctcDetails.ClearTable();
+            tcMctcDetails.FillTable(columns, new List<List<object>>() { _row });
+            #endregion
         }
 
         private void SaveAsJSON(string fileName)
@@ -636,25 +754,6 @@ namespace DatabaseReader
             jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
             var json = JsonConvert.SerializeObject(_dataFile, jsonSettings);
             File.WriteAllText(fileName, json);
-        }
-
-        private void btnOpen_Click(object sender, EventArgs e)
-        {
-            Cursor = Cursors.WaitCursor;
-
-            tcPlotInfo.ClearTable();
-            ccMctcPlot.ClearPlot();
-            _batches = null;
-            _modelVariables = null;
-            _dataFile = null;
-
-            OpenFileDialog openDialog = new OpenFileDialog();
-            openDialog.Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt";
-            DialogResult result = openDialog.ShowDialog();
-            if (result == DialogResult.OK)
-                OpenJSON(openDialog.FileName);
-
-            Cursor = Cursors.Default;
         }
 
         private void OpenJSON(string fileName)
@@ -669,7 +768,69 @@ namespace DatabaseReader
 
         private void ckbxExcludeIrrelevantBatches_CheckedChanged(object sender, EventArgs e)
         {
-            PlotAndTabulate();
+            RefreshPlotAndTable();
+        }
+
+        private void tsmOpen_Click(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+
+            tcBatchDetails.ClearTable();
+            ccMctcPlot.ClearPlot();
+            tvCaseSelection.Nodes.Clear();
+            _batches = null;
+            _modelVariables = null;
+            _dataFile = null;
+
+            OpenFileDialog openDialog = new OpenFileDialog();
+            openDialog.Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt";
+            DialogResult result = openDialog.ShowDialog();
+            if (result == DialogResult.OK)
+                OpenJSON(openDialog.FileName);
+
+            Cursor = Cursors.Default;
+        }
+
+        private void tsmSave_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            saveDialog.Filter = "Json files (*.json)|*.json|Text files (*.txt)|*.txt";
+            DialogResult result = saveDialog.ShowDialog();
+            if (result == DialogResult.OK)
+                SaveAsJSON(saveDialog.FileName);
+        }
+
+        private void tsmVariableDefinitions_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tsmPlotSettings_Click(object sender, EventArgs e)
+        {
+            using (var settingDialog = new FrmMctcPlotSettings(_mctcPlotSettings))
+            {
+                if (settingDialog.ShowDialog() == DialogResult.OK)
+                {
+                    _mctcPlotSettings = settingDialog.Settings;
+                    RefreshPlotAndTable();
+                }
+            }
+        }
+
+        private void tsmResetMCTCDirectory_Click(object sender, EventArgs e)
+        {
+            _directory = null;
+            tsmReadMCTC.PerformClick();
+        }
+
+        private void tsmFile_DropDownOpening(object sender, EventArgs e)
+        {
+            tsmResetMCTCDirectory.Visible = _directory != null;
+        }
+
+        private void nudMctcRunNumber_ValueChanged(object sender, EventArgs e)
+        {
+            RefreshPlotAndTable();
         }
     }
 }
