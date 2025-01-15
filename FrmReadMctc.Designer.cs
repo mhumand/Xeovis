@@ -42,30 +42,31 @@
             this.tsmFixedUIOnReading = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabpageDetailed = new System.Windows.Forms.TabPage();
-            this.tabpageOverview = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.nudMctcRunNumber = new System.Windows.Forms.NumericUpDown();
-            this.ckbxExcludeIrrelevantBatches = new System.Windows.Forms.CheckBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.cmbxModelVariable = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.ccMctcPlot = new DatabaseReader.CustomControls.ChartControl();
-            this.tcMctcDetails = new DatabaseReader.CustomControls.TableControl();
             this.tcBatchDetails = new DatabaseReader.CustomControls.TableControl();
+            this.label3 = new System.Windows.Forms.Label();
+            this.tabpageOverview = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.ckbxExcludeIrrelevantBatches = new System.Windows.Forms.CheckBox();
+            this.nudMctcRunNumber = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tbMctcRunNumber = new System.Windows.Forms.TrackBar();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tcMctcDetails = new DatabaseReader.CustomControls.TableControl();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabpageDetailed.SuspendLayout();
-            this.tabpageOverview.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.tabpageOverview.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudMctcRunNumber)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbMctcRunNumber)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tvCaseSelection
@@ -76,7 +77,7 @@
             this.tvCaseSelection.FullRowSelect = true;
             this.tvCaseSelection.Location = new System.Drawing.Point(12, 56);
             this.tvCaseSelection.Name = "tvCaseSelection";
-            this.tvCaseSelection.Size = new System.Drawing.Size(181, 698);
+            this.tvCaseSelection.Size = new System.Drawing.Size(164, 698);
             this.tvCaseSelection.TabIndex = 1;
             this.tvCaseSelection.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.tvCaseSelection_AfterCheck);
             this.tvCaseSelection.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tvCaseSelection_MouseClick);
@@ -85,7 +86,7 @@
             // 
             this.btnPlotAndTabulate.Location = new System.Drawing.Point(12, 27);
             this.btnPlotAndTabulate.Name = "btnPlotAndTabulate";
-            this.btnPlotAndTabulate.Size = new System.Drawing.Size(181, 23);
+            this.btnPlotAndTabulate.Size = new System.Drawing.Size(164, 23);
             this.btnPlotAndTabulate.TabIndex = 2;
             this.btnPlotAndTabulate.Text = "Plot and Tabulate";
             this.btnPlotAndTabulate.UseVisualStyleBackColor = true;
@@ -185,10 +186,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabpageDetailed);
             this.tabControl1.Controls.Add(this.tabpageOverview);
-            this.tabControl1.Location = new System.Drawing.Point(202, 27);
+            this.tabControl1.Location = new System.Drawing.Point(182, 120);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1149, 727);
+            this.tabControl1.Size = new System.Drawing.Size(1169, 634);
             this.tabControl1.TabIndex = 12;
             // 
             // tabpageDetailed
@@ -197,45 +198,10 @@
             this.tabpageDetailed.Location = new System.Drawing.Point(4, 22);
             this.tabpageDetailed.Name = "tabpageDetailed";
             this.tabpageDetailed.Padding = new System.Windows.Forms.Padding(3);
-            this.tabpageDetailed.Size = new System.Drawing.Size(1141, 701);
+            this.tabpageDetailed.Size = new System.Drawing.Size(1161, 608);
             this.tabpageDetailed.TabIndex = 0;
             this.tabpageDetailed.Text = "Detailed";
             this.tabpageDetailed.UseVisualStyleBackColor = true;
-            // 
-            // tabpageOverview
-            // 
-            this.tabpageOverview.Controls.Add(this.trackBar1);
-            this.tabpageOverview.Controls.Add(this.tableLayoutPanel1);
-            this.tabpageOverview.Location = new System.Drawing.Point(4, 22);
-            this.tabpageOverview.Name = "tabpageOverview";
-            this.tabpageOverview.Padding = new System.Windows.Forms.Padding(3);
-            this.tabpageOverview.Size = new System.Drawing.Size(1141, 701);
-            this.tabpageOverview.TabIndex = 1;
-            this.tabpageOverview.Text = "Overview";
-            this.tabpageOverview.UseVisualStyleBackColor = true;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(6, 57);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1129, 638);
-            this.tableLayoutPanel1.TabIndex = 0;
-            // 
-            // trackBar1
-            // 
-            this.trackBar1.Location = new System.Drawing.Point(84, 6);
-            this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(331, 45);
-            this.trackBar1.TabIndex = 1;
             // 
             // splitContainer1
             // 
@@ -245,67 +211,22 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.nudMctcRunNumber);
-            this.splitContainer1.Panel1.Controls.Add(this.ckbxExcludeIrrelevantBatches);
-            this.splitContainer1.Panel1.Controls.Add(this.label2);
             this.splitContainer1.Panel1.Controls.Add(this.label1);
             this.splitContainer1.Panel1.Controls.Add(this.cmbxModelVariable);
             this.splitContainer1.Panel1.Controls.Add(this.ccMctcPlot);
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.tcMctcDetails);
             this.splitContainer1.Panel2.Controls.Add(this.tcBatchDetails);
-            this.splitContainer1.Panel2.Controls.Add(this.label4);
             this.splitContainer1.Panel2.Controls.Add(this.label3);
-            this.splitContainer1.Size = new System.Drawing.Size(1135, 695);
-            this.splitContainer1.SplitterDistance = 621;
+            this.splitContainer1.Size = new System.Drawing.Size(1155, 602);
+            this.splitContainer1.SplitterDistance = 602;
             this.splitContainer1.TabIndex = 9;
-            // 
-            // nudMctcRunNumber
-            // 
-            this.nudMctcRunNumber.Location = new System.Drawing.Point(105, 7);
-            this.nudMctcRunNumber.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudMctcRunNumber.Name = "nudMctcRunNumber";
-            this.nudMctcRunNumber.Size = new System.Drawing.Size(54, 22);
-            this.nudMctcRunNumber.TabIndex = 8;
-            this.nudMctcRunNumber.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudMctcRunNumber.ValueChanged += new System.EventHandler(this.nudMctcRunNumber_ValueChanged);
-            // 
-            // ckbxExcludeIrrelevantBatches
-            // 
-            this.ckbxExcludeIrrelevantBatches.AutoSize = true;
-            this.ckbxExcludeIrrelevantBatches.Checked = true;
-            this.ckbxExcludeIrrelevantBatches.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbxExcludeIrrelevantBatches.Location = new System.Drawing.Point(232, 38);
-            this.ckbxExcludeIrrelevantBatches.Name = "ckbxExcludeIrrelevantBatches";
-            this.ckbxExcludeIrrelevantBatches.Size = new System.Drawing.Size(158, 17);
-            this.ckbxExcludeIrrelevantBatches.TabIndex = 7;
-            this.ckbxExcludeIrrelevantBatches.Text = "Exclude Irrelevant Batches";
-            this.ckbxExcludeIrrelevantBatches.UseVisualStyleBackColor = true;
-            this.ckbxExcludeIrrelevantBatches.CheckedChanged += new System.EventHandler(this.ckbxExcludeIrrelevantBatches_CheckedChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(23, 9);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(76, 13);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Mctc Run No.";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(15, 38);
+            this.label1.Location = new System.Drawing.Point(3, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(84, 13);
             this.label1.TabIndex = 6;
@@ -315,51 +236,21 @@
             // 
             this.cmbxModelVariable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbxModelVariable.FormattingEnabled = true;
-            this.cmbxModelVariable.Location = new System.Drawing.Point(105, 35);
+            this.cmbxModelVariable.Location = new System.Drawing.Point(93, 6);
             this.cmbxModelVariable.Name = "cmbxModelVariable";
             this.cmbxModelVariable.Size = new System.Drawing.Size(121, 21);
             this.cmbxModelVariable.TabIndex = 5;
             this.cmbxModelVariable.SelectedIndexChanged += new System.EventHandler(this.cmbxModelVariable_SelectedIndexChanged);
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 77);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(73, 13);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Batch Details";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(9, 4);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(69, 13);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "Mctc Details";
-            // 
             // ccMctcPlot
             // 
             this.ccMctcPlot.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ccMctcPlot.Location = new System.Drawing.Point(3, 62);
+            this.ccMctcPlot.Location = new System.Drawing.Point(3, 32);
             this.ccMctcPlot.Name = "ccMctcPlot";
-            this.ccMctcPlot.Size = new System.Drawing.Size(615, 593);
+            this.ccMctcPlot.Size = new System.Drawing.Size(596, 593);
             this.ccMctcPlot.TabIndex = 4;
             this.ccMctcPlot.UseLabelFiltering = false;
-            // 
-            // tcMctcDetails
-            // 
-            this.tcMctcDetails.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tcMctcDetails.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tcMctcDetails.Location = new System.Drawing.Point(12, 21);
-            this.tcMctcDetails.MultiSelect = true;
-            this.tcMctcDetails.Name = "tcMctcDetails";
-            this.tcMctcDetails.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
-            this.tcMctcDetails.Size = new System.Drawing.Size(485, 53);
-            this.tcMctcDetails.TabIndex = 9;
             // 
             // tcBatchDetails
             // 
@@ -367,18 +258,136 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcBatchDetails.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tcBatchDetails.Location = new System.Drawing.Point(12, 93);
+            this.tcBatchDetails.Location = new System.Drawing.Point(12, 25);
             this.tcBatchDetails.MultiSelect = true;
             this.tcBatchDetails.Name = "tcBatchDetails";
             this.tcBatchDetails.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
-            this.tcBatchDetails.Size = new System.Drawing.Size(485, 562);
+            this.tcBatchDetails.Size = new System.Drawing.Size(524, 537);
             this.tcBatchDetails.TabIndex = 8;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(9, 9);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(73, 13);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Batch Details";
+            // 
+            // tabpageOverview
+            // 
+            this.tabpageOverview.Controls.Add(this.tableLayoutPanel);
+            this.tabpageOverview.Location = new System.Drawing.Point(4, 22);
+            this.tabpageOverview.Name = "tabpageOverview";
+            this.tabpageOverview.Padding = new System.Windows.Forms.Padding(3);
+            this.tabpageOverview.Size = new System.Drawing.Size(1161, 623);
+            this.tabpageOverview.TabIndex = 1;
+            this.tabpageOverview.Text = "Overview";
+            this.tabpageOverview.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel
+            // 
+            this.tableLayoutPanel.AutoScroll = true;
+            this.tableLayoutPanel.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Inset;
+            this.tableLayoutPanel.ColumnCount = 2;
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
+            this.tableLayoutPanel.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel.Name = "tableLayoutPanel";
+            this.tableLayoutPanel.RowCount = 2;
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel.Size = new System.Drawing.Size(1155, 617);
+            this.tableLayoutPanel.TabIndex = 0;
+            // 
+            // ckbxExcludeIrrelevantBatches
+            // 
+            this.ckbxExcludeIrrelevantBatches.AutoSize = true;
+            this.ckbxExcludeIrrelevantBatches.Checked = true;
+            this.ckbxExcludeIrrelevantBatches.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ckbxExcludeIrrelevantBatches.Location = new System.Drawing.Point(13, 64);
+            this.ckbxExcludeIrrelevantBatches.Name = "ckbxExcludeIrrelevantBatches";
+            this.ckbxExcludeIrrelevantBatches.Size = new System.Drawing.Size(158, 17);
+            this.ckbxExcludeIrrelevantBatches.TabIndex = 7;
+            this.ckbxExcludeIrrelevantBatches.Text = "Exclude Irrelevant Batches";
+            this.ckbxExcludeIrrelevantBatches.UseVisualStyleBackColor = true;
+            this.ckbxExcludeIrrelevantBatches.CheckedChanged += new System.EventHandler(this.ckbxExcludeIrrelevantBatches_CheckedChanged);
+            // 
+            // nudMctcRunNumber
+            // 
+            this.nudMctcRunNumber.Location = new System.Drawing.Point(92, 27);
+            this.nudMctcRunNumber.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudMctcRunNumber.Name = "nudMctcRunNumber";
+            this.nudMctcRunNumber.Size = new System.Drawing.Size(54, 22);
+            this.nudMctcRunNumber.TabIndex = 8;
+            this.nudMctcRunNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.nudMctcRunNumber.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudMctcRunNumber.ValueChanged += new System.EventHandler(this.nudMctcRunNumber_ValueChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(10, 29);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(76, 13);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "Mctc Run No.";
+            // 
+            // tbMctcRunNumber
+            // 
+            this.tbMctcRunNumber.AutoSize = false;
+            this.tbMctcRunNumber.Location = new System.Drawing.Point(152, 28);
+            this.tbMctcRunNumber.Minimum = 1;
+            this.tbMctcRunNumber.Name = "tbMctcRunNumber";
+            this.tbMctcRunNumber.Size = new System.Drawing.Size(212, 21);
+            this.tbMctcRunNumber.TabIndex = 1;
+            this.tbMctcRunNumber.Value = 1;
+            this.tbMctcRunNumber.Scroll += new System.EventHandler(this.tbMctcRunNumber_Scroll);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.ckbxExcludeIrrelevantBatches);
+            this.groupBox1.Controls.Add(this.tcMctcDetails);
+            this.groupBox1.Controls.Add(this.tbMctcRunNumber);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.nudMctcRunNumber);
+            this.groupBox1.Location = new System.Drawing.Point(182, 27);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(1169, 87);
+            this.groupBox1.TabIndex = 13;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "MCTC";
+            // 
+            // tcMctcDetails
+            // 
+            this.tcMctcDetails.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tcMctcDetails.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tcMctcDetails.Location = new System.Drawing.Point(370, 12);
+            this.tcMctcDetails.MultiSelect = true;
+            this.tcMctcDetails.Name = "tcMctcDetails";
+            this.tcMctcDetails.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
+            this.tcMctcDetails.Size = new System.Drawing.Size(792, 69);
+            this.tcMctcDetails.TabIndex = 9;
             // 
             // FrmReadMctc
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1363, 766);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btnPlotAndTabulate);
             this.Controls.Add(this.tvCaseSelection);
@@ -392,16 +401,17 @@
             this.menuStrip.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabpageDetailed.ResumeLayout(false);
-            this.tabpageOverview.ResumeLayout(false);
-            this.tabpageOverview.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.tabpageOverview.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nudMctcRunNumber)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbMctcRunNumber)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -429,12 +439,12 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabpageDetailed;
         private System.Windows.Forms.TabPage tabpageOverview;
-        private System.Windows.Forms.TrackBar trackBar1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TrackBar tbMctcRunNumber;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
         private System.Windows.Forms.NumericUpDown nudMctcRunNumber;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private CustomControls.TableControl tcMctcDetails;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.GroupBox groupBox1;
     }
 }

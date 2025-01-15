@@ -1,4 +1,5 @@
-﻿using DatabaseReader.Definitions;
+﻿using DatabaseReader.CustomControls;
+using DatabaseReader.Definitions;
 using DatabaseReader.Definitions.Modelling;
 using DatabaseReader.Definitions.Persistence;
 using DatabaseReader.Definitions.UI;
@@ -6,6 +7,7 @@ using DatabaseReader.Enums;
 using DatabaseReader.Enums.Modelling;
 using DatabaseReader.Events;
 using DatabaseReader.Helpers;
+using DevExpress.Utils.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,6 +15,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace DatabaseReader
@@ -21,12 +24,15 @@ namespace DatabaseReader
     {
         private string _directory;
         private List<string> _files;
-        private List<Batch> _batches;
-        private List<ModelVariable> _modelVariables;
         private ContextMenu _contextMenu;
         private DataFile _dataFile;
+
+        private List<Batch> _batches;
+        private List<ModelVariable> _allModelVariables;
+        private Dictionary<ModelVariable, List<ModelVariable>> _selectedModelVariables;
         private MctcPlotSettings _mctcPlotSettings;
         private List<MctcVariable> _mctcVariables;
+        private int _mctcRunIndex;
 
         public FrmReadMctc()
         {
@@ -42,6 +48,10 @@ namespace DatabaseReader
             tcBatchDetails.TableRowSelected += tcPlotInfo_RowSelected;
             ccMctcPlot.ChartPointSelected += ccMctcPlot_ChartPointSelected;
             ccMctcPlot.ClearPlot();
+
+            var panelType = tableLayoutPanel.GetType();
+            PropertyInfo info = panelType.GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance);
+            info.SetValue(tableLayoutPanel, true);
         }
 
         private void ccMctcPlot_ChartPointSelected(object sender, ChartPointSelectedEventArgs e)
@@ -111,7 +121,7 @@ namespace DatabaseReader
             }
 
             _batches = null;
-            _modelVariables = null;
+            _allModelVariables = null;
             _mctcVariables = null;
             _dataFile = null;
 
@@ -145,17 +155,13 @@ namespace DatabaseReader
             if (_batches != null)
                 ReadModelVariables();
 
-            if (_modelVariables != null)
+            if (_allModelVariables != null)
                 ReadMctcResults();
 
             Cursor = Cursors.Default;
 
-            _modelVariables?.RemoveAll(mv => mv.Batch.IsAllFailed());
+            _allModelVariables?.RemoveAll(mv => mv.Batch.IsAllFailed());
             _batches?.RemoveAll(b => b.IsAllFailed());
-
-            _dataFile = new DataFile();
-            _dataFile.Batches = _batches;
-            _dataFile.ModelVariables = _modelVariables;
 
             PopulateUI();
         }
@@ -194,7 +200,9 @@ namespace DatabaseReader
             PopulateTreeView_PhaseModelsOnly();
 
             nudMctcRunNumber.Maximum = _mctcVariables.FirstOrDefault().Values.Count;
+            tbMctcRunNumber.Maximum = (int)nudMctcRunNumber.Maximum;
             nudMctcRunNumber.Value = 1;
+            tbMctcRunNumber.Value = 1;
 
             // keeping UI Fixed
             var allNodes = tvCaseSelection.GetAllNodes();
@@ -206,7 +214,7 @@ namespace DatabaseReader
 
                 tvCaseSelection.AfterCheck += tvCaseSelection_AfterCheck;
 
-                RefreshPlotAndTable();
+                RefreshSinglePlotAndTable();
             }
         }
 
@@ -243,8 +251,8 @@ namespace DatabaseReader
         private void PopulateTreeView_PhaseModelsOnly()
         {
             tvCaseSelection.Nodes.Clear();
-            if (_modelVariables == null || _modelVariables.Count == 0 || _batches.Count == 0) return;
-            var allPhases = _modelVariables.Select(v => v.Phase).ToList();
+            if (_allModelVariables == null || _allModelVariables.Count == 0 || _batches.Count == 0) return;
+            var allPhases = _allModelVariables.Select(v => v.Phase).ToList();
             var phases = allPhases.Distinct();
 
             foreach (var phase in phases)
@@ -338,7 +346,7 @@ namespace DatabaseReader
             if (lines == null || lines.Count == 0) return;
 
             lines = CleanAndSplitLine(lines[0], includeDot: false);
-            _modelVariables = new List<ModelVariable>();
+            _allModelVariables = new List<ModelVariable>();
             for (int i = 0; i < lines.Count; i++)
             {
                 var varData = lines[i].Split(new char[] { '(', ')', 'b', '-' }).ToList();
@@ -354,29 +362,31 @@ namespace DatabaseReader
                 modelVariable.ObsVal = DoubleExtensions.GetDoubleValueFromText(lines[i]);
 
                 modelVariable.Batch.ModelVariables.Add(modelVariable);
-                _modelVariables.Add(modelVariable);
+                _allModelVariables.Add(modelVariable);
             }
         }
 
         private void ReadMctcResults()
         {
-            var lines = ReadFileLines("-dr");
-            if (lines == null || lines.Count == 0) return;
+            var allLines = ReadFileLines("-dr");
+            if (allLines == null || allLines.Count == 0) return;
 
             var splitters = new char[] { '{', '}', '*', '(', ')', '\t', '"', ',', ';' };
-            var allRange = Enumerable.Range(0, lines.Count);
+            var allRange = Enumerable.Range(0, allLines.Count);
 
-            _mctcVariables = GetMctcVariables(lines);
+            _mctcVariables = GetMctcVariables(allLines);
             if (_mctcVariables == null || _mctcVariables.Count == 0) return;
 
-            var resultsStartIndex = allRange.Where(i => lines[i].Contains("cw")).ToList();
+            var resultsStartIndex = allRange.Where(i => allLines[i].Contains("cw")).ToList();
+            var mctcVarValueEndIndex = allRange.Where(i => allLines[i].Contains("nw")).ToList();
             for (int i = 0; i < resultsStartIndex.Count; i++)
             {
-                var line = lines[resultsStartIndex[i]].Split(splitters).ToList();
-                line.RemoveAll(l => string.IsNullOrWhiteSpace(l));
+                var valsLine = string.Join("", allLines.GetRange(resultsStartIndex[i], mctcVarValueEndIndex[i] - resultsStartIndex[i]).ToArray());
+                var valsLines = valsLine.Split(splitters).ToList();
+                valsLines.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
-                for (int j = 1; j < line.Count; j++)
-                    _mctcVariables.FirstOrDefault(v => v.Index == j - 1).Values.Add(DoubleExtensions.GetDoubleValueFromText(line[j].Trim()));
+                for (int j = 1; j < valsLines.Count; j++)
+                    _mctcVariables.FirstOrDefault(v => v.Index == j - 1).Values.Add(DoubleExtensions.GetDoubleValueFromText(valsLines[j].Trim()));
             }
 
             for (int i = 0; i < _batches.Count; i++)
@@ -385,14 +395,14 @@ namespace DatabaseReader
 
                 string batchKey = $"(* {batch.Index} *)";
                 string nextBatchKey = $"(* {batch.Index + 1} *)";
-                var batchLineIndexes = allRange.Where(j => lines[j].Contains(batchKey)).ToList();
-                var nextBatchLineIndexes = allRange.Where(j => lines[j].Contains(nextBatchKey)).ToList();
+                var batchLineIndexes = allRange.Where(j => allLines[j].Contains(batchKey)).ToList();
+                var nextBatchLineIndexes = allRange.Where(j => allLines[j].Contains(nextBatchKey)).ToList();
 
                 // what data is in lines[batchLinesIndx[0]]? phase proportions?
                 string modVarNameLine = string.Empty;
                 int cutoff = nextBatchLineIndexes.Count == 0 ? resultsStartIndex[0] - 2 : nextBatchLineIndexes[0] - 1;
                 for (int j = batchLineIndexes[0]; j < cutoff; j++)
-                    modVarNameLine += lines[j + 1];
+                    modVarNameLine += allLines[j + 1];
 
                 var modVarNameLines = modVarNameLine.Split(splitters).ToList();
                 modVarNameLines.RemoveAll(l => string.IsNullOrWhiteSpace(l));
@@ -402,12 +412,12 @@ namespace DatabaseReader
                     string modVarValueLine = string.Empty;
 
                     if (nextBatchLineIndexes.Count == 0)
-                        cutoff = resultsStartIndex.Count == k + 1 ? lines.Count - 1 : resultsStartIndex[k + 1];
+                        cutoff = resultsStartIndex.Count == k + 1 ? allLines.Count - 1 : resultsStartIndex[k + 1];
                     else
                         cutoff = nextBatchLineIndexes[1 + k];
 
                     for (int j = batchLineIndexes[1 + k]; j < cutoff; j++)
-                        modVarValueLine += lines[j];
+                        modVarValueLine += allLines[j];
 
                     var modVarValueLines = modVarValueLine.Split(splitters).ToList();
                     modVarValueLines.RemoveAll(l => string.IsNullOrWhiteSpace(l));
@@ -439,7 +449,7 @@ namespace DatabaseReader
                     var otherModelVars = batch.ModelVariables.Except(modelVarsInResults).ToList();
                     foreach (var modelVar in otherModelVars)
                     {
-                        _modelVariables.Remove(modelVar);
+                        _allModelVariables.Remove(modelVar);
                         batch.ModelVariables.Remove(modelVar);
                     }
                 }
@@ -526,60 +536,156 @@ namespace DatabaseReader
             ccMctcPlot.ClearPlot();
             tcBatchDetails.ClearTable();
 
-            if (_modelVariables == null) return;
+            if (_allModelVariables == null) return;
             var checkedNodes = tvCaseSelection.GetCheckedNodes();
             if (!checkedNodes.Any()) return;
 
             var modelVarNodes = checkedNodes.Where(n => n.Tag is ModelVariable).ToList();
             if (!modelVarNodes.Any()) return;
 
-            int currentSelectedIndex = cmbxModelVariable.SelectedIndex;
-            var currentSelectedItem = cmbxModelVariable.SelectedItem as ModelVariable;
             cmbxModelVariable.Items.Clear();
             foreach (var item in modelVarNodes)
                 cmbxModelVariable.Items.Add(item.Tag);
 
+            // preparing for overview
+            _selectedModelVariables = new Dictionary<ModelVariable, List<ModelVariable>>();
+            foreach (ModelVariable modelVariable in cmbxModelVariable.Items)
+            {
+                if (modelVariable == null) continue;
+                var modelVarList = _allModelVariables.Where(mv => mv.Name == modelVariable.Name).ToList();
+                _selectedModelVariables.Add(modelVariable, modelVarList);
+            }
+
+            //
+            int currentSelectedIndex = cmbxModelVariable.SelectedIndex;
+            var currentSelectedItem = cmbxModelVariable.SelectedItem as ModelVariable;
             bool indexCondition = currentSelectedIndex < cmbxModelVariable.Items.Count && currentSelectedIndex >= 0;
             bool phaseCondition = currentSelectedItem != null && currentSelectedItem.Phase == (modelVarNodes[0].Tag as ModelVariable).Phase;
             if (indexCondition && phaseCondition)
                 cmbxModelVariable.SelectedIndex = currentSelectedIndex;
             else
                 cmbxModelVariable.SelectedIndex = 0;
+
+            FillMctcDetailsTable();
+            PrepareTableLayoutPanel();
+            PlotAll();
+        }
+
+        private void PrepareTableLayoutPanel()
+        {
+            var panel = tableLayoutPanel;
+            panel.Controls.Clear();
+
+            panel.ColumnCount = 3;
+            panel.RowCount = (int)Math.Ceiling(_selectedModelVariables.Count * 1.0 / tableLayoutPanel.ColumnCount);
+
+            panel.ColumnStyles.Clear();
+            panel.RowStyles.Clear();
+
+            for (int i = 0; i < panel.ColumnCount; ++i)
+                panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+
+            for (int i = 0; i < panel.RowCount; ++i)
+                panel.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
         }
 
         private void cmbxModelVariable_SelectedIndexChanged(object sender, EventArgs e)
         {
-            RefreshPlotAndTable();
+            RefreshSinglePlotAndTable();
         }
 
-        private void RefreshPlotAndTable()
+        private void RefreshSinglePlotAndTable()
         {
             tcBatchDetails.TableRowSelected -= tcPlotInfo_RowSelected;
             ccMctcPlot.ChartPointSelected -= ccMctcPlot_ChartPointSelected;
 
-            PlotAndTabulate();
+            PlotAndTabulate_SingleDetailed();
 
             tcBatchDetails.TableRowSelected += tcPlotInfo_RowSelected;
             ccMctcPlot.ChartPointSelected += ccMctcPlot_ChartPointSelected;
         }
 
-        private void PlotAndTabulate()
+        private void PlotAll(bool useCurrentCharts = false)
+        {
+            if (!useCurrentCharts)
+                tableLayoutPanel.Controls.Clear();
+
+            int counter = 0;
+            for (int i = 0; i < tableLayoutPanel.RowCount; i++)
+            {
+                for (int j = 0; j < tableLayoutPanel.ColumnCount; j++)
+                {
+                    if (counter >= _selectedModelVariables.Count) break;
+                    var modelVars = _selectedModelVariables.ElementAt(counter).Value;
+
+                    ChartControl chartControl = new ChartControl();
+                    if (useCurrentCharts)
+                        chartControl = tableLayoutPanel.GetControlFromPosition(j, i) as ChartControl;
+                    
+                    if (!useCurrentCharts || chartControl == null)
+                    {
+                        chartControl = new ChartControl();
+                        chartControl.Dock = DockStyle.Fill;
+                        tableLayoutPanel.Controls.Add(chartControl, j, i);
+                    }
+
+                    bool isSuccessful = PlotInChartControl(chartControl, modelVars, _mctcRunIndex, false);
+                    if (!isSuccessful)
+                        tableLayoutPanel.Controls.Remove(chartControl);
+
+                    counter++;
+                }
+            }
+        }
+
+        private void PlotAndTabulate_SingleDetailed()
         {
             if (!(cmbxModelVariable.SelectedItem is ModelVariable selectedModelVar)) return;
 
             // getting all instances of the selected model variable
-            var modelVars = _modelVariables.Where(mv => mv.Name == selectedModelVar.Name).ToList();
+            var modelVars = _selectedModelVariables.FirstOrDefault(x => x.Key.Phase == selectedModelVar.Phase && x.Key.VariableType == selectedModelVar.VariableType).Value;
             if (modelVars.Count == 0) return;
 
-            #region Plot
-            // categorizing based on batch phase assemblage
-            var modelVarGroups = modelVars.GroupBy(mv => mv.Batch.GetPhaseAssemblageString()).ToList();
-            var chartModel = new ChartModel();
-            chartModel.Title = EnumExtensions.GetDescriptionFromValue(modelVars.FirstOrDefault().Phase);
-            chartModel.XAxisLabel = $"Observed {selectedModelVar}";
-            chartModel.YAxisLabel = $"Calculated {selectedModelVar}";
-            chartModel.HasEqualDimensions = true;
+            var isSuccessful = PlotInChartControl(ccMctcPlot, modelVars, _mctcRunIndex, true);
+            if (!isSuccessful)
+            {
+                ccMctcPlot.ClearPlot();
+                tcBatchDetails.ClearTable();
+                return;
+            }
 
+            #region Table
+            var columns = new List<string>() { "#", "Obs", "Calc", "Err%", "Assemblage", "Batch", "P [kbar]", "T [°C]" };
+            var rows = new List<List<object>>();
+            int counter = 1;
+            var groups = GroupModelVars(modelVars);
+            foreach (var mvar in modelVars.Where(x => groups.Any(g => g.Contains(x)) && x.CalcVals.ContainsKey(_mctcRunIndex)))
+            {
+                var row = new List<object>
+                {
+                    counter++.ToString("000"),
+                    mvar.ObsVal,
+                    mvar.CalcVals[_mctcRunIndex],
+                    Math.Round(100.0 * Math.Abs(1.0 - mvar.CalcVals[_mctcRunIndex] / mvar.ObsVal), 1),
+                    mvar.Batch.GetPhaseAssemblageString(),
+                    mvar.Batch,
+                    mvar.Batch.ExperimentalRun.Pressure,
+                    mvar.Batch.ExperimentalRun.Temperature
+                };
+
+                rows.Add(row);
+            }
+
+            tcBatchDetails.ClearTable();
+            tcBatchDetails.FillTable(columns, rows);
+            tcBatchDetails.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            tcBatchDetails.MultiSelect = false;
+            #endregion
+        }
+
+        private List<IGrouping<string, ModelVariable>> GroupModelVars(List<ModelVariable> modelVars)
+        {
+            var modelVarGroups = modelVars.GroupBy(mv => mv.Batch.GetPhaseAssemblageString()).ToList();
             var selectedGroups = new List<IGrouping<string, ModelVariable>>();
             if (ckbxExcludeIrrelevantBatches.Checked)
             {
@@ -606,16 +712,23 @@ namespace DatabaseReader
             else
                 selectedGroups = modelVarGroups;
 
+            return selectedGroups;
+        }
+
+        private bool PlotInChartControl(ChartControl chartControl, List<ModelVariable> modelVars, int mctcRunIndex, bool EqualDimensions)
+        {
+            var selectedGroups = GroupModelVars(modelVars);
             if (selectedGroups.Count == 0)
-            {
-                ccMctcPlot.ClearPlot();
-                tcBatchDetails.ClearTable();
-                return;
-            }
+                return false;
+
+            var chartModel = new ChartModel();
+            chartModel.Title = EnumExtensions.GetDescriptionFromValue(modelVars.FirstOrDefault().Phase);
+            chartModel.XAxisLabel = $"Observed {modelVars.FirstOrDefault()}";
+            chartModel.YAxisLabel = $"Calculated {modelVars.FirstOrDefault()}";
+            chartModel.HasEqualDimensions = EqualDimensions;
 
             int colorIndex = 0;
             int markerIndex = 0;
-            int mctcRunIndex = (int)nudMctcRunNumber.Value - 1;
             foreach (var modelVarGroup in selectedGroups)
             {
                 var curve = new CurveModel();
@@ -640,12 +753,8 @@ namespace DatabaseReader
                 chartModel.Curves.Add(curve);
             }
 
-            if (!chartModel.Curves.Any())
-            {
-                ccMctcPlot.ClearPlot();
-                tcBatchDetails.ClearTable();
-                return;
-            }
+            if (chartModel.Curves.Count == 0 || chartModel.Curves.Any(c => c.Xvals.Count == 0) || chartModel.Curves.Any(c => c.Yvals.Count == 0))
+                return false;
 
             // x = y line
             var xyCurve = new CurveModel();
@@ -660,20 +769,20 @@ namespace DatabaseReader
             xyCurve.LineWidth = 2;
             xyCurve.CurveType = Enums.UI.CurveType.FixedLine;
             chartModel.Curves.Add(xyCurve);
-            ccMctcPlot.Plot(chartModel);
+            chartControl.Plot(chartModel);
 
             // scaling
-            var axisX = ccMctcPlot.Chart.GraphPane.XAxis;
+            var axisX = chartControl.Chart.GraphPane.XAxis;
             axisX.Scale.Min = minVal;
             axisX.Scale.Max = maxVal;
-            var axisY = ccMctcPlot.Chart.GraphPane.YAxis;
+            var axisY = chartControl.Chart.GraphPane.YAxis;
             axisY.Scale.Min = minVal;
             axisY.Scale.Max = maxVal;
             axisY.MajorGrid.IsZeroLine = false;
-            ccMctcPlot.Chart.Refresh();
+            chartControl.Chart.Refresh();
 
             // settings
-            ccMctcPlot.UseLabelFiltering = true;
+            chartControl.UseLabelFiltering = true;
 
             var filterPureOnly = "Only Pure Phases";
             var filterSolutionOnly = "Only Solution Phases";
@@ -696,57 +805,22 @@ namespace DatabaseReader
                 solutionPhasesString.Add(currentPhase.ToString());
                 specialFilters.Add(filterPureOnly, purePhasesOnlyString);
                 specialFilters.Add(filterSolutionOnly, solutionPhasesString);
-                ccMctcPlot.SpecialFilters = specialFilters;
-            }
-            #endregion
-
-            #region Table
-            var columns = new List<string>() { "#", "Obs", "Calc", "Err%", "Assemblage", "Batch", "P [kbar]", "T [°C]" };
-
-            var rows = new List<List<object>>();
-            int counter = 1;
-            foreach (var mvar in modelVars)
-            {
-                if (!mvar.CalcVals.ContainsKey(mctcRunIndex))
-                    continue;
-
-                var row = new List<object>
-                {
-                    counter++.ToString("000"),
-                    mvar.ObsVal,
-                    mvar.CalcVals[mctcRunIndex],
-                    Math.Round(100.0 * Math.Abs(1.0 - mvar.CalcVals[mctcRunIndex] / mvar.ObsVal), 1),
-                    mvar.Batch.GetPhaseAssemblageString(),
-                    mvar.Batch,
-                    mvar.Batch.ExperimentalRun.Pressure,
-                    mvar.Batch.ExperimentalRun.Temperature
-                };
-
-                rows.Add(row);
+                chartControl.SpecialFilters = specialFilters;
             }
 
-            tcBatchDetails.ClearTable();
-            tcBatchDetails.FillTable(columns, rows);
-            tcBatchDetails.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            tcBatchDetails.MultiSelect = false;
-
-            // mctc details
-            columns = new List<string>();
-            var _row = new List<object>();
-
-            foreach (var mctcVar in _mctcVariables)
-            {
-                columns.Add(mctcVar.Name);
-                _row.Add(mctcVar.Values[mctcRunIndex]);
-            }
-
-            tcMctcDetails.ClearTable();
-            tcMctcDetails.FillTable(columns, new List<List<object>>() { _row });
-            #endregion
+            return true;
         }
 
         private void SaveAsJSON(string fileName)
         {
+            _dataFile = new DataFile();
+            _dataFile.Batches = _batches;
+            _dataFile.AllModelVariables = _allModelVariables;
+            //_dataFile.SelectedModelVariables = _selectedModelVariables;
+            _dataFile.MctcVariables = _mctcVariables;
+            //_dataFile.MctcPlotSettings = _mctcPlotSettings;
+            //_dataFile.MctcRunIndex = _mctcRunIndex;
+
             var jsonSettings = new JsonSerializerSettings();
             jsonSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             jsonSettings.NullValueHandling = NullValueHandling.Ignore;
@@ -761,14 +835,19 @@ namespace DatabaseReader
             var json = File.ReadAllText(fileName);
             _dataFile = JsonConvert.DeserializeObject<DataFile>(json);
             _batches = _dataFile.Batches;
-            _modelVariables = _dataFile.ModelVariables;
+            _allModelVariables = _dataFile.AllModelVariables;
+            //_selectedModelVariables = _dataFile.SelectedModelVariables;
+            _mctcVariables = _dataFile.MctcVariables;
+            //_mctcPlotSettings = _dataFile.MctcPlotSettings;
+            //_mctcRunIndex = _dataFile.MctcRunIndex;
 
             PopulateUI();
         }
 
         private void ckbxExcludeIrrelevantBatches_CheckedChanged(object sender, EventArgs e)
         {
-            RefreshPlotAndTable();
+            RefreshSinglePlotAndTable();
+            PlotAll(true);
         }
 
         private void tsmOpen_Click(object sender, EventArgs e)
@@ -779,7 +858,7 @@ namespace DatabaseReader
             ccMctcPlot.ClearPlot();
             tvCaseSelection.Nodes.Clear();
             _batches = null;
-            _modelVariables = null;
+            _allModelVariables = null;
             _dataFile = null;
 
             OpenFileDialog openDialog = new OpenFileDialog();
@@ -812,7 +891,7 @@ namespace DatabaseReader
                 if (settingDialog.ShowDialog() == DialogResult.OK)
                 {
                     _mctcPlotSettings = settingDialog.Settings;
-                    RefreshPlotAndTable();
+                    RefreshSinglePlotAndTable();
                 }
             }
         }
@@ -830,7 +909,37 @@ namespace DatabaseReader
 
         private void nudMctcRunNumber_ValueChanged(object sender, EventArgs e)
         {
-            RefreshPlotAndTable();
+            tbMctcRunNumber.Value = (int)nudMctcRunNumber.Value;
+            FillMctcDetailsTable();
+
+            RefreshSinglePlotAndTable();
+            PlotAll(true);
+        }
+
+        private void tbMctcRunNumber_Scroll(object sender, EventArgs e)
+        {
+            nudMctcRunNumber.Value = tbMctcRunNumber.Value;
+            FillMctcDetailsTable();
+
+            RefreshSinglePlotAndTable();
+            PlotAll(true);
+        }
+
+        private void FillMctcDetailsTable()
+        {
+            _mctcRunIndex = (int)nudMctcRunNumber.Value - 1;
+
+            var columns = new List<string>();
+            var _row = new List<object>();
+
+            foreach (var mctcVar in _mctcVariables)
+            {
+                columns.Add(mctcVar.Name);
+                _row.Add(mctcVar.Values[_mctcRunIndex]);
+            }
+
+            tcMctcDetails.ClearTable();
+            tcMctcDetails.FillTable(columns, new List<List<object>>() { _row });
         }
     }
 }
