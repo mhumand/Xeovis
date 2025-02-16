@@ -349,13 +349,13 @@ namespace DatabaseReader
             _allModelVariables = new List<ModelVariable>();
             for (int i = 0; i < lines.Count; i++)
             {
-                var varData = lines[i].Split(new char[] { '(', ')', 'b', '-' }).ToList();
+                var varData = lines[i].Split(new char[] { '(', ')', '-' }).ToList();
                 varData.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
                 var modelVariable = new ModelVariable();
                 modelVariable.Phase = PhaseTypeExtensions.GetPhaseTypeByName(varData[1]);
                 modelVariable.VariableType = EnumExtensions.GetValueFromDescription<ModelVariableType>(varData[0]);
-                int.TryParse(varData[2], out int batchIndex);
+                int.TryParse(varData[2].TrimStart(new char[] {'b'}), out int batchIndex);
                 modelVariable.Batch = _batches.FirstOrDefault(b => b.Index == batchIndex);
 
                 i++;
