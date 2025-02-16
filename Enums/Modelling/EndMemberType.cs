@@ -2,6 +2,7 @@
 {
     public enum EndMemberType
     {
+        None,
         ab,
         abh,
         acm,
@@ -57,5 +58,10 @@
         ts,
         usp,
         zo
+    }
+
+    public static class EndMemberTypeExtensions
+    {
+
     }
 }

@@ -54,8 +54,11 @@
             this.nudMctcRunNumber = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.tbMctcRunNumber = new System.Windows.Forms.TrackBar();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabPageMCTC = new System.Windows.Forms.TabPage();
             this.tcMctcDetails = new DatabaseReader.CustomControls.TableControl();
+            this.nudLayoutColumnCount = new System.Windows.Forms.NumericUpDown();
+            this.label4 = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabpageDetailed.SuspendLayout();
@@ -66,7 +69,9 @@
             this.tabpageOverview.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudMctcRunNumber)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbMctcRunNumber)).BeginInit();
-            this.groupBox1.SuspendLayout();
+            this.tabControl2.SuspendLayout();
+            this.tabPageMCTC.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudLayoutColumnCount)).BeginInit();
             this.SuspendLayout();
             // 
             // tvCaseSelection
@@ -77,7 +82,7 @@
             this.tvCaseSelection.FullRowSelect = true;
             this.tvCaseSelection.Location = new System.Drawing.Point(12, 56);
             this.tvCaseSelection.Name = "tvCaseSelection";
-            this.tvCaseSelection.Size = new System.Drawing.Size(164, 698);
+            this.tvCaseSelection.Size = new System.Drawing.Size(164, 716);
             this.tvCaseSelection.TabIndex = 1;
             this.tvCaseSelection.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.tvCaseSelection_AfterCheck);
             this.tvCaseSelection.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tvCaseSelection_MouseClick);
@@ -186,7 +191,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabpageDetailed);
             this.tabControl1.Controls.Add(this.tabpageOverview);
-            this.tabControl1.Location = new System.Drawing.Point(182, 120);
+            this.tabControl1.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tabControl1.Location = new System.Drawing.Point(182, 138);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(1169, 634);
@@ -220,7 +226,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.tcBatchDetails);
             this.splitContainer1.Panel2.Controls.Add(this.label3);
             this.splitContainer1.Size = new System.Drawing.Size(1155, 602);
-            this.splitContainer1.SplitterDistance = 602;
+            this.splitContainer1.SplitterDistance = 540;
             this.splitContainer1.TabIndex = 9;
             // 
             // label1
@@ -248,7 +254,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ccMctcPlot.Location = new System.Drawing.Point(3, 32);
             this.ccMctcPlot.Name = "ccMctcPlot";
-            this.ccMctcPlot.Size = new System.Drawing.Size(596, 593);
+            this.ccMctcPlot.Size = new System.Drawing.Size(534, 535);
             this.ccMctcPlot.TabIndex = 4;
             this.ccMctcPlot.UseLabelFiltering = false;
             // 
@@ -257,12 +263,13 @@
             this.tcBatchDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.tcBatchDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tcBatchDetails.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tcBatchDetails.Location = new System.Drawing.Point(12, 25);
+            this.tcBatchDetails.Location = new System.Drawing.Point(12, 32);
             this.tcBatchDetails.MultiSelect = true;
             this.tcBatchDetails.Name = "tcBatchDetails";
             this.tcBatchDetails.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
-            this.tcBatchDetails.Size = new System.Drawing.Size(524, 537);
+            this.tcBatchDetails.Size = new System.Drawing.Size(586, 564);
             this.tcBatchDetails.TabIndex = 8;
             // 
             // label3
@@ -270,9 +277,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(9, 9);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(73, 13);
+            this.label3.Size = new System.Drawing.Size(76, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "Batch Details";
+            this.label3.Text = "Batch Details:";
             // 
             // tabpageOverview
             // 
@@ -280,7 +287,7 @@
             this.tabpageOverview.Location = new System.Drawing.Point(4, 22);
             this.tabpageOverview.Name = "tabpageOverview";
             this.tabpageOverview.Padding = new System.Windows.Forms.Padding(3);
-            this.tabpageOverview.Size = new System.Drawing.Size(1161, 623);
+            this.tabpageOverview.Size = new System.Drawing.Size(1161, 608);
             this.tabpageOverview.TabIndex = 1;
             this.tabpageOverview.Text = "Overview";
             this.tabpageOverview.UseVisualStyleBackColor = true;
@@ -299,7 +306,7 @@
             this.tableLayoutPanel.RowCount = 2;
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(1155, 617);
+            this.tableLayoutPanel.Size = new System.Drawing.Size(1155, 602);
             this.tableLayoutPanel.TabIndex = 0;
             // 
             // ckbxExcludeIrrelevantBatches
@@ -307,7 +314,7 @@
             this.ckbxExcludeIrrelevantBatches.AutoSize = true;
             this.ckbxExcludeIrrelevantBatches.Checked = true;
             this.ckbxExcludeIrrelevantBatches.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbxExcludeIrrelevantBatches.Location = new System.Drawing.Point(13, 64);
+            this.ckbxExcludeIrrelevantBatches.Location = new System.Drawing.Point(147, 57);
             this.ckbxExcludeIrrelevantBatches.Name = "ckbxExcludeIrrelevantBatches";
             this.ckbxExcludeIrrelevantBatches.Size = new System.Drawing.Size(158, 17);
             this.ckbxExcludeIrrelevantBatches.TabIndex = 7;
@@ -317,7 +324,7 @@
             // 
             // nudMctcRunNumber
             // 
-            this.nudMctcRunNumber.Location = new System.Drawing.Point(92, 27);
+            this.nudMctcRunNumber.Location = new System.Drawing.Point(85, 21);
             this.nudMctcRunNumber.Minimum = new decimal(new int[] {
             1,
             0,
@@ -337,7 +344,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 29);
+            this.label2.Location = new System.Drawing.Point(5, 23);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(76, 13);
             this.label2.TabIndex = 6;
@@ -346,7 +353,7 @@
             // tbMctcRunNumber
             // 
             this.tbMctcRunNumber.AutoSize = false;
-            this.tbMctcRunNumber.Location = new System.Drawing.Point(152, 28);
+            this.tbMctcRunNumber.Location = new System.Drawing.Point(147, 22);
             this.tbMctcRunNumber.Minimum = 1;
             this.tbMctcRunNumber.Name = "tbMctcRunNumber";
             this.tbMctcRunNumber.Size = new System.Drawing.Size(212, 21);
@@ -354,40 +361,88 @@
             this.tbMctcRunNumber.Value = 1;
             this.tbMctcRunNumber.Scroll += new System.EventHandler(this.tbMctcRunNumber_Scroll);
             // 
-            // groupBox1
+            // tabControl2
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tabControl2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.ckbxExcludeIrrelevantBatches);
-            this.groupBox1.Controls.Add(this.tcMctcDetails);
-            this.groupBox1.Controls.Add(this.tbMctcRunNumber);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.nudMctcRunNumber);
-            this.groupBox1.Location = new System.Drawing.Point(182, 27);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1169, 87);
-            this.groupBox1.TabIndex = 13;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "MCTC";
+            this.tabControl2.Controls.Add(this.tabPageMCTC);
+            this.tabControl2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tabControl2.Location = new System.Drawing.Point(182, 27);
+            this.tabControl2.Name = "tabControl2";
+            this.tabControl2.SelectedIndex = 0;
+            this.tabControl2.Size = new System.Drawing.Size(1169, 109);
+            this.tabControl2.TabIndex = 14;
+            // 
+            // tabPageMCTC
+            // 
+            this.tabPageMCTC.Controls.Add(this.ckbxExcludeIrrelevantBatches);
+            this.tabPageMCTC.Controls.Add(this.tcMctcDetails);
+            this.tabPageMCTC.Controls.Add(this.nudLayoutColumnCount);
+            this.tabPageMCTC.Controls.Add(this.nudMctcRunNumber);
+            this.tabPageMCTC.Controls.Add(this.tbMctcRunNumber);
+            this.tabPageMCTC.Controls.Add(this.label4);
+            this.tabPageMCTC.Controls.Add(this.label2);
+            this.tabPageMCTC.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tabPageMCTC.Location = new System.Drawing.Point(4, 22);
+            this.tabPageMCTC.Name = "tabPageMCTC";
+            this.tabPageMCTC.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageMCTC.Size = new System.Drawing.Size(1161, 83);
+            this.tabPageMCTC.TabIndex = 0;
+            this.tabPageMCTC.Text = "MCTC";
+            this.tabPageMCTC.UseVisualStyleBackColor = true;
             // 
             // tcMctcDetails
             // 
             this.tcMctcDetails.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.tcMctcDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tcMctcDetails.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tcMctcDetails.Location = new System.Drawing.Point(370, 12);
+            this.tcMctcDetails.Location = new System.Drawing.Point(365, 3);
             this.tcMctcDetails.MultiSelect = true;
             this.tcMctcDetails.Name = "tcMctcDetails";
             this.tcMctcDetails.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
-            this.tcMctcDetails.Size = new System.Drawing.Size(792, 69);
+            this.tcMctcDetails.Size = new System.Drawing.Size(790, 77);
             this.tcMctcDetails.TabIndex = 9;
+            // 
+            // nudLayoutColumnCount
+            // 
+            this.nudLayoutColumnCount.Location = new System.Drawing.Point(85, 55);
+            this.nudLayoutColumnCount.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nudLayoutColumnCount.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudLayoutColumnCount.Name = "nudLayoutColumnCount";
+            this.nudLayoutColumnCount.Size = new System.Drawing.Size(54, 22);
+            this.nudLayoutColumnCount.TabIndex = 8;
+            this.nudLayoutColumnCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.nudLayoutColumnCount.Value = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.nudLayoutColumnCount.ValueChanged += new System.EventHandler(this.nudLayoutColumnCount_ValueChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 58);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(73, 13);
+            this.label4.TabIndex = 6;
+            this.label4.Text = "Columns No.";
             // 
             // FrmReadMctc
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1363, 766);
-            this.Controls.Add(this.groupBox1);
+            this.ClientSize = new System.Drawing.Size(1363, 784);
+            this.Controls.Add(this.tabControl2);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btnPlotAndTabulate);
             this.Controls.Add(this.tvCaseSelection);
@@ -410,8 +465,10 @@
             this.tabpageOverview.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nudMctcRunNumber)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbMctcRunNumber)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.tabControl2.ResumeLayout(false);
+            this.tabPageMCTC.ResumeLayout(false);
+            this.tabPageMCTC.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudLayoutColumnCount)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -445,6 +502,9 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private CustomControls.TableControl tcMctcDetails;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.TabControl tabControl2;
+        private System.Windows.Forms.TabPage tabPageMCTC;
+        private System.Windows.Forms.NumericUpDown nudLayoutColumnCount;
+        private System.Windows.Forms.Label label4;
     }
 }

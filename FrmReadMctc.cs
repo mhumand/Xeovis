@@ -567,16 +567,17 @@ namespace DatabaseReader
                 cmbxModelVariable.SelectedIndex = 0;
 
             FillMctcDetailsTable();
-            PrepareTableLayoutPanel();
+            PrepareTableLayoutPanel((int)nudLayoutColumnCount.Value);
             PlotAll();
         }
 
-        private void PrepareTableLayoutPanel()
+        private void PrepareTableLayoutPanel(int columnCount)
         {
+            if (_selectedModelVariables == null || _selectedModelVariables.Count == 0) return;
             var panel = tableLayoutPanel;
             panel.Controls.Clear();
 
-            panel.ColumnCount = 3;
+            panel.ColumnCount = columnCount;
             panel.RowCount = (int)Math.Ceiling(_selectedModelVariables.Count * 1.0 / tableLayoutPanel.ColumnCount);
 
             panel.ColumnStyles.Clear();
@@ -607,6 +608,7 @@ namespace DatabaseReader
 
         private void PlotAll(bool useCurrentCharts = false)
         {
+            if (_selectedModelVariables == null || _selectedModelVariables.Count == 0) return;
             if (!useCurrentCharts)
                 tableLayoutPanel.Controls.Clear();
 
@@ -618,7 +620,7 @@ namespace DatabaseReader
                     if (counter >= _selectedModelVariables.Count) break;
                     var modelVars = _selectedModelVariables.ElementAt(counter).Value;
 
-                    ChartControl chartControl = new ChartControl();
+                    var chartControl = new ChartControl();
                     if (useCurrentCharts)
                         chartControl = tableLayoutPanel.GetControlFromPosition(j, i) as ChartControl;
                     
@@ -750,16 +752,18 @@ namespace DatabaseReader
                 curve.MarkerColor = color;
                 curve.MarkerType = ChartUtilities.GetMarkerType(markerIndex);
                 curve.MarkerSize = 10;
-                chartModel.Curves.Add(curve);
+
+                if (curve.Xvals.Count > 0 && curve.Yvals.Count > 0)
+                    chartModel.Curves.Add(curve);
             }
 
-            if (chartModel.Curves.Count == 0 || chartModel.Curves.Any(c => c.Xvals.Count == 0) || chartModel.Curves.Any(c => c.Yvals.Count == 0))
+            if (chartModel.Curves.Count == 0 || chartModel.Curves.All(c => c.Xvals.Count == 0) || chartModel.Curves.All(c => c.Yvals.Count == 0))
                 return false;
 
             // x = y line
             var xyCurve = new CurveModel();
-            double minVal = Math.Min(chartModel.Curves.Min(c => c.Xvals.Min()), chartModel.Curves.Min(c => c.Yvals.Min()));
-            double maxVal = Math.Max(chartModel.Curves.Max(c => c.Xvals.Max()), chartModel.Curves.Max(c => c.Yvals.Max()));
+            double minVal = Math.Min(chartModel.Curves.Where(c => c.Xvals.Count > 0).Min(c => c.Xvals.Min()), chartModel.Curves.Where(c => c.Yvals.Count > 0).Min(c => c.Yvals.Min()));
+            double maxVal = Math.Max(chartModel.Curves.Where(c => c.Xvals.Count > 0).Max(c => c.Xvals.Max()), chartModel.Curves.Where(c => c.Yvals.Count > 0).Max(c => c.Yvals.Max()));
             double difference = maxVal - minVal;
             minVal -= difference * 0.05;
             maxVal += difference * 0.05;
@@ -881,7 +885,10 @@ namespace DatabaseReader
 
         private void tsmVariableDefinitions_Click(object sender, EventArgs e)
         {
-
+            using (var dialog = new FrmVariableDefinitions())
+            {
+                dialog.ShowDialog();
+            }
         }
 
         private void tsmPlotSettings_Click(object sender, EventArgs e)
@@ -940,6 +947,12 @@ namespace DatabaseReader
 
             tcMctcDetails.ClearTable();
             tcMctcDetails.FillTable(columns, new List<List<object>>() { _row });
+        }
+
+        private void nudLayoutColumnCount_ValueChanged(object sender, EventArgs e)
+        {
+            PrepareTableLayoutPanel((int)nudLayoutColumnCount.Value);
+            PlotAll(true);
         }
     }
 }

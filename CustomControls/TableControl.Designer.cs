@@ -57,7 +57,7 @@
             this.dgvTable.RowHeadersVisible = false;
             this.dgvTable.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dgvTable.ShowEditingIcon = false;
-            this.dgvTable.Size = new System.Drawing.Size(596, 595);
+            this.dgvTable.Size = new System.Drawing.Size(594, 593);
             this.dgvTable.TabIndex = 0;
             this.dgvTable.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvTable_CellMouseDoubleClick);
             this.dgvTable.SelectionChanged += new System.EventHandler(this.dgvTable_SelectionChanged);
@@ -67,11 +67,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.Controls.Add(this.dgvTable);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TableControl";
-            this.Size = new System.Drawing.Size(596, 595);
+            this.Size = new System.Drawing.Size(594, 593);
             ((System.ComponentModel.ISupportInitialize)(this.dgvTable)).EndInit();
             this.ResumeLayout(false);
 

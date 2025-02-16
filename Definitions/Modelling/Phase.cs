@@ -10,7 +10,7 @@ namespace DatabaseReader.Definitions
         public PhaseType Type { get; set; }
         public PhaseState State { get; set; }
         public List<string> OtherNames { get; set; }
-        public List<EndMember> EndMembers { get; set; }
+        //public List<EndMember> EndMembers { get; set; }
         public List<OxideType> Oxides { get; set; }
         public List<double> Composition { get; set; }
         public double Total {  get; set; }
@@ -28,7 +28,7 @@ namespace DatabaseReader.Definitions
             Type = PhaseTypeExtensions.GetPhaseTypeByName(Name);
             Composition = new List<double>();
             Oxides = new List<OxideType>();
-            EndMembers = new List<EndMember>();
+            //EndMembers = new List<EndMember>();
             OtherNames = new List<string>();
         }
 

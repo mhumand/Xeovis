@@ -657,16 +657,15 @@ namespace DatabaseReader
             tcADPhaseCompSummary.ClearTable();
 
             var Columns = new List<string>() { "#", "Study", "Run", "T (°C)", "P (kbar)", "All Phases" };
-            var oxides = Enum.GetValues(typeof(OxideType));
+            var oxides = Enum.GetValues(typeof(OxideType)).Cast<OxideType>().Except(new List<OxideType> { OxideType.None });
             foreach (var oxide in oxides)
                 Columns.Add(oxide.ToString());
 
             var Rows = new List<List<object>>();
             int counter = 1;
             int expCounter = 0;
-            foreach (var item in cmbxExperiments.Items)
+            foreach (Experiment exp in cmbxExperiments.Items)
             {
-                var exp = item as Experiment;
                 var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(cmbxDMAdvancedPhaseList.SelectedItem.ToString());
 
                 var allInstances = new List<Phase>();
@@ -689,7 +688,7 @@ namespace DatabaseReader
 
                     foreach (var oxide in oxides)
                     {
-                        var index = phaseInstance.Oxides.IndexOf((OxideType)oxide);
+                        var index = phaseInstance.Oxides.IndexOf(oxide);
                         if (index >= 0)
                             row.Add(phaseInstance.Composition[index].Round(4));
                         else
@@ -707,7 +706,12 @@ namespace DatabaseReader
             lblPhaseDetail.Text = $"{expCounter} studies \t {counter - 1} runs.";
 
             // composition summary
-            if (Rows.Count == 0) return;
+            if (Rows.Count == 0)
+            {
+                Cursor = Cursors.Default;
+                return;
+            }
+
             var table = tcAdvancedDataManager.DataTable;
 
             var rows = new List<List<object>>();
@@ -726,7 +730,7 @@ namespace DatabaseReader
             minRow[0] = "Minimum";
 
             int preIndex = avgRow.Count;
-            for (int i = 0; i < oxides.Length; i++)
+            for (int i = 0; i < oxides.Count(); i++)
             {
                 var vals = new List<double>();
                 for (int j = 0; j < Rows.Count; j++)
@@ -741,7 +745,7 @@ namespace DatabaseReader
             rows.Add(maxRow);
             rows.Add(minRow);
 
-            var columns = Columns.GetRange(6, oxides.Length);
+            var columns = Columns.GetRange(6, oxides.Count());
             columns.Insert(0, " ");
             tcADPhaseCompSummary.FillTable(columns, rows);
 

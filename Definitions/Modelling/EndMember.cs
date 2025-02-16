@@ -6,7 +6,7 @@ namespace DatabaseReader.Definitions
     {
         public string Name { get; set; }
         public EndMemberType Type { get; set; }
-        public Phase OwnerPhase { get; set; }
+        public Phase Phase { get; set; }
         public string Formula { get; set; }
         public bool IsOrderEndMember { get; set; }
 

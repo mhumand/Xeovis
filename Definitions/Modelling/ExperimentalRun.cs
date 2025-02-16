@@ -33,6 +33,7 @@ namespace DatabaseReader.Definitions
             Phases = new List<Phase>();
             BulkComposition = new List<double>();
             BulkOxides = new List<OxideType>();
+            ReadingIndex = -999;
         }
 
         public string GetPhaseAssemblageString(List<Phase> excludingPhases = null)

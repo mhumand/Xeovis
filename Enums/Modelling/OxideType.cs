@@ -66,5 +66,12 @@ namespace DatabaseReader.Enums
                     return CationType.None;
             }
         }
+
+        public static bool IsCommon(this OxideType type)
+        {
+            return type == OxideType.SiO2 || type == OxideType.Al2O3 || type == OxideType.TiO2 || type == OxideType.FeO
+                || type == OxideType.Fe2O3 || type == OxideType.Cr2O3 || type == OxideType.CaO || type == OxideType.MgO || type == OxideType.MnO
+                || type == OxideType.Na2O || type == OxideType.K2O || type == OxideType.NiO || type == OxideType.P2O5;
+        }
     }
 }

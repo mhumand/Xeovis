@@ -274,10 +274,10 @@ namespace DatabaseReader.Enums
                 case "ol":
                 case "olivine":
                     return PhaseType.ol;
+                case "sp":
                 case "spn":
                 case "spinel":
                     return PhaseType.spn;
-                case "sp":
                 case "sph":
                 case "sphene":
                 case "titanie":

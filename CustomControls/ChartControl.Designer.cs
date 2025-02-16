@@ -35,9 +35,7 @@
             // 
             // zgChart
             // 
-            this.zgChart.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.zgChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.zgChart.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.zgChart.Location = new System.Drawing.Point(0, 0);
             this.zgChart.Name = "zgChart";

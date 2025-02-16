@@ -127,6 +127,7 @@
     </Compile>
     <Compile Include="Definitions\Modelling\DefaultModelDefinitions.cs" />
     <Compile Include="Definitions\Modelling\DefaultPhaseCompositions.cs" />
+    <Compile Include="Definitions\xEOS\EnergyParameter.cs" />
     <Compile Include="Definitions\Persistence\Batch.cs" />
     <Compile Include="Definitions\Modelling\EndMember.cs" />
     <Compile Include="Definitions\Modelling\Experiment.cs" />
@@ -136,10 +137,10 @@
     <Compile Include="Definitions\Modelling\SubsetRun.cs" />
     <Compile Include="Definitions\Modelling\SubsetSettings.cs" />
     <Compile Include="Definitions\Persistence\DataFile.cs" />
+    <Compile Include="Definitions\xEOS\XEOS.cs" />
     <Compile Include="Definitions\UI\ChartModel.cs" />
     <Compile Include="Definitions\UI\CurveModel.cs" />
     <Compile Include="Enums\Modelling\CationType.cs" />
-    <Compile Include="Enums\Modelling\EndMemberAttributeType.cs" />
     <Compile Include="Enums\Modelling\EndMemberType.cs" />
     <Compile Include="Enums\Modelling\ModelVariableType.cs" />
     <Compile Include="Enums\Modelling\OxideType.cs" />
@@ -181,6 +182,12 @@
     <Compile Include="FrmReadMctc.Designer.cs">
       <DependentUpon>FrmReadMctc.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmVariableDefinitions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmVariableDefinitions.Designer.cs">
+      <DependentUpon>FrmVariableDefinitions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\ChartUtilities.cs" />
     <Compile Include="Helpers\DoubleExtensions.cs" />
     <Compile Include="Helpers\EnumExtensions.cs" />
@@ -208,6 +215,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmReadMctc.resx">
       <DependentUpon>FrmReadMctc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmVariableDefinitions.resx">
+      <DependentUpon>FrmVariableDefinitions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -39,7 +39,7 @@
             this.btnDataManager.Name = "btnDataManager";
             this.btnDataManager.Size = new System.Drawing.Size(283, 84);
             this.btnDataManager.TabIndex = 0;
-            this.btnDataManager.Text = "Data Manager";
+            this.btnDataManager.Text = "Database Reader";
             this.btnDataManager.UseVisualStyleBackColor = true;
             this.btnDataManager.Click += new System.EventHandler(this.btnDataManager_Click);
             // 
@@ -64,7 +64,7 @@
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Database Reader";
+            this.Text = "xEOS Toolbox";
             this.ResumeLayout(false);
 
         }
