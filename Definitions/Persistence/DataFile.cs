@@ -12,6 +12,7 @@ namespace DatabaseReader.Definitions.Persistence
         public MctcPlotSettings MctcPlotSettings;
         public List<MctcVariable> MctcVariables;
         public int MctcRunIndex;
+        public ProjectSettings ProjectSettings { get; set; }
 
         public DataFile()
         {
@@ -20,6 +21,7 @@ namespace DatabaseReader.Definitions.Persistence
             SelectedModelVariables = new Dictionary<ModelVariable, List<ModelVariable>>();
             MctcPlotSettings = new MctcPlotSettings();
             MctcVariables = new List<MctcVariable>();
+            ProjectSettings = new ProjectSettings();
         }
     }
 }

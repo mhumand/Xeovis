@@ -13,6 +13,8 @@ namespace DatabaseReader.Definitions
         public Batch Batch { get; set; }
         public PhaseType Phase { get; set; }
         public ModelVariableType VariableType { get; set; }
+        public double DefaultValue { get; set; }
+        public bool IsOrderVariable => ModelVariableTypeExtensions.IsOrderVariable(VariableType);
 
         public ModelVariable()
         {

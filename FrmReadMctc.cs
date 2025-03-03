@@ -7,7 +7,6 @@ using DatabaseReader.Enums;
 using DatabaseReader.Enums.Modelling;
 using DatabaseReader.Events;
 using DatabaseReader.Helpers;
-using DevExpress.Utils.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -26,6 +25,7 @@ namespace DatabaseReader
         private List<string> _files;
         private ContextMenu _contextMenu;
         private DataFile _dataFile;
+        private ProjectSettings _projectSettings;
 
         private List<Batch> _batches;
         private List<ModelVariable> _allModelVariables;
@@ -44,6 +44,7 @@ namespace DatabaseReader
         {
             MakeContextMenu();
             _mctcPlotSettings = new MctcPlotSettings();
+            _projectSettings = new ProjectSettings();
             tvCaseSelection.ContextMenu = _contextMenu;
             tcBatchDetails.TableRowSelected += tcPlotInfo_RowSelected;
             ccMctcPlot.ChartPointSelected += ccMctcPlot_ChartPointSelected;
@@ -114,6 +115,14 @@ namespace DatabaseReader
 
         private void tsmReadMCTC_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(_directory))
+                if (!ShowDirectoryBrowsingDialog()) return;
+
+            ReadMCTCDirectoryAndPopulateUI();
+        }
+
+        private void ReadMCTCDirectoryAndPopulateUI()
+        {
             if (!tsmFixedUIOnReading.Checked)
             {
                 tcBatchDetails.ClearTable();
@@ -125,27 +134,6 @@ namespace DatabaseReader
             _mctcVariables = null;
             _dataFile = null;
 
-            if (string.IsNullOrWhiteSpace(_directory))
-            {
-                var dialog = new FolderBrowserDialog();
-                dialog.Description = "Select the directory that contains THERMOCALC MTCT output txt files.";
-                dialog.SelectedPath = "H:\\My Drive\\PhD @ Unimelb\\PhD\\PhD - Project\\Project - Calculations\\set_up_fitting\\TC RUN";
-                if (dialog.ShowDialog() == DialogResult.Cancel)
-                {
-                    return;
-                }
-
-                _directory = dialog.SelectedPath;
-            }
-
-            if (!Directory.Exists(_directory))
-            {
-                MessageBox.Show("Directory does not exist.");
-                _directory = null;
-                return;
-            }
-
-            //RunThermocalc();
             _files = Directory.GetFiles(_directory).ToList();
 
             Cursor = Cursors.WaitCursor;
@@ -163,33 +151,33 @@ namespace DatabaseReader
             _allModelVariables?.RemoveAll(mv => mv.Batch.IsAllFailed());
             _batches?.RemoveAll(b => b.IsAllFailed());
 
+            if (_mctcVariables == null) return;
             PopulateUI();
         }
 
-        private void RunThermocalc()
+        private bool ShowDirectoryBrowsingDialog()
         {
-            // Use ProcessStartInfo class
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.CreateNoWindow = false;
-            startInfo.UseShellExecute = true;
-            startInfo.FileName = _directory + "\\tc355aWin.exe";
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            //startInfo.Verb = "runas";
+            var dialog = new FolderBrowserDialog();
+            dialog.Description = "Select the directory that contains THERMOCALC MTCT output txt files.";
+            dialog.SelectedPath = "H:\\My Drive\\PhD @ Unimelb\\PhD\\PhD - Project\\Project - Calculations\\set_up_fitting\\TC RUN";
+            if (dialog.ShowDialog() == DialogResult.Cancel)
+                return false;
 
-            try
+            if (!Directory.Exists(dialog.SelectedPath))
             {
-                // Start the process with the info we specified.
-                // Call WaitForExit and then the using statement will close.
-                using (Process exeProcess = Process.Start(startInfo))
-                {
-                    exeProcess.WaitForExit();
-                    //string output = exeProcess.StandardOutput.ReadToEnd();
-                }
+                MessageBox.Show("Directory does not exist.");
+                _directory = null;
+                return false;
             }
-            catch
-            {
-                // Log error.
-            }
+
+            _directory = dialog.SelectedPath;
+            return true;
+        }
+
+        private void tsmResetMCTCDirectory_Click(object sender, EventArgs e)
+        {
+            _directory = null;
+            tsmReadMCTC.PerformClick();
         }
 
         private void PopulateUI()
@@ -723,11 +711,14 @@ namespace DatabaseReader
             if (selectedGroups.Count == 0)
                 return false;
 
+            var modelVar = modelVars.FirstOrDefault();
             var chartModel = new ChartModel();
-            chartModel.Title = EnumExtensions.GetDescriptionFromValue(modelVars.FirstOrDefault().Phase);
-            chartModel.XAxisLabel = $"Observed {modelVars.FirstOrDefault()}";
-            chartModel.YAxisLabel = $"Calculated {modelVars.FirstOrDefault()}";
+            //chartModel.Title = EnumExtensions.GetDescriptionFromValue(modelVars.FirstOrDefault().Phase);
+            chartModel.Title = modelVar + " ~ " + string.Join(" & ", DefaultModelDefinitions.GetCationsFromModelVariable(modelVar.Phase, modelVar.VariableType).ToArray());
+            chartModel.XAxisLabel = $"Observed {modelVar}";
+            chartModel.YAxisLabel = $"Calculated {modelVar}";
             chartModel.HasEqualDimensions = EqualDimensions;
+            chartModel.IsLegendVisible = _mctcPlotSettings.IsLegendVisible;
 
             int colorIndex = 0;
             int markerIndex = 0;
@@ -824,6 +815,7 @@ namespace DatabaseReader
             _dataFile.MctcVariables = _mctcVariables;
             //_dataFile.MctcPlotSettings = _mctcPlotSettings;
             //_dataFile.MctcRunIndex = _mctcRunIndex;
+            _dataFile.ProjectSettings = _projectSettings;
 
             var jsonSettings = new JsonSerializerSettings();
             jsonSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -844,6 +836,7 @@ namespace DatabaseReader
             _mctcVariables = _dataFile.MctcVariables;
             //_mctcPlotSettings = _dataFile.MctcPlotSettings;
             //_mctcRunIndex = _dataFile.MctcRunIndex;
+            _projectSettings = _dataFile.ProjectSettings;
 
             PopulateUI();
         }
@@ -885,7 +878,7 @@ namespace DatabaseReader
 
         private void tsmVariableDefinitions_Click(object sender, EventArgs e)
         {
-            using (var dialog = new FrmVariableDefinitions())
+            using (var dialog = new FrmVariableDefinitions(_projectSettings))
             {
                 dialog.ShowDialog();
             }
@@ -899,14 +892,9 @@ namespace DatabaseReader
                 {
                     _mctcPlotSettings = settingDialog.Settings;
                     RefreshSinglePlotAndTable();
+                    PlotAll();
                 }
             }
-        }
-
-        private void tsmResetMCTCDirectory_Click(object sender, EventArgs e)
-        {
-            _directory = null;
-            tsmReadMCTC.PerformClick();
         }
 
         private void tsmFile_DropDownOpening(object sender, EventArgs e)
@@ -954,5 +942,53 @@ namespace DatabaseReader
             PrepareTableLayoutPanel((int)nudLayoutColumnCount.Value);
             PlotAll(true);
         }
+
+        private void tsmCalibration_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(_directory))
+                if (!ShowDirectoryBrowsingDialog()) return;
+
+            var successful = RunThermocalc();
+
+            if (successful)
+                ReadMCTCDirectoryAndPopulateUI();
+        }
+
+        private bool RunThermocalc()
+        {
+            /// Use ProcessStartInfo class
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            //startInfo.CreateNoWindow = false;
+            //startInfo.UseShellExecute = true;
+            startInfo.FileName = _directory + "\\tc355aWin.exe";
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.WorkingDirectory = _directory;
+            //startInfo.Verb = "runas";
+
+            Cursor = Cursors.WaitCursor;
+            bool result = false;
+
+            try
+            {
+                /// Start the process with the info we specified.
+                /// Call WaitForExit and then the using statement will close.
+                using (Process exeProcess = Process.Start(startInfo))
+                {
+                    exeProcess.WaitForExit();
+                    //string output = exeProcess.StandardOutput.ReadToEnd();
+                    result = true;
+                }
+            }
+            catch
+            {
+                // Log error.
+                result = false;
+            }
+
+            Cursor = Cursors.Default;
+            return result;
+        }
+
+
     }
 }

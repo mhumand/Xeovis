@@ -29,11 +29,14 @@ namespace DatabaseReader.Definitions.Modelling
             if (phase == PhaseType.ep)
                 return GetVariableCations_Epidote(variable);
 
-            if (phase == PhaseType.phe)
-                return GetVariableCations_Phengite(variable);
+            if (phase == PhaseType.pl)
+                return GetVariableCations_Plagioclase(variable);
 
             if (phase == PhaseType.bi)
                 return GetVariableCations_Biotite(variable);
+
+            if (phase == PhaseType.phe)
+                return GetVariableCations_Phengite(variable);
 
             return null;
         }
@@ -58,9 +61,6 @@ namespace DatabaseReader.Definitions.Modelling
                     break;
                 case ModelVariableType.t:
                     list.Add(CationType.Ti);
-                    break;
-                case ModelVariableType.mj:
-                    list.Add(CationType.Si);
                     break;
             }
 
@@ -92,8 +92,9 @@ namespace DatabaseReader.Definitions.Modelling
                 case ModelVariableType.i:
                     list.Add(CationType.Fe3);
                     break;
-                case ModelVariableType.g:
+                case ModelVariableType.m:
                     list.Add(CationType.Mg);
+                    list.Add(CationType.Fe2);
                     break;
             }
 
@@ -157,9 +158,6 @@ namespace DatabaseReader.Definitions.Modelling
                 case ModelVariableType.t:
                     list.Add(CationType.Ti);
                     break;
-                case ModelVariableType.k:
-                    list.Add(CationType.K);
-                    break;
                 case ModelVariableType.j:
                     list.Add(CationType.Na);
                     break;
@@ -199,6 +197,45 @@ namespace DatabaseReader.Definitions.Modelling
             {
                 case ModelVariableType.f:
                     list.Add(CationType.Fe3);
+                    break;
+            }
+
+            return list;
+        }
+
+        private static List<CationType> GetVariableCations_Biotite(ModelVariableType variable)
+        {
+            var list = new List<CationType>();
+            switch (variable)
+            {
+                case ModelVariableType.x:
+                    list.Add(CationType.Fe2);
+                    list.Add(CationType.Mg);
+                    break;
+                case ModelVariableType.y:
+                    list.Add(CationType.Al);
+                    break;
+                case ModelVariableType.f:
+                    list.Add(CationType.Fe3);
+                    break;
+                case ModelVariableType.t:
+                    list.Add(CationType.Ti);
+                    break;
+            }
+
+            return list;
+        }
+
+        private static List<CationType> GetVariableCations_Plagioclase(ModelVariableType variable)
+        {
+            var list = new List<CationType>();
+            switch (variable)
+            {
+                case ModelVariableType.ca:
+                    list.Add(CationType.Ca);
+                    break;
+                case ModelVariableType.k:
+                    list.Add(CationType.K);
                     break;
             }
 
@@ -249,27 +286,5 @@ namespace DatabaseReader.Definitions.Modelling
             return list;
         }
 
-        private static List<CationType> GetVariableCations_Biotite(ModelVariableType variable)
-        {
-            var list = new List<CationType>();
-            switch (variable)
-            {
-                case ModelVariableType.x:
-                    list.Add(CationType.Fe2);
-                    list.Add(CationType.Mg);
-                    break;
-                case ModelVariableType.y:
-                    list.Add(CationType.Al);
-                    break;
-                case ModelVariableType.f:
-                    list.Add(CationType.Fe3);
-                    break;
-                case ModelVariableType.t:
-                    list.Add(CationType.Ti);
-                    break;
-            }
-
-            return list;
-        }
     }
 }

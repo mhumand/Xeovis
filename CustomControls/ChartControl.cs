@@ -107,6 +107,7 @@ namespace DatabaseReader.CustomControls
             _graphPane.Legend.IsHStack = true;
             _graphPane.Legend.Border.IsVisible = false;
             _graphPane.Legend.Fill.Color = Color.Transparent;
+            _graphPane.Legend.FontSpec.Size = 10;
 
             // tics
             _graphPane.XAxis.MajorTic.IsOpposite = false;

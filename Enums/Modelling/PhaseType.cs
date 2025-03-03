@@ -210,6 +210,7 @@ namespace DatabaseReader.Enums
                 case "pl":
                 case "plag":
                 case "plagioclase":
+                case "fsp":
                     return PhaseType.pl;
                 case "ru":
                 case "rut":

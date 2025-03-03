@@ -38,12 +38,12 @@ namespace DatabaseReader.Definitions.Modelling
                 return new List<OxideType>() { OxideType.FeO, OxideType.MgO, OxideType.TiO2, OxideType.Fe2O3 };
 
             if (phaseType == PhaseType.cpx)
-                return new List<OxideType>() { OxideType.SiO2, OxideType.Na2O, OxideType.CaO, OxideType.MgO, OxideType.FeO, OxideType.Al2O3, OxideType.Fe2O3, OxideType.TiO2, OxideType.Cr2O3 };
+                return new List<OxideType>() { OxideType.SiO2, OxideType.Na2O, OxideType.K2O, OxideType.CaO, OxideType.MgO, OxideType.FeO, OxideType.Al2O3, OxideType.Fe2O3, OxideType.TiO2, OxideType.Cr2O3 };
 
             if (phaseType == PhaseType.opx)
-                return new List<OxideType>() { OxideType.SiO2, OxideType.Na2O, OxideType.K2O, OxideType.CaO, OxideType.FeO, OxideType.Al2O3, OxideType.Fe2O3, OxideType.TiO2, OxideType.Cr2O3 };
+                return new List<OxideType>() { OxideType.SiO2, OxideType.Na2O, OxideType.MgO, OxideType.CaO, OxideType.FeO, OxideType.Al2O3, OxideType.Fe2O3, OxideType.TiO2, OxideType.Cr2O3 };
 
-            if (phaseType == PhaseType.sph)
+            if (phaseType == PhaseType.spn)
                 return new List<OxideType>() { OxideType.MgO, OxideType.FeO, OxideType.Al2O3, OxideType.Fe2O3, OxideType.Cr2O3, OxideType.TiO2 };
 
             if (phaseType == PhaseType.ep)
@@ -51,6 +51,9 @@ namespace DatabaseReader.Definitions.Modelling
 
             if (phaseType == PhaseType.bi)
                 return new List<OxideType>() { OxideType.SiO2, OxideType.K2O, OxideType.FeO, OxideType.MgO, OxideType.TiO2, OxideType.Fe2O3, OxideType.Al2O3, OxideType.H2O };
+
+            if (phaseType == PhaseType.pl)
+                return new List<OxideType>() { OxideType.SiO2, OxideType.CaO, OxideType.Na2O, OxideType.K2O, OxideType.Al2O3 };
 
             return null;
         }

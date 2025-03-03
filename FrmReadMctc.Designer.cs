@@ -40,13 +40,13 @@
             this.tsmVariableDefinitions = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmPlotSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmFixedUIOnReading = new System.Windows.Forms.ToolStripMenuItem();
+            this.calibrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmCalibration = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabpageDetailed = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.label1 = new System.Windows.Forms.Label();
             this.cmbxModelVariable = new System.Windows.Forms.ComboBox();
-            this.ccMctcPlot = new DatabaseReader.CustomControls.ChartControl();
-            this.tcBatchDetails = new DatabaseReader.CustomControls.TableControl();
             this.label3 = new System.Windows.Forms.Label();
             this.tabpageOverview = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -56,9 +56,11 @@
             this.tbMctcRunNumber = new System.Windows.Forms.TrackBar();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPageMCTC = new System.Windows.Forms.TabPage();
-            this.tcMctcDetails = new DatabaseReader.CustomControls.TableControl();
             this.nudLayoutColumnCount = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
+            this.tcMctcDetails = new DatabaseReader.CustomControls.TableControl();
+            this.ccMctcPlot = new DatabaseReader.CustomControls.ChartControl();
+            this.tcBatchDetails = new DatabaseReader.CustomControls.TableControl();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabpageDetailed.SuspendLayout();
@@ -101,7 +103,8 @@
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmFile,
-            this.tsmSettings});
+            this.tsmSettings,
+            this.calibrationToolStripMenuItem});
             this.menuStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
@@ -166,14 +169,14 @@
             // tsmVariableDefinitions
             // 
             this.tsmVariableDefinitions.Name = "tsmVariableDefinitions";
-            this.tsmVariableDefinitions.Size = new System.Drawing.Size(176, 22);
+            this.tsmVariableDefinitions.Size = new System.Drawing.Size(180, 22);
             this.tsmVariableDefinitions.Text = "Variables Definition";
             this.tsmVariableDefinitions.Click += new System.EventHandler(this.tsmVariableDefinitions_Click);
             // 
             // tsmPlotSettings
             // 
             this.tsmPlotSettings.Name = "tsmPlotSettings";
-            this.tsmPlotSettings.Size = new System.Drawing.Size(176, 22);
+            this.tsmPlotSettings.Size = new System.Drawing.Size(180, 22);
             this.tsmPlotSettings.Text = "Plot Settings";
             this.tsmPlotSettings.Click += new System.EventHandler(this.tsmPlotSettings_Click);
             // 
@@ -181,8 +184,25 @@
             // 
             this.tsmFixedUIOnReading.CheckOnClick = true;
             this.tsmFixedUIOnReading.Name = "tsmFixedUIOnReading";
-            this.tsmFixedUIOnReading.Size = new System.Drawing.Size(176, 22);
+            this.tsmFixedUIOnReading.Size = new System.Drawing.Size(180, 22);
             this.tsmFixedUIOnReading.Text = "Fixed UI on reading";
+            // 
+            // calibrationToolStripMenuItem
+            // 
+            this.calibrationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmCalibration});
+            this.calibrationToolStripMenuItem.Name = "calibrationToolStripMenuItem";
+            this.calibrationToolStripMenuItem.Size = new System.Drawing.Size(97, 20);
+            this.calibrationToolStripMenuItem.Text = "THERMOCALC";
+            // 
+            // tsmCalibration
+            // 
+            this.tsmCalibration.Name = "tsmCalibration";
+            this.tsmCalibration.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.C)));
+            this.tsmCalibration.Size = new System.Drawing.Size(206, 22);
+            this.tsmCalibration.Text = "Calibration";
+            this.tsmCalibration.Click += new System.EventHandler(this.tsmCalibration_Click);
             // 
             // tabControl1
             // 
@@ -247,30 +267,6 @@
             this.cmbxModelVariable.Size = new System.Drawing.Size(121, 21);
             this.cmbxModelVariable.TabIndex = 5;
             this.cmbxModelVariable.SelectedIndexChanged += new System.EventHandler(this.cmbxModelVariable_SelectedIndexChanged);
-            // 
-            // ccMctcPlot
-            // 
-            this.ccMctcPlot.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ccMctcPlot.Location = new System.Drawing.Point(3, 32);
-            this.ccMctcPlot.Name = "ccMctcPlot";
-            this.ccMctcPlot.Size = new System.Drawing.Size(534, 535);
-            this.ccMctcPlot.TabIndex = 4;
-            this.ccMctcPlot.UseLabelFiltering = false;
-            // 
-            // tcBatchDetails
-            // 
-            this.tcBatchDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tcBatchDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tcBatchDetails.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tcBatchDetails.Location = new System.Drawing.Point(12, 32);
-            this.tcBatchDetails.MultiSelect = true;
-            this.tcBatchDetails.Name = "tcBatchDetails";
-            this.tcBatchDetails.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
-            this.tcBatchDetails.Size = new System.Drawing.Size(586, 564);
-            this.tcBatchDetails.TabIndex = 8;
             // 
             // label3
             // 
@@ -391,19 +387,6 @@
             this.tabPageMCTC.Text = "MCTC";
             this.tabPageMCTC.UseVisualStyleBackColor = true;
             // 
-            // tcMctcDetails
-            // 
-            this.tcMctcDetails.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tcMctcDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tcMctcDetails.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tcMctcDetails.Location = new System.Drawing.Point(365, 3);
-            this.tcMctcDetails.MultiSelect = true;
-            this.tcMctcDetails.Name = "tcMctcDetails";
-            this.tcMctcDetails.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
-            this.tcMctcDetails.Size = new System.Drawing.Size(790, 77);
-            this.tcMctcDetails.TabIndex = 9;
-            // 
             // nudLayoutColumnCount
             // 
             this.nudLayoutColumnCount.Location = new System.Drawing.Point(85, 55);
@@ -437,6 +420,43 @@
             this.label4.TabIndex = 6;
             this.label4.Text = "Columns No.";
             // 
+            // tcMctcDetails
+            // 
+            this.tcMctcDetails.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tcMctcDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tcMctcDetails.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tcMctcDetails.Location = new System.Drawing.Point(365, 3);
+            this.tcMctcDetails.MultiSelect = true;
+            this.tcMctcDetails.Name = "tcMctcDetails";
+            this.tcMctcDetails.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
+            this.tcMctcDetails.Size = new System.Drawing.Size(790, 77);
+            this.tcMctcDetails.TabIndex = 9;
+            // 
+            // ccMctcPlot
+            // 
+            this.ccMctcPlot.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ccMctcPlot.Location = new System.Drawing.Point(3, 32);
+            this.ccMctcPlot.Name = "ccMctcPlot";
+            this.ccMctcPlot.Size = new System.Drawing.Size(534, 535);
+            this.ccMctcPlot.TabIndex = 4;
+            this.ccMctcPlot.UseLabelFiltering = false;
+            // 
+            // tcBatchDetails
+            // 
+            this.tcBatchDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tcBatchDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tcBatchDetails.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tcBatchDetails.Location = new System.Drawing.Point(12, 32);
+            this.tcBatchDetails.MultiSelect = true;
+            this.tcBatchDetails.Name = "tcBatchDetails";
+            this.tcBatchDetails.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
+            this.tcBatchDetails.Size = new System.Drawing.Size(586, 564);
+            this.tcBatchDetails.TabIndex = 8;
+            // 
             // FrmReadMctc
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -452,6 +472,7 @@
             this.Name = "FrmReadMctc";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Read MCTC";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.tabControl1.ResumeLayout(false);
@@ -506,5 +527,7 @@
         private System.Windows.Forms.TabPage tabPageMCTC;
         private System.Windows.Forms.NumericUpDown nudLayoutColumnCount;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ToolStripMenuItem calibrationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tsmCalibration;
     }
 }

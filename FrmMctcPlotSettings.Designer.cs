@@ -32,6 +32,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.ckbxShowLegend = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.nudTransparency)).BeginInit();
             this.SuspendLayout();
             // 
@@ -77,6 +78,16 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
+            // ckbxShowLegend
+            // 
+            this.ckbxShowLegend.AutoSize = true;
+            this.ckbxShowLegend.Location = new System.Drawing.Point(21, 55);
+            this.ckbxShowLegend.Name = "ckbxShowLegend";
+            this.ckbxShowLegend.Size = new System.Drawing.Size(94, 17);
+            this.ckbxShowLegend.TabIndex = 11;
+            this.ckbxShowLegend.Text = "Show legend";
+            this.ckbxShowLegend.UseVisualStyleBackColor = true;
+            // 
             // FrmMctcPlotSettings
             // 
             this.AcceptButton = this.btnSave;
@@ -84,6 +95,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(343, 377);
+            this.Controls.Add(this.ckbxShowLegend);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.nudTransparency);
@@ -104,5 +116,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.CheckBox ckbxShowLegend;
     }
 }

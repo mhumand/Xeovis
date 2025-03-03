@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace DatabaseReader.Enums.Modelling
 {
@@ -33,6 +35,9 @@ namespace DatabaseReader.Enums.Modelling
         [Description("Q3")]
         Q3,
 
+        [Description("Qt")]
+        Qt,
+
         [Description("f")]
         f,
 
@@ -57,7 +62,30 @@ namespace DatabaseReader.Enums.Modelling
         [Description("g")]
         g,
 
+        [Description("m")]
+        m,
+
         [Description("mj")]
-        mj
+        mj,
+
+        [Description("ca")]
+        ca,
+
+        [Description("z")]
+        z,
+
+        [Description("a")]
+        a
+
+    }
+
+    public static class ModelVariableTypeExtensions
+    {
+        public static bool IsOrderVariable(this ModelVariableType variableType)
+        {
+            var orderTypes = new List<ModelVariableType> { ModelVariableType.Q, ModelVariableType.Q1, ModelVariableType.Q2, ModelVariableType.Q3, ModelVariableType.Qt };
+
+            return orderTypes.Contains(variableType);
+        }
     }
 }

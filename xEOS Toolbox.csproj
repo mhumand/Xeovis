@@ -119,14 +119,10 @@
     <Compile Include="CustomControls\TableControl.Designer.cs">
       <DependentUpon>TableControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="CustomControls\LabelInputControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CustomControls\LabelInputControl.Designer.cs">
-      <DependentUpon>LabelInputControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Definitions\Modelling\DefaultModelDefinitions.cs" />
     <Compile Include="Definitions\Modelling\DefaultPhaseCompositions.cs" />
+    <Compile Include="Definitions\Persistence\ProjectSettings.cs" />
+    <Compile Include="Definitions\xEOS\AlphaParameter.cs" />
     <Compile Include="Definitions\xEOS\EnergyParameter.cs" />
     <Compile Include="Definitions\Persistence\Batch.cs" />
     <Compile Include="Definitions\Modelling\EndMember.cs" />
@@ -200,9 +196,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CustomControls\TableControl.resx">
       <DependentUpon>TableControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\LabelInputControl.resx">
-      <DependentUpon>LabelInputControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmDataManager.resx">
       <DependentUpon>FrmDataManager.cs</DependentUpon>

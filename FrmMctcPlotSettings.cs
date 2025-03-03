@@ -17,11 +17,13 @@ namespace DatabaseReader
         private void PrepareUI()
         {
             nudTransparency.Value = Settings.ColorTransparencyIn100;
+            ckbxShowLegend.Checked = Settings.IsLegendVisible;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
             Settings.ColorTransparencyIn100 = (int)nudTransparency.Value;
+            Settings.IsLegendVisible = ckbxShowLegend.Checked;
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -36,10 +38,11 @@ namespace DatabaseReader
     public class MctcPlotSettings
     {
         public int ColorTransparencyIn100 { get; set; }
-
+        public bool IsLegendVisible { get; set; }
         public MctcPlotSettings()
         {
             ColorTransparencyIn100 = 40;
+            IsLegendVisible = true;
         }
     }
 }
