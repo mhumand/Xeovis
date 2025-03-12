@@ -36,16 +36,24 @@
             this.cmbxPhase = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.cklbOxides = new System.Windows.Forms.CheckedListBox();
+            this.cklbxOxides = new System.Windows.Forms.CheckedListBox();
             this.lblPhaseFullName = new System.Windows.Forms.Label();
+            this.cklbxCations = new System.Windows.Forms.CheckedListBox();
+            this.tcEndmembers = new DatabaseReader.CustomControls.TableControl();
+            this.lbl5 = new System.Windows.Forms.Label();
+            this.cmbxModelVariable = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.tcEnergyParameters = new DatabaseReader.CustomControls.TableControl();
             this.SuspendLayout();
             // 
             // txtFilePath
             // 
+            this.txtFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFilePath.Location = new System.Drawing.Point(91, 12);
             this.txtFilePath.Name = "txtFilePath";
             this.txtFilePath.ReadOnly = true;
-            this.txtFilePath.Size = new System.Drawing.Size(572, 22);
+            this.txtFilePath.Size = new System.Drawing.Size(562, 22);
             this.txtFilePath.TabIndex = 0;
             // 
             // label1
@@ -59,7 +67,8 @@
             // 
             // btnBrowseAndRead
             // 
-            this.btnBrowseAndRead.Location = new System.Drawing.Point(669, 12);
+            this.btnBrowseAndRead.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBrowseAndRead.Location = new System.Drawing.Point(659, 12);
             this.btnBrowseAndRead.Name = "btnBrowseAndRead";
             this.btnBrowseAndRead.Size = new System.Drawing.Size(106, 22);
             this.btnBrowseAndRead.TabIndex = 2;
@@ -71,7 +80,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(619, 438);
+            this.btnCancel.Location = new System.Drawing.Point(609, 545);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 3;
@@ -82,7 +91,7 @@
             // btnSave
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.Location = new System.Drawing.Point(700, 438);
+            this.btnSave.Location = new System.Drawing.Point(690, 545);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 3;
@@ -118,15 +127,17 @@
             this.label3.TabIndex = 1;
             this.label3.Text = "Composition";
             // 
-            // cklbOxides
+            // cklbxOxides
             // 
-            this.cklbOxides.ColumnWidth = 60;
-            this.cklbOxides.FormattingEnabled = true;
-            this.cklbOxides.Location = new System.Drawing.Point(91, 77);
-            this.cklbOxides.MultiColumn = true;
-            this.cklbOxides.Name = "cklbOxides";
-            this.cklbOxides.Size = new System.Drawing.Size(683, 21);
-            this.cklbOxides.TabIndex = 5;
+            this.cklbxOxides.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cklbxOxides.ColumnWidth = 60;
+            this.cklbxOxides.FormattingEnabled = true;
+            this.cklbxOxides.Location = new System.Drawing.Point(91, 77);
+            this.cklbxOxides.MultiColumn = true;
+            this.cklbxOxides.Name = "cklbxOxides";
+            this.cklbxOxides.Size = new System.Drawing.Size(673, 21);
+            this.cklbxOxides.TabIndex = 5;
             // 
             // lblPhaseFullName
             // 
@@ -137,18 +148,86 @@
             this.lblPhaseFullName.TabIndex = 1;
             this.lblPhaseFullName.Text = "...";
             // 
+            // cklbxCations
+            // 
+            this.cklbxCations.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cklbxCations.ColumnWidth = 50;
+            this.cklbxCations.FormattingEnabled = true;
+            this.cklbxCations.Location = new System.Drawing.Point(221, 104);
+            this.cklbxCations.MultiColumn = true;
+            this.cklbxCations.Name = "cklbxCations";
+            this.cklbxCations.Size = new System.Drawing.Size(543, 21);
+            this.cklbxCations.TabIndex = 5;
+            // 
+            // tcEndmembers
+            // 
+            this.tcEndmembers.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tcEndmembers.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tcEndmembers.Location = new System.Drawing.Point(91, 136);
+            this.tcEndmembers.MultiSelect = true;
+            this.tcEndmembers.Name = "tcEndmembers";
+            this.tcEndmembers.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
+            this.tcEndmembers.Size = new System.Drawing.Size(242, 403);
+            this.tcEndmembers.TabIndex = 6;
+            // 
+            // lbl5
+            // 
+            this.lbl5.AutoSize = true;
+            this.lbl5.Location = new System.Drawing.Point(32, 107);
+            this.lbl5.Name = "lbl5";
+            this.lbl5.Size = new System.Drawing.Size(53, 13);
+            this.lbl5.TabIndex = 1;
+            this.lbl5.Text = "Variables";
+            // 
+            // cmbxModelVariable
+            // 
+            this.cmbxModelVariable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbxModelVariable.FormattingEnabled = true;
+            this.cmbxModelVariable.Location = new System.Drawing.Point(92, 104);
+            this.cmbxModelVariable.Name = "cmbxModelVariable";
+            this.cmbxModelVariable.Size = new System.Drawing.Size(123, 21);
+            this.cmbxModelVariable.TabIndex = 7;
+            this.cmbxModelVariable.SelectedIndexChanged += new System.EventHandler(this.cmbxModelVariable_SelectedIndexChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(22, 136);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(63, 13);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "Parameters";
+            // 
+            // tcEnergyParameters
+            // 
+            this.tcEnergyParameters.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tcEnergyParameters.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tcEnergyParameters.Location = new System.Drawing.Point(339, 136);
+            this.tcEnergyParameters.MultiSelect = true;
+            this.tcEnergyParameters.Name = "tcEnergyParameters";
+            this.tcEnergyParameters.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.RowHeaderSelect;
+            this.tcEnergyParameters.Size = new System.Drawing.Size(426, 403);
+            this.tcEnergyParameters.TabIndex = 6;
+            // 
             // FrmVariableDefinitions
             // 
             this.AcceptButton = this.btnSave;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(787, 473);
-            this.Controls.Add(this.cklbOxides);
+            this.ClientSize = new System.Drawing.Size(777, 580);
+            this.Controls.Add(this.cmbxModelVariable);
+            this.Controls.Add(this.tcEnergyParameters);
+            this.Controls.Add(this.tcEndmembers);
+            this.Controls.Add(this.cklbxCations);
+            this.Controls.Add(this.cklbxOxides);
             this.Controls.Add(this.cmbxPhase);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnBrowseAndRead);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.lbl5);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.lblPhaseFullName);
             this.Controls.Add(this.label2);
@@ -175,7 +254,13 @@
         private System.Windows.Forms.ComboBox cmbxPhase;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.CheckedListBox cklbOxides;
+        private System.Windows.Forms.CheckedListBox cklbxOxides;
         private System.Windows.Forms.Label lblPhaseFullName;
+        private System.Windows.Forms.CheckedListBox cklbxCations;
+        private CustomControls.TableControl tcEndmembers;
+        private System.Windows.Forms.Label lbl5;
+        private System.Windows.Forms.ComboBox cmbxModelVariable;
+        private System.Windows.Forms.Label label4;
+        private CustomControls.TableControl tcEnergyParameters;
     }
 }

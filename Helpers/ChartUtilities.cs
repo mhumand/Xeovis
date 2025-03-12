@@ -56,7 +56,7 @@ namespace DatabaseReader.Helpers
                 Color.Magenta,
                 Color.DeepSkyBlue,
                 Color.Black,
-                Color.Pink,
+                Color.LawnGreen,
                 Color.Olive,
             };
 

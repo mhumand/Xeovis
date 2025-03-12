@@ -19,7 +19,7 @@ namespace DatabaseReader.Definitions.UI
         public bool IsTitleVisible { get; set; }
         public bool IsXAxisLabelVisible { get; set; }
         public bool IsYAxisLabelVisible { get; set; }
-
+        public bool AutoScale {  get; set; }
         public ChartModel()
         {
             Curves = new List<CurveModel>();
@@ -29,6 +29,7 @@ namespace DatabaseReader.Definitions.UI
             IsXAxisLabelVisible = true;
             IsYAxisLabelVisible = true;
             IsTitleVisible = true;
+            AutoScale = false;
         }
     }
 }

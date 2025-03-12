@@ -113,7 +113,7 @@ namespace DatabaseReader
                         }
                         else
                             if (alphaParts.Count > 4) continue;
-                        
+
                         var alpha = new AlphaParameter();
                         alpha.Endmember = xeos.EndMembers.FirstOrDefault(em => em.Name == alphaParts[0]);
                         alpha.A = DoubleExtensions.GetDoubleValueFromText(alphaParts[1]);
@@ -134,7 +134,7 @@ namespace DatabaseReader
 
                     var variable = new ModelVariable();
                     variable.VariableType = EnumExtensions.GetValueFromDescription<ModelVariableType>(varParts[0]);
-                    variable.Phase = xeos.PhaseType;
+                    variable.PhaseType = xeos.PhaseType;
                     variable.DefaultValue = DoubleExtensions.GetDoubleValueFromText(varParts[2]);
                     xeos.Variables.Add(variable);
                 }
@@ -157,11 +157,19 @@ namespace DatabaseReader
 
         private void PopulateUI()
         {
-            var oxideList = new List<OxideType>() { OxideType.SiO2, OxideType.Al2O3, OxideType.FeO, OxideType.Fe2O3, OxideType.MgO, OxideType.K2O, OxideType.Na2O, OxideType.Cr2O3, OxideType.TiO2, OxideType.H2O };
+            var oxideList = new List<OxideType>() { OxideType.SiO2, OxideType.Al2O3, OxideType.FeO, OxideType.Fe2O3, OxideType.MgO, OxideType.CaO, OxideType.K2O, OxideType.Na2O, OxideType.Cr2O3, OxideType.TiO2, OxideType.H2O };
 
+            cklbxOxides.Items.Clear();
             foreach (var item in oxideList)
-                cklbOxides.Items.Add(item);
+                cklbxOxides.Items.Add(item);
 
+            var cationList = new List<CationType> { CationType.Si, CationType.Al, CationType.Fe2, CationType.Fe3, CationType.Mg, CationType.Ca, CationType.K, CationType.Na, CationType.Cr, CationType.Ti };
+
+            cklbxCations.Items.Clear();
+            foreach (var item in cationList)
+                cklbxCations.Items.Add(item);
+
+            cmbxPhase.Items.Clear();
             foreach (var xeos in _xeosList)
                 cmbxPhase.Items.Add(xeos);
 
@@ -170,16 +178,87 @@ namespace DatabaseReader
 
         private void cmbxPhase_SelectedIndexChanged(object sender, EventArgs e)
         {
-            for (int i = 0; i < cklbOxides.Items.Count; i++)
-                cklbOxides.SetItemCheckState(i, CheckState.Unchecked);
+            cmbxModelVariable.Items.Clear();
+            tcEndmembers.ClearTable();
+            tcEnergyParameters.ClearTable();
+            for (int i = 0; i < cklbxOxides.Items.Count; i++)
+                cklbxOxides.SetItemCheckState(i, CheckState.Unchecked);
 
             if (!(cmbxPhase.SelectedItem is XEOS xeos)) return;
             lblPhaseFullName.Text = EnumExtensions.GetDescriptionFromValue(xeos.PhaseType);
             var composition = DefaultPhaseCompositions.GetOxidesFromPhaseComposition(xeos.PhaseType);
             if (composition == null) return;
-            for (int i = 0; i < cklbOxides.Items.Count; i++)
-                if (composition.Contains((OxideType)cklbOxides.Items[i]))
-                    cklbOxides.SetItemCheckState(i, CheckState.Checked);
+            for (int i = 0; i < cklbxOxides.Items.Count; i++)
+                if (composition.Contains((OxideType)cklbxOxides.Items[i]))
+                    cklbxOxides.SetItemCheckState(i, CheckState.Checked);
+
+            foreach (var item in xeos.Variables.Where(v => !v.IsOrderVariable))
+                cmbxModelVariable.Items.Add(item);
+
+            cmbxModelVariable.SelectedIndex = 0;
+
+            TabulateEndmembersAndAlphas(xeos);
+            TabulateenergyParameters(xeos);
+        }
+
+        private void TabulateEndmembersAndAlphas(XEOS xeos)
+        {
+            if (xeos == null) return;
+            tcEndmembers.ClearTable();
+
+            var columns = new List<string>() { "endmember" };
+            var hasAlphs = xeos.Alphas.Count > 0;
+            if (hasAlphs)
+                columns.AddRange(new List<string>() { "α_A", "α_B", "α_C" });
+
+            var rows = new List<List<object>>();
+            for (int i = 0; i < xeos.EndMembers.Count; i++)
+            {
+                var row = new List<object>() { xeos.EndMembers[i].Name };
+                if (hasAlphs)
+                {
+                    var alpha = xeos.Alphas.FirstOrDefault(a => a.Endmember == xeos.EndMembers[i]);
+                    if (alpha == null) continue;
+                    row.AddRange(new List<object>() { alpha.A, alpha.B, alpha.C });
+                }
+
+                rows.Add(row);
+            }
+
+            tcEndmembers.FillTable(columns, rows);
+        }
+
+        private void TabulateenergyParameters(XEOS xeos)
+        {
+            if (xeos == null) return;
+            tcEnergyParameters.ClearTable();
+
+            var columns = new List<string>() { "Energy Parameter" };
+            columns.AddRange(new List<string>() { "W_A", "W_B", "W_C" });
+            var rows = new List<List<object>>();
+            for (int i = 0; i < xeos.Ws.Count; i++)
+            {
+                var row = new List<object>() { xeos.Ws[i] };
+                var Wij = xeos.Ws[i];
+                if (Wij == null) continue;
+                row.AddRange(new List<object>() { Wij.A, Wij.B, Wij.C });
+                rows.Add(row);
+            }
+
+            tcEnergyParameters.FillTable(columns, rows);
+        }
+
+        private void cmbxModelVariable_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            for (int i = 0; i < cklbxCations.Items.Count; i++)
+                cklbxCations.SetItemCheckState(i, CheckState.Unchecked);
+
+            if (!(cmbxModelVariable.SelectedItem is ModelVariable modelVariable)) return;
+            var cations = DefaultModelDefinitions.GetCationsFromModelVariable(modelVariable.PhaseType, modelVariable.VariableType);
+            if (cations == null) return;
+            for (int i = 0; i < cklbxCations.Items.Count; i++)
+                if (cations.Contains((CationType)cklbxCations.Items[i]))
+                    cklbxCations.SetItemCheckState(i, CheckState.Checked);
         }
     }
 }

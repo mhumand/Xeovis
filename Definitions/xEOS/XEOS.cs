@@ -1,5 +1,6 @@
 ﻿using DatabaseReader.Enums;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DatabaseReader.Definitions.xEOS
 {
@@ -17,6 +18,16 @@ namespace DatabaseReader.Definitions.xEOS
             Ws = new List<EnergyParameter>();
             Alphas = new List<AlphaParameter>();
             Variables = new List<ModelVariable>();
+        }
+
+        public EnergyParameter GetWij(EndMember endMember1, EndMember endMember2)
+        {
+            if (endMember1 == null || endMember2 == null) return null;
+            if (Ws == null || Ws.Count == 0) return null;
+            var w = Ws.FirstOrDefault(ws => (ws.Endmember1 == endMember1 && ws.Endmember2 == endMember2)
+            || (ws.Endmember1 == endMember2 && ws.Endmember2 == endMember1));
+            if (w == null) return null;
+            return w;
         }
 
         public override string ToString()

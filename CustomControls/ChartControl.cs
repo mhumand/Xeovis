@@ -21,10 +21,12 @@ namespace DatabaseReader.CustomControls
         private ContextMenuStrip _legendContextMenu;
 
         public ZedGraphControl Chart => zgChart;
-        public EventHandler<ChartPointSelectedEventArgs> ChartPointSelected;
         public List<LineObj> LineObjects;
         public bool UseLabelFiltering { get; set; }
         public Dictionary<string, List<string>> SpecialFilters;
+
+        public EventHandler<ChartPointSelectedEventArgs> ChartPointSelected;
+        public EventHandler<ChartDoubleClickedEventArgs> ChartDoubleClicked;
 
         public ChartControl()
         {
@@ -85,6 +87,7 @@ namespace DatabaseReader.CustomControls
             _graphPane.XAxis.ResetAutoScale(_graphPane, CreateGraphics());
             _graphPane.YAxis.ResetAutoScale(_graphPane, CreateGraphics());
             zgChart.Refresh();
+            Height = Width;
         }
 
         private void SetPlotStyle()
@@ -107,7 +110,8 @@ namespace DatabaseReader.CustomControls
             _graphPane.Legend.IsHStack = true;
             _graphPane.Legend.Border.IsVisible = false;
             _graphPane.Legend.Fill.Color = Color.Transparent;
-            _graphPane.Legend.FontSpec.Size = 10;
+            _graphPane.Legend.FontSpec.Size = 12;
+            _graphPane.Legend.Gap = 0.2f;
 
             // tics
             _graphPane.XAxis.MajorTic.IsOpposite = false;
@@ -129,6 +133,9 @@ namespace DatabaseReader.CustomControls
             _graphPane.XAxis.Title.FontSpec.Family = fontFamily;
             _graphPane.YAxis.Title.FontSpec.Family = fontFamily;
 
+            _graphPane.IsPenWidthScaled = _chartModel.AutoScale;
+            _graphPane.IsFontsScaled = _chartModel.AutoScale;
+
             foreach (var curve in _graphPane.CurveList)
             {
                 curve.Label.FontSpec.IsBold = true;
@@ -141,11 +148,21 @@ namespace DatabaseReader.CustomControls
         {
             if (_chartModel == null || !_chartModel.HasEqualDimensions) return;
 
-            int height = Width;
-            //if (_graphPane.Legend.IsVisible && (int)_graphPane.Legend.Rect.Height > 2 * _graphPane.Margin.Top)
-            //    height += (int)_graphPane.Legend.Rect.Height;
+            var legendHeight = _graphPane.Legend.Rect.Height;
+            var legendWidth = _graphPane.Legend.Rect.Width;
 
-            Height = height;
+            if (_graphPane.Legend.Position == LegendPos.Top || _graphPane.Legend.Position == LegendPos.TopCenter
+                || _graphPane.Legend.Position == LegendPos.Bottom || _graphPane.Legend.Position == LegendPos.BottomCenter)
+            {
+                Height = (int)(Width + legendHeight);
+            }
+            else if (_graphPane.Legend.Position == LegendPos.Left || _graphPane.Legend.Position == LegendPos.Right)
+            {
+                Height = (int)(Width - legendWidth);
+            }
+            else
+                Height = Width;
+
         }
 
         public void CrosshairSelectPoint(double X = double.NaN, double Y = double.NaN)
@@ -369,6 +386,10 @@ namespace DatabaseReader.CustomControls
             var position = (LegendPos)(sender as ToolStripMenuItem).Tag;
             _chartModel.LegendPosition = position;
             _graphPane.Legend.Position = position;
+            //if (position == LegendPos.Left || position == LegendPos.Right)
+            //    _graphPane.Legend.IsHStack = false;
+            //else
+            //    _graphPane.Legend.IsHStack = true;
             zgChart.Refresh();
         }
 
@@ -428,7 +449,7 @@ namespace DatabaseReader.CustomControls
             var filterLabelsMenu = specialFiltersMenuItem.DropDown as ToolStripDropDownMenu;
             filterLabelsMenu.ShowImageMargin = false;
             filterLabelsMenu.BackColor = menuStrip.BackColor;
-            
+
             foreach (var filter in SpecialFilters)
             {
                 var specialFilterMenuItem = new ToolStripMenuItem(filter.Key);
@@ -450,7 +471,7 @@ namespace DatabaseReader.CustomControls
             foreach (var curve in _graphPane.CurveList.Where(c => (c.Tag as CurveModel).CurveType == Enums.UI.CurveType.Normal))
             {
                 string label = curve.Label.Text;
-                var labelParts = label.Split(new char[] { ' ', ',' , '+' }).ToList();
+                var labelParts = label.Split(new char[] { ' ', ',', '+' }).ToList();
                 labelParts.RemoveAll(p => string.IsNullOrWhiteSpace(p));
                 bool mustBeShown = true;
                 foreach (var part in labelParts)
@@ -567,6 +588,11 @@ namespace DatabaseReader.CustomControls
                 e.Handled = true;
                 e.SuppressKeyPress = true;
             }
+        }
+
+        private void zgChart_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ChartDoubleClicked?.Invoke(this, new ChartDoubleClickedEventArgs(_chartModel));
         }
     }
 }

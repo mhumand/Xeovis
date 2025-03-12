@@ -151,6 +151,8 @@
     <Compile Include="Enums\Modelling\RunFilterType.cs" />
     <Compile Include="Enums\UI\CurveType.cs" />
     <Compile Include="Enums\UI\FilterType.cs" />
+    <Compile Include="Enums\UI\PlotPointsGroupingType.cs" />
+    <Compile Include="Events\ChartDoubleClickedEventArgs.cs" />
     <Compile Include="Events\ChartPointSelectedEventArgs.cs" />
     <Compile Include="Events\TableCellDoubleClickedEventArgs.cs" />
     <Compile Include="Events\TableRowSelectedEventArgs.cs" />

@@ -7,11 +7,11 @@ namespace DatabaseReader.Definitions
 {
     public class ModelVariable
     {
-        public string Name => $"{VariableType}({Phase})";
+        public string Name => $"{VariableType}({PhaseType})";
         public double ObsVal { get; set; }
         public Dictionary<int, double> CalcVals { get; set; } // int being the index of the results group
         public Batch Batch { get; set; }
-        public PhaseType Phase { get; set; }
+        public PhaseType PhaseType { get; set; }
         public ModelVariableType VariableType { get; set; }
         public double DefaultValue { get; set; }
         public bool IsOrderVariable => ModelVariableTypeExtensions.IsOrderVariable(VariableType);
