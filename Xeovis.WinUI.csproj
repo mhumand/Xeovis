@@ -262,6 +262,11 @@
   <ItemGroup>
     <None Include="Resources\ZoomReset32x32.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Xeovis.WinControls\Xeovis.WinControls.csproj">
+      <Project>{1f1d9ca8-d870-4fec-91c2-ce3578f77bbf}</Project>
+      <Name>Xeovis.WinControls</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
