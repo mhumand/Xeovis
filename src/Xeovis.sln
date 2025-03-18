@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34607.119
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xeovis.WinUI", "Xeovis.WinUI\Xeovis.WinUI.csproj", "{6A790488-BA10-409A-AECA-C80DF0DC1872}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xeovis.WinControls", "Xeovis.WinControls\Xeovis.WinControls.csproj", "{1F1D9CA8-D870-4FEC-91C2-CE3578F77BBF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6A790488-BA10-409A-AECA-C80DF0DC1872}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A790488-BA10-409A-AECA-C80DF0DC1872}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A790488-BA10-409A-AECA-C80DF0DC1872}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A790488-BA10-409A-AECA-C80DF0DC1872}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F1D9CA8-D870-4FEC-91C2-CE3578F77BBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F1D9CA8-D870-4FEC-91C2-CE3578F77BBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F1D9CA8-D870-4FEC-91C2-CE3578F77BBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F1D9CA8-D870-4FEC-91C2-CE3578F77BBF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AA10993B-1C7B-4889-A059-6893CD8A4EF1}
+	EndGlobalSection
+EndGlobal
