@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DD53AC0C-139B-46FF-996F-9F84359F9F26}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Xeovis.Domain</RootNamespace>
+    <AssemblyName>Xeovis.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Definitions\Modelling\Batch.cs" />
+    <Compile Include="Definitions\Modelling\DefaultModelDefinitions.cs" />
+    <Compile Include="Definitions\Modelling\DefaultPhaseCompositions.cs" />
+    <Compile Include="Definitions\Modelling\EndMember.cs" />
+    <Compile Include="Definitions\Modelling\Experiment.cs" />
+    <Compile Include="Definitions\Modelling\ExperimentalRun.cs" />
+    <Compile Include="Definitions\Modelling\MctcVariable.cs" />
+    <Compile Include="Definitions\Modelling\ModelVariable.cs" />
+    <Compile Include="Definitions\Modelling\Parameter.cs" />
+    <Compile Include="Definitions\Modelling\Phase.cs" />
+    <Compile Include="Definitions\Modelling\SubsetRun.cs" />
+    <Compile Include="Definitions\Modelling\SubsetSettings.cs" />
+    <Compile Include="Definitions\Modelling\ThermoProperties.cs" />
+    <Compile Include="Definitions\xEOS\AlphaParameter.cs" />
+    <Compile Include="Definitions\xEOS\EnergyParameter.cs" />
+    <Compile Include="Definitions\xEOS\XEOS.cs" />
+    <Compile Include="Enums\CationType.cs" />
+    <Compile Include="Enums\EndMemberType.cs" />
+    <Compile Include="Enums\ModelVariableType.cs" />
+    <Compile Include="Enums\OxideType.cs" />
+    <Compile Include="Enums\ParameterType.cs" />
+    <Compile Include="Enums\PhaseAttribute.cs" />
+    <Compile Include="Enums\PhaseState.cs" />
+    <Compile Include="Enums\PhaseType.cs" />
+    <Compile Include="Enums\RockType.cs" />
+    <Compile Include="Enums\RunFilterType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Xeovis.Base\Xeovis.Base.csproj">
+      <Project>{8B8509D3-6C6B-46EF-A83A-422B2146B676}</Project>
+      <Name>Xeovis.Base</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

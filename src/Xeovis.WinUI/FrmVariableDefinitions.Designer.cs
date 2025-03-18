@@ -1,4 +1,4 @@
-﻿namespace DatabaseReader
+﻿namespace Xeovis.WinUI
 {
     partial class FrmVariableDefinitions
     {
@@ -39,11 +39,11 @@
             this.cklbxOxides = new System.Windows.Forms.CheckedListBox();
             this.lblPhaseFullName = new System.Windows.Forms.Label();
             this.cklbxCations = new System.Windows.Forms.CheckedListBox();
-            this.tcEndmembers = new DatabaseReader.CustomControls.TableControl();
+            this.tcEndmembers = new WinControls.TableControl();
             this.lbl5 = new System.Windows.Forms.Label();
             this.cmbxModelVariable = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.tcEnergyParameters = new DatabaseReader.CustomControls.TableControl();
+            this.tcEnergyParameters = new WinControls.TableControl();
             this.SuspendLayout();
             // 
             // txtFilePath
@@ -257,10 +257,10 @@
         private System.Windows.Forms.CheckedListBox cklbxOxides;
         private System.Windows.Forms.Label lblPhaseFullName;
         private System.Windows.Forms.CheckedListBox cklbxCations;
-        private CustomControls.TableControl tcEndmembers;
+        private WinControls.TableControl tcEndmembers;
         private System.Windows.Forms.Label lbl5;
         private System.Windows.Forms.ComboBox cmbxModelVariable;
         private System.Windows.Forms.Label label4;
-        private CustomControls.TableControl tcEnergyParameters;
+        private WinControls.TableControl tcEnergyParameters;
     }
 }

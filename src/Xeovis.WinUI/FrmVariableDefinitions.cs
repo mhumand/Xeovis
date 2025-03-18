@@ -1,17 +1,13 @@
-﻿using DatabaseReader.Definitions;
-using DatabaseReader.Definitions.Modelling;
-using DatabaseReader.Definitions.Persistence;
-using DatabaseReader.Definitions.xEOS;
-using DatabaseReader.Enums;
-using DatabaseReader.Enums.Modelling;
-using DatabaseReader.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Xeovis.Base;
+using Xeovis.Domain;
+using Xeovis.Persistence;
 
-namespace DatabaseReader
+namespace Xeovis.WinUI
 {
     public partial class FrmVariableDefinitions : Form
     {

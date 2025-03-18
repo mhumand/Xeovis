@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace DatabaseReader
+namespace Xeovis.WinUI
 {
     public partial class FrmMain : Form
     {

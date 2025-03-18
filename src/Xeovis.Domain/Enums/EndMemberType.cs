@@ -1,0 +1,67 @@
+﻿namespace Xeovis.Domain
+{
+    public enum EndMemberType
+    {
+        None,
+        ab,
+        abh,
+        acm,
+        afchl,
+        alm,
+        ames,
+        an,
+        andr,
+        ann,
+        br,
+        cel,
+        clin,
+        coe,
+        cor,
+        crd,
+        cumm,
+        cz,
+        daph,
+        di,
+        east,
+        en,
+        ep,
+        fcel,
+        fcrd,
+        fep,
+        fs,
+        geik,
+        gl,
+        gr,
+        grun,
+        hcrd,
+        hed,
+        hem,
+        herc,
+        jd,
+        ky,
+        law,
+        ma,
+        mgts,
+        mt,
+        mu,
+        pa,
+        parg,
+        phl,
+        py,
+        q,
+        ru,
+        sph,
+        san,
+        sill,
+        sp,
+        tr,
+        ts,
+        usp,
+        zo
+    }
+
+    public static class EndMemberTypeExtensions
+    {
+
+    }
+}

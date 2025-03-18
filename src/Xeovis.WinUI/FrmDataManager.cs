@@ -1,10 +1,4 @@
-﻿using DatabaseReader.CustomControls;
-using DatabaseReader.Definitions;
-using DatabaseReader.Enums;
-using DatabaseReader.Enums.Modelling;
-using DatabaseReader.Events;
-using DatabaseReader.Helpers;
-using ExcelDataReader;
+﻿using ExcelDataReader;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,9 +6,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using static DatabaseReader.Helpers.DoubleExtensions;
+using Xeovis.Domain;
+using Xeovis.WinControls;
+using Xeovis.Base;
 
-namespace DatabaseReader
+namespace Xeovis.WinUI
 {
     public partial class FrmDataManager : Form
     {
@@ -153,19 +149,19 @@ namespace DatabaseReader
                         ExperimentalRun run = new ExperimentalRun();
 
                         if (indexIndex >= 0)
-                            run.ReadingIndex = (int)GetDoubleValueFromText(cells[indexIndex].ToString());
+                            run.ReadingIndex = (int)DoubleExtensions.GetDoubleValueFromText(cells[indexIndex].ToString());
 
                         run.Name = cells[nameIndex].ToString();
                         if (string.IsNullOrEmpty(run.Name)) continue;
 
-                        run.Pressure = GetDoubleValueFromText(cells[pressureIndex].ToString());
+                        run.Pressure = DoubleExtensions.GetDoubleValueFromText(cells[pressureIndex].ToString());
                         if (double.IsNaN(run.Pressure)) continue;
                         run.Pressure *= 10.0; //GPa to KBar
 
-                        run.Temperature = GetDoubleValueFromText(cells[temperatureIndex].ToString());
+                        run.Temperature = DoubleExtensions.GetDoubleValueFromText(cells[temperatureIndex].ToString());
                         if (double.IsNaN(run.Temperature)) continue;
 
-                        run.Duration = GetDoubleValueFromText(cells[durationIndex].ToString());
+                        run.Duration = DoubleExtensions.GetDoubleValueFromText(cells[durationIndex].ToString());
 
                         if (rocktypeIndex >= 0)
                             run.Rocktype = RockTypeExtensions.GetRockType(cells[rocktypeIndex].ToString());
@@ -188,7 +184,7 @@ namespace DatabaseReader
                             var index = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains(oxide.ToString()) && !c.ToString().Contains("err")));
                             if (index < 0) continue;
                             run.BulkOxides.Add(oxide);
-                            double value = GetDoubleValueFromText(cells[index].ToString());
+                            double value = DoubleExtensions.GetDoubleValueFromText(cells[index].ToString());
                             run.BulkComposition.Add(double.IsNaN(value) ? 0 : value);
                         }
 
@@ -298,7 +294,7 @@ namespace DatabaseReader
                                 var oxideIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains(oxide.ToString()) && !c.ToString().Contains("err")));
                                 if (oxideIndex < 0) continue;
                                 runPhase.Oxides.Add(oxide);
-                                double value = GetDoubleValueFromText(cells[oxideIndex].ToString());
+                                double value = DoubleExtensions.GetDoubleValueFromText(cells[oxideIndex].ToString());
                                 runPhase.Composition.Add(double.IsNaN(value) ? 0 : value);
                             }
                         }

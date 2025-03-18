@@ -1,4 +1,4 @@
-﻿namespace DatabaseReader
+﻿namespace Xeovis.WinUI
 {
     partial class FrmMctcPlotSettings
     {

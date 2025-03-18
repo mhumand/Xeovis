@@ -1,4 +1,4 @@
-﻿namespace DatabaseReader
+﻿namespace Xeovis.WinUI
 {
     partial class FrmDataManager
     {
@@ -63,12 +63,12 @@
             this.btnGenerateRuns = new System.Windows.Forms.Button();
             this.flpFilters = new System.Windows.Forms.FlowLayoutPanel();
             this.btnAddRunFilterType = new System.Windows.Forms.Button();
-            this.tcExperiment = new DatabaseReader.CustomControls.TableControl();
-            this.tcPhases = new DatabaseReader.CustomControls.TableControl();
-            this.tcADPhaseCompSummary = new DatabaseReader.CustomControls.TableControl();
-            this.tcAdvancedDataManager = new DatabaseReader.CustomControls.TableControl();
-            this.tcStudiesOverview = new DatabaseReader.CustomControls.TableControl();
-            this.tcFilteredRuns = new DatabaseReader.CustomControls.TableControl();
+            this.tcExperiment = new WinControls.TableControl();
+            this.tcPhases = new WinControls.TableControl();
+            this.tcADPhaseCompSummary = new WinControls.TableControl();
+            this.tcAdvancedDataManager = new WinControls.TableControl();
+            this.tcStudiesOverview = new WinControls.TableControl();
+            this.tcFilteredRuns = new WinControls.TableControl();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -615,12 +615,12 @@
         private System.Windows.Forms.TextBox txtPath;
         private System.Windows.Forms.Button btnScanDirectory;
         private System.Windows.Forms.ComboBox cmbxExperiments;
-        private CustomControls.TableControl tcExperiment;
+        private WinControls.TableControl tcExperiment;
         private System.Windows.Forms.CheckBox ckbxSubDirectory;
         private System.Windows.Forms.TextBox txtSubDirectory;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ComboBox cmbxPhases;
-        private CustomControls.TableControl tcPhases;
+        private WinControls.TableControl tcPhases;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TabControl tabControlMain;
@@ -631,7 +631,7 @@
         private System.Windows.Forms.Button btnSubselectRuns;
         private System.Windows.Forms.Button btnAddRunFilterType;
         private System.Windows.Forms.ComboBox cmbxRunFilterType;
-        private CustomControls.TableControl tcFilteredRuns;
+        private WinControls.TableControl tcFilteredRuns;
         private System.Windows.Forms.FlowLayoutPanel flpFilters;
         private System.Windows.Forms.Button btnGenerateRuns;
         private System.Windows.Forms.GroupBox groupBox4;
@@ -641,14 +641,14 @@
         private System.Windows.Forms.TabPage tabPageDataManager_Advanced;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cmbxDMAdvancedPhaseList;
-        private CustomControls.TableControl tcAdvancedDataManager;
+        private WinControls.TableControl tcAdvancedDataManager;
         private System.Windows.Forms.CheckedListBox cklbxDMAdvancedOtherPhases;
         private System.Windows.Forms.Label lblPhaseDetail;
-        private CustomControls.TableControl tcADPhaseCompSummary;
+        private WinControls.TableControl tcADPhaseCompSummary;
         private System.Windows.Forms.Label lblAllPhases;
         private System.Windows.Forms.TextBox txtAllPhases;
         private System.Windows.Forms.TabPage tabPageDataManager_StudiesOverview;
-        private CustomControls.TableControl tcStudiesOverview;
+        private WinControls.TableControl tcStudiesOverview;
         private System.Windows.Forms.CheckBox ckbxShortNameForStudies;
     }
 }

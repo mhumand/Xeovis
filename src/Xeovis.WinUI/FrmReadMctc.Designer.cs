@@ -1,4 +1,4 @@
-﻿namespace DatabaseReader
+﻿namespace Xeovis.WinUI
 {
     partial class FrmReadMctc
     {
@@ -49,8 +49,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainerDetailedTab = new System.Windows.Forms.SplitContainer();
-            this.ccMctcPlot = new DatabaseReader.CustomControls.ChartControl();
-            this.tcBatchDetails = new DatabaseReader.CustomControls.TableControl();
+            this.ccMctcPlot = new WinControls.ChartControl();
+            this.tcBatchDetails = new WinControls.TableControl();
             this.lblBatchDetails = new System.Windows.Forms.Label();
             this.cmbxModelVariable = new System.Windows.Forms.ComboBox();
             this.tabpageOverview = new System.Windows.Forms.TabPage();
@@ -61,7 +61,7 @@
             this.tbMctcRunNumber = new System.Windows.Forms.TrackBar();
             this.tabControlMCTC = new System.Windows.Forms.TabControl();
             this.tabPageMCTC = new System.Windows.Forms.TabPage();
-            this.tcMctcDetails = new DatabaseReader.CustomControls.TableControl();
+            this.tcMctcDetails = new WinControls.TableControl();
             this.nudLayoutColumnCount = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
@@ -540,10 +540,10 @@
         #endregion
         private System.Windows.Forms.TreeView tvCaseSelection;
         private System.Windows.Forms.Button btnPlotAndTabulate;
-        private CustomControls.ChartControl ccMctcPlot;
+        private WinControls.ChartControl ccMctcPlot;
         private System.Windows.Forms.ComboBox cmbxModelVariable;
         private System.Windows.Forms.Label label1;
-        private CustomControls.TableControl tcBatchDetails;
+        private WinControls.TableControl tcBatchDetails;
         private System.Windows.Forms.SplitContainer splitContainerDetailedTab;
         private System.Windows.Forms.CheckBox ckbxExcludeIrrelevantBatches;
         private System.Windows.Forms.MenuStrip menuStrip;
@@ -564,7 +564,7 @@
         private System.Windows.Forms.NumericUpDown nudMctcRunNumber;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lblBatchDetails;
-        private CustomControls.TableControl tcMctcDetails;
+        private WinControls.TableControl tcMctcDetails;
         private System.Windows.Forms.TabControl tabControlMCTC;
         private System.Windows.Forms.TabPage tabPageMCTC;
         private System.Windows.Forms.NumericUpDown nudLayoutColumnCount;

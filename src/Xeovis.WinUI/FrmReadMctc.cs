@@ -1,14 +1,4 @@
-﻿using DatabaseReader.CustomControls;
-using DatabaseReader.Definitions;
-using DatabaseReader.Definitions.Modelling;
-using DatabaseReader.Definitions.Persistence;
-using DatabaseReader.Definitions.UI;
-using DatabaseReader.Enums;
-using DatabaseReader.Enums.Modelling;
-using DatabaseReader.Enums.UI;
-using DatabaseReader.Events;
-using DatabaseReader.Helpers;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,8 +7,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using Xeovis.Base;
+using Xeovis.Domain;
+using Xeovis.Persistence;
+using Xeovis.WinControls;
 
-namespace DatabaseReader
+namespace Xeovis.WinUI
 {
     public partial class FrmReadMctc : Form
     {
@@ -817,7 +811,7 @@ namespace DatabaseReader
             xyCurve.Yvals = new List<double>() { minVal, maxVal };
             xyCurve.IsMarkerVisible = false;
             xyCurve.LineWidth = 2;
-            xyCurve.CurveType = Enums.UI.CurveType.FixedLine;
+            xyCurve.CurveType = CurveType.FixedLine;
             chartModel.Curves.Add(xyCurve);
             chartControl.Plot(chartModel);
 

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
+using Xeovis.Persistence;
 
-namespace DatabaseReader
+namespace Xeovis.WinUI
 {
     public partial class FrmMctcPlotSettings : Form
     {
@@ -32,17 +33,6 @@ namespace DatabaseReader
         {
             DialogResult = DialogResult.Cancel;
             Close();
-        }
-    }
-
-    public class MctcPlotSettings
-    {
-        public int ColorTransparencyIn100 { get; set; }
-        public bool IsLegendVisible { get; set; }
-        public MctcPlotSettings()
-        {
-            ColorTransparencyIn100 = 40;
-            IsLegendVisible = true;
         }
     }
 }
