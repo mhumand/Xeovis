@@ -103,7 +103,7 @@ namespace DatabaseReader.CustomControls
 
             _graphPane.XAxis.Title.Text = _chartModel.XAxisLabel;
             _graphPane.YAxis.Title.Text = _chartModel.YAxisLabel;
-
+            
             // legend
             _graphPane.Legend.IsVisible = _chartModel.IsLegendVisible;
             _graphPane.Legend.Position = _chartModel.LegendPosition;
@@ -112,7 +112,7 @@ namespace DatabaseReader.CustomControls
             _graphPane.Legend.Fill.Color = Color.Transparent;
             _graphPane.Legend.FontSpec.Size = 12;
             _graphPane.Legend.Gap = 0.2f;
-
+            
             // tics
             _graphPane.XAxis.MajorTic.IsOpposite = false;
             _graphPane.XAxis.MinorTic.IsOpposite = false;

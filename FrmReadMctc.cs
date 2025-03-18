@@ -659,42 +659,87 @@ namespace DatabaseReader
             #endregion
         }
 
-        private List<IGrouping<string, ModelVariable>> GroupModelVars(List<ModelVariable> modelVars)
+        private List<IGrouping<object, ModelVariable>> GroupModelVars(List<ModelVariable> modelVars)
         {
-            var modelVarGroups = new List<IGrouping<string, ModelVariable>>();
+            var modelVarGroups = new List<IGrouping<object, ModelVariable>>();
 
             if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Batch)
-                modelVarGroups = modelVars.GroupBy(mv => mv.Batch.GetPhaseAssemblageString()).ToList();
+                modelVarGroups = modelVars.GroupBy(mv => (object)mv.Batch.GetPhaseAssemblageString()).ToList();
             else if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Temperature)
-                modelVarGroups = modelVars.GroupBy(mv => mv.Batch.ExperimentalRun.Temperature.ToString()).ToList();
+                modelVarGroups = modelVars.GroupBy(mv => (object)mv.Batch.ExperimentalRun.Temperature).ToList();
             else if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Pressure)
-                modelVarGroups = modelVars.GroupBy(mv => mv.Batch.ExperimentalRun.Pressure.ToString()).ToList();
+                modelVarGroups = modelVars.GroupBy(mv => (object)mv.Batch.ExperimentalRun.Pressure).ToList();
 
-            var selectedGroups = new List<IGrouping<string, ModelVariable>>();
-            if (ckbxExcludeIrrelevantBatches.Checked && cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Batch)
+            var selectedGroups = new List<IGrouping<object, ModelVariable>>();
+            if (ckbxExcludeIrrelevantBatches.Checked)
             {
-                foreach (var modelVarGroup in modelVarGroups)
+                if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Batch)
                 {
-                    var modelVar = modelVarGroup.FirstOrDefault();
-                    var phases = modelVar.Batch.Phases.Except(new List<PhaseType>() { modelVar.PhaseType });
-                    var varType = modelVar.VariableType;
+                    foreach (var modelVarGroup in modelVarGroups)
+                    {
+                        var modelVar = modelVarGroup.FirstOrDefault();
+                        var phases = modelVar.Batch.Phases.Except(new List<PhaseType>() { modelVar.PhaseType });
+                        var varType = modelVar.VariableType;
 
-                    var phaseAllCations = new List<CationType>();
-                    foreach (var phase in phases)
-                        phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(phase));
+                        var phaseAllCations = new List<CationType>();
+                        foreach (var phase in phases)
+                            phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(phase));
 
-                    var phaseCations = phaseAllCations.Distinct().ToList();
-                    var modelVariableCations = DefaultModelDefinitions.GetCationsFromModelVariable(modelVar.PhaseType, modelVar.VariableType);
+                        var phaseCations = phaseAllCations.Distinct().ToList();
+                        var modelVariableCations = DefaultModelDefinitions.GetCationsFromModelVariable(modelVar.PhaseType, modelVar.VariableType);
 
-                    if (phaseCations.Count != 0 && modelVariableCations.Count != 0)
-                        if (!phaseCations.Any(c => modelVariableCations.Contains(c)))
-                            continue;
+                        if (phaseCations.Count != 0 && modelVariableCations.Count != 0)
+                            if (!phaseCations.Any(c => modelVariableCations.Contains(c)))
+                                continue;
 
-                    selectedGroups.Add(modelVarGroup);
+                        selectedGroups.Add(modelVarGroup);
+                    }
                 }
+                else
+                {
+                    foreach (var modelVarGroup in modelVarGroups)
+                    {
+                        var exclude = new List<ModelVariable>();
+                        foreach (var modelVar in modelVarGroup)
+                        {
+                            var phases = modelVar.Batch.Phases.Except(new List<PhaseType>() { modelVar.PhaseType });
+                            var varType = modelVar.VariableType;
+
+                            var phaseAllCations = new List<CationType>();
+                            foreach (var phase in phases)
+                                phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(phase));
+
+                            var phaseCations = phaseAllCations.Distinct().ToList();
+                            var modelVariableCations = DefaultModelDefinitions.GetCationsFromModelVariable(modelVar.PhaseType, modelVar.VariableType);
+
+                            if (phaseCations.Count != 0 && modelVariableCations.Count != 0)
+                                if (!phaseCations.Any(c => modelVariableCations.Contains(c)))
+                                    exclude.Add(modelVar);
+                        }
+
+                        var flt = modelVarGroup.Except(exclude).ToList();
+                        if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Temperature)
+                        {
+                            var grp = flt.GroupBy(x => (object)x.Batch.ExperimentalRun.Temperature).FirstOrDefault();
+                            if (grp != null && grp.Count() != 0)
+                                selectedGroups.Add(grp);
+                        }
+                        else
+                        {
+                            var grp = flt.GroupBy(x => (object)x.Batch.ExperimentalRun.Pressure).FirstOrDefault();
+                            if (grp != null && grp.Count() != 0)
+                                selectedGroups.Add(grp);
+                        }
+   
+                    }
+                }
+
             }
             else
                 selectedGroups = modelVarGroups;
+
+            if (!(cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Batch))
+                selectedGroups = selectedGroups.OrderBy(g => g.Key).ToList();
 
             return selectedGroups;
         }
@@ -705,9 +750,12 @@ namespace DatabaseReader
             if (selectedGroups.Count == 0)
                 return false;
 
+            var avgErrorPercent = GetAverageErrorPercent(modelVars, mctcRunIndex);
+
             var modelVar = modelVars.FirstOrDefault();
             var chartModel = new ChartModel();
             chartModel.Title = modelVar + " ~ " + string.Join(" & ", DefaultModelDefinitions.GetCationsFromModelVariable(modelVar.PhaseType, modelVar.VariableType).ToArray());
+            chartModel.Title += $" (err = {avgErrorPercent.Round(4)}%)";
             chartModel.XAxisLabel = $"Observed {modelVar}";
             chartModel.YAxisLabel = $"Calculated {modelVar}";
             chartModel.HasEqualDimensions = EqualDimensions;
@@ -717,22 +765,30 @@ namespace DatabaseReader
 
             int colorIndex = 0;
             int markerIndex = 0;
+            int counter = 0;
             foreach (var modelVarGroup in selectedGroups)
             {
                 var curve = new CurveModel();
-                //curve.Name = modelVarGroup.FirstOrDefault().Batch.GetPhaseAssemblageString();
-                curve.Name = modelVarGroup.Key;
+                curve.Name = modelVarGroup.Key.ToString();
 
                 curve.Xvals = modelVarGroup.Where(mv => mv.CalcVals.ContainsKey(mctcRunIndex)).Select(mv => mv.ObsVal).ToList();
                 curve.Yvals = modelVarGroup.Where(mv => mv.CalcVals.ContainsKey(mctcRunIndex)).Select(mv => mv.CalcVals[mctcRunIndex]).ToList();
                 curve.IsLineVisible = false;
 
-                var color = ChartUtilities.GetColor(colorIndex++);
-                if (color == Color.Transparent)
+                Color color;
+                if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Batch)
                 {
-                    colorIndex = (colorIndex - 1) % 10;
                     color = ChartUtilities.GetColor(colorIndex++);
-                    markerIndex++;
+                    if (color == Color.Transparent)
+                    {
+                        colorIndex = (colorIndex - 1) % 10;
+                        color = ChartUtilities.GetColor(colorIndex++);
+                        markerIndex++;
+                    }
+                }
+                else
+                {
+                    color = ChartUtilities.GetColorInGradient(counter, selectedGroups.Count);
                 }
 
                 curve.Transparency = _mctcPlotSettings.ColorTransparencyIn100;
@@ -742,6 +798,8 @@ namespace DatabaseReader
 
                 if (curve.Xvals.Count > 0 && curve.Yvals.Count > 0)
                     chartModel.Curves.Add(curve);
+
+                counter++;
             }
 
 
@@ -801,6 +859,19 @@ namespace DatabaseReader
             }
 
             return true;
+        }
+
+        private double GetAverageErrorPercent(List<ModelVariable> modelVars, int mctcRunIndex)
+        {
+            var deviationSum = 0.0;
+            foreach (var modelVar in modelVars.Where(v => v.CalcVals.ContainsKey(mctcRunIndex)).ToList())
+            {
+                var val = modelVar.CalcVals[mctcRunIndex];
+                if (modelVar.ObsVal == 0.0 || double.IsNaN(val)) continue;
+                deviationSum += Math.Abs(1.0 - val / modelVar.ObsVal);
+            }
+
+            return deviationSum / modelVars.Count * 100.0;
         }
 
         private void SaveAsJSON(string fileName)
@@ -1028,6 +1099,12 @@ namespace DatabaseReader
             }
 
             tabControlResults.SelectedTab = tabpageDetailed;
+        }
+
+        private void cmbxPlotPointsGrouping_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PlotAll(useCurrentCharts: true);
+            RefreshSinglePlotAndTable();
         }
     }
 }
