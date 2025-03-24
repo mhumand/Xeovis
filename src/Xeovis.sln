@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xeovis.Domain", "Xeovis.Dom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xeovis.Persistence", "Xeovis.Persistence\Xeovis.Persistence.csproj", "{C09EB18B-C170-4AD0-93D8-702FE5F0074B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xeovis.CrossPlatformUI", "Xeovis.CrossPlatformUI\Xeovis.CrossPlatformUI.csproj", "{820FCD43-4949-41B5-B94F-A6D13ABAD434}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{C09EB18B-C170-4AD0-93D8-702FE5F0074B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C09EB18B-C170-4AD0-93D8-702FE5F0074B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C09EB18B-C170-4AD0-93D8-702FE5F0074B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{820FCD43-4949-41B5-B94F-A6D13ABAD434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{820FCD43-4949-41B5-B94F-A6D13ABAD434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{820FCD43-4949-41B5-B94F-A6D13ABAD434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{820FCD43-4949-41B5-B94F-A6D13ABAD434}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
