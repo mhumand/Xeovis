@@ -114,7 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xeovis.Base\Xeovis.Base.csproj">
-      <Project>{8B8509D3-6C6B-46EF-A83A-422B2146B676}</Project>
+      <Project>{9948f908-7783-4645-8f42-14c9dff3263d}</Project>
       <Name>Xeovis.Base</Name>
     </ProjectReference>
   </ItemGroup>

@@ -197,15 +197,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xeovis.Base\Xeovis.Base.csproj">
-      <Project>{8b8509d3-6c6b-46ef-a83a-422b2146b676}</Project>
+      <Project>{9948f908-7783-4645-8f42-14c9dff3263d}</Project>
       <Name>Xeovis.Base</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xeovis.Domain\Xeovis.Domain.csproj">
-      <Project>{dd53ac0c-139b-46ff-996f-9f84359f9f26}</Project>
+      <Project>{219cf3b9-b593-4dcd-85a5-0bd745c9d16b}</Project>
       <Name>Xeovis.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xeovis.Persistence\Xeovis.Persistence.csproj">
-      <Project>{c09eb18b-c170-4ad0-93d8-702fe5f0074b}</Project>
+      <Project>{dfe1f649-e839-42b2-a2b4-5dd3a3cf8444}</Project>
       <Name>Xeovis.Persistence</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xeovis.WinControls\Xeovis.WinControls.csproj">
