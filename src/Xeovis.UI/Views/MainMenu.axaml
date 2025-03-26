@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="250"
+             x:Class="Xeovis.UI.MainMenu"
+			 xmlns:vm="using:Xeovis.UI.ViewModels"
+			 x:DataType="vm:MainMenuViewModel">
+	
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="_Project">
+				<MenuItem Header="_New" Command="{Binding Project_New}"/>
+				<MenuItem Header="_Open" Command="{Binding Project_Open}"/>
+				<MenuItem Header="_Save" Command="{Binding Project_Save}"/>
+				<Separator/>
+				<MenuItem Header="_Preferences" IsVisible="False"/>
+				<MenuItem Header="_Quit" Command="{Binding Project_Quit}"/>
+			</MenuItem>
+			<MenuItem Header="_Data Manager">
+				<MenuItem Header="_Read Data" Command="{Binding DataManager_ReadData}"/>
+				<MenuItem Header="_Settings" Command="{Binding DataManager_Settings}"/>
+			</MenuItem>
+			<MenuItem Header="_MCTC Reader">
+				<MenuItem Header="_New Plot" Command="{Binding MctcReader_NewPlot}"/>
+				<MenuItem Header="_Settings" Command="{Binding MctcReader_Settings}"/>
+			</MenuItem>
+			<MenuItem Header="_About" Command="{Binding About}">
+			</MenuItem>
+		</Menu>
+		<TextBlock/>
+	</DockPanel>
+
+</UserControl>
