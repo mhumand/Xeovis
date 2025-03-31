@@ -9,9 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
-    <Folder Include="Views\UserControls\" />
+    <Folder Include="Events\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +24,12 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Xeovis.Base\Xeovis.Base.csproj" />
+    <ProjectReference Include="..\Xeovis.Domain\Xeovis.Domain.csproj" />
+    <ProjectReference Include="..\Xeovis.Persistence\Xeovis.Persistence.csproj" />
   </ItemGroup>
 
   <ItemGroup>

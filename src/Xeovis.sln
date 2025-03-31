@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xeovis.Domain", "Xeovis.Dom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xeovis.Persistence", "Xeovis.Persistence\Xeovis.Persistence.csproj", "{DFE1F649-E839-42B2-A2B4-5DD3A3CF8444}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xeovis.UI", "Xeovis.UI\Xeovis.UI.csproj", "{02D688C1-A23D-4CEC-8BF5-CB704A45D755}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xeovis.UI", "Xeovis.UI\Xeovis.UI.csproj", "{02D688C1-A23D-4CEC-8BF5-CB704A45D755}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xeovis.TestUI", "Xeovis.TestUI\Xeovis.TestUI.csproj", "{2AD64F6B-A95D-4559-997B-A8E853FEA53A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{02D688C1-A23D-4CEC-8BF5-CB704A45D755}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02D688C1-A23D-4CEC-8BF5-CB704A45D755}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02D688C1-A23D-4CEC-8BF5-CB704A45D755}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AD64F6B-A95D-4559-997B-A8E853FEA53A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AD64F6B-A95D-4559-997B-A8E853FEA53A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AD64F6B-A95D-4559-997B-A8E853FEA53A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AD64F6B-A95D-4559-997B-A8E853FEA53A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

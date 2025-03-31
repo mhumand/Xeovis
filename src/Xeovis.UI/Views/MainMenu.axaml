@@ -4,11 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="250"
              x:Class="Xeovis.UI.MainMenu"
-			 xmlns:vm="using:Xeovis.UI.ViewModels"
-			 x:DataType="vm:MainMenuViewModel">
+			 DataContext="{Binding RelativeSource={RelativeSource Self}}"
+			 >
 	
-	<DockPanel>
-		<Menu DockPanel.Dock="Top">
+		<Menu VerticalAlignment="Top">
 			<MenuItem Header="_Project">
 				<MenuItem Header="_New" Command="{Binding Project_New}"/>
 				<MenuItem Header="_Open" Command="{Binding Project_Open}"/>
@@ -22,13 +21,12 @@
 				<MenuItem Header="_Settings" Command="{Binding DataManager_Settings}"/>
 			</MenuItem>
 			<MenuItem Header="_MCTC Reader">
+				<MenuItem Header="_Read Data" Command="{Binding MctcReader_NewPlot}"/>
 				<MenuItem Header="_New Plot" Command="{Binding MctcReader_NewPlot}"/>
 				<MenuItem Header="_Settings" Command="{Binding MctcReader_Settings}"/>
 			</MenuItem>
 			<MenuItem Header="_About" Command="{Binding About}">
 			</MenuItem>
 		</Menu>
-		<TextBlock/>
-	</DockPanel>
 
 </UserControl>

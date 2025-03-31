@@ -20,8 +20,51 @@
 		<vm:MainWindowViewModel/>
 	</Design.DataContext>
 	-->
+		
 
+	<DockPanel>
+		<Grid x:Name="MenuGrid" DockPanel.Dock="Top"/>
+		
+		<Grid ColumnDefinitions="200, *" DockPanel.Dock="Top">
+			
+			<Border Grid.Column="0"  BorderBrush="Gray" BorderThickness="1" Margin="2">
+				<Grid x:Name="TreeGrid" RowDefinitions="1*,0.1,1*">
 
-	<local:MainMenu/>
+					<TreeView x:Name="tvDataManager" Grid.Row="0" ItemsSource="{Binding DataManagerNodes}">
+						<TreeView.ItemTemplate>
+							<TreeDataTemplate ItemsSource="{Binding Children}">
+									<TextBlock Text="{Binding Title}"/>
+							</TreeDataTemplate>
+						</TreeView.ItemTemplate>
+					</TreeView>
+					
+					<GridSplitter Grid.Row="1" Background="Gray" ResizeDirection="Rows" BorderThickness="3"/>
+
+					<TreeView x:Name="tvMctcPlots" Grid.Row="2" ItemsSource="{Binding MctcPlotNodes}">
+						<TreeView.ItemTemplate>
+							<TreeDataTemplate ItemsSource="{Binding Children}">
+								<TextBlock Text="{Binding Title}"/>
+							</TreeDataTemplate>
+						</TreeView.ItemTemplate>
+					</TreeView>
+					
+				</Grid>
+			</Border>
+			
+			<Border Grid.Column="1"  BorderBrush="Gray" BorderThickness="1" Margin="2" >
+				<TabControl x:Name="TabControl">
+					<TabItem Header="Tab 1">
+						<TextBlock Margin="5">This is tab 1 content</TextBlock>
+					</TabItem>
+					<TabItem Header="Tab 2">
+						<TextBlock Margin="5">This is tab 2 content</TextBlock>
+					</TabItem>
+					<TabItem Header="Tab 3">
+						<TextBlock Margin="5">This is tab 3 content</TextBlock>
+					</TabItem>
+				</TabControl>
+			</Border>
+		</Grid>
+	</DockPanel>
 
 </Window>
