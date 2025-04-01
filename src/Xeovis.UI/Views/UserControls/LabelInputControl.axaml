@@ -2,34 +2,32 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:Xeovis.UI.ViewModels"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="60"
 			 MinHeight="60"
+			 MinWidth="100"
 			 xmlns:local="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
-			 DataContext="{Binding RelativeSource={RelativeSource Self}}"
              x:Class="Xeovis.UI.LabelInputControl"
+			 x:DataType="vm:LabelInputControlViewModel"
 			 FontFamily="Segoe UI"
 			 FontSize="14">
 
-	<DockPanel>
-		<Grid DockPanel.Dock="Top" Margin="2" Height="50" >
-			<Grid.RowDefinitions>
-				<RowDefinition Height="3*"/>
-				<RowDefinition Height="1*"/>
-				<RowDefinition Height="3*"/>
-			</Grid.RowDefinitions>
-			<TextBlock Grid.Row="0" x:Name="tbLabel" Text="{Binding Label}" FontWeight="Regular"/>
-			<Grid Grid.Row="2" >
-				<TextBox x:Name="tbInput" BorderThickness="0.6" CornerRadius="2" BorderBrush="DarkGray"
-						 Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsReadOnly}" Focusable="{Binding !IsReadOnly}" 
-						 SelectionBrush="SkyBlue" />
-				
-				<Button x:Name="btnClear" Margin="1,1,5,1" Padding="0" FontSize="12" FontWeight="SemiBold" Width="20" Background="White" Foreground="DarkGray"
-						HorizontalAlignment="Right" VerticalAlignment="Center"
-						 VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-						Content="X" Click="btnClear_Click" IsVisible="{Binding !IsReadOnly}"/>
-			</Grid>
+	<StackPanel Margin="2" Spacing="5">
+
+		<StackPanel Orientation="Horizontal" Spacing="5">
+			<TextBlock x:Name="tbLabel" Text="{Binding Label}" FontWeight="Regular"/>
+			<local:ToolTipControl x:Name="toolTip"/>
+		</StackPanel>
+
+		<Grid x:Name="txtBtnGrid">
+			<TextBox x:Name="tbInput" BorderThickness="0.6" CornerRadius="2" BorderBrush="DarkGray"
+					 Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsReadOnly}" Focusable="{Binding !IsReadOnly}"
+					 SelectionBrush="SkyBlue" />
+			<Button x:Name="btnClear" Margin="1,1,5,1" Padding="0" FontSize="12" FontWeight="SemiBold" Width="20" Background="White" Foreground="DarkGray"
+					HorizontalAlignment="Right" VerticalAlignment="Center"
+					 VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+					Content="X" Click="btnClear_Click" IsVisible="{Binding !IsReadOnly}"/>
 		</Grid>
-		<Grid></Grid>
-	</DockPanel>
-	
+	</StackPanel>
+
 </UserControl>

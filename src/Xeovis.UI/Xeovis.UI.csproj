@@ -10,7 +10,10 @@
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
-    <Folder Include="Events\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\info.png" />
   </ItemGroup>
 
   <ItemGroup>

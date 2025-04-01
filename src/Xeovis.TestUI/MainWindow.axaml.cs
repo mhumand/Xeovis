@@ -9,9 +9,15 @@ namespace Xeovis.TestUI
             InitializeComponent();
         }
 
-        private void Button_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void btnLabelInputControl_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             var dialog = new FrmUserInputControl();
+            dialog.ShowDialog(this);
+        }
+
+        private void btnLabelListControl_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var dialog = new FrmLabelListControl();
             dialog.ShowDialog(this);
         }
     }

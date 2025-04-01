@@ -1,60 +1,55 @@
 using Avalonia.Controls;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using Xeovis.UI.ViewModels;
 
 namespace Xeovis.UI;
 
-public partial class LabelInputControl : UserControl, INotifyPropertyChanged
+public partial class LabelInputControl : UserControl
 {
-    private string _value;
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    public string Value
-    {
-        get { return _value; }
-        set
-        {
-            _value = value;
-            OnPropertyChanged();
-        }
-    }
-
-    private string _label;
-
-    public string Label
-    {
-        get { return _label; }
-        set
-        {
-            _label = value;
-            OnPropertyChanged();
-        }
-    }
-
-    private bool _isReadOnly;
-
-    public bool IsReadOnly
-    {
-        get { return _isReadOnly; }
-        set
-        {
-            _isReadOnly = value;
-            OnPropertyChanged();
-        }
-    }
+    public LabelInputControlViewModel _viewModel;
 
     public LabelInputControl()
     {
         InitializeComponent();
-        DataContext = this;
         Focusable = true;
+        btnClear.IsVisible = false;
+        Loaded += LabelInputControl_Loaded;
         tbInput.KeyDown += tbInput_KeyDown;
+        txtBtnGrid.PointerEntered += txtBtnGrid_PointerEntered;
+        txtBtnGrid.PointerExited += txtBtnGrid_PointerExited;
+    }
+
+    private void LabelInputControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        btnClear.IsVisible = false;
+        toolTip.IsVisible = _viewModel.HasToolTip;
+        toolTip.ToolTipText = _viewModel.ToolTip;
+    }
+
+    private void txtBtnGrid_PointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
+    {
+        btnClear.IsVisible = false;
+    }
+
+    private void txtBtnGrid_PointerEntered(object? sender, Avalonia.Input.PointerEventArgs e)
+    {
+        if (!_viewModel.IsReadOnly)
+            btnClear.IsVisible = true;
+    }
+
+    public LabelInputControl(LabelInputControlViewModel viewModel = null) : base()
+    {
+        SetDataContext(viewModel);
     }
 
     public double GetDoubleValue()
     {
-        return Base.DoubleExtensions.GetDoubleValueFromText(Value);
+        return _viewModel.GetDoubleValue();
+    }
+
+    public void SetDataContext(LabelInputControlViewModel viewModel)
+    {
+        _viewModel = viewModel;
+        DataContext = viewModel;
     }
 
     private void btnClear_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -63,14 +58,9 @@ public partial class LabelInputControl : UserControl, INotifyPropertyChanged
         tbInput.Focus();
     }
 
-    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
     private void tbInput_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
     {
-        if (e.Key == Avalonia.Input.Key.Escape)
+        if (e.Key == Avalonia.Input.Key.Escape || e.Key == Avalonia.Input.Key.Enter)
         {
             this.Focus();
         }

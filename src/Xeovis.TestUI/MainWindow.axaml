@@ -9,14 +9,10 @@
 		Height="500"
 		WindowStartupLocation="CenterScreen">
 
-	<Grid Height="400" VerticalAlignment="Center">
-		<Grid.RowDefinitions>
-			<RowDefinition/>
-			<RowDefinition/>
-			<RowDefinition/>
-			<RowDefinition/>
-		</Grid.RowDefinitions>
-		<Button Grid.Row="0" x:Name="btnLabelInputControl" Content="Label Input Control" HorizontalAlignment="Center" Width="200" Height="40"
-				HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="Button_Click" />
-	</Grid>
+	<StackPanel Margin="20" Spacing="20">
+		<Button x:Name="btnLabelInputControl" Content="Label Input Control" HorizontalAlignment="Center" Click="btnLabelInputControl_Click" />
+
+		<Button x:Name="btnLabelListControl" Content="Label List Control" HorizontalAlignment="Center" Click="btnLabelListControl_Click" />
+		
+	</StackPanel>
 </Window>
