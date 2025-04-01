@@ -1,0 +1,18 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="500"
+        x:Class="Xeovis.TestUI.MainWindow"
+        Title="Xeovis.TestUI"
+		Width="400"
+		Height="500"
+		WindowStartupLocation="CenterScreen">
+
+	<StackPanel Margin="20" Spacing="20">
+		<Button x:Name="btnLabelInputControl" Content="Label Input Control" HorizontalAlignment="Center" Click="btnLabelInputControl_Click" />
+
+		<Button x:Name="btnLabelListControl" Content="Label List Control" HorizontalAlignment="Center" Click="btnLabelListControl_Click" />
+		
+	</StackPanel>
+</Window>
