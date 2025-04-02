@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="70"
+			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+			 MinHeight="70"
+			 MinWidth="200"
+			 xmlns:vm="using:Xeovis.UI.ViewModels"
+             x:Class="Xeovis.UI.LabelComboBoxControl"
+			 x:DataType="vm:LabelComboBoxControlViewModel"
+			 FontFamily="Seqoe UI"
+			 FontSize="14">
+
+	<StackPanel Margin="5" Spacing="5">
+		<StackPanel Orientation="Horizontal" Spacing="5">
+			<TextBlock x:Name="tbLabel" Text="{Binding Label}" FontWeight="Regular"/>
+
+			<userControls:ToolTipControl x:Name="toolTip"/>
+		</StackPanel>
+
+		<ComboBox x:Name="comboBox" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding Items}" HorizontalAlignment="Stretch" SelectionChanged="comboBox_SelectionChanged" CornerRadius="2" MaxDropDownHeight="300">
+			<ComboBox.ItemTemplate>
+				<DataTemplate>
+					<Grid VerticalAlignment="Center">
+						<TextBlock x:Name="txtLabel" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Label}" />
+						<TextBlock x:Name="txtDescription" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="Gray" Text="{Binding Description}" IsVisible="{Binding HasDescription}"/>
+					</Grid>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+
+	</StackPanel>
+</UserControl>

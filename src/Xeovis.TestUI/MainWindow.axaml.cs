@@ -26,5 +26,11 @@ namespace Xeovis.TestUI
             var dialog = new FrmCheckBoxControl();
             dialog.ShowDialog(this);
         }
+
+        private void btnLabelComboBoxControl_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var dialog = new FrmLabelComboBoxControl();
+            dialog.ShowDialog(this);
+        }
     }
 }
