@@ -15,6 +15,8 @@
 		<Button x:Name="btnLabelListControl" Content="Label List Control" HorizontalAlignment="Center" Click="btnLabelListControl_Click" />
 
 		<Button x:Name="btnCheckBoxControl" Content="CheckBox Control" HorizontalAlignment="Center" Click="btnCheckBoxControl_Click" />
-		
+
+		<Button x:Name="btnLabelComboBoxControl" Content="Label ComboBox Control" HorizontalAlignment="Center" Click="btnLabelComboBoxControl_Click" />
+
 	</StackPanel>
 </Window>

@@ -24,6 +24,8 @@ namespace Xeovis.UI.Models
         private object _tag;
         public object Tag => _tag;
 
+        public bool HasDescription => !string.IsNullOrWhiteSpace(_description);
+
         public ListableItem()
         {
             _isVisible = true;
@@ -36,11 +38,12 @@ namespace Xeovis.UI.Models
             _tag = item;
         }
 
-        public ListableItem(string label, object tag = null, bool isVisible = true) : base()
+        public ListableItem(string label, object tag = null, bool isVisible = true, string description = null) : base()
         {
             _label = label.Trim();
             _tag = tag;
             _isVisible = isVisible;
+            _description = description;
         }
 
         public void SetLabel(string label)

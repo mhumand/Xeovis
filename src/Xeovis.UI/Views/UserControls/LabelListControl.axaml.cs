@@ -15,21 +15,19 @@ public partial class LabelListControl : UserControl
     public LabelListControl()
     {
         InitializeComponent();
-        lbItems.KeyDown += lbItems_KeyDown;
         lbItems.SelectionChanged += lbItems_SelectionChanged;
+        Loaded += LabelListControl_Loaded;
+    }
+
+    private void LabelListControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        toolTip.ToolTipText = _viewModel.ToolTip;
+        toolTip.IsVisible = _viewModel.HasToolTip;
     }
 
     private void lbItems_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         ListSelectionChanged?.Invoke(sender, new ListSelectionChangedEventArgs(lbItems.SelectedItem, lbItems.SelectedIndex));
-    }
-
-    private void lbItems_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
-    {
-        if (e.Key == Avalonia.Input.Key.Escape)
-        {
-            lbItems.SelectedIndex = -1;
-        }
     }
 
     public LabelListControl(LabelListControlViewModel viewModel) : base()

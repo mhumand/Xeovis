@@ -26,7 +26,13 @@ public partial class FrmLabelListControl : Window
             new ListableItem("Item 1"),
             new ListableItem("Item 2"),
             new ListableItem("Item 3",isVisible:false),
-            new ListableItem("Item 4")
+            new ListableItem("Item 4"),
+            new ListableItem("Item 5"),
+            new ListableItem("Item 6"),
+            new ListableItem("Item 7"),
+            new ListableItem("Item 8"),
+            new ListableItem("Item 9"),
+            new ListableItem("Item 10"),
         };
 
         for (int i = 0; i < vm.Items.Count; i++)
@@ -35,11 +41,14 @@ public partial class FrmLabelListControl : Window
         }
 
         vm.Items[0].CanBeRemoved = true;
+        vm.Items[4].CanBeRemoved = true;
         vm.Items[0].SetDescription("item 1");
         vm.Items[1].SetDescription("item 2");
         vm.Items[1].SetColor(Color.DarkRed);
 
         vm.Label = "Simple Label";
+        vm.ToolTip = "Simple tooltip for label";
+        vm.SelectedIndex = 6;
         llcList.SetDataContext(vm);
     }
 
