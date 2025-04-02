@@ -4,25 +4,17 @@ using Xeovis.UI.Models;
 
 namespace Xeovis.UI.ViewModels
 {
-    public partial class LabelComboBoxControlViewModel : ViewModelBase
+    public partial class LabelComboBoxControlViewModel : LabelControlViewModel
     {
-        [ObservableProperty]
-        private string label;
-
         [ObservableProperty]
         private ObservableCollection<ListableItem> items;
 
         [ObservableProperty]
-        private string toolTip;
-
-        [ObservableProperty]
         private int selectedIndex;
-
-        public bool HasToolTip => !string.IsNullOrWhiteSpace(toolTip);
 
         public LabelComboBoxControlViewModel()
         {
-            selectedIndex = 0;
+            SelectedIndex = 0;
         }
     }
 }

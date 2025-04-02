@@ -4,11 +4,8 @@ using Xeovis.UI.Models;
 
 namespace Xeovis.UI.ViewModels
 {
-    public partial class LabelListControlViewModel : ViewModelBase
+    public partial class LabelListControlViewModel : LabelControlViewModel
     {
-        [ObservableProperty]
-        private string label;
-
         [ObservableProperty]
         private ObservableCollection<ListableItem> items;
 
@@ -16,12 +13,7 @@ namespace Xeovis.UI.ViewModels
         private bool isMultiSelect;
 
         [ObservableProperty]
-        private string toolTip;
-
-        [ObservableProperty]
         private int selectedIndex;
-
-        public bool HasToolTip => !string.IsNullOrWhiteSpace(toolTip);
 
         public LabelListControlViewModel()
         {

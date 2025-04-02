@@ -19,7 +19,7 @@
 		</StackPanel>
 
 		<Grid x:Name="txtBtnGrid">
-			<TextBox x:Name="tbInput" BorderThickness="0.6" CornerRadius="2" BorderBrush="DarkGray"
+			<TextBox x:Name="tbInput" BorderThickness="0.6"  BorderBrush="DarkGray"
 					 Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsReadOnly}" Focusable="{Binding !IsReadOnly}"
 					 SelectionBrush="SkyBlue" VerticalContentAlignment="Center"/>
 			<Button x:Name="btnClear" Margin="1,1,5,1" Padding="0" Width="20" Height="20" Background="White" Foreground="Transparent" Opacity="0.5"

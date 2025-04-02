@@ -18,5 +18,7 @@
 
 		<Button x:Name="btnLabelComboBoxControl" Content="Label ComboBox Control" HorizontalAlignment="Center" Click="btnLabelComboBoxControl_Click" />
 
+		<Button x:Name="btnLabelSpinnerControl" Content="Label Spinner Control" HorizontalAlignment="Center" Click="btnLabelSpinnerControl_Click" />
+		
 	</StackPanel>
 </Window>
