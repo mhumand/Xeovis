@@ -15,10 +15,17 @@ namespace Xeovis.UI.ViewModels
         [ObservableProperty]
         private bool isMultiSelect;
 
+        [ObservableProperty]
+        private string toolTip;
+
+        [ObservableProperty]
+        private int selectedIndex;
+
+        public bool HasToolTip => !string.IsNullOrWhiteSpace(toolTip);
+
         public LabelListControlViewModel()
         {
-            
+            selectedIndex = 0;
         }
-
     }
 }

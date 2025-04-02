@@ -16,6 +16,13 @@ public partial class LabelListControl : UserControl
     {
         InitializeComponent();
         lbItems.SelectionChanged += lbItems_SelectionChanged;
+        Loaded += LabelListControl_Loaded;
+    }
+
+    private void LabelListControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        toolTip.ToolTipText = _viewModel.ToolTip;
+        toolTip.IsVisible = _viewModel.HasToolTip;
     }
 
     private void lbItems_SelectionChanged(object? sender, SelectionChangedEventArgs e)

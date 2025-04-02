@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
+			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="300"
 			 MinWidth="100"
 			 MinHeight="100"
@@ -11,16 +12,25 @@
 			 FontFamily="Segoe UI"
 			 FontSize="14">
 
-	<StackPanel Margin="2" Spacing="5">
+	<!--I'm using Grid instead of StackPanel becuase the vertical scrollbar in ListBox
+	does not appear automatically when using a StackPanel - M.H. 02/04/2025-->
+	<Grid Margin="2" VerticalAlignment="Top">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="30"/>
+			<RowDefinition />
+		</Grid.RowDefinitions>
 
-		<TextBlock x:Name="tbLabel" Text="{Binding Label}" FontWeight="Regular"/>
+		<StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="5">
+			<TextBlock x:Name="tbLabel" VerticalAlignment="Center" Text="{Binding Label}" FontWeight="Regular"/>
+			<userControls:ToolTipControl x:Name="toolTip" VerticalAlignment="Center"/>
+		</StackPanel>
 
-		<ListBox x:Name="lbItems" CornerRadius="2" ItemsSource="{Binding Items}" SelectionMode="AlwaysSelected">
+		<ListBox Grid.Row="1" x:Name="lbItems" CornerRadius="2" ItemsSource="{Binding Items}" SelectionMode="AlwaysSelected" SelectedIndex="{Binding SelectedIndex}">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<Grid>
 						<TextBlock Text="{Binding Label}" Foreground="{Binding Color}" VerticalAlignment="Center"/>
-
+						<!--todo: add description before button - M.H. 02/04/2025-->
 						<Button x:Name="btnRemoveItem" Padding="0" Width="20" Height="20" FontWeight="SemiBold"  Background="Transparent" Opacity="0.75"
 						HorizontalAlignment="Right" VerticalAlignment="Center"
 						 VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
@@ -29,12 +39,12 @@
 								<Image x:Name="image" Width="16" Height="16" Source="/Assets/remove.png"/>
 							</Button.Content>
 						</Button>
-
+						
 					</Grid>
 				</DataTemplate>
 			</ListBox.ItemTemplate>
 		</ListBox>
 
-	</StackPanel>
+	</Grid>
 
 </UserControl>
