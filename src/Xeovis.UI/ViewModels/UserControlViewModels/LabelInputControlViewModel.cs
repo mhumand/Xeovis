@@ -2,33 +2,21 @@
 
 namespace Xeovis.UI.ViewModels
 {
-    public partial class LabelInputControlViewModel : ViewModelBase
+    public partial class LabelInputControlViewModel : LabelControlViewModel
     {
-
-        [ObservableProperty]
-        private string label;
-
         [ObservableProperty]
         private object value;
-
-        [ObservableProperty]
-        private bool isReadOnly;
-
-        [ObservableProperty]
-        private string toolTip;
-
-        public bool HasToolTip => !string.IsNullOrWhiteSpace(ToolTip);
 
         public LabelInputControlViewModel()
         {
             
         }
 
-        public LabelInputControlViewModel(string Label, object Value, bool IsReadOnly = false)
+        public LabelInputControlViewModel(string label, object value, bool isReadOnly = false)
         {
-            label = Label;
-            value = Value;
-            isReadOnly = IsReadOnly;
+            Label = label;
+            Value = value;
+            IsReadOnly = isReadOnly;
         }
 
         public double GetDoubleValue()

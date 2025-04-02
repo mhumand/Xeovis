@@ -19,7 +19,7 @@
 			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>
 
-		<ComboBox x:Name="comboBox" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding Items}" HorizontalAlignment="Stretch" SelectionChanged="comboBox_SelectionChanged" CornerRadius="2" MaxDropDownHeight="300">
+		<ComboBox x:Name="comboBox" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding Items}" HorizontalAlignment="Stretch" SelectionChanged="comboBox_SelectionChanged" MaxDropDownHeight="300">
 			<ComboBox.ItemTemplate>
 				<DataTemplate>
 					<Grid VerticalAlignment="Center">

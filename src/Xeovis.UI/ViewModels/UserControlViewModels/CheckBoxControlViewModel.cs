@@ -2,18 +2,15 @@
 
 namespace Xeovis.UI.ViewModels
 {
-    public partial class CheckBoxControlViewModel : ViewModelBase
+    public partial class CheckBoxControlViewModel : LabelControlViewModel
     {
         [ObservableProperty]
-        private string label;
-
-        [ObservableProperty]
-        private string description;
+        private string? description;
 
         [ObservableProperty]
         private bool isChecked;
 
-        public bool HasDescription => !string.IsNullOrWhiteSpace(description);
+        public bool HasDescription => !string.IsNullOrWhiteSpace(Description);
 
         public CheckBoxControlViewModel()
         {

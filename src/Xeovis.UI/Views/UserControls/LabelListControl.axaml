@@ -25,7 +25,7 @@
 			<userControls:ToolTipControl x:Name="toolTip" VerticalAlignment="Center"/>
 		</StackPanel>
 
-		<ListBox Grid.Row="1" x:Name="lbItems" CornerRadius="2" ItemsSource="{Binding Items}" SelectionMode="AlwaysSelected" SelectedIndex="{Binding SelectedIndex}">
+		<ListBox Grid.Row="1" x:Name="lbItems" ItemsSource="{Binding Items}" SelectionMode="AlwaysSelected" SelectedIndex="{Binding SelectedIndex}">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<Grid>

@@ -32,5 +32,11 @@ namespace Xeovis.TestUI
             var dialog = new FrmLabelComboBoxControl();
             dialog.ShowDialog(this);
         }
+
+        private void btnLabelSpinnerControl_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var dialog = new FrmLabelSpinnerControl();
+            dialog.ShowDialog(this);
+        }
     }
 }
