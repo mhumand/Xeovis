@@ -13,7 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\clear.png" />
+    <None Remove="Assets\delete.png" />
     <None Remove="Assets\info.png" />
+    <None Remove="Assets\remove.png" />
   </ItemGroup>
 
   <ItemGroup>

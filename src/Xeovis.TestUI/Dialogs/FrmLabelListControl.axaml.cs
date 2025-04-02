@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using System.Collections.Generic;
 using Xeovis.UI.ViewModels;
 using Xeovis.UI.Models;
 using System.Collections.ObjectModel;

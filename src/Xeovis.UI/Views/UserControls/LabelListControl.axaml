@@ -19,12 +19,16 @@
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<Grid>
-						<TextBlock Text="{Binding Label}" Foreground="{Binding Color}"/>
+						<TextBlock Text="{Binding Label}" Foreground="{Binding Color}" VerticalAlignment="Center"/>
 
-						<Button x:Name="btnRemoveItem" Padding="0" FontSize="12" Width="20" FontWeight="SemiBold"  Background="Transparent" Foreground="DarkGray"
+						<Button x:Name="btnRemoveItem" Padding="0" Width="20" Height="20" FontWeight="SemiBold"  Background="Transparent" Opacity="0.75"
 						HorizontalAlignment="Right" VerticalAlignment="Center"
 						 VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-						Content="X" Tag="{Binding Tag}" Click="btnRemoveItem_Click" IsVisible="{Binding CanBeRemoved}" />
+						Tag="{Binding Tag}" Click="btnRemoveItem_Click" IsVisible="{Binding CanBeRemoved}">
+							<Button.Content>
+								<Image x:Name="image" Width="16" Height="16" Source="/Assets/remove.png"/>
+							</Button.Content>
+						</Button>
 
 					</Grid>
 				</DataTemplate>
