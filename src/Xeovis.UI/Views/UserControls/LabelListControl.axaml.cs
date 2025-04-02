@@ -1,15 +1,14 @@
 using Avalonia.Controls;
 using System;
-using System.ComponentModel;
 using System.Linq;
 using Xeovis.UI.Events;
 using Xeovis.UI.ViewModels;
 
 namespace Xeovis.UI;
 
-public partial class LabelListControl : UserControl, INotifyPropertyChanged
+public partial class LabelListControl : UserControl
 {
-    private LabelListControlViewModel _viewModel;
+    private LabelListControlViewModel _viewModel = new LabelListControlViewModel();
 
     public event EventHandler<ListSelectionChangedEventArgs> ListSelectionChanged;
 

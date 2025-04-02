@@ -3,30 +3,33 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="60"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="60"
 			 MinHeight="60"
-			 MinWidth="100"
-			 xmlns:local="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+			 MinWidth="200"
+			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
              x:Class="Xeovis.UI.LabelInputControl"
 			 x:DataType="vm:LabelInputControlViewModel"
 			 FontFamily="Segoe UI"
 			 FontSize="14">
 
 	<StackPanel Margin="2" Spacing="5">
-
 		<StackPanel Orientation="Horizontal" Spacing="5">
 			<TextBlock x:Name="tbLabel" Text="{Binding Label}" FontWeight="Regular"/>
-			<local:ToolTipControl x:Name="toolTip"/>
+			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>
 
 		<Grid x:Name="txtBtnGrid">
 			<TextBox x:Name="tbInput" BorderThickness="0.6" CornerRadius="2" BorderBrush="DarkGray"
 					 Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsReadOnly}" Focusable="{Binding !IsReadOnly}"
-					 SelectionBrush="SkyBlue" />
-			<Button x:Name="btnClear" Margin="1,1,5,1" Padding="0" FontSize="12" FontWeight="SemiBold" Width="20" Background="White" Foreground="DarkGray"
+					 SelectionBrush="SkyBlue" VerticalContentAlignment="Center"/>
+			<Button x:Name="btnClear" Margin="1,1,5,1" Padding="0" Width="20" Height="20" Background="White" Foreground="Transparent" Opacity="0.5"
 					HorizontalAlignment="Right" VerticalAlignment="Center"
 					 VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-					Content="X" Click="btnClear_Click" IsVisible="{Binding !IsReadOnly}"/>
+					Click="btnClear_Click" IsVisible="{Binding !IsReadOnly}">
+				<Button.Content>
+					<Image x:Name="image" Width="16" Height="16" Source="/Assets/clear.png"/>
+				</Button.Content>
+			</Button>
 		</Grid>
 	</StackPanel>
 

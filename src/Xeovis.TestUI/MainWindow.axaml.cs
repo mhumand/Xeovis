@@ -20,5 +20,11 @@ namespace Xeovis.TestUI
             var dialog = new FrmLabelListControl();
             dialog.ShowDialog(this);
         }
+
+        private void btnCheckBoxControl_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var dialog = new FrmCheckBoxControl();
+            dialog.ShowDialog(this);
+        }
     }
 }

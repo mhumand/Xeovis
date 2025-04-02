@@ -9,7 +9,7 @@
 			 DataContext="{Binding RelativeSource={RelativeSource Self}}"
 			 >
 	
-	<Image x:Name="image" Width="16" Height="16" Source="/Assets/info.png"
+	<Image x:Name="image" Width="18" Height="18" Source="/Assets/info.png"
 		   ToolTip.Tip="{Binding ToolTipText}"/>
 	
 </UserControl>

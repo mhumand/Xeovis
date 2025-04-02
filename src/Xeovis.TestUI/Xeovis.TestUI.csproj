@@ -29,4 +29,8 @@
       <DependentUpon>FrmUserlnputControl.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Dialogs\FrmCheckBoxControl.axaml" />
+  </ItemGroup>
 </Project>

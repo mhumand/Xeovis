@@ -5,7 +5,7 @@ namespace Xeovis.UI;
 
 public partial class LabelInputControl : UserControl
 {
-    public LabelInputControlViewModel _viewModel;
+    public LabelInputControlViewModel _viewModel = new LabelInputControlViewModel();
 
     public LabelInputControl()
     {
