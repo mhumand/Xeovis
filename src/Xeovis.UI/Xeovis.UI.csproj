@@ -17,6 +17,8 @@
     <None Remove="Assets\delete.png" />
     <None Remove="Assets\info.png" />
     <None Remove="Assets\remove.png" />
+    <None Remove="Assets\XeovisLogo.png" />
+    <None Remove="Assets\XeovisLogoLarge.png" />
   </ItemGroup>
 
   <ItemGroup>

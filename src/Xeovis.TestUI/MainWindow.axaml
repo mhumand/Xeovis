@@ -7,18 +7,19 @@
         Title="Xeovis.TestUI"
 		Width="400"
 		Height="500"
+		Icon="/XeovisLogo.png"
 		WindowStartupLocation="CenterScreen">
 
 	<StackPanel Margin="20" Spacing="20">
-		<Button x:Name="btnLabelInputControl" Content="Label Input Control" HorizontalAlignment="Center" Click="btnLabelInputControl_Click" />
+		<Button x:Name="btnLabelInputControl" Width="250" HorizontalContentAlignment="Center" Content="Label Input Control" HorizontalAlignment="Center" Click="btnLabelInputControl_Click" />
 
-		<Button x:Name="btnLabelListControl" Content="Label List Control" HorizontalAlignment="Center" Click="btnLabelListControl_Click" />
+		<Button x:Name="btnLabelListControl" Width="250" HorizontalContentAlignment="Center" Content="Label List Control" HorizontalAlignment="Center" Click="btnLabelListControl_Click" />
 
-		<Button x:Name="btnCheckBoxControl" Content="CheckBox Control" HorizontalAlignment="Center" Click="btnCheckBoxControl_Click" />
+		<Button x:Name="btnCheckBoxControl" Width="250" HorizontalContentAlignment="Center" Content="CheckBox Control" HorizontalAlignment="Center" Click="btnCheckBoxControl_Click" />
 
-		<Button x:Name="btnLabelComboBoxControl" Content="Label ComboBox Control" HorizontalAlignment="Center" Click="btnLabelComboBoxControl_Click" />
+		<Button x:Name="btnLabelComboBoxControl" Width="250" HorizontalContentAlignment="Center" Content="Label ComboBox Control" HorizontalAlignment="Center" Click="btnLabelComboBoxControl_Click" />
 
-		<Button x:Name="btnLabelSpinnerControl" Content="Label Spinner Control" HorizontalAlignment="Center" Click="btnLabelSpinnerControl_Click" />
+		<Button x:Name="btnLabelSpinnerControl" Width="250" HorizontalContentAlignment="Center" Content="Label Spinner Control" HorizontalAlignment="Center" Click="btnLabelSpinnerControl_Click" />
 		
 	</StackPanel>
 </Window>

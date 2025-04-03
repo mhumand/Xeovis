@@ -15,7 +15,6 @@
 	<StackPanel Margin="5" Spacing="5">
 		<StackPanel Orientation="Horizontal" Spacing="5">
 			<TextBlock x:Name="tbLabel" Text="{Binding Label}" FontWeight="Regular"/>
-
 			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>
 
@@ -24,7 +23,7 @@
 				<DataTemplate>
 					<Grid VerticalAlignment="Center">
 						<TextBlock x:Name="txtLabel" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Label}" />
-						<TextBlock x:Name="txtDescription" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="Gray" Text="{Binding Description}" IsVisible="{Binding HasDescription}"/>
+						<TextBlock x:Name="txtDescription" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Light" Text="{Binding Description}" IsVisible="{Binding HasDescription}"/>
 					</Grid>
 				</DataTemplate>
 			</ComboBox.ItemTemplate>

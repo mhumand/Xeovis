@@ -30,16 +30,16 @@
 				<DataTemplate>
 					<Grid>
 						<TextBlock Text="{Binding Label}" Foreground="{Binding Color}" VerticalAlignment="Center"/>
-						<!--todo: add description before button - M.H. 02/04/2025-->
-						<Button x:Name="btnRemoveItem" Padding="0" Width="20" Height="20" FontWeight="SemiBold"  Background="Transparent" Opacity="0.75"
-						HorizontalAlignment="Right" VerticalAlignment="Center"
-						 VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-						Tag="{Binding Tag}" Click="btnRemoveItem_Click" IsVisible="{Binding CanBeRemoved}">
-							<Button.Content>
-								<Image x:Name="image" Width="16" Height="16" Source="/Assets/remove.png"/>
-							</Button.Content>
-						</Button>
-						
+
+						<StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal" Spacing="5">
+							<TextBlock VerticalAlignment="Center" Text="{Binding Description}" FontWeight="Light" IsVisible="{Binding HasDescription}"/>
+							
+							<Button x:Name="btnRemoveItem" Padding="0" Width="20" Height="20" FontWeight="SemiBold"  Background="Transparent" Opacity="0.75" VerticalAlignment="Center"  VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Tag="{Binding Tag}" Click="btnRemoveItem_Click" IsVisible="{Binding CanBeRemoved}">
+								<Button.Content>
+									<Image x:Name="image" Width="16" Height="16" Source="/Assets/remove.png"/>
+								</Button.Content>
+							</Button>
+						</StackPanel>
 					</Grid>
 				</DataTemplate>
 			</ListBox.ItemTemplate>

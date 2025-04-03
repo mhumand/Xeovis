@@ -8,7 +8,9 @@
 		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
 		Width="400"
 		Height="400"
-		WindowStartupLocation="CenterScreen">
+		WindowStartupLocation="CenterScreen"
+		ShowInTaskbar="False"
+		Icon="/XeovisLogo.png">
 
 	<StackPanel Margin="10" Spacing="10">
 		<userControls:LabelSpinnerControl x:Name="lsc1" />

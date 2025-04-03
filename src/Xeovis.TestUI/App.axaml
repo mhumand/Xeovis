@@ -4,7 +4,13 @@
              RequestedThemeVariant="Light">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
-    <Application.Styles>
-        <FluentTheme />
-    </Application.Styles>
+	<Application.Styles>
+		<!--https://theme.xaml.live/-->
+		<FluentTheme>
+			<FluentTheme.Palettes>
+				<ColorPaletteResources x:Key="Light" Accent="Teal" AltHigh="White" AltLow="White" AltMedium="White" AltMediumHigh="White" AltMediumLow="White" BaseHigh="Black" BaseLow="#ff99cccc" BaseMedium="#ff458e8f" BaseMediumHigh="Teal" BaseMediumLow="#ff198c8c" ChromeAltLow="Teal" ChromeBlackHigh="Black" ChromeBlackLow="#ff99cccc" ChromeBlackMedium="Teal" ChromeBlackMediumLow="#ff458e8f" ChromeDisabledHigh="#ff99cccc" ChromeDisabledLow="#ff458e8f" ChromeGray="#ff198c8c" ChromeHigh="#ff99cccc" ChromeLow="#ffc9f0f0" ChromeMedium="#ffbfe9e9" ChromeMediumLow="#ffc9f0f0" ChromeWhite="White" ListLow="#ffbfe9e9" ListMedium="#ff99cccc" RegionColor="White" />
+				<ColorPaletteResources x:Key="Dark" Accent="Teal" AltHigh="Black" AltLow="Black" AltMedium="Black" AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ff004c4c" BaseMedium="#ff74a9a9" BaseMediumHigh="#ff91c0c0" BaseMediumLow="#ff3a7a7a" ChromeAltLow="#ff91c0c0" ChromeBlackHigh="Black" ChromeBlackLow="#ff91c0c0" ChromeBlackMedium="Black" ChromeBlackMediumLow="Black" ChromeDisabledHigh="#ff004c4c" ChromeDisabledLow="#ff74a9a9" ChromeGray="#ff579292" ChromeHigh="#ff579292" ChromeLow="#ff002627" ChromeMedium="#ff003030" ChromeMediumLow="#ff004343" ChromeWhite="White" ListLow="#ff003030" ListMedium="#ff004c4c" RegionColor="Black" />
+			</FluentTheme.Palettes>
+		</FluentTheme>
+	</Application.Styles>
 </Application>
