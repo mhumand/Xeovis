@@ -2,7 +2,7 @@
 
 namespace Xeovis.UI.ViewModels
 {
-    public partial class CheckBoxControlViewModel : LabelControlViewModel
+    public partial class CheckBoxControlViewModel : LabelControlViewModelBase
     {
         [ObservableProperty]
         private string? description;

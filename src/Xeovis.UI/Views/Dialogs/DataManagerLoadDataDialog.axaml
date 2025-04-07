@@ -1,0 +1,22 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+		MinHeight="400"
+		MinWidth="500"
+		Height="600"
+		Width="800"
+		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+		xmlns:vm="using:Xeovis.UI.ViewModels.DialogsViewModels"
+		x:DataType="vm:DataManagerLoadDataViewModel"
+        x:Class="Xeovis.UI.DataManagerLoadDataDialog"
+        Title="Data Manager - Load Data"
+		ShowInTaskbar="False"
+		WindowStartupLocation="CenterScreen"
+		FontFamily="Segoe UI"
+		FontSize="14">
+	
+	
+  Welcome to Avalonia!
+</Window>

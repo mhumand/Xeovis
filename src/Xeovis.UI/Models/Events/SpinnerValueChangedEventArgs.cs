@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Xeovis.UI.Events
+namespace Xeovis.UI.Models.Events
 {
     public class SpinnerValueChangedEventArgs : EventArgs
     {

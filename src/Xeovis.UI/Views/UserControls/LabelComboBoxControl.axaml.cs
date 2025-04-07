@@ -1,13 +1,23 @@
 using Avalonia.Controls;
 using System;
-using Xeovis.UI.Events;
+using Xeovis.UI.Models.Events;
 using Xeovis.UI.ViewModels;
 
 namespace Xeovis.UI;
 
 public partial class LabelComboBoxControl : UserControl
 {
-    private LabelComboBoxControlViewModel _viewModel = new LabelComboBoxControlViewModel();
+    private LabelComboBoxControlViewModel _viewModel;
+
+    public LabelComboBoxControlViewModel ViewModel
+    {
+        get { return _viewModel; }
+        set
+        {
+            _viewModel = value;
+            DataContext = value;
+        }
+    }
 
     public event EventHandler<ListSelectionChangedEventArgs> ListSelectionChanged;
 
@@ -21,12 +31,6 @@ public partial class LabelComboBoxControl : UserControl
     {
         toolTip.ToolTipText = _viewModel.ToolTip;
         toolTip.IsVisible = _viewModel.HasToolTip;
-    }
-
-    public void SetDataContext(LabelComboBoxControlViewModel viewModel)
-    {
-        _viewModel = viewModel;
-        DataContext = viewModel;
     }
 
     private void comboBox_SelectionChanged(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)

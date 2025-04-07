@@ -2,7 +2,7 @@
 
 namespace Xeovis.UI.ViewModels
 {
-    public partial class LabelControlViewModel : ViewModelBase
+    public partial class LabelControlViewModelBase : ViewModelBase
     {
         [ObservableProperty]
         private string? label;

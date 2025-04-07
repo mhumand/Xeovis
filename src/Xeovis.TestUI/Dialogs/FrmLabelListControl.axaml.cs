@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 using Xeovis.UI.ViewModels;
 using Xeovis.UI.Models;
-using System.Collections.ObjectModel;
-using Xeovis.UI.Events;
+using Xeovis.UI.Models.Events;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace Xeovis.TestUI;
 
@@ -20,8 +20,7 @@ public partial class FrmLabelListControl : Window
 
     private void PrepareUI()
     {
-        var vm = new LabelListControlViewModel();
-        vm.Items = new ObservableCollection<ListableItem>()
+        var items = new List<ListableItem>()
         {
             new ListableItem("Item 1"),
             new ListableItem("Item 2"),
@@ -35,6 +34,8 @@ public partial class FrmLabelListControl : Window
             new ListableItem("Item 10"),
         };
 
+        var vm = new LabelListControlViewModel(items);
+
         for (int i = 0; i < vm.Items.Count; i++)
         {
             vm.Items[i].SetTag(i);
@@ -45,18 +46,35 @@ public partial class FrmLabelListControl : Window
         vm.Items[0].SetDescription("item 1");
         vm.Items[1].SetDescription("item 2");
         vm.Items[1].SetColor(Color.DarkRed);
+        vm.Items[5].IsChecked = true;
+        vm.Items[7].IsChecked = true;
 
         vm.Label = "Simple Label";
         vm.ToolTip = "Simple tooltip for label";
         vm.SelectedIndex = 6;
-        llcList.SetDataContext(vm);
+        vm.IsCheckable = true;
+        vm.ItemCheckStateChanged += Vm_ItemCheckStateChanged;
+        llcList.ViewModel = vm;
+    }
+
+    private void Vm_ItemCheckStateChanged(object? sender, CheckStateChangedEventArgs e)
+    {
+        if (e.IsChecked != null)
+            tbCheckedItem.Text = "Check status changed for item " + sender.ToString() + " : " + e.IsChecked.ToString();
+        else
+            tbCheckedItem.Text = "";
     }
 
     private void llcList_ListSelectionChanged(object? sender, ListSelectionChangedEventArgs e)
     {
         if (e.SelectedItem != null)
-            tbSelectedItem.Text = e.SelectedItem.ToString();
+            tbSelectedItem.Text = "Selected Item = " + e.SelectedItem.ToString();
         else
             tbSelectedItem.Text = "";
+    }
+
+    private void btnAdd_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        llcList.ViewModel.Items.Add(new ListableItem("Added Item"));
     }
 }

@@ -40,7 +40,8 @@ public partial class MainMenu : UserControl
 
     public void DataManager_LoadData()
     {
-
+        var loadData = new DataManagerLoadDataDialog();
+        loadData.ShowDialog(_parent);
     }
 
     public void DataManager_Settings()

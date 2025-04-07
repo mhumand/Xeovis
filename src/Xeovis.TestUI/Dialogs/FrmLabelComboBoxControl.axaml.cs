@@ -36,7 +36,7 @@ public partial class FrmLabelComboBoxControl : Window
             new UI.Models.ListableItem("item 14"),
             new UI.Models.ListableItem("item 15"),
         };
-        lcbc1.SetDataContext(vm1);
+        lcbc1.ViewModel = vm1;
         lcbc1.ListSelectionChanged += lcbc1_ListSelectionChanged;
 
         var vm2 = new LabelComboBoxControlViewModel();
@@ -50,16 +50,16 @@ public partial class FrmLabelComboBoxControl : Window
         };
         vm2.ToolTip = "It's a simple tooltip for combobox label";
         vm2.SelectedIndex = 2;
-        lcbc2.SetDataContext(vm2);
+        lcbc2.ViewModel = vm2;
         lcbc2.ListSelectionChanged += lcbc2_ListSelectionChanged;
     }
 
-    private void lcbc2_ListSelectionChanged(object? sender, UI.Events.ListSelectionChangedEventArgs e)
+    private void lcbc2_ListSelectionChanged(object? sender, UI.Models.Events.ListSelectionChangedEventArgs e)
     {
         txt2.Text = $"Selected item in cmbx2 changed to {e.SelectedItem}";
     }
 
-    private void lcbc1_ListSelectionChanged(object? sender, UI.Events.ListSelectionChangedEventArgs e)
+    private void lcbc1_ListSelectionChanged(object? sender, UI.Models.Events.ListSelectionChangedEventArgs e)
     {
         txt1.Text = $"Selected index in cmbx1 changed to {e.SelectedIndex}";
     }

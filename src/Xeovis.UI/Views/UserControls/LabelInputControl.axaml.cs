@@ -5,7 +5,18 @@ namespace Xeovis.UI;
 
 public partial class LabelInputControl : UserControl
 {
-    public LabelInputControlViewModel _viewModel = new LabelInputControlViewModel();
+    private LabelInputControlViewModel _viewModel;
+
+    public LabelInputControlViewModel ViewModel
+    {
+        get { return _viewModel; }
+        set
+        {
+            _viewModel = value;
+            DataContext = value;
+        }
+    }
+
 
     public LabelInputControl()
     {
@@ -36,20 +47,9 @@ public partial class LabelInputControl : UserControl
             btnClear.IsVisible = true;
     }
 
-    public LabelInputControl(LabelInputControlViewModel viewModel = null) : this()
-    {
-        SetDataContext(viewModel);
-    }
-
     public double GetDoubleValue()
     {
         return _viewModel.GetDoubleValue();
-    }
-
-    public void SetDataContext(LabelInputControlViewModel viewModel)
-    {
-        _viewModel = viewModel;
-        DataContext = viewModel;
     }
 
     private void btnClear_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

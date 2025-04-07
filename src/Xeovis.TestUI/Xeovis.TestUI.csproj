@@ -25,10 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Xeovis.UI\Xeovis.UI.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Dialogs\FrmUserlnputControl.axaml.cs">
       <DependentUpon>FrmUserlnputControl.axaml</DependentUpon>
     </Compile>
@@ -40,5 +36,9 @@
 
   <ItemGroup>
     <Content Include="XeovisLogo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Xeovis.UI\Xeovis.UI.csproj" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+using Xeovis.UI.Models.Events;
 
 namespace Xeovis.UI.Models
 {
@@ -25,6 +27,21 @@ namespace Xeovis.UI.Models
         public object Tag => _tag;
 
         public bool HasDescription => !string.IsNullOrWhiteSpace(_description);
+
+        private bool _isChecked;
+
+        public bool IsChecked
+        {
+            get { return _isChecked; }
+            set
+            {
+                CheckStateChanged?.Invoke(this, new CheckStateChangedEventArgs(value, this));
+                _isChecked = value;
+            }
+        }
+
+        public event EventHandler<CheckStateChangedEventArgs> CheckStateChanged;
+
 
         public ListableItem()
         {
