@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="400"
+		Width="700"
+		Height="400"
+		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+        x:Class="Xeovis.TestUI.FrmLabelBrowseDirectoryControl"
+        Title="FrmLabelBrowseDirectoryControl"
+		WindowStartupLocation="CenterScreen"
+		ShowInTaskbar="False">
+
+	<StackPanel Margin="15" Spacing="10">
+		<userControls:LabelBrowseDirectoryControl x:Name="lbccFileBrowseExcel" />
+		<TextBlock x:Name="txtFileExcel" />
+		<userControls:LabelBrowseDirectoryControl x:Name="lbccFolderBrowse"/>
+		<TextBlock x:Name="txtFolder" />
+	</StackPanel>
+</Window>

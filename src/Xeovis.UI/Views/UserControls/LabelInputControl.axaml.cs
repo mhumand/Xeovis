@@ -1,4 +1,6 @@
 using Avalonia.Controls;
+using System;
+using Xeovis.UI.Models.Events;
 using Xeovis.UI.ViewModels;
 
 namespace Xeovis.UI;
@@ -17,6 +19,7 @@ public partial class LabelInputControl : UserControl
         }
     }
 
+    public event EventHandler<TextInputChangedEventArgs> TextInputChanged;
 
     public LabelInputControl()
     {
@@ -25,15 +28,24 @@ public partial class LabelInputControl : UserControl
         btnClear.IsVisible = false;
         Loaded += LabelInputControl_Loaded;
         tbInput.KeyDown += tbInput_KeyDown;
+        tbInput.TextChanged += tbInput_TextChanged;
         txtBtnGrid.PointerEntered += txtBtnGrid_PointerEntered;
         txtBtnGrid.PointerExited += txtBtnGrid_PointerExited;
+    }
+
+    private void tbInput_TextChanged(object? sender, TextChangedEventArgs e)
+    {
+        TextInputChanged?.Invoke(this, new TextInputChangedEventArgs(tbInput.Text));
     }
 
     private void LabelInputControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         btnClear.IsVisible = false;
-        toolTip.IsVisible = _viewModel.HasToolTip;
-        toolTip.ToolTipText = _viewModel.ToolTip;
+        if (_viewModel != null)
+        {
+            toolTip.IsVisible = _viewModel.HasToolTip;
+            toolTip.ToolTipText = _viewModel.ToolTip;
+        }
     }
 
     private void txtBtnGrid_PointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
@@ -43,13 +55,8 @@ public partial class LabelInputControl : UserControl
 
     private void txtBtnGrid_PointerEntered(object? sender, Avalonia.Input.PointerEventArgs e)
     {
-        if (!_viewModel.IsReadOnly)
+        if (_viewModel != null && !_viewModel.IsReadOnly)
             btnClear.IsVisible = true;
-    }
-
-    public double GetDoubleValue()
-    {
-        return _viewModel.GetDoubleValue();
     }
 
     private void btnClear_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

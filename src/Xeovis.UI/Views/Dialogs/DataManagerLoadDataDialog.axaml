@@ -16,7 +16,16 @@
 		WindowStartupLocation="CenterScreen"
 		FontFamily="Segoe UI"
 		FontSize="14">
-	
-	
-  Welcome to Avalonia!
+
+
+	<DockPanel>
+		<StackPanel DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Left">
+			
+		</StackPanel>
+
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="15" Margin="15" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+			<Button x:Name="btnCancel" Width="70" Height="30" Content="Cancel" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsCancel="True"/>
+			<Button x:Name="btnOk" Width="70" Height="30" Content="OK" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsDefault="True"/>
+		</StackPanel>
+	</DockPanel>
 </Window>

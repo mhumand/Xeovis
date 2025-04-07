@@ -5,14 +5,14 @@ namespace Xeovis.UI.ViewModels
     public partial class LabelInputControlViewModel : LabelControlViewModelBase
     {
         [ObservableProperty]
-        private object value;
+        private string value;
 
         public LabelInputControlViewModel()
         {
             
         }
 
-        public LabelInputControlViewModel(string label, object value, bool isReadOnly = false)
+        public LabelInputControlViewModel(string label, string value, bool isReadOnly = false)
         {
             Label = label;
             Value = value;

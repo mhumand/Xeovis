@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\browse.png" />
     <None Remove="Assets\clear.png" />
     <None Remove="Assets\delete.png" />
     <None Remove="Assets\info.png" />
@@ -50,10 +51,6 @@
     <Compile Update="Views\MainMenu.axaml.cs">
       <DependentUpon>MainMenu.axaml</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Helpers\" />
   </ItemGroup>
 
   <ItemGroup>

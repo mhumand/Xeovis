@@ -17,6 +17,7 @@
 		<userControls:LabelInputControl x:Name="licSimpleTextReadOnly"/>
 		<userControls:LabelInputControl x:Name="licNumber"/>
 
+		<TextBlock x:Name="txtTest1" />
 	</StackPanel>
 
 </Window>

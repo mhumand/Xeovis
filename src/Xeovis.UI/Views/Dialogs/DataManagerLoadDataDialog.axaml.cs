@@ -5,7 +5,18 @@ namespace Xeovis.UI;
 
 public partial class DataManagerLoadDataDialog : Window
 {
-    private DataManagerLoadDataViewModel _viewModel = new DataManagerLoadDataViewModel();
+    private DataManagerLoadDataViewModel _viewModel;
+
+    public DataManagerLoadDataViewModel ViewModel
+    {
+        get { return _viewModel; }
+        set
+        {
+            _viewModel = value;
+            DataContext = value;
+        }
+    }
+
 
     public DataManagerLoadDataDialog()
     {
