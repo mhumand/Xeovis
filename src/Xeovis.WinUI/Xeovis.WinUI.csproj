@@ -1,217 +1,44 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6A790488-BA10-409A-AECA-C80DF0DC1872}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>DatabaseReader</RootNamespace>
-    <AssemblyName>DatabaseReader</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="ExcelDataReader, Version=3.7.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
-      <HintPath>..\packages\ExcelDataReader.3.7.0\lib\net462\ExcelDataReader.dll</HintPath>
-    </Reference>
-    <Reference Include="ExcelDataReader.DataSet, Version=3.7.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
-      <HintPath>..\packages\ExcelDataReader.DataSet.3.7.0\lib\net462\ExcelDataReader.DataSet.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing.Common, Version=9.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Drawing.Common.9.0.0-rc.1.24451.1\lib\net462\System.Drawing.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="System.Text.Encodings.Web, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Text.Encodings.Web.8.0.0\lib\net462\System.Text.Encodings.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Json, Version=8.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Text.Json.8.0.5\lib\net462\System.Text.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="UIAutomationClient" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="ZedGraph, Version=6.0.0.0, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
-      <HintPath>packages\ZedGraph.6.0.0-alpha0001\lib\net47\ZedGraph.dll</HintPath>
-    </Reference>
-    <Reference Include="ZedGraph.WinForms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
-      <HintPath>packages\ZedGraph.WinForms.6.0.0-alpha0001\lib\net47\ZedGraph.WinForms.dll</HintPath>
-    </Reference>
+    <PackageReference Include="ExcelDataReader" Version="3.7.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="ZedGraph" Version="6.0.0-alpha0001" />
+    <PackageReference Include="ZedGraph.WinForms" Version="6.0.0-alpha0001" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="FrmDataManager.cs">
+    <ProjectReference Include="..\Xeovis.Domain\Xeovis.Domain.csproj" />
+    <ProjectReference Include="..\Xeovis.Helpers\Xeovis.Helpers.csproj" />
+    <ProjectReference Include="..\Xeovis.Persistence\Xeovis.Persistence.csproj" />
+    <ProjectReference Include="..\Xeovis.WinControls\Xeovis.WinControls.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="FrmDataManager.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmDataManager.Designer.cs">
-      <DependentUpon>FrmDataManager.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FrmMain.cs">
+    <Compile Update="FrmMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmMain.Designer.cs">
-      <DependentUpon>FrmMain.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FrmMctcPlotSettings.cs">
+    <Compile Update="FrmMctcPlotSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmMctcPlotSettings.Designer.cs">
-      <DependentUpon>FrmMctcPlotSettings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FrmReadMctc.cs">
+    <Compile Update="FrmReadMctc.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmReadMctc.Designer.cs">
-      <DependentUpon>FrmReadMctc.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FrmVariableDefinitions.cs">
+    <Compile Update="FrmVariableDefinitions.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmVariableDefinitions.Designer.cs">
-      <DependentUpon>FrmVariableDefinitions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FrmDataManager.resx">
-      <DependentUpon>FrmDataManager.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FrmMain.resx">
-      <DependentUpon>FrmMain.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FrmMctcPlotSettings.resx">
-      <DependentUpon>FrmMctcPlotSettings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FrmReadMctc.resx">
-      <DependentUpon>FrmReadMctc.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FrmVariableDefinitions.resx">
-      <DependentUpon>FrmVariableDefinitions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ZoomIn16x16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ZoomIn32x32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ZoomOut16x16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ZoomOut32x32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ZoomRectangle16x16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ZoomRectangle32x32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ZoomReset16x16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ZoomReset32x32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Xeovis.Base\Xeovis.Base.csproj">
-      <Project>{9948f908-7783-4645-8f42-14c9dff3263d}</Project>
-      <Name>Xeovis.Base</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Xeovis.Domain\Xeovis.Domain.csproj">
-      <Project>{219cf3b9-b593-4dcd-85a5-0bd745c9d16b}</Project>
-      <Name>Xeovis.Domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Xeovis.Persistence\Xeovis.Persistence.csproj">
-      <Project>{dfe1f649-e839-42b2-a2b4-5dd3a3cf8444}</Project>
-      <Name>Xeovis.Persistence</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Xeovis.WinControls\Xeovis.WinControls.csproj">
-      <Project>{1f1d9ca8-d870-4fec-91c2-ce3578f77bbf}</Project>
-      <Name>Xeovis.WinControls</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Xeovis.Base\Xeovis.Base.csproj" />
+    <ProjectReference Include="..\Xeovis.Helpers\Xeovis.Helpers.csproj" />
   </ItemGroup>
 
 </Project>
