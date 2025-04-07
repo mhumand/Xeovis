@@ -7,7 +7,6 @@
         Title="Xeovis.TestUI"
 		Width="400"
 		Height="500"
-		Icon="/XeovisLogo.png"
 		WindowStartupLocation="CenterScreen">
 
 	<StackPanel Margin="20" Spacing="20">

@@ -36,7 +36,7 @@ public partial class LabelInputControl : UserControl
             btnClear.IsVisible = true;
     }
 
-    public LabelInputControl(LabelInputControlViewModel viewModel = null) : base()
+    public LabelInputControl(LabelInputControlViewModel viewModel = null) : this()
     {
         SetDataContext(viewModel);
     }

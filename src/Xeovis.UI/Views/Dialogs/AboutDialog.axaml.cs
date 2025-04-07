@@ -2,10 +2,10 @@ using Avalonia.Controls;
 
 namespace Xeovis.UI;
 
-public partial class About : Window
+public partial class AboutDialog : Window
 {
     public string Description => GetDescriptionText();
-    public About()
+    public AboutDialog()
     {
         InitializeComponent();
     }

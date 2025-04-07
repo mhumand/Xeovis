@@ -5,7 +5,7 @@ namespace Xeovis.UI.Views
 {
     public partial class MainWindow : Window
     {
-        private MainMenu _menu;
+        private MainMenu? _menu;
         private MainWindowViewModel _viewModel;
 
         public MainWindow()

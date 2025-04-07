@@ -30,7 +30,7 @@ public partial class LabelListControl : UserControl
         ListSelectionChanged?.Invoke(sender, new ListSelectionChangedEventArgs(lbItems.SelectedItem, lbItems.SelectedIndex));
     }
 
-    public LabelListControl(LabelListControlViewModel viewModel) : base()
+    public LabelListControl(LabelListControlViewModel viewModel) : this()
     {
         SetDataContext(viewModel);
     }

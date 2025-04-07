@@ -9,8 +9,7 @@
 		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
         Title="FrmCheckBoxControl"
 		WindowStartupLocation="CenterScreen"
-		ShowInTaskbar="False"
-		Icon="/XeovisLogo.png">
+		ShowInTaskbar="False">
 
 	<StackPanel Margin="10" Spacing="10">
 

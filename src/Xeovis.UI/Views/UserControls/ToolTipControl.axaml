@@ -6,8 +6,7 @@
 			 Width="16"
 			 Height="16"
              x:Class="Xeovis.UI.ToolTipControl"
-			 DataContext="{Binding RelativeSource={RelativeSource Self}}"
-			 >
+			 DataContext="{Binding RelativeSource={RelativeSource Self}}">
 	
 	<Image x:Name="image" Width="18" Height="18" Source="/Assets/info.png"
 		   ToolTip.Tip="{Binding ToolTipText}"/>

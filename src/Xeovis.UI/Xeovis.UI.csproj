@@ -6,6 +6,9 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <PackageIcon>XeovisLogoLarge.png</PackageIcon>
+    <ApplicationIcon>Assets\XeovisLogo.ico</ApplicationIcon>
+    <AssemblyName>Xeovis.UI</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,8 +20,12 @@
     <None Remove="Assets\delete.png" />
     <None Remove="Assets\info.png" />
     <None Remove="Assets\remove.png" />
+    <None Remove="Assets\XeovisLogo.ico" />
     <None Remove="Assets\XeovisLogo.png" />
-    <None Remove="Assets\XeovisLogoLarge.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\XeovisLogo.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,5 +54,12 @@
 
   <ItemGroup>
     <Folder Include="Views\Helpers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Assets\XeovisLogoLarge.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 </Project>

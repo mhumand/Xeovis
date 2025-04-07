@@ -6,9 +6,10 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <ApplicationIcon>XeovisLogo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="XeovisLogo.png" />
+    <None Remove="XeovisLogo.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AvaloniaResource Include="XeovisLogo.png" />
+    <Content Include="XeovisLogo.ico" />
   </ItemGroup>
 </Project>

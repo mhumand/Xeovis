@@ -17,7 +17,7 @@ namespace Xeovis.UI.ViewModels
             
         }
 
-        public CheckBoxControlViewModel(string label, string description = null, bool isChecked = false) : base()
+        public CheckBoxControlViewModel(string label, string description = null, bool isChecked = false) : this()
         {
             Label = label;
             Description = description;

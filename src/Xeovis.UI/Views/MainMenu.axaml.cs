@@ -9,12 +9,11 @@ public partial class MainMenu : UserControl
 
     public MainMenu()
     {
-
+        InitializeComponent();
     }
 
-    public MainMenu(Window parnetWindow) : base()
+    public MainMenu(Window parnetWindow) : this()
     {
-        InitializeComponent();
         DataContext = this;
         _parent = parnetWindow;
     }
@@ -39,7 +38,7 @@ public partial class MainMenu : UserControl
         Environment.Exit(0);
     }
 
-    public void DataManager_ReadData()
+    public void DataManager_LoadData()
     {
 
     }
@@ -61,7 +60,7 @@ public partial class MainMenu : UserControl
 
     public void About()
     {
-        var about = new About();
+        var about = new AboutDialog();
         about.ShowDialog(_parent);
     }
 }

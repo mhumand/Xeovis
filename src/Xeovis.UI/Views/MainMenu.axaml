@@ -4,8 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="250"
              x:Class="Xeovis.UI.MainMenu"
-			 DataContext="{Binding RelativeSource={RelativeSource Self}}"
-			 >
+			 DataContext="{Binding RelativeSource={RelativeSource Self}}">
 	
 		<Menu VerticalAlignment="Top">
 			<MenuItem Header="_Project">
@@ -17,7 +16,7 @@
 				<MenuItem Header="_Quit" Command="{Binding Project_Quit}"/>
 			</MenuItem>
 			<MenuItem Header="_Data Manager">
-				<MenuItem Header="_Read Data" Command="{Binding DataManager_ReadData}"/>
+				<MenuItem Header="_Load Data" Command="{Binding DataManager_LoadData}"/>
 				<MenuItem Header="_Settings" Command="{Binding DataManager_Settings}"/>
 			</MenuItem>
 			<MenuItem Header="_MCTC Reader">

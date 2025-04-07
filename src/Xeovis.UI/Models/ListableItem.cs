@@ -32,13 +32,13 @@ namespace Xeovis.UI.Models
             CanBeRemoved = false;
         }
 
-        public ListableItem(object item) : base()
+        public ListableItem(object item) : this()
         {
             _label = item.ToString().Trim();
             _tag = item;
         }
 
-        public ListableItem(string label, object tag = null, bool isVisible = true, string description = null) : base()
+        public ListableItem(string label, object tag = null, bool isVisible = true, string description = null) : this()
         {
             _label = label.Trim();
             _tag = tag;
