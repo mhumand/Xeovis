@@ -15,7 +15,7 @@ namespace Xeovis.WinUI
     public partial class FrmDataManager : Form
     {
         private List<Experiment> _Experiments;
-        private ContextMenu _contextMenu;
+        private ContextMenuStrip _contextMenu;
 
         public FrmDataManager()
         {
@@ -71,7 +71,7 @@ namespace Xeovis.WinUI
             }
 
             tabControlMain.Visible = true;
-            cklbxExperiments.ContextMenu = _contextMenu;
+            cklbxExperiments.ContextMenuStrip = _contextMenu;
         }
 
         private void btnReadExperiments_Click(object sender, EventArgs e)
@@ -107,7 +107,7 @@ namespace Xeovis.WinUI
         {
             DirectoryInfo info = experiment.DirectoryInfo;
             if (info == null) return;
-            List<FileInfo> subFiles = info.GetFiles("*.xls", SearchOption.TopDirectoryOnly).ToList();
+            List<FileInfo> subFiles = info.GetFiles().Where(f => f.Extension.StartsWith(".xls")).ToList();
             if (ckbxSubDirectory.Checked)
             {
                 string subPath = info.FullName + $"\\{txtSubDirectory.Text}";
@@ -125,6 +125,8 @@ namespace Xeovis.WinUI
             experiment.Files = subFiles;
             var expFile = subFiles.FirstOrDefault(f => f.Name.ToLower().Contains("experiment.xls"));
             if (expFile == null) return;
+
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = File.Open(expFile.FullName, FileMode.Open, FileAccess.Read))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
@@ -427,19 +429,19 @@ namespace Xeovis.WinUI
 
         private void MakeContextMenu()
         {
-            _contextMenu = new ContextMenu();
-            MenuItem selectAll = new MenuItem("Select All", SelectAll_Click);
-            MenuItem selectNone = new MenuItem("Select None", SelectNone_Click);
-            _contextMenu.MenuItems.Add(selectAll);
-            _contextMenu.MenuItems.Add(selectNone);
+            _contextMenu = new ContextMenuStrip();
+            ToolStripMenuItem selectAll = new ToolStripMenuItem("Select All", null, SelectAll_Click);
+            ToolStripMenuItem selectNone = new ToolStripMenuItem("Select None", null, SelectNone_Click);
+            _contextMenu.Items.Add(selectAll);
+            _contextMenu.Items.Add(selectNone);
 
         }
 
         private void SelectNone_Click(object sender, EventArgs e)
         {
-            MenuItem menuItem = sender as MenuItem;
+            ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
             if (menuItem == null) return;
-            ContextMenu menu = menuItem.GetContextMenu();
+            ContextMenuStrip menu = menuItem.Owner as ContextMenuStrip;
             if (menu == null) return;
             var cklbx = menu.SourceControl as CheckedListBox;
             if (cklbx == null) return;
@@ -451,9 +453,9 @@ namespace Xeovis.WinUI
 
         private void SelectAll_Click(object sender, EventArgs e)
         {
-            MenuItem menuItem = sender as MenuItem;
+            ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
             if (menuItem == null) return;
-            ContextMenu menu = menuItem.GetContextMenu();
+            ContextMenuStrip menu = menuItem.Owner as ContextMenuStrip;
             if (menu == null) return;
             var cklbx = menu.SourceControl as CheckedListBox;
             if (cklbx == null) return;
@@ -532,7 +534,7 @@ namespace Xeovis.WinUI
             cklbx.CheckOnClick = true;
             cklbx.BorderStyle = BorderStyle.None;
             cklbx.Dock = DockStyle.Fill;
-            cklbx.ContextMenu = _contextMenu;
+            cklbx.ContextMenuStrip = _contextMenu;
             cklbx.Tag = filterType;
 
             groupBox.Controls.Add(cklbx);
@@ -598,7 +600,7 @@ namespace Xeovis.WinUI
             cklbx.CheckOnClick = true;
             cklbx.BorderStyle = BorderStyle.None;
             cklbx.Dock = DockStyle.Fill;
-            cklbx.ContextMenu = _contextMenu;
+            cklbx.ContextMenuStrip = _contextMenu;
             cklbx.Tag = filterType;
 
             groupBox.Controls.Add(cklbx);
@@ -638,7 +640,7 @@ namespace Xeovis.WinUI
             cmbxDMAdvancedPhaseList.SelectedIndexChanged += CmbxDMAdvancedPhaseList_SelectedIndexChanged;
             cmbxDMAdvancedPhaseList.SelectedIndex = 0;
 
-            cklbxDMAdvancedOtherPhases.ContextMenu = _contextMenu;
+            cklbxDMAdvancedOtherPhases.ContextMenuStrip = _contextMenu;
             cklbxDMAdvancedOtherPhases.ColumnWidth = 60;
             var oxides = Enum.GetValues(typeof(OxideType));
             foreach (var oxide in oxides)
@@ -757,7 +759,7 @@ namespace Xeovis.WinUI
             int counter = 1;
             foreach (Experiment exp in cklbxExperiments.CheckedItems)
             {
-                if (exp == null) return;
+                if (exp == null || exp.Runs.Count == 0) return;
                 var minT = exp.Runs.Min(r => r.Temperature);
                 var maxT = exp.Runs.Max(r => r.Temperature);
                 var minP = exp.Runs.Min(r => r.Pressure);

@@ -18,7 +18,7 @@ namespace Xeovis.WinUI
     {
         private string _directory;
         private List<string> _files;
-        private ContextMenu _contextMenu;
+        private ContextMenuStrip _contextMenu;
         private DataFile _dataFile;
         private ProjectSettings _projectSettings;
 
@@ -40,7 +40,7 @@ namespace Xeovis.WinUI
             MakeContextMenu();
             _mctcPlotSettings = new MctcPlotSettings();
             _projectSettings = new ProjectSettings();
-            tvCaseSelection.ContextMenu = _contextMenu;
+            tvCaseSelection.ContextMenuStrip = _contextMenu;
             tcBatchDetails.TableRowSelected += tcPlotInfo_RowSelected;
             ccMctcPlot.ChartPointSelected += ccMctcPlot_ChartPointSelected;
             ccMctcPlot.ClearPlot();
@@ -92,11 +92,11 @@ namespace Xeovis.WinUI
 
         private void MakeContextMenu()
         {
-            _contextMenu = new ContextMenu();
-            MenuItem checkAll = new MenuItem("Check All", CheckAll_Click);
-            MenuItem checkNone = new MenuItem("Check None", CheckNone_Click);
-            _contextMenu.MenuItems.Add(checkAll);
-            _contextMenu.MenuItems.Add(checkNone);
+            _contextMenu = new ContextMenuStrip();
+            ToolStripMenuItem checkAll = new ToolStripMenuItem("Check All", null, CheckAll_Click);
+            ToolStripMenuItem checkNone = new ToolStripMenuItem("Check None", null, CheckNone_Click);
+            _contextMenu.Items.Add(checkAll);
+            _contextMenu.Items.Add(checkNone);
         }
 
         private void CheckNone_Click(object sender, EventArgs e)

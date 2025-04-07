@@ -1,122 +1,34 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1F1D9CA8-D870-4FEC-91C2-CE3578F77BBF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Xeovis.WinControls</RootNamespace>
-    <AssemblyName>Xeovis.WinControls</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing.Common, Version=9.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Drawing.Common.9.0.0-rc.1.24451.1\lib\net462\System.Drawing.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="ZedGraph, Version=6.0.0.0, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZedGraph.6.0.0-alpha0001\lib\net47\ZedGraph.dll</HintPath>
-    </Reference>
-    <Reference Include="ZedGraph.WinForms, Version=6.0.0.0, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZedGraph.WinForms.6.0.0-alpha0001\lib\net47\ZedGraph.WinForms.dll</HintPath>
-    </Reference>
+    <PackageReference Include="ExcelDataReader" Version="3.7.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="ZedGraph" Version="6.0.0-alpha0001" />
+    <PackageReference Include="ZedGraph.WinForms" Version="6.0.0-alpha0001" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="CustomControls\ChartControl.cs">
+    <ProjectReference Include="..\Xeovis.Domain\Xeovis.Domain.csproj" />
+    <ProjectReference Include="..\Xeovis.Helpers\Xeovis.Helpers.csproj" />
+    <ProjectReference Include="..\Xeovis.Persistence\Xeovis.Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="CustomControls\ChartControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="CustomControls\ChartControl.Designer.cs">
-      <DependentUpon>ChartControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CustomControls\TableControl.cs">
+    <Compile Update="CustomControls\TableControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="CustomControls\TableControl.Designer.cs">
-      <DependentUpon>TableControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Definitions\ChartModel.cs" />
-    <Compile Include="Definitions\CurveModel.cs" />
-    <Compile Include="Events\ChartDoubleClickedEventArgs.cs" />
-    <Compile Include="Events\ChartPointSelectedEventArgs.cs" />
-    <Compile Include="Events\TableCellDoubleClickedEventArgs.cs" />
-    <Compile Include="Events\TableRowSelectedEventArgs.cs" />
-    <Compile Include="Helpers\ChartUtilities.cs" />
-    <Compile Include="Helpers\TreeViewExtensions.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Enums\CurveType.cs" />
-    <Compile Include="Enums\FilterType.cs" />
-    <Compile Include="Enums\PlotPointsGroupingType.cs" />
-    <EmbeddedResource Include="CustomControls\ChartControl.resx">
-      <DependentUpon>ChartControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CustomControls\TableControl.resx">
-      <DependentUpon>TableControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Xeovis.Base\Xeovis.Base.csproj">
-      <Project>{9948f908-7783-4645-8f42-14c9dff3263d}</Project>
-      <Name>Xeovis.Base</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

@@ -13,6 +13,12 @@ namespace Xeovis.Domain
         public List<FileInfo> Files { get; set; }
         public List<PhaseType> PhasesWithData { get; set; }
 
+        public Experiment()
+        {
+            Name = "#NullExp";
+            DirectoryInfo = new DirectoryInfo(Name);
+        }
+
         public Experiment(string name)
         {
             Name = name;
