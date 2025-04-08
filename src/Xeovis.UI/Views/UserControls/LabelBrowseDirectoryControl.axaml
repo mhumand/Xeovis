@@ -2,9 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="60"
-			 MinHeight="60"
-			 MinWidth="400"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="56"
+			 MinHeight="56"
+			 MinWidth="200"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
 			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
 			 x:DataType="vm:LabelBrowseDirectoryControlViewModel"
@@ -13,13 +13,13 @@
 	<UserControl.Styles>
 		<StyleInclude Source="/Views/Styles/Textboxes.axaml"/>
 		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
 	</UserControl.Styles>
 	
-	<StackPanel Spacing="10">
+	<StackPanel Spacing="5">
 		<StackPanel Orientation="Horizontal" Spacing="5">
 			<TextBlock x:Name="tbLabel"
-					   Text="{Binding Label}"
-					   FontWeight="Regular"/>
+					   Text="{Binding Label}"/>
 			
 			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>

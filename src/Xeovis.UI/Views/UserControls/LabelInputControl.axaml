@@ -8,21 +8,19 @@
 			 MinWidth="200"
 			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
              x:Class="Xeovis.UI.LabelInputControl"
-			 x:DataType="vm:LabelInputControlViewModel"
-			 FontFamily="Segoe UI"
-			 FontSize="14">
+			 x:DataType="vm:LabelInputControlViewModel">
 
 	<UserControl.Styles>
 		<StyleInclude Source="/Views/Styles/Textboxes.axaml"/>
 		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
 	</UserControl.Styles>
 
-	<StackPanel Margin="2" Spacing="5">
+	<StackPanel Spacing="5">
 		<StackPanel Orientation="Horizontal" Spacing="5">
 			
 			<TextBlock x:Name="tbLabel"
-					   Text="{Binding Label}"
-					   FontWeight="Regular"/>
+					   Text="{Binding Label}"/>
 			
 			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>

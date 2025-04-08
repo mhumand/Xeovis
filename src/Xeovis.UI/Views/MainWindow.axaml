@@ -10,6 +10,7 @@
         Icon="/Assets/XeovisLogo.png"
         Title="Xeovis"
 		WindowStartupLocation="CenterScreen"
+		ShowInTaskbar="True"
 		WindowState="Maximized"
 		FontSize="14">
 

@@ -21,24 +21,26 @@ namespace Xeovis.UI.ViewModels
         [ObservableProperty]
         private bool isCheckable;
 
+        [ObservableProperty]
+        private bool isRemovable;
+
         public event EventHandler<CheckStateChangedEventArgs> ItemCheckStateChanged;
 
         public LabelListControlViewModel()
         {
             selectedIndex = 0;
-        }
-
-        private void Items_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            foreach (var item in Items)
-            {
-                item.CheckStateChanged -= Item_CheckStateChanged;
-                item.CheckStateChanged += Item_CheckStateChanged;
-            }
+            Items = new ObservableCollection<ListableItem>();
         }
 
         public LabelListControlViewModel(List<ListableItem> items) : this()
         {
+            SetItems(items);
+        }
+
+        public void SetItems(List<ListableItem> items)
+        {
+            Items.Clear();
+            if (items == null) return;
             Items = new ObservableCollection<ListableItem>(items);
             foreach (var item in Items)
                 item.CheckStateChanged += Item_CheckStateChanged;
@@ -50,5 +52,15 @@ namespace Xeovis.UI.ViewModels
         {
             ItemCheckStateChanged?.Invoke(sender, e);
         }
+
+        private void Items_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            foreach (var item in Items)
+            {
+                item.CheckStateChanged -= Item_CheckStateChanged;
+                item.CheckStateChanged += Item_CheckStateChanged;
+            }
+        }
+
     }
 }

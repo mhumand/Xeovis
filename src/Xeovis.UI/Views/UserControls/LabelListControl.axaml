@@ -9,12 +9,17 @@
 			 MinHeight="100"
 			 x:Class="Xeovis.UI.LabelListControl"
 			 x:DataType="vm:LabelListControlViewModel"
-			 FontFamily="Segoe UI"
-			 FontSize="14"
 			 x:Name="control">
 
 	<UserControl.Styles>
 		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
+
+		<Style Selector="ListBoxItem">
+			<Setter Property="Height" Value="35"></Setter>
+			<Setter Property="Padding" Value="10,0,5,0"></Setter>
+		</Style>
+		
 	</UserControl.Styles>
 	
 	<!--I'm using Grid instead of StackPanel becuase the vertical scrollbar in ListBox
@@ -28,19 +33,21 @@
 		<StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="5">
 			<TextBlock x:Name="tbLabel"
 					   VerticalAlignment="Center"
-					   Text="{Binding Label}"
-					   FontWeight="Regular"/>
+					   Text="{Binding Label}"/>
 			<userControls:ToolTipControl x:Name="toolTip" VerticalAlignment="Center"/>
 		</StackPanel>
 
 		<ListBox Grid.Row="1" x:Name="lbItems"
+				 IsEnabled="{Binding !IsReadOnly}"
 				 ItemsSource="{Binding Items}"
 				 SelectionMode="AlwaysSelected"
 				 SelectedIndex="{Binding SelectedIndex}">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
-					<Grid>
-						<TextBlock Text="{Binding Label}" Foreground="{Binding Color}" VerticalAlignment="Center"/>
+					<Grid VerticalAlignment="Center">
+						<TextBlock Text="{Binding Label}"
+								   Foreground="{Binding Color}"
+								   VerticalAlignment="Center"/>
 
 						<StackPanel HorizontalAlignment="Right"
 									VerticalAlignment="Center"
@@ -63,7 +70,7 @@
 									Opacity="0.75"
 									Tag="{Binding Tag}"
 									Click="btnRemoveItem_Click"
-									IsVisible="{Binding CanBeRemoved}">
+									IsVisible="{Binding #control.((vm:LabelListControlViewModel)DataContext).IsRemovable}">
 								<Button.Content>
 									<Image x:Name="image" Width="16" Height="16" Source="/Assets/remove.png"/>
 								</Button.Content>

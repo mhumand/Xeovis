@@ -21,6 +21,7 @@ public partial class LabelListControl : UserControl
     }
 
     public event EventHandler<ListSelectionChangedEventArgs> ListSelectionChanged;
+    public event EventHandler<ListableItemRemovedEventArgs> ItemRemoved;
 
     public LabelListControl()
     {
@@ -50,5 +51,6 @@ public partial class LabelListControl : UserControl
         var item = _viewModel.Items.FirstOrDefault(i => i.Tag == btn.Tag);
         if (item == null) return;
         _viewModel.Items.Remove(item);
+        ItemRemoved?.Invoke(this, new ListableItemRemovedEventArgs(item));
     }
 }

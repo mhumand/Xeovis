@@ -9,8 +9,8 @@
 			 DataContext="{Binding RelativeSource={RelativeSource Self}}">
 	
 	<Image x:Name="image"
-		   Width="17"
-		   Height="17"
+		   Width="16"
+		   Height="16"
 		   Source="/Assets/info.png"
 		   ToolTip.Tip="{Binding ToolTipText}"/>
 	

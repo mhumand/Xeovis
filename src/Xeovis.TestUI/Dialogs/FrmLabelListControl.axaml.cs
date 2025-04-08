@@ -38,14 +38,12 @@ public partial class FrmLabelListControl : Window
 
         for (int i = 0; i < vm.Items.Count; i++)
         {
-            vm.Items[i].SetTag(i);
+            vm.Items[i].Tag = i;
         }
 
-        vm.Items[0].CanBeRemoved = true;
-        vm.Items[4].CanBeRemoved = true;
-        vm.Items[0].SetDescription("item 1");
-        vm.Items[1].SetDescription("item 2");
-        vm.Items[1].SetColor(Color.DarkRed);
+        vm.Items[0].Description = "item 1";
+        vm.Items[1].Description = "item 2";
+        vm.Items[1].Color = Color.DarkRed;
         vm.Items[5].IsChecked = true;
         vm.Items[7].IsChecked = true;
 
@@ -53,6 +51,7 @@ public partial class FrmLabelListControl : Window
         vm.ToolTip = "Simple tooltip for label";
         vm.SelectedIndex = 6;
         vm.IsCheckable = true;
+        vm.IsRemovable = true;
         vm.ItemCheckStateChanged += Vm_ItemCheckStateChanged;
         llcList.ViewModel = vm;
     }

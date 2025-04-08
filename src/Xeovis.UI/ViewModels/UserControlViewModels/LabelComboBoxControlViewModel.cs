@@ -15,6 +15,7 @@ namespace Xeovis.UI.ViewModels
         public LabelComboBoxControlViewModel()
         {
             SelectedIndex = 0;
+            Items = new ObservableCollection<ListableItem>();
         }
     }
 }
