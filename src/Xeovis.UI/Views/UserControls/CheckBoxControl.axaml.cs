@@ -7,7 +7,7 @@ namespace Xeovis.UI;
 
 public partial class CheckBoxControl : UserControl
 {
-    private CheckBoxControlViewModel _viewModel;
+    private CheckBoxControlViewModel _viewModel = new CheckBoxControlViewModel();
 
     public CheckBoxControlViewModel ViewModel
     {

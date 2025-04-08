@@ -8,7 +8,7 @@ namespace Xeovis.UI;
 
 public partial class LabelListControl : UserControl
 {
-    private LabelListControlViewModel _viewModel;
+    private LabelListControlViewModel _viewModel = new LabelListControlViewModel();
 
     public LabelListControlViewModel ViewModel
     {
@@ -31,8 +31,11 @@ public partial class LabelListControl : UserControl
 
     private void LabelListControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        toolTip.ToolTipText = _viewModel.ToolTip;
-        toolTip.IsVisible = _viewModel.HasToolTip;
+        if (_viewModel != null)
+        {
+            toolTip.ToolTipText = _viewModel.ToolTip;
+            toolTip.IsVisible = _viewModel.HasToolTip;
+        }
     }
 
     private void lbItems_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -42,6 +45,7 @@ public partial class LabelListControl : UserControl
 
     private void btnRemoveItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        if (_viewModel == null) return;
         if (sender is not Button btn) return;
         var item = _viewModel.Items.FirstOrDefault(i => i.Tag == btn.Tag);
         if (item == null) return;

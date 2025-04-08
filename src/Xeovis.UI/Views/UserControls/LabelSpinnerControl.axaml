@@ -19,6 +19,15 @@
 			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>
 		
-		<NumericUpDown x:Name="spinner" HorizontalAlignment="Left" Width="150" Value="{Binding Value}" Maximum="{Binding MaxValue}" Increment="1" Minimum="{Binding MinValue}" IsReadOnly="{Binding IsReadOnly}" ValueChanged="spinner_ValueChanged" KeyDown="spinner_KeyDown" />
+		<NumericUpDown x:Name="spinner"
+					   HorizontalAlignment="Left"
+					   Width="150"
+					   Value="{Binding Value}"
+					   Maximum="{Binding MaxValue}"
+					   Increment="1"
+					   Minimum="{Binding MinValue}"
+					   IsReadOnly="{Binding IsReadOnly}"
+					   ValueChanged="spinner_ValueChanged"
+					   KeyDown="spinner_KeyDown" />
 	</StackPanel>
 </UserControl>

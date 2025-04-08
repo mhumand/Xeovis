@@ -7,7 +7,7 @@ namespace Xeovis.UI;
 
 public partial class LabelSpinnerControl : UserControl
 {
-    private LabelSpinnerControlViewModel _viewModel;
+    private LabelSpinnerControlViewModel _viewModel = new LabelSpinnerControlViewModel();
 
     public LabelSpinnerControlViewModel ViewModel
     {
@@ -31,8 +31,11 @@ public partial class LabelSpinnerControl : UserControl
 
     private void LabelSpinnerControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        toolTip.ToolTipText = _viewModel.ToolTip;
-        toolTip.IsVisible = _viewModel.HasToolTip;
+        if (_viewModel != null)
+        {
+            toolTip.ToolTipText = _viewModel.ToolTip;
+            toolTip.IsVisible = _viewModel.HasToolTip;
+        }
     }
 
     private void spinner_ValueChanged(object? sender, Avalonia.Controls.NumericUpDownValueChangedEventArgs e)

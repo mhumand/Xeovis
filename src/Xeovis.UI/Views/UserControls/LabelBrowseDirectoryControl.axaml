@@ -10,20 +10,28 @@
 			 x:DataType="vm:LabelBrowseDirectoryControlViewModel"
              x:Class="Xeovis.UI.LabelBrowseDirectoryControl">
 
-	<StackPanel Margin="2" Spacing="5">
+	<UserControl.Styles>
+		<StyleInclude Source="/Views/Styles/Textboxes.axaml"/>
+		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+	</UserControl.Styles>
+	
+	<StackPanel Spacing="10">
 		<StackPanel Orientation="Horizontal" Spacing="5">
-			<TextBlock x:Name="tbLabel" Text="{Binding Label}" FontWeight="Regular"/>
+			<TextBlock x:Name="tbLabel"
+					   Text="{Binding Label}"
+					   FontWeight="Regular"/>
+			
 			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>
 
 		<Grid x:Name="txtBtnGrid">
-			<TextBox x:Name="tbInput" BorderThickness="0.6"  BorderBrush="DarkGray"
-					 Text="{Binding Directory, UpdateSourceTrigger=PropertyChanged}"
-					 SelectionBrush="SkyBlue" VerticalContentAlignment="Center"/>
-			<Button x:Name="btnBrowse" Margin="1,1,5,1" Padding="0" Width="25" Height="25" Background="White" Foreground="Transparent"
-					HorizontalAlignment="Right" VerticalAlignment="Center"
-					 VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-					Click="btnBrowse_Click" ToolTip.Tip="Browse">
+			<TextBox x:Name="tbInput" 
+					 Text="{Binding Directory, UpdateSourceTrigger=PropertyChanged}"/>
+			
+			<Button x:Name="btnBrowse"
+					Classes="InLine"
+					Click="btnBrowse_Click"
+					ToolTip.Tip="Browse">
 				<Button.Content>
 					<Image x:Name="image" Width="16" Height="16" Source="/Assets/browse.png"/>
 				</Button.Content>

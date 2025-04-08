@@ -7,7 +7,7 @@ namespace Xeovis.UI;
 
 public partial class LabelComboBoxControl : UserControl
 {
-    private LabelComboBoxControlViewModel _viewModel;
+    private LabelComboBoxControlViewModel _viewModel = new LabelComboBoxControlViewModel();
 
     public LabelComboBoxControlViewModel ViewModel
     {
@@ -29,8 +29,11 @@ public partial class LabelComboBoxControl : UserControl
 
     private void LabelComboBoxControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        toolTip.ToolTipText = _viewModel.ToolTip;
-        toolTip.IsVisible = _viewModel.HasToolTip;
+        if (_viewModel != null)
+        {
+            toolTip.ToolTipText = _viewModel.ToolTip;
+            toolTip.IsVisible = _viewModel.HasToolTip;
+        }
     }
 
     private void comboBox_SelectionChanged(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)

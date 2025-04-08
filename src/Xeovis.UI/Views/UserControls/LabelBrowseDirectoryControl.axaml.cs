@@ -9,7 +9,7 @@ namespace Xeovis.UI;
 
 public partial class LabelBrowseDirectoryControl : UserControl
 {
-    private LabelBrowseDirectoryControlViewModel _viewModel;
+    private LabelBrowseDirectoryControlViewModel _viewModel = new LabelBrowseDirectoryControlViewModel();
 
     public LabelBrowseDirectoryControlViewModel ViewModel
     {
@@ -47,6 +47,7 @@ public partial class LabelBrowseDirectoryControl : UserControl
 
     private async void btnBrowse_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        if (_viewModel == null) return;
         var topLevel = TopLevel.GetTopLevel(this);
 
         if (_viewModel.IsFolderBrowser)

@@ -18,12 +18,25 @@
 			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>
 
-		<ComboBox x:Name="comboBox" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding Items}" HorizontalAlignment="Stretch" SelectionChanged="comboBox_SelectionChanged" MaxDropDownHeight="300">
+		<ComboBox x:Name="comboBox"
+				  SelectedIndex="{Binding SelectedIndex}"
+				  ItemsSource="{Binding Items}"
+				  HorizontalAlignment="Stretch"
+				  SelectionChanged="comboBox_SelectionChanged"
+				  MaxDropDownHeight="300">
 			<ComboBox.ItemTemplate>
 				<DataTemplate>
 					<Grid VerticalAlignment="Center">
-						<TextBlock x:Name="txtLabel" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Label}" />
-						<TextBlock x:Name="txtDescription" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Light" Text="{Binding Description}" IsVisible="{Binding HasDescription}"/>
+						<TextBlock x:Name="txtLabel"
+								   VerticalAlignment="Center"
+								   HorizontalAlignment="Left"
+								   Text="{Binding Label}" />
+						<TextBlock x:Name="txtDescription"
+								   VerticalAlignment="Center"
+								   HorizontalAlignment="Right"
+								   FontWeight="Light"
+								   Text="{Binding Description}"
+								   IsVisible="{Binding HasDescription}"/>
 					</Grid>
 				</DataTemplate>
 			</ComboBox.ItemTemplate>
