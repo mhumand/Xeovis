@@ -19,6 +19,7 @@ public partial class FrmCheckBoxControl : Window
         vm1.Label = "label1";
         vm1.ToolTip = "simple tooltip";
         vm1.IsChecked = true;
+        cbcBox1.ViewModel = vm1;
         cbcBox1.CheckStateChanged += cbcBox1_CheckStateChanged;
 
         var vm2 = new CheckBoxControlViewModel("label 2");
