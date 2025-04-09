@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Xeovis.WinControls
+﻿namespace Xeovis.WinControls
 {
     public  class TableRowSelectedEventArgs : EventArgs
     {

@@ -1,12 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Windows.Forms;
 using Xeovis.Base;
 using Xeovis.Domain;
 using Xeovis.Persistence;
@@ -23,10 +17,10 @@ namespace Xeovis.WinUI
         private ProjectSettings _projectSettings;
 
         private List<Batch> _batches;
-        private List<ModelVariable> _allModelVariables;
-        private Dictionary<ModelVariable, List<ModelVariable>> _selectedModelVariables;
-        private MctcPlotSettings _mctcPlotSettings;
-        private List<MctcVariable> _mctcVariables;
+        private List<xeosVariable> _allModelVariables;
+        private Dictionary<xeosVariable, List<xeosVariable>> _selectedModelVariables;
+        private mctcPlotSettings _mctcPlotSettings;
+        private List<mctcVariable> _mctcVariables;
         private int _mctcRunIndex;
 
         public FrmReadMctc()
@@ -38,7 +32,7 @@ namespace Xeovis.WinUI
         private void PrepareUI()
         {
             MakeContextMenu();
-            _mctcPlotSettings = new MctcPlotSettings();
+            _mctcPlotSettings = new mctcPlotSettings();
             _projectSettings = new ProjectSettings();
             tvCaseSelection.ContextMenuStrip = _contextMenu;
             tcBatchDetails.TableRowSelected += tcPlotInfo_RowSelected;
@@ -219,8 +213,8 @@ namespace Xeovis.WinUI
             {
                 var phaseNode = new TreeNode(phase.ToString() + " - " + EnumExtensions.GetDescriptionFromValue(phase));
                 phaseNode.Tag = phase;
-                var batches = _batches.Where(b => b.ModelVariables.Any(mv => mv.PhaseType == phase)).ToList();
-                var allModelVars = batches.SelectMany(b => b.ModelVariables.Where(v => v.PhaseType == phase)).ToList();
+                var batches = _batches.Where(b => b.xeosVariables.Any(mv => mv.PhaseType == phase)).ToList();
+                var allModelVars = batches.SelectMany(b => b.xeosVariables.Where(v => v.PhaseType == phase)).ToList();
                 var groupedVars = allModelVars.GroupBy(v => v.ToString()).ToList();
                 foreach (var group in groupedVars)
                 {
@@ -251,7 +245,7 @@ namespace Xeovis.WinUI
                 int.TryParse(Line1[0], out int index);
                 batch.Index = index;
                 batch.Experiment = new Experiment(Line1[1]);
-                batch.ExperimentalRun = new ExperimentalRun() { Name = Line1[2], Experiment = batch.Experiment };
+                batch.ExpRun = new ExpRun() { Name = Line1[2], Experiment = batch.Experiment };
 
                 //batch data
                 i++;
@@ -271,8 +265,8 @@ namespace Xeovis.WinUI
                 for (int j = 1; j < varianceIndex; j++)
                     batch.Phases.Add(PhaseTypeExtensions.GetPhaseTypeByName(Line2[j]));
 
-                batch.ExperimentalRun.Pressure = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 3]);
-                batch.ExperimentalRun.Temperature = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 4]);
+                batch.ExpRun.Pressure = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 3]);
+                batch.ExpRun.Temperature = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 4]);
 
                 _batches.Add(batch);
             }
@@ -306,13 +300,13 @@ namespace Xeovis.WinUI
             if (lines == null || lines.Count == 0) return;
 
             lines = CleanAndSplitLine(lines[0], includeDot: false);
-            _allModelVariables = new List<ModelVariable>();
+            _allModelVariables = new List<xeosVariable>();
             for (int i = 0; i < lines.Count; i++)
             {
                 var varData = lines[i].Split(new char[] { '(', ')', '-' }).ToList();
                 varData.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
-                var modelVariable = new ModelVariable();
+                var modelVariable = new xeosVariable();
                 modelVariable.PhaseType = PhaseTypeExtensions.GetPhaseTypeByName(varData[1]);
                 modelVariable.VariableType = EnumExtensions.GetValueFromDescription<ModelVariableType>(varData[0]);
                 int.TryParse(varData[2].TrimStart(new char[] {'b'}), out int batchIndex);
@@ -321,7 +315,7 @@ namespace Xeovis.WinUI
                 i++;
                 modelVariable.ObsVal = DoubleExtensions.GetDoubleValueFromText(lines[i]);
 
-                modelVariable.Batch.ModelVariables.Add(modelVariable);
+                modelVariable.Batch.xeosVariables.Add(modelVariable);
                 _allModelVariables.Add(modelVariable);
             }
         }
@@ -395,29 +389,29 @@ namespace Xeovis.WinUI
                     else
                         batch.IsFailed.Add(k, false);
 
-                    var modelVarsInResults = new List<ModelVariable>();
+                    var modelVarsInResults = new List<xeosVariable>();
                     for (int j = 0; j < modVarNameLines.Count; j++)
                     {
                         var varName = modVarNameLines[j];
                         j++;
                         var varPhase = PhaseTypeExtensions.GetPhaseTypeByName(modVarNameLines[j]);
-                        var modelVariable = batch.ModelVariables.FirstOrDefault(v => v.VariableType.ToString() == varName && v.PhaseType == varPhase);
+                        var modelVariable = batch.xeosVariables.FirstOrDefault(v => v.VariableType.ToString() == varName && v.PhaseType == varPhase);
                         if (modelVariable == null) continue;
                         modelVariable.CalcVals.Add(k, DoubleExtensions.GetDoubleValueFromText(modVarValueLines[2 + (j + 1) / 2]));
                         modelVarsInResults.Add(modelVariable);
                     }
 
-                    var otherModelVars = batch.ModelVariables.Except(modelVarsInResults).ToList();
+                    var otherModelVars = batch.xeosVariables.Except(modelVarsInResults).ToList();
                     foreach (var modelVar in otherModelVars)
                     {
                         _allModelVariables.Remove(modelVar);
-                        batch.ModelVariables.Remove(modelVar);
+                        batch.xeosVariables.Remove(modelVar);
                     }
                 }
             }
         }
 
-        private List<MctcVariable> GetMctcVariables(List<string> lines)
+        private List<mctcVariable> GetMctcVariables(List<string> lines)
         {
             var allRange = Enumerable.Range(0, lines.Count);
             var splitters = new char[] { '{', '}', '*', '(', ')', '\t', '"', ',', ';' };
@@ -425,7 +419,7 @@ namespace Xeovis.WinUI
             var mcinfoIndex = allRange.Where(i => lines[i].Contains("mcinfo")).ToList()[0];
             var mcrangeIndex = allRange.Where(i => lines[i].Contains("mcrange")).ToList()[0];
             var mctcVarLineCount = mcrangeIndex - mcinfoIndex;
-            var mctcVariables = new List<MctcVariable>();
+            var mctcVariables = new List<mctcVariable>();
             for (int i = 0; i < mctcVarLineCount; i++)
             {
                 var line = lines[mcinfoIndex + i];
@@ -437,7 +431,7 @@ namespace Xeovis.WinUI
                 valuesString.RemoveAll(l => string.IsNullOrWhiteSpace(l));
                 var startingVal = DoubleExtensions.GetDoubleValueFromText(valuesString[0].Trim());
                 var rangeVal = DoubleExtensions.GetDoubleValueFromText(valuesString[1].Trim());
-                var mctcVariable = new MctcVariable() { Index = i, Name = name, StartingValue = startingVal, Range = rangeVal };
+                var mctcVariable = new mctcVariable() { Index = i, Name = name, StartingValue = startingVal, Range = rangeVal };
                 mctcVariables.Add(mctcVariable);
             }
 
@@ -501,7 +495,7 @@ namespace Xeovis.WinUI
             var checkedNodes = tvCaseSelection.GetCheckedNodes();
             if (!checkedNodes.Any()) return;
 
-            var modelVarNodes = checkedNodes.Where(n => n.Tag is ModelVariable).ToList();
+            var modelVarNodes = checkedNodes.Where(n => n.Tag is xeosVariable).ToList();
             if (!modelVarNodes.Any()) return;
 
             cmbxModelVariable.Items.Clear();
@@ -509,8 +503,8 @@ namespace Xeovis.WinUI
                 cmbxModelVariable.Items.Add(item.Tag);
 
             // preparing for overview
-            _selectedModelVariables = new Dictionary<ModelVariable, List<ModelVariable>>();
-            foreach (ModelVariable modelVariable in cmbxModelVariable.Items)
+            _selectedModelVariables = new Dictionary<xeosVariable, List<xeosVariable>>();
+            foreach (xeosVariable modelVariable in cmbxModelVariable.Items)
             {
                 if (modelVariable == null) continue;
                 var modelVarList = _allModelVariables.Where(mv => mv.Name == modelVariable.Name).ToList();
@@ -519,9 +513,9 @@ namespace Xeovis.WinUI
 
             //
             int currentSelectedIndex = cmbxModelVariable.SelectedIndex;
-            var currentSelectedItem = cmbxModelVariable.SelectedItem as ModelVariable;
+            var currentSelectedItem = cmbxModelVariable.SelectedItem as xeosVariable;
             bool indexCondition = currentSelectedIndex < cmbxModelVariable.Items.Count && currentSelectedIndex >= 0;
-            bool phaseCondition = currentSelectedItem != null && currentSelectedItem.PhaseType == (modelVarNodes[0].Tag as ModelVariable).PhaseType;
+            bool phaseCondition = currentSelectedItem != null && currentSelectedItem.PhaseType == (modelVarNodes[0].Tag as xeosVariable).PhaseType;
             if (indexCondition && phaseCondition)
                 cmbxModelVariable.SelectedIndex = currentSelectedIndex;
             else
@@ -610,7 +604,7 @@ namespace Xeovis.WinUI
 
         private void PlotAndTabulate_SingleDetailed()
         {
-            if (!(cmbxModelVariable.SelectedItem is ModelVariable selectedModelVar)) return;
+            if (!(cmbxModelVariable.SelectedItem is xeosVariable selectedModelVar)) return;
 
             // getting all instances of the selected model variable
             var modelVars = _selectedModelVariables.FirstOrDefault(x => x.Key.PhaseType == selectedModelVar.PhaseType && x.Key.VariableType == selectedModelVar.VariableType).Value;
@@ -639,8 +633,8 @@ namespace Xeovis.WinUI
                     Math.Round(100.0 * Math.Abs(1.0 - mvar.CalcVals[_mctcRunIndex] / mvar.ObsVal), 1),
                     mvar.Batch.GetPhaseAssemblageString(),
                     mvar.Batch,
-                    mvar.Batch.ExperimentalRun.Pressure,
-                    mvar.Batch.ExperimentalRun.Temperature
+                    mvar.Batch.ExpRun.Pressure,
+                    mvar.Batch.ExpRun.Temperature
                 };
 
                 rows.Add(row);
@@ -653,18 +647,18 @@ namespace Xeovis.WinUI
             #endregion
         }
 
-        private List<IGrouping<object, ModelVariable>> GroupModelVars(List<ModelVariable> modelVars)
+        private List<IGrouping<object, xeosVariable>> GroupModelVars(List<xeosVariable> modelVars)
         {
-            var modelVarGroups = new List<IGrouping<object, ModelVariable>>();
+            var modelVarGroups = new List<IGrouping<object, xeosVariable>>();
 
             if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Batch)
                 modelVarGroups = modelVars.GroupBy(mv => (object)mv.Batch.GetPhaseAssemblageString()).ToList();
             else if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Temperature)
-                modelVarGroups = modelVars.GroupBy(mv => (object)mv.Batch.ExperimentalRun.Temperature).ToList();
+                modelVarGroups = modelVars.GroupBy(mv => (object)mv.Batch.ExpRun.Temperature).ToList();
             else if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Pressure)
-                modelVarGroups = modelVars.GroupBy(mv => (object)mv.Batch.ExperimentalRun.Pressure).ToList();
+                modelVarGroups = modelVars.GroupBy(mv => (object)mv.Batch.ExpRun.Pressure).ToList();
 
-            var selectedGroups = new List<IGrouping<object, ModelVariable>>();
+            var selectedGroups = new List<IGrouping<object, xeosVariable>>();
             if (ckbxExcludeIrrelevantBatches.Checked)
             {
                 if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Batch)
@@ -693,7 +687,7 @@ namespace Xeovis.WinUI
                 {
                     foreach (var modelVarGroup in modelVarGroups)
                     {
-                        var exclude = new List<ModelVariable>();
+                        var exclude = new List<xeosVariable>();
                         foreach (var modelVar in modelVarGroup)
                         {
                             var phases = modelVar.Batch.Phases.Except(new List<PhaseType>() { modelVar.PhaseType });
@@ -714,13 +708,13 @@ namespace Xeovis.WinUI
                         var flt = modelVarGroup.Except(exclude).ToList();
                         if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Temperature)
                         {
-                            var grp = flt.GroupBy(x => (object)x.Batch.ExperimentalRun.Temperature).FirstOrDefault();
+                            var grp = flt.GroupBy(x => (object)x.Batch.ExpRun.Temperature).FirstOrDefault();
                             if (grp != null && grp.Count() != 0)
                                 selectedGroups.Add(grp);
                         }
                         else
                         {
-                            var grp = flt.GroupBy(x => (object)x.Batch.ExperimentalRun.Pressure).FirstOrDefault();
+                            var grp = flt.GroupBy(x => (object)x.Batch.ExpRun.Pressure).FirstOrDefault();
                             if (grp != null && grp.Count() != 0)
                                 selectedGroups.Add(grp);
                         }
@@ -738,7 +732,7 @@ namespace Xeovis.WinUI
             return selectedGroups;
         }
 
-        private bool PlotInChartControl(ChartControl chartControl, List<ModelVariable> modelVars, int mctcRunIndex, bool EqualDimensions, bool legendOnRight = false, bool hideLegend = false, bool autoScale = false)
+        private bool PlotInChartControl(ChartControl chartControl, List<xeosVariable> modelVars, int mctcRunIndex, bool EqualDimensions, bool legendOnRight = false, bool hideLegend = false, bool autoScale = false)
         {
             var selectedGroups = GroupModelVars(modelVars);
             if (selectedGroups.Count == 0)
@@ -855,7 +849,7 @@ namespace Xeovis.WinUI
             return true;
         }
 
-        private double GetAverageErrorPercent(List<ModelVariable> modelVars, int mctcRunIndex)
+        private double GetAverageErrorPercent(List<xeosVariable> modelVars, int mctcRunIndex)
         {
             var deviationSum = 0.0;
             foreach (var modelVar in modelVars.Where(v => v.CalcVals.ContainsKey(mctcRunIndex)).ToList())
@@ -872,9 +866,9 @@ namespace Xeovis.WinUI
         {
             _dataFile = new DataFile();
             _dataFile.Batches = _batches;
-            _dataFile.AllModelVariables = _allModelVariables;
+            _dataFile.AllxeosVariables = _allModelVariables;
             //_dataFile.SelectedModelVariables = _selectedModelVariables;
-            _dataFile.MctcVariables = _mctcVariables;
+            _dataFile.mctcVariables = _mctcVariables;
             //_dataFile.MctcPlotSettings = _mctcPlotSettings;
             //_dataFile.MctcRunIndex = _mctcRunIndex;
             _dataFile.ProjectSettings = _projectSettings;
@@ -893,9 +887,9 @@ namespace Xeovis.WinUI
             var json = File.ReadAllText(fileName);
             _dataFile = JsonConvert.DeserializeObject<DataFile>(json);
             _batches = _dataFile.Batches;
-            _allModelVariables = _dataFile.AllModelVariables;
+            _allModelVariables = _dataFile.AllxeosVariables;
             //_selectedModelVariables = _dataFile.SelectedModelVariables;
-            _mctcVariables = _dataFile.MctcVariables;
+            _mctcVariables = _dataFile.mctcVariables;
             //_mctcPlotSettings = _dataFile.MctcPlotSettings;
             //_mctcRunIndex = _dataFile.MctcRunIndex;
             _projectSettings = _dataFile.ProjectSettings;
@@ -1081,8 +1075,8 @@ namespace Xeovis.WinUI
         {
             var chartControl = sender as ChartControl;
             if (chartControl == null) return;
-            if (!(chartControl.Tag is ModelVariable modelVar)) return;
-            foreach (ModelVariable item in cmbxModelVariable.Items)
+            if (!(chartControl.Tag is xeosVariable modelVar)) return;
+            foreach (xeosVariable item in cmbxModelVariable.Items)
             {
                 if (item == null) return;
                 if (item.PhaseType == modelVar.PhaseType && item.VariableType == modelVar.VariableType)

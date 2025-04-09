@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Xeovis.Domain
+﻿namespace Xeovis.Domain
 {
-    public class ExperimentalRun
+    public class ExpRun
     {
         public string Name { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public List<Phase> Phases { get; set; }
         public List<double> BulkComposition {  get; set; }
         public List<OxideType> BulkOxides { get; set; }
@@ -16,6 +14,7 @@ namespace Xeovis.Domain
         public double Duration { get; set; }
         public double OxygenFugacity { get; set; }
         public Experiment Experiment { get; set; }
+        public Guid ExperimentId { get; set; }
         public string Laboratory {  get; set; }
         public string Device { get; set; }
         public string Container { get; set; }
@@ -26,7 +25,7 @@ namespace Xeovis.Domain
         public RockType Rocktype { get; set; }
 
 
-        public ExperimentalRun()
+        public ExpRun()
         {
             Phases = new List<Phase>();
             BulkComposition = new List<double>();

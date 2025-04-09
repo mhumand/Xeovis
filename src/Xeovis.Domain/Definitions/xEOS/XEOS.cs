@@ -1,22 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Xeovis.Domain
+﻿namespace Xeovis.Domain
 {
     public class XEOS
     {
         public string Name { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public PhaseType PhaseType { get; set; }
         public List<EndMember> EndMembers { get; set; }
         public List<EnergyParameter> Ws { get; set; }
         public List<AlphaParameter> Alphas { get; set; }
-        public List<ModelVariable> Variables { get; set; }
+        public List<xeosVariable> Variables { get; set; }
         public XEOS()
         {
             EndMembers = new List<EndMember>();
             Ws = new List<EnergyParameter>();
             Alphas = new List<AlphaParameter>();
-            Variables = new List<ModelVariable>();
+            Variables = new List<xeosVariable>();
         }
 
         public EnergyParameter GetWij(EndMember endMember1, EndMember endMember2)

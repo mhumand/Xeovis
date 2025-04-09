@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Xeovis.Domain
+﻿namespace Xeovis.Domain
 {
     public static class DefaultModelDefinitions
     {

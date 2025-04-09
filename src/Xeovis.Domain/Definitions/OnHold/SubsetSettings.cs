@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Xeovis.Domain
+﻿namespace Xeovis.Domain.Definitions.OnHold
 {
     public class SubsetSettings
     {

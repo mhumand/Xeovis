@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using ZedGraph;
+﻿using ZedGraph;
 
 namespace Xeovis.WinControls
 {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Xeovis.Domain;
 using Xeovis.UI.Models;
 
 namespace Xeovis.UI.ViewModels.DialogsViewModels
@@ -12,16 +13,17 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
         public bool IsSubfolderChecked { get; set; }
 
         private List<ListableItem> selectedFolders = new List<ListableItem>();
-
         public List<ListableItem> SelectedFolders
         {
             get { return selectedFolders; }
             set { selectedFolders = value; }
         }
 
+        public bool HasAnySelectedFolders => SelectedFolders != null && selectedFolders.Any();
 
         private List<ListableItem> eligibleFolders = new List<ListableItem>();
         public List<ListableItem> EligibleFolders => eligibleFolders;
+
 
         public DataManagerLoadDataViewModel()
         {
@@ -33,6 +35,7 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
         {
             if (string.IsNullOrWhiteSpace(directory)) return null;
 
+            FolderDirectory = directory;
             eligibleFolders = new List<ListableItem>();
             if (Directory.Exists(directory))
             {

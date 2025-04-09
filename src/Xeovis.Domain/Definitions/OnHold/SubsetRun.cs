@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace Xeovis.Domain
+﻿namespace Xeovis.Domain.Definitions.OnHold
 {
     public class SubsetRun
     {
-        public ExperimentalRun Run { get; set; }
+        public ExpRun Run { get; set; }
         public string Name => Run.Name;
         public List<Phase> Phases { get; set; }
         public double Pressure => Run.Pressure;
@@ -12,10 +10,10 @@ namespace Xeovis.Domain
         public Experiment Experiment => Run.Experiment;
         public int Index { get; set; }
 
-        public SubsetRun(List<Phase> phases, ExperimentalRun experimentalRun)
+        public SubsetRun(List<Phase> phases, ExpRun expRun)
         {
             Phases = phases;
-            Run = experimentalRun;
+            Run = expRun;
         }
 
         public override string ToString()

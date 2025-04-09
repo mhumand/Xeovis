@@ -1,14 +1,10 @@
 ﻿using ExcelDataReader;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
 using Xeovis.Domain;
 using Xeovis.WinControls;
 using Xeovis.Base;
+using Xeovis.Domain.Definitions.OnHold;
 
 namespace Xeovis.WinUI
 {
@@ -148,7 +144,7 @@ namespace Xeovis.WinUI
                     for (int i = 1; i < table.Rows.Count; i++)
                     {
                         var cells = table.Rows[i].ItemArray;
-                        ExperimentalRun run = new ExperimentalRun();
+                        ExpRun run = new ExpRun();
 
                         if (indexIndex >= 0)
                             run.ReadingIndex = (int)DoubleExtensions.GetDoubleValueFromText(cells[indexIndex].ToString());
@@ -172,7 +168,7 @@ namespace Xeovis.WinUI
                         foreach (var ph in phases)
                         {
                             var phase = new Phase(ph.Trim());
-                            phase.ExperimentalRun = run;
+                            phase.ExpRun = run;
                             run.Phases.Add(phase);
                         }
 
@@ -329,7 +325,7 @@ namespace Xeovis.WinUI
                 var row = new List<object>
                 {
                     phaseInstance.Comment,
-                    phaseInstance.ExperimentalRun
+                    phaseInstance.ExpRun
                 };
 
                 foreach (var comp in phaseInstance.Composition)
@@ -616,7 +612,7 @@ namespace Xeovis.WinUI
             var Experiments = new List<Experiment>();
             foreach (var experiment in Experiments)
             {
-                var runs = new List<ExperimentalRun>();
+                var runs = new List<ExpRun>();
 
             }
         }
@@ -677,11 +673,11 @@ namespace Xeovis.WinUI
                     var row = new List<object>
                     {
                         counter++.ToString("000"),
-                        phaseInstance.ExperimentalRun.Experiment.ShortName,
-                        phaseInstance.ExperimentalRun.Name,
-                        phaseInstance.ExperimentalRun.Temperature,
-                        phaseInstance.ExperimentalRun.Pressure,
-                        phaseInstance.ExperimentalRun.GetPhaseAssemblageString()
+                        phaseInstance.ExpRun.Experiment.ShortName,
+                        phaseInstance.ExpRun.Name,
+                        phaseInstance.ExpRun.Temperature,
+                        phaseInstance.ExpRun.Pressure,
+                        phaseInstance.ExpRun.GetPhaseAssemblageString()
                     };
 
                     foreach (var oxide in oxides)

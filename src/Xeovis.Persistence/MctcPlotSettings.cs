@@ -1,10 +1,10 @@
 ﻿namespace Xeovis.Persistence
 {
-    public class MctcPlotSettings
+    public class mctcPlotSettings
     {
         public int ColorTransparencyIn100 { get; set; }
         public bool IsLegendVisible { get; set; }
-        public MctcPlotSettings()
+        public mctcPlotSettings()
         {
             ColorTransparencyIn100 = 40;
             IsLegendVisible = true;

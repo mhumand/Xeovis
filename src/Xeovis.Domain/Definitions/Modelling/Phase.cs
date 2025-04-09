@@ -1,19 +1,17 @@
-﻿using System.Collections.Generic;
-
-namespace Xeovis.Domain
+﻿namespace Xeovis.Domain
 {
     public class Phase
     {
         public string Name { get; set; }
-        public int Order { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public PhaseType Type { get; set; }
         public PhaseState State { get; set; }
         public List<string> OtherNames { get; set; }
         //public List<EndMember> EndMembers { get; set; }
         public List<OxideType> Oxides { get; set; }
         public List<double> Composition { get; set; }
-        public double Total {  get; set; }
-        public ExperimentalRun ExperimentalRun { get; set; }
+        public ExpRun ExpRun { get; set; }
+        public Guid ExpRunId { get; set; }
         public string Comment { get; set; }
 
         // phase attributes?

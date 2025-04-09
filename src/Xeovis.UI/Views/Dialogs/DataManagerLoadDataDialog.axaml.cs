@@ -1,5 +1,8 @@
 using Avalonia.Controls;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 using System.Linq;
+using System.Threading.Tasks;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
@@ -102,11 +105,23 @@ public partial class DataManagerLoadDataDialog : Window
         llcContents.ViewModel.SetItems(contents);
     }
 
-    private void btnScan_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void btnScan_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        _viewModel.FolderDirectory = lbdcDirectory.ViewModel.Directory;
-        var folders = _viewModel.GetEligibleFoldersList(_viewModel.FolderDirectory, ckbxSubfolder.ViewModel.IsChecked);
-        if (folders == null) return;
+        if (string.IsNullOrWhiteSpace(lbdcDirectory.ViewModel.Directory))
+        {
+            var msgBox = MessageBoxManager.GetMessageBoxStandard("Error", "Directory is empty!", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
+            await msgBox.ShowWindowDialogAsync(this);
+            return;
+        }
+
+        var folders = _viewModel.GetEligibleFoldersList(lbdcDirectory.ViewModel.Directory, ckbxSubfolder.ViewModel.IsChecked);
+        if (folders == null || folders.Count == 0)
+        {
+            var msgBox = MessageBoxManager.GetMessageBoxStandard("Error", "No folder containing excel files was found!", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
+            await msgBox.ShowWindowDialogAsync(this);
+            return;
+        }
+
         llcFolders.ViewModel.SetItems(folders);
         llcSelected.ViewModel.Items.Clear();
     }
@@ -116,8 +131,18 @@ public partial class DataManagerLoadDataDialog : Window
         this.Close(DialogResultType.Cancel);
     }
 
-    private void btnOK_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void btnOK_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        var selectedFolders = llcSelected.ViewModel.Items.ToList();
+        if (selectedFolders == null || selectedFolders.Count == 0)
+        {
+            var msgBox = MessageBoxManager.GetMessageBoxStandard("Warning", "No folder was selected to read data.\nAre you sure you want to continue?\nThis might lead to losing previously loaded data!", ButtonEnum.YesNoCancel, MsBox.Avalonia.Enums.Icon.Warning);
+            var result = await msgBox.ShowWindowDialogAsync(this);
+            if (result != ButtonResult.Yes)
+                return;
+        }
+
+        _viewModel.SelectedFolders = selectedFolders;
 
         this.Close(DialogResultType.OK);
     }
