@@ -2,10 +2,11 @@
 
 namespace Xeovis.Persistence
 {
-    public class DataFile
+    public class ProjectFile
     {
-        public string Name { get; set; }
-        public string Notes { get; set; }
+        public string? Name { get; set; }
+        public string? Notes { get; set; }
+        public Guid Id { get; set; }
         public List<Batch> Batches { get; set; }
         public List<xeosVariable> AllxeosVariables { get; set; }
         public Dictionary<xeosVariable, List<xeosVariable>> SelectedxeosVariables;
@@ -14,8 +15,9 @@ namespace Xeovis.Persistence
         public int MctcRunIndex;
         public ProjectSettings ProjectSettings { get; set; }
 
-        public DataFile()
+        public ProjectFile()
         {
+            Id = Guid.NewGuid();
             Batches = new List<Batch>();
             AllxeosVariables = new List<xeosVariable>();
             SelectedxeosVariables = new Dictionary<xeosVariable, List<xeosVariable>>();

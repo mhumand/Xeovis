@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using System.Linq;
-using System.Threading.Tasks;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
@@ -76,11 +75,7 @@ public partial class DataManagerLoadDataDialog : Window
         {
             var item = llcFolders.ViewModel.Items.FirstOrDefault(i => i.Id == e.Item.Id);
             if (item == null) return;
-            var newItem = item.Copy();
-            newItem.IsChecked = false;
-            var index = llcFolders.ViewModel.Items.IndexOf(item);
-            llcFolders.ViewModel.Items.RemoveAt(index);
-            llcFolders.ViewModel.Items.Insert(index, newItem);
+            item.IsChecked = false;
         }
     }
 
@@ -90,7 +85,11 @@ public partial class DataManagerLoadDataDialog : Window
         if (e.IsChecked)
         {
             if (!llcSelected.ViewModel.Items.Contains(item))
+            {
+
                 llcSelected.ViewModel.Items.Add(item);
+                llcSelected.ViewModel.SetItems(llcSelected.ViewModel.Items.OrderBy(i => i.Label).ToList());
+            }
         }
         else
         {
@@ -115,6 +114,7 @@ public partial class DataManagerLoadDataDialog : Window
         }
 
         var folders = _viewModel.GetEligibleFoldersList(lbdcDirectory.ViewModel.Directory, ckbxSubfolder.ViewModel.IsChecked);
+        
         if (folders == null || folders.Count == 0)
         {
             var msgBox = MessageBoxManager.GetMessageBoxStandard("Error", "No folder containing excel files was found!", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
@@ -122,7 +122,7 @@ public partial class DataManagerLoadDataDialog : Window
             return;
         }
 
-        llcFolders.ViewModel.SetItems(folders);
+        llcFolders.ViewModel.SetItems(folders.OrderBy(f => f.Label).ToList());
         llcSelected.ViewModel.Items.Clear();
     }
 

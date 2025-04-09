@@ -10,7 +10,7 @@
         //public List<EndMember> EndMembers { get; set; }
         public List<OxideType> Oxides { get; set; }
         public List<double> Composition { get; set; }
-        public ExpRun ExpRun { get; set; }
+        public ExpRun ExpRun { get; set; }//todo: will be removed
         public Guid ExpRunId { get; set; }
         public string Comment { get; set; }
 

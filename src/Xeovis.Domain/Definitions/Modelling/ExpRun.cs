@@ -13,7 +13,7 @@
         public double ErrorT { get; set; } // °C
         public double Duration { get; set; }
         public double OxygenFugacity { get; set; }
-        public Experiment Experiment { get; set; }
+        public Experiment Experiment { get; set; }//todo: will be removed
         public Guid ExperimentId { get; set; }
         public string Laboratory {  get; set; }
         public string Device { get; set; }

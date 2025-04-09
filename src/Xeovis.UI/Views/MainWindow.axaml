@@ -1,48 +1,63 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:Xeovis.UI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:local="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Xeovis.UI.Views.MainWindow"
+		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+		xmlns:vm="using:Xeovis.UI.ViewModels"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/XeovisLogo.png"
         Title="Xeovis"
-		WindowStartupLocation="CenterScreen"
 		ShowInTaskbar="True"
-		WindowState="Maximized"
-		FontSize="14">
+		WindowState="Maximized">
+
+	<Window.Styles>
+		<StyleInclude Source="/Views/Styles/Dialogs.axaml"></StyleInclude>
+	</Window.Styles>
 
 	<DockPanel>
-		<Grid x:Name="MenuGrid" DockPanel.Dock="Top"/>
-		
+		<!-- Main Menu -->
+		<Grid x:Name="MenuGrid"
+			  DockPanel.Dock="Top"
+			  RowDefinitions="*">
+			<userControls:MainMenu x:Name="mainMenu" />
+		</Grid>
+
 		<Grid ColumnDefinitions="200, *" DockPanel.Dock="Top">
-			
+
+			<!-- Tree Views -->
 			<Border Grid.Column="0"  BorderBrush="Gray" BorderThickness="1" Margin="2">
 				<Grid x:Name="TreeGrid" RowDefinitions="1*,0.1,1*">
 
-					<TreeView x:Name="tvDataManager" Grid.Row="0" ItemsSource="{Binding DataManagerNodes}">
+					<TreeView x:Name="tvDataManager"
+							  Grid.Row="0"
+							  ItemsSource="{Binding ExperimentNodes}">
 						<TreeView.ItemTemplate>
 							<TreeDataTemplate ItemsSource="{Binding Children}">
-									<TextBlock Text="{Binding Title}"/>
+								<TextBlock Text="{Binding Label}"/>
 							</TreeDataTemplate>
 						</TreeView.ItemTemplate>
 					</TreeView>
-					
-					<GridSplitter Grid.Row="1" Background="Gray" ResizeDirection="Rows" BorderThickness="3"/>
 
-					<TreeView x:Name="tvMctcPlots" Grid.Row="2" ItemsSource="{Binding MctcPlotNodes}">
+					<GridSplitter Grid.Row="1"
+								  Background="Gray"
+								  ResizeDirection="Rows"
+								  BorderThickness="3"/>
+
+					<TreeView x:Name="tvMctcPlots"
+							  Grid.Row="2"
+							  ItemsSource="{Binding MctcPlotNodes}">
 						<TreeView.ItemTemplate>
 							<TreeDataTemplate ItemsSource="{Binding Children}">
-								<TextBlock Text="{Binding Title}"/>
+								<TextBlock Text="{Binding Label}"/>
 							</TreeDataTemplate>
 						</TreeView.ItemTemplate>
 					</TreeView>
-					
+
 				</Grid>
 			</Border>
-			
+
+			<!-- Main Pane -->
 			<Border Grid.Column="1"  BorderBrush="Gray" BorderThickness="1" Margin="2" >
 				<TabControl x:Name="TabControl">
 					<TabItem Header="Tab 1">

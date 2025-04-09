@@ -6,7 +6,7 @@
         public double ObsVal { get; set; }
         public Guid Id { get; set; } = Guid.NewGuid();
         public Dictionary<int, double> CalcVals { get; set; } // int being the index of the results group
-        public Batch Batch { get; set; }
+        public Batch Batch { get; set; }//todo: will be removed
         public Guid BatchId { get; set; }
         public PhaseType PhaseType { get; set; }
         public ModelVariableType VariableType { get; set; }

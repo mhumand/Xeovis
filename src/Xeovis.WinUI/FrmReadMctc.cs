@@ -13,7 +13,7 @@ namespace Xeovis.WinUI
         private string _directory;
         private List<string> _files;
         private ContextMenuStrip _contextMenu;
-        private DataFile _dataFile;
+        private ProjectFile _dataFile;
         private ProjectSettings _projectSettings;
 
         private List<Batch> _batches;
@@ -864,7 +864,7 @@ namespace Xeovis.WinUI
 
         private void SaveAsJSON(string fileName)
         {
-            _dataFile = new DataFile();
+            _dataFile = new ProjectFile();
             _dataFile.Batches = _batches;
             _dataFile.AllxeosVariables = _allModelVariables;
             //_dataFile.SelectedModelVariables = _selectedModelVariables;
@@ -885,7 +885,7 @@ namespace Xeovis.WinUI
         private void OpenJSON(string fileName)
         {
             var json = File.ReadAllText(fileName);
-            _dataFile = JsonConvert.DeserializeObject<DataFile>(json);
+            _dataFile = JsonConvert.DeserializeObject<ProjectFile>(json);
             _batches = _dataFile.Batches;
             _allModelVariables = _dataFile.AllxeosVariables;
             //_selectedModelVariables = _dataFile.SelectedModelVariables;

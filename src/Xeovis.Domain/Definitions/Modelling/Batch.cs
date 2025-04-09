@@ -6,9 +6,9 @@
         public List<PhaseType> Phases { get; set; }
         public int Index { get; set; }
         public Guid Id { get; set; } = Guid.NewGuid();
-        public Experiment Experiment { get; set; }
+        public Experiment Experiment { get; set; }//todo: will be removed
         public Guid ExperimentId { get; set; }
-        public ExpRun ExpRun { get; set; }
+        public ExpRun ExpRun { get; set; }//todo: will be removed
         public Guid ExpRunId { get; set; }
         public List<double> BulkComposition { get; set; }
         public List<OxideType> BulkOxides { get; set; }
