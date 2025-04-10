@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
         x:Class="Xeovis.UI.Views.MainWindow"
 		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
 		xmlns:vm="using:Xeovis.UI.ViewModels"
@@ -13,6 +13,23 @@
 
 	<Window.Styles>
 		<StyleInclude Source="/Views/Styles/Dialogs.axaml"></StyleInclude>
+
+		<Style Selector="TreeView">
+			<Setter Property="Margin" Value="0 5"/>
+		</Style>
+
+		<Style Selector="GridSplitter">
+			<Setter Property="Background" Value="LightGray"/>
+			<Setter Property="BorderThickness" Value="3"/>
+			<Setter Property="Margin" Value="5"/>
+		</Style>
+
+		<Style Selector="Border.Panels">
+			<Setter Property="BorderBrush" Value="LightGray"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="Margin" Value="5"/>
+			<Setter Property="CornerRadius" Value="5"/>
+		</Style>
 	</Window.Styles>
 
 	<DockPanel>
@@ -23,42 +40,61 @@
 			<userControls:MainMenu x:Name="mainMenu" />
 		</Grid>
 
-		<Grid ColumnDefinitions="200, *" DockPanel.Dock="Top">
+		<Grid DockPanel.Dock="Top">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="250" MinWidth="250" />
+				<ColumnDefinition Width="5" MinWidth="5" />
+				<ColumnDefinition Width="*" MinWidth="500" />
+			</Grid.ColumnDefinitions>
 
 			<!-- Tree Views -->
-			<Border Grid.Column="0"  BorderBrush="Gray" BorderThickness="1" Margin="2">
-				<Grid x:Name="TreeGrid" RowDefinitions="1*,0.1,1*">
+			<Border Grid.Column="0" Classes="Panels">
+				<Grid x:Name="TreeGrid">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="1*" MinHeight="200"/>
+						<RowDefinition Height="5" MinHeight="5"/>
+						<RowDefinition Height="1*" MinHeight="200"/>
+					</Grid.RowDefinitions>
 
-					<TreeView x:Name="tvDataManager"
-							  Grid.Row="0"
-							  ItemsSource="{Binding ExperimentNodes}">
-						<TreeView.ItemTemplate>
-							<TreeDataTemplate ItemsSource="{Binding Children}">
-								<TextBlock Text="{Binding Label}"/>
-							</TreeDataTemplate>
-						</TreeView.ItemTemplate>
-					</TreeView>
+					<Grid Grid.Row="0" Margin="10 5" RowDefinitions="25,*">
+						<TextBlock Grid.Row="0" Text="Experiments" />
+						<TreeView x:Name="tvDataManager"
+								  Grid.Row="1"
+								  ItemsSource="{Binding ExperimentNodes}">
+							<TreeView.ItemTemplate>
+								<TreeDataTemplate ItemsSource="{Binding Children}">
+									<TextBlock Text="{Binding Label}"/>
+								</TreeDataTemplate>
+							</TreeView.ItemTemplate>
+						</TreeView>
+					</Grid>
+
 
 					<GridSplitter Grid.Row="1"
-								  Background="Gray"
-								  ResizeDirection="Rows"
-								  BorderThickness="3"/>
+								  ResizeDirection="Rows"/>
 
-					<TreeView x:Name="tvMctcPlots"
-							  Grid.Row="2"
-							  ItemsSource="{Binding MctcPlotNodes}">
-						<TreeView.ItemTemplate>
-							<TreeDataTemplate ItemsSource="{Binding Children}">
-								<TextBlock Text="{Binding Label}"/>
-							</TreeDataTemplate>
-						</TreeView.ItemTemplate>
-					</TreeView>
+					<Grid Grid.Row="2" Margin="10 5" RowDefinitions="25,*">
+						<TextBlock Grid.Row="0" Text="Plots" />
+						<TreeView x:Name="tvMctcPlots"
+								  Grid.Row="1"
+								  ItemsSource="{Binding MctcPlotNodes}">
+							<TreeView.ItemTemplate>
+								<TreeDataTemplate ItemsSource="{Binding Children}">
+									<TextBlock Text="{Binding Label}"/>
+								</TreeDataTemplate>
+							</TreeView.ItemTemplate>
+						</TreeView>
+					</Grid>
+
 
 				</Grid>
 			</Border>
 
+			<GridSplitter Grid.Column="1"
+			  ResizeDirection="Columns"/>
+
 			<!-- Main Pane -->
-			<Border Grid.Column="1"  BorderBrush="Gray" BorderThickness="1" Margin="2" >
+			<Border Grid.Column="2" Classes="Panels" >
 				<TabControl x:Name="TabControl">
 					<TabItem Header="Tab 1">
 						<TextBlock Margin="5">This is tab 1 content</TextBlock>

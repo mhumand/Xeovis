@@ -75,7 +75,10 @@ public partial class DataManagerLoadDataDialog : Window
         {
             var item = llcFolders.ViewModel.Items.FirstOrDefault(i => i.Id == e.Item.Id);
             if (item == null) return;
+
+            llcFolders.ViewModel.ItemCheckStateChanged -= ViewModel_ItemCheckStateChanged;
             item.IsChecked = false;
+            llcFolders.ViewModel.ItemCheckStateChanged += ViewModel_ItemCheckStateChanged;
         }
     }
 
