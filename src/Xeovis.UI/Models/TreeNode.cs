@@ -1,22 +1,22 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 
 namespace Xeovis.UI.Models
 {
-    public class TreeNode
+    public partial class TreeNode : ListableItem
     {
-        public ObservableCollection<TreeNode>? Children { get; }
-        public string Title { get; }
-        public bool IsChecked { get; } = false;
+        [ObservableProperty]
+        private ObservableCollection<TreeNode> children;
 
-        public TreeNode(string title)
+        public TreeNode(string label)
         {
-            Title = title;
+            Children = new ObservableCollection<TreeNode>();
+            Label = label;
         }
 
         public TreeNode(string title, ObservableCollection<TreeNode> children)
         {
-            Title = title;
+            Label = title;
             Children = children;
         }
     }

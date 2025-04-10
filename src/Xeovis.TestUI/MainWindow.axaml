@@ -7,7 +7,6 @@
         Title="Xeovis.TestUI"
 		Width="400"
 		Height="500"
-		Icon="/XeovisLogo.png"
 		WindowStartupLocation="CenterScreen">
 
 	<StackPanel Margin="20" Spacing="20">
@@ -20,6 +19,8 @@
 		<Button x:Name="btnLabelComboBoxControl" Width="250" HorizontalContentAlignment="Center" Content="Label ComboBox Control" HorizontalAlignment="Center" Click="btnLabelComboBoxControl_Click" />
 
 		<Button x:Name="btnLabelSpinnerControl" Width="250" HorizontalContentAlignment="Center" Content="Label Spinner Control" HorizontalAlignment="Center" Click="btnLabelSpinnerControl_Click" />
-		
+
+		<Button x:Name="btnLabelBrowseDirectoryControl" Width="250" HorizontalContentAlignment="Center" Content="Label Browse Directory Control" HorizontalAlignment="Center" Click="btnLabelBrowseDirectoryControl_Click" />
+
 	</StackPanel>
 </Window>

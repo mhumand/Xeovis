@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using System;
 using System.Linq;
-using Xeovis.UI.Events;
+using Xeovis.UI.Models.Events;
 using Xeovis.UI.ViewModels;
 
 namespace Xeovis.UI;
@@ -10,7 +10,18 @@ public partial class LabelListControl : UserControl
 {
     private LabelListControlViewModel _viewModel = new LabelListControlViewModel();
 
+    public LabelListControlViewModel ViewModel
+    {
+        get { return _viewModel; }
+        set
+        {
+            _viewModel = value;
+            DataContext = value;
+        }
+    }
+
     public event EventHandler<ListSelectionChangedEventArgs> ListSelectionChanged;
+    public event EventHandler<ListableItemRemovedEventArgs> ItemRemoved;
 
     public LabelListControl()
     {
@@ -21,8 +32,11 @@ public partial class LabelListControl : UserControl
 
     private void LabelListControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        toolTip.ToolTipText = _viewModel.ToolTip;
-        toolTip.IsVisible = _viewModel.HasToolTip;
+        if (_viewModel != null)
+        {
+            toolTip.ToolTipText = _viewModel.ToolTip;
+            toolTip.IsVisible = _viewModel.HasToolTip;
+        }
     }
 
     private void lbItems_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -30,22 +44,13 @@ public partial class LabelListControl : UserControl
         ListSelectionChanged?.Invoke(sender, new ListSelectionChangedEventArgs(lbItems.SelectedItem, lbItems.SelectedIndex));
     }
 
-    public LabelListControl(LabelListControlViewModel viewModel) : base()
-    {
-        SetDataContext(viewModel);
-    }
-
     private void btnRemoveItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        if (_viewModel == null) return;
         if (sender is not Button btn) return;
         var item = _viewModel.Items.FirstOrDefault(i => i.Tag == btn.Tag);
         if (item == null) return;
         _viewModel.Items.Remove(item);
-    }
-
-    public void SetDataContext(LabelListControlViewModel viewModel)
-    {
-        _viewModel = viewModel;
-        DataContext = viewModel;
+        ItemRemoved?.Invoke(this, new ListableItemRemovedEventArgs(item));
     }
 }

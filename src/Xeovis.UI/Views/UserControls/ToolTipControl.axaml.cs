@@ -15,7 +15,7 @@ public partial class ToolTipControl : UserControl, INotifyPropertyChanged
         set
         {
             toolTipText = value;
-            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(ToolTipText)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ToolTipText)));
         }
     }
 

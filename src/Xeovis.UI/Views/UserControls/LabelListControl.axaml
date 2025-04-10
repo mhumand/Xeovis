@@ -9,9 +9,19 @@
 			 MinHeight="100"
 			 x:Class="Xeovis.UI.LabelListControl"
 			 x:DataType="vm:LabelListControlViewModel"
-			 FontFamily="Segoe UI"
-			 FontSize="14">
+			 x:Name="control">
 
+	<UserControl.Styles>
+		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
+
+		<Style Selector="ListBoxItem">
+			<Setter Property="Height" Value="35"></Setter>
+			<Setter Property="Padding" Value="10,0,5,0"></Setter>
+		</Style>
+		
+	</UserControl.Styles>
+	
 	<!--I'm using Grid instead of StackPanel becuase the vertical scrollbar in ListBox
 	does not appear automatically when using a StackPanel - M.H. 02/04/2025-->
 	<Grid Margin="2" VerticalAlignment="Top">
@@ -21,20 +31,46 @@
 		</Grid.RowDefinitions>
 
 		<StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="5">
-			<TextBlock x:Name="tbLabel" VerticalAlignment="Center" Text="{Binding Label}" FontWeight="Regular"/>
+			<TextBlock x:Name="tbLabel"
+					   VerticalAlignment="Center"
+					   Text="{Binding Label}"/>
 			<userControls:ToolTipControl x:Name="toolTip" VerticalAlignment="Center"/>
 		</StackPanel>
 
-		<ListBox Grid.Row="1" x:Name="lbItems" ItemsSource="{Binding Items}" SelectionMode="AlwaysSelected" SelectedIndex="{Binding SelectedIndex}">
+		<ListBox Grid.Row="1" x:Name="lbItems"
+				 IsEnabled="{Binding !IsReadOnly}"
+				 ItemsSource="{Binding Items}"
+				 SelectionMode="AlwaysSelected"
+				 SelectedIndex="{Binding SelectedIndex}">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
-					<Grid>
-						<TextBlock Text="{Binding Label}" Foreground="{Binding Color}" VerticalAlignment="Center"/>
+					<Grid VerticalAlignment="Center">
+						<TextBlock Text="{Binding Label}"
+								   Foreground="{Binding Color}"
+								   VerticalAlignment="Center"/>
 
-						<StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal" Spacing="5">
-							<TextBlock VerticalAlignment="Center" Text="{Binding Description}" FontWeight="Light" IsVisible="{Binding HasDescription}"/>
+						<StackPanel HorizontalAlignment="Right"
+									VerticalAlignment="Center"
+									Orientation="Horizontal"
+									Spacing="5">
 							
-							<Button x:Name="btnRemoveItem" Padding="0" Width="20" Height="20" FontWeight="SemiBold"  Background="Transparent" Opacity="0.75" VerticalAlignment="Center"  VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Tag="{Binding Tag}" Click="btnRemoveItem_Click" IsVisible="{Binding CanBeRemoved}">
+							<TextBlock VerticalAlignment="Center"
+									   Text="{Binding Description}"
+									   FontWeight="Light"
+									   IsVisible="{Binding HasDescription}"/>
+
+							<CheckBox x:Name="checkBox"
+									  IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}"
+									  IsVisible="{Binding #control.((vm:LabelListControlViewModel)DataContext).IsCheckable}"
+									  Tag="{Binding Tag}"/>
+
+							<Button x:Name="btnRemoveItem"
+									Classes="InLine"
+									Background="Transparent"
+									Opacity="0.75"
+									Tag="{Binding Tag}"
+									Click="btnRemoveItem_Click"
+									IsVisible="{Binding #control.((vm:LabelListControlViewModel)DataContext).IsRemovable}">
 								<Button.Content>
 									<Image x:Name="image" Width="16" Height="16" Source="/Assets/remove.png"/>
 								</Button.Content>

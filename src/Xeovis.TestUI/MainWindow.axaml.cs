@@ -38,5 +38,11 @@ namespace Xeovis.TestUI
             var dialog = new FrmLabelSpinnerControl();
             dialog.ShowDialog(this);
         }
+
+        private void btnLabelBrowseDirectoryControl_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var dialog = new FrmLabelBrowseDirectoryControl();
+            dialog.ShowDialog(this);
+        }
     }
 }

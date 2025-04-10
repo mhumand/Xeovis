@@ -2,28 +2,44 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="70"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="60"
 			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
-			 MinHeight="70"
+			 MinHeight="60"
 			 MinWidth="200"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
              x:Class="Xeovis.UI.LabelComboBoxControl"
-			 x:DataType="vm:LabelComboBoxControlViewModel"
-			 FontFamily="Seqoe UI"
-			 FontSize="14">
+			 x:DataType="vm:LabelComboBoxControlViewModel">
 
-	<StackPanel Margin="5" Spacing="5">
+	<UserControl.Styles>
+		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
+	</UserControl.Styles>
+	
+	<StackPanel Spacing="5">
 		<StackPanel Orientation="Horizontal" Spacing="5">
-			<TextBlock x:Name="tbLabel" Text="{Binding Label}" FontWeight="Regular"/>
+			<TextBlock x:Name="tbLabel"
+					   Text="{Binding Label}"/>
 			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>
 
-		<ComboBox x:Name="comboBox" SelectedIndex="{Binding SelectedIndex}" ItemsSource="{Binding Items}" HorizontalAlignment="Stretch" SelectionChanged="comboBox_SelectionChanged" MaxDropDownHeight="300">
+		<ComboBox x:Name="comboBox"
+				  SelectedIndex="{Binding SelectedIndex}"
+				  ItemsSource="{Binding Items}"
+				  HorizontalAlignment="Stretch"
+				  SelectionChanged="comboBox_SelectionChanged"
+				  MaxDropDownHeight="300">
 			<ComboBox.ItemTemplate>
 				<DataTemplate>
 					<Grid VerticalAlignment="Center">
-						<TextBlock x:Name="txtLabel" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Label}" />
-						<TextBlock x:Name="txtDescription" VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Light" Text="{Binding Description}" IsVisible="{Binding HasDescription}"/>
+						<TextBlock x:Name="txtLabel"
+								   VerticalAlignment="Center"
+								   HorizontalAlignment="Left"
+								   Text="{Binding Label}" />
+						<TextBlock x:Name="txtDescription"
+								   VerticalAlignment="Center"
+								   HorizontalAlignment="Right"
+								   FontWeight="Light"
+								   Text="{Binding Description}"
+								   IsVisible="{Binding HasDescription}"/>
 					</Grid>
 				</DataTemplate>
 			</ComboBox.ItemTemplate>

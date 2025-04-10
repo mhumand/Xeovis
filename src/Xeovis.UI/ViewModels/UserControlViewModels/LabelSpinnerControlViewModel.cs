@@ -2,7 +2,7 @@
 
 namespace Xeovis.UI.ViewModels
 {
-    public partial class LabelSpinnerControlViewModel : LabelControlViewModel
+    public partial class LabelSpinnerControlViewModel : LabelControlViewModelBase
     {
         [ObservableProperty]
         private int? value;

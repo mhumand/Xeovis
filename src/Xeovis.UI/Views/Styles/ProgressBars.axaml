@@ -1,0 +1,25 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+		<ProgressBar />
+    </Border>
+  </Design.PreviewWith>
+
+	<Style Selector="ProgressBar.Primary">
+		<Setter Property="ShowProgressText" Value="True"/>
+		<Setter Property="Height" Value="20"/>
+		<Setter Property="Margin" Value="0 10"/>
+		<Setter Property="TextBlock.FontWeight" Value="Bold"/>
+		<Setter Property="Foreground" Value="#2196F3"/>
+	</Style>
+
+	<Style Selector="ProgressBar.Secondary">
+		<Setter Property="ShowProgressText" Value="True"/>
+		<Setter Property="Height" Value="20"/>
+		<Setter Property="Margin" Value="0 10"/>
+		<Setter Property="TextBlock.FontWeight" Value="Bold"/>
+		<Setter Property="Foreground" Value="#4CAF50"/>
+	</Style>
+	
+</Styles>

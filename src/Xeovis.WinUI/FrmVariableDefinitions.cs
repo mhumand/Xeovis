@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
-using Xeovis.Base;
+﻿using Xeovis.Base;
 using Xeovis.Domain;
 using Xeovis.Persistence;
 
@@ -128,7 +123,7 @@ namespace Xeovis.WinUI
                     var varParts = varLine.Split(splitters).ToList();
                     varParts.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
-                    var variable = new ModelVariable();
+                    var variable = new xeosVariable();
                     variable.VariableType = EnumExtensions.GetValueFromDescription<ModelVariableType>(varParts[0]);
                     variable.PhaseType = xeos.PhaseType;
                     variable.DefaultValue = DoubleExtensions.GetDoubleValueFromText(varParts[2]);
@@ -249,7 +244,7 @@ namespace Xeovis.WinUI
             for (int i = 0; i < cklbxCations.Items.Count; i++)
                 cklbxCations.SetItemCheckState(i, CheckState.Unchecked);
 
-            if (!(cmbxModelVariable.SelectedItem is ModelVariable modelVariable)) return;
+            if (!(cmbxModelVariable.SelectedItem is xeosVariable modelVariable)) return;
             var cations = DefaultModelDefinitions.GetCationsFromModelVariable(modelVariable.PhaseType, modelVariable.VariableType);
             if (cations == null) return;
             for (int i = 0; i < cklbxCations.Items.Count; i++)

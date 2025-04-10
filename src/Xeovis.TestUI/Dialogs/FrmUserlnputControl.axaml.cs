@@ -18,14 +18,20 @@ public partial class FrmUserInputControl : Window
 
     private void PrepareUI()
     {
-        _vmNumber = new LabelInputControlViewModel("number", 266.6);
+        _vmNumber = new LabelInputControlViewModel("number", "266.6");
         _vmNumber.ToolTip = "It's a simple tooltip";
-        licNumber.SetDataContext(_vmNumber);
+        licNumber.ViewModel = _vmNumber;
+        licNumber.TextInputChanged += LicNumber_TextInputChanged;
 
         _vmSimpleText = new LabelInputControlViewModel("Simple Text", "It's a simple text.");
-        licSimpleText.SetDataContext(_vmSimpleText);
+        licSimpleText.ViewModel = _vmSimpleText;
 
         _vmSimpleTextReadOnly = new LabelInputControlViewModel("Read-only Text", "read-only text", true);
-        licSimpleTextReadOnly.SetDataContext(_vmSimpleTextReadOnly);
+        licSimpleTextReadOnly.ViewModel = _vmSimpleTextReadOnly;
+    }
+
+    private void LicNumber_TextInputChanged(object? sender, UI.Models.Events.TextInputChangedEventArgs e)
+    {
+        txtTest1.Text = e.Text;
     }
 }

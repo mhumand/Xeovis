@@ -1,22 +1,23 @@
 using Avalonia.Controls;
+using MsBox.Avalonia;
 using System;
+using System.Threading.Tasks;
+using Xeovis.UI.Models.Enums;
+using Xeovis.UI.Models.Events;
+using Xeovis.UI.Models.FileReaders;
 
 namespace Xeovis.UI;
 
 public partial class MainMenu : UserControl
 {
-    private Window _parent;
+    public event EventHandler<ExperimentsLoadedEventArgs> ExperimentsLoaded;
+
+    public Window Parent;
 
     public MainMenu()
     {
-
-    }
-
-    public MainMenu(Window parnetWindow) : base()
-    {
         InitializeComponent();
         DataContext = this;
-        _parent = parnetWindow;
     }
 
     public void Project_New()
@@ -39,9 +40,35 @@ public partial class MainMenu : UserControl
         Environment.Exit(0);
     }
 
-    public void DataManager_ReadData()
+    public async void DataManager_LoadData()
     {
+        if (Parent == null) return;
+        var dialog = new DataManagerLoadDataDialog();
+        var result = await dialog.ShowDialog<DialogResultType>(Parent);
 
+        if (result == DialogResultType.OK)
+        {
+            var progressDialog = new ProgressBarDialog();
+            progressDialog.ShowDialog(Parent);
+
+            var progress = progressDialog.ProgressReporter;
+            var token = progressDialog.Token;
+
+            try
+            {
+                var expReader = new ExperimentReader(dialog.ViewModel.SelectedFolders, dialog.ViewModel.SubfolderDirectory);
+                var experiments = await Task.Run(() => expReader.GetExperiments(progress, token));
+                ExperimentsLoaded?.Invoke(this, new ExperimentsLoadedEventArgs(experiments, dialog.ViewModel));
+            }
+            catch (OperationCanceledException)
+            {
+
+            }
+            finally
+            {
+                progressDialog.Close();
+            }
+        }
     }
 
     public void DataManager_Settings()
@@ -61,7 +88,8 @@ public partial class MainMenu : UserControl
 
     public void About()
     {
-        var about = new About();
-        about.ShowDialog(_parent);
+        if (Parent == null) return;
+        var dialog = new AboutDialog();
+        dialog.ShowDialog(Parent);
     }
 }

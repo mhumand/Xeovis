@@ -1,84 +1,65 @@
-﻿using System.Drawing;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
+using System.ComponentModel;
+using System.Drawing;
+using Xeovis.UI.Models.Events;
 
 namespace Xeovis.UI.Models
 {
-    public class ListableItem
+    public partial class ListableItem : ObservableObject
     {
-        private string _label;
-        public string Label => _label;
+        public event EventHandler<CheckStateChangedEventArgs> CheckStateChanged;
 
-        private string _description;
-        public string Description => _description;
+        [ObservableProperty]
+        private Guid id;
 
-        private int _index;
-        public int Index => _index;
+        [ObservableProperty]
+        private string label;
 
-        private Color _color;
-        public Color Color => _color;
+        [ObservableProperty]
+        private string description;
 
-        private bool _isVisible;
-        public bool IsVisible => _isVisible;
+        [ObservableProperty]
+        private int index;
 
-        public bool CanBeRemoved { get; set; }
+        [ObservableProperty]
+        private Color color;
 
-        private object _tag;
-        public object Tag => _tag;
+        [ObservableProperty]
+        private bool isVisible;
 
-        public bool HasDescription => !string.IsNullOrWhiteSpace(_description);
+        [ObservableProperty]
+        private object tag;
+
+        [ObservableProperty]
+        private bool isChecked;
+        partial void OnIsCheckedChanged(bool oldValue, bool newValue) => CheckStateChanged?.Invoke(this, new CheckStateChangedEventArgs(newValue, this));
+
+        public bool HasDescription => !string.IsNullOrWhiteSpace(Description);
 
         public ListableItem()
         {
-            _isVisible = true;
-            CanBeRemoved = false;
+            IsVisible = true;
+            Id = Guid.NewGuid();
         }
 
-        public ListableItem(object item) : base()
+        public ListableItem(object item) : this()
         {
-            _label = item.ToString().Trim();
-            _tag = item;
+            Label = item.ToString().Trim();
+            Tag = item;
         }
 
-        public ListableItem(string label, object tag = null, bool isVisible = true, string description = null) : base()
+        public ListableItem(string label, object tag = null, bool isVisible = true, string description = null) : this()
         {
-            _label = label.Trim();
-            _tag = tag;
-            _isVisible = isVisible;
-            _description = description;
-        }
-
-        public void SetLabel(string label)
-        {
-            _label = label;
-        }
-
-        public void SetDescription(string description)
-        {
-            _description = description;
-        }
-
-        public void SetIndex(int index)
-        {
-            _index = index;
-        }
-
-        public void SetColor(Color color)
-        {
-            _color = color;
-        }
-
-        public void SetVisibility(bool visible)
-        {
-            _isVisible = visible;
-        }
-
-        public void SetTag(object tag)
-        {
-            _tag = tag;
+            Label = label.Trim();
+            Tag = tag;
+            IsVisible = isVisible;
+            Description = description;
         }
 
         public override string ToString()
         {
-            return _label;
+            return Label;
         }
     }
 }

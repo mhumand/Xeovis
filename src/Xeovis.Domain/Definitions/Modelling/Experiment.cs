@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-namespace Xeovis.Domain
+﻿namespace Xeovis.Domain
 {
     public class Experiment
     {
         public string Name { get; set; }
         public string ShortName { get; }
-        public List<ExperimentalRun> Runs { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public List<ExpRun> Runs { get; set; }
         public DirectoryInfo DirectoryInfo { get; set; }
         public List<FileInfo> Files { get; set; }
         public List<PhaseType> PhasesWithData { get; set; }
@@ -23,7 +20,7 @@ namespace Xeovis.Domain
         {
             Name = name;
             ShortName = GetShortName();
-            Runs = new List<ExperimentalRun>();
+            Runs = new List<ExpRun>();
             DirectoryInfo = new DirectoryInfo(name);
             Files = new List<FileInfo>();
             PhasesWithData = new List<PhaseType>();
@@ -38,7 +35,7 @@ namespace Xeovis.Domain
 
         public List<PhaseType> GetAllPhaseTypes()
         {
-            var phaseTypes = Runs.SelectMany<ExperimentalRun, PhaseType>(r => r.Phases.Select(p => p.Type));
+            var phaseTypes = Runs.SelectMany<ExpRun, PhaseType>(r => r.Phases.Select(p => p.Type));
             var distinctPhases = phaseTypes.Distinct().ToList();
             distinctPhases.Sort();
             return distinctPhases;

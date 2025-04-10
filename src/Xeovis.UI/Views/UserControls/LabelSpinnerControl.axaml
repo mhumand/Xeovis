@@ -2,23 +2,34 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="160" d:DesignHeight="60"
+             mc:Ignorable="d" d:DesignWidth="130" d:DesignHeight="60"
 			 MinHeight="60"
-			 MinWidth="160"
+			 MinWidth="130"
 			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
              x:Class="Xeovis.UI.LabelSpinnerControl"
              x:DataType="vm:LabelSpinnerControlViewModel"
-			 xmlns:vm="using:Xeovis.UI.ViewModels"
-			 FontFamily="Seqoe UI"
-			 FontSize="14">
+			 xmlns:vm="using:Xeovis.UI.ViewModels">
+	
+	<UserControl.Styles>
+		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
+	</UserControl.Styles>
 
-
-	<StackPanel Margin="2" Spacing="5">
+	<StackPanel Spacing="5">
 		<StackPanel Orientation="Horizontal" Spacing="5">
-			<TextBlock x:Name="tbLabel" Text="{Binding Label}" FontWeight="Regular"/>
+			<TextBlock x:Name="tbLabel"
+					   Text="{Binding Label}"/>
 			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>
 		
-		<NumericUpDown x:Name="spinner" HorizontalAlignment="Left" Width="150" Value="{Binding Value}" Maximum="{Binding MaxValue}" Increment="1" Minimum="{Binding MinValue}" IsReadOnly="{Binding IsReadOnly}" ValueChanged="spinner_ValueChanged" KeyDown="spinner_KeyDown" />
+		<NumericUpDown x:Name="spinner"
+					   HorizontalAlignment="Left"
+					   Width="130"
+					   Value="{Binding Value}"
+					   Maximum="{Binding MaxValue}"
+					   Increment="1"
+					   Minimum="{Binding MinValue}"
+					   IsReadOnly="{Binding IsReadOnly}"
+					   ValueChanged="spinner_ValueChanged"
+					   KeyDown="spinner_KeyDown" />
 	</StackPanel>
 </UserControl>

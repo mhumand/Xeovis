@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Xeovis.WinControls
+﻿namespace Xeovis.WinControls
 {
     public class ChartPointSelectedEventArgs : EventArgs
     {

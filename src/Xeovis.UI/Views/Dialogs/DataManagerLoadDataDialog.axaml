@@ -1,0 +1,119 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
+		MinHeight="400"
+		MinWidth="700"
+		Height="600"
+		Width="1000"
+		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+		xmlns:vm="using:Xeovis.UI.ViewModels.DialogsViewModels"
+		xmlns:vmc="using:Xeovis.UI.ViewModels"
+		x:DataType="vm:DataManagerLoadDataViewModel"
+        x:Class="Xeovis.UI.DataManagerLoadDataDialog"
+        Title="Data Manager - Load Data">
+
+	<Window.Styles>
+		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
+		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+		<StyleInclude Source="/Views/Styles/Textboxes.axaml"/>
+
+		<Style Selector="Border.Custom">
+			<Setter Property="BorderThickness" Value="1.5"/>
+			<Setter Property="CornerRadius" Value="5"/>
+			<Setter Property="Margin" Value="5,0,5,0"/>
+			<Setter Property="Padding" Value="5,0,5,0"/>
+		</Style>
+	</Window.Styles>
+
+	<DockPanel Margin="15">
+
+		<!-- Top Section - Directory + Scan -->
+		<Grid x:Name="topGrid"
+			  DockPanel.Dock="Top"
+			  RowDefinitions="60,40"
+			  ColumnDefinitions="*,80">
+			<userControls:LabelBrowseDirectoryControl x:Name="lbdcDirectory"
+													  Grid.Row="0"
+													  Grid.Column="0"
+													  VerticalAlignment="Bottom"/>
+
+			<Button x:Name="btnScan"
+					Grid.Row="0" Grid.Column="1"
+					Classes="Primary"
+					VerticalAlignment="Bottom"
+					HorizontalAlignment="Right"
+					Content="Scan"
+					Click="btnScan_Click"/>
+
+			<StackPanel  Grid.Row="1" Grid.Column="0"
+						 Margin="0,5,0,0"
+						 Orientation="Horizontal"
+						 VerticalAlignment="Bottom"
+						 Spacing="10">
+
+				<userControls:CheckBoxControl x:Name="ckbxSubfolder"/>
+				<TextBox x:Name="txtSubfolder"
+						 MinHeight="20"
+						 Height="30"
+						 Width="100"
+						 VerticalContentAlignment="Center"
+						 Padding="5,0,0,0"
+						 IsEnabled="{Binding #ckbxSubfolder.((vmc:CheckBoxControlViewModel)DataContext).IsChecked}" />
+			</StackPanel>
+
+		</Grid>
+
+		<!-- Middle Section - Label List Controls -->
+
+		<Grid DockPanel.Dock="Top"
+			  VerticalAlignment="Stretch"
+			  Margin="0,20,0,0"
+			  ColumnDefinitions="1*,1*,1*"
+			  RowDefinitions="*,50">
+
+			<Border Classes="Custom"
+					Grid.Column="0"
+					Grid.ColumnSpan="2"
+					BorderBrush="#1C39BB">
+
+				<Grid ColumnDefinitions="1*,1*">
+					<userControls:LabelListControl x:Name="llcFolders" Grid.Column="0" Margin="5"/>
+					<userControls:LabelListControl x:Name="llcContents" Grid.Column="1" Margin="5"/>
+				</Grid>
+
+			</Border>
+
+			<Border Classes="Custom" Grid.Column="2" BorderBrush="Gray">
+				<userControls:LabelListControl x:Name="llcSelected"/>
+			</Border>
+
+
+			<!-- Bottom Section - Dialog Buttons -->
+			<StackPanel Orientation="Horizontal"
+						Grid.Row="1"
+						Grid.ColumnSpan="3"
+						Spacing="10"
+						VerticalAlignment="Bottom"
+						HorizontalAlignment="Right">
+
+				<Button x:Name="btnCancel"
+						Classes="Primary"
+						Content="Cancel"
+						IsCancel="True"
+						Click="btnCancel_Click"/>
+
+				<Button x:Name="btnOK"
+						Classes="Primary"
+						Content="OK"
+						IsDefault="True"
+						Click="btnOK_Click"/>
+
+			</StackPanel>
+
+		</Grid>
+
+	</DockPanel>
+
+</Window>

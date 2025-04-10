@@ -6,6 +6,9 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <PackageIcon>XeovisLogoLarge.png</PackageIcon>
+    <ApplicationIcon>Assets\XeovisLogo.ico</ApplicationIcon>
+    <AssemblyName>Xeovis.UI</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,12 +16,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\browse.png" />
     <None Remove="Assets\clear.png" />
     <None Remove="Assets\delete.png" />
     <None Remove="Assets\info.png" />
     <None Remove="Assets\remove.png" />
+    <None Remove="Assets\XeovisLogo.ico" />
     <None Remove="Assets\XeovisLogo.png" />
-    <None Remove="Assets\XeovisLogoLarge.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\XeovisLogo.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,6 +40,9 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+    <PackageReference Include="ExcelDataReader" Version="3.7.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.7.0" />
+    <PackageReference Include="MessageBox.Avalonia" Version="3.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +57,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Helpers\" />
+    <None Update="Assets\XeovisLogoLarge.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 </Project>

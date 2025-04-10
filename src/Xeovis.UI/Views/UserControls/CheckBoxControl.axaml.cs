@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using System;
-using Xeovis.UI.Events;
+using Xeovis.UI.Models.Events;
 using Xeovis.UI.ViewModels;
 
 namespace Xeovis.UI;
@@ -9,17 +9,31 @@ public partial class CheckBoxControl : UserControl
 {
     private CheckBoxControlViewModel _viewModel = new CheckBoxControlViewModel();
 
+    public CheckBoxControlViewModel ViewModel
+    {
+        get { return _viewModel; }
+        set
+        {
+            _viewModel = value;
+            DataContext = value;
+        }
+    }
+
     public event EventHandler<CheckStateChangedEventArgs> CheckStateChanged;
 
     public CheckBoxControl()
     {
         InitializeComponent();
+        Loaded += CheckBoxControl_Loaded;
     }
 
-    public void SetDataContext(CheckBoxControlViewModel viewModel)
+    private void CheckBoxControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        _viewModel = viewModel;
-        DataContext = viewModel;
+        if (_viewModel != null)
+        {
+            toolTip.ToolTipText = _viewModel.ToolTip;
+            toolTip.IsVisible = _viewModel.HasToolTip;
+        }
     }
 
     private void checkBox_CheckChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

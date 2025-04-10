@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="56"
+			 MinHeight="56"
+			 MinWidth="200"
+			 xmlns:vm="using:Xeovis.UI.ViewModels"
+			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+			 x:DataType="vm:LabelBrowseDirectoryControlViewModel"
+             x:Class="Xeovis.UI.LabelBrowseDirectoryControl">
+
+	<UserControl.Styles>
+		<StyleInclude Source="/Views/Styles/Textboxes.axaml"/>
+		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
+	</UserControl.Styles>
+	
+	<StackPanel Spacing="5">
+		<StackPanel Orientation="Horizontal" Spacing="5">
+			<TextBlock x:Name="tbLabel"
+					   Text="{Binding Label}"/>
+			
+			<userControls:ToolTipControl x:Name="toolTip"/>
+		</StackPanel>
+
+		<Grid x:Name="txtBtnGrid">
+			<TextBox x:Name="tbInput" 
+					 Text="{Binding Directory, UpdateSourceTrigger=PropertyChanged}"/>
+			
+			<Button x:Name="btnBrowse"
+					Classes="InLine"
+					Click="btnBrowse_Click"
+					ToolTip.Tip="Browse">
+				<Button.Content>
+					<Image x:Name="image" Width="16" Height="16" Source="/Assets/browse.png"/>
+				</Button.Content>
+			</Button>
+		</Grid>
+	</StackPanel>
+</UserControl>

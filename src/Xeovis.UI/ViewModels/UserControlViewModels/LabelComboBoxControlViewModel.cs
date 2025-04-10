@@ -4,7 +4,7 @@ using Xeovis.UI.Models;
 
 namespace Xeovis.UI.ViewModels
 {
-    public partial class LabelComboBoxControlViewModel : LabelControlViewModel
+    public partial class LabelComboBoxControlViewModel : LabelControlViewModelBase
     {
         [ObservableProperty]
         private ObservableCollection<ListableItem> items;
@@ -15,6 +15,7 @@ namespace Xeovis.UI.ViewModels
         public LabelComboBoxControlViewModel()
         {
             SelectedIndex = 0;
+            Items = new ObservableCollection<ListableItem>();
         }
     }
 }

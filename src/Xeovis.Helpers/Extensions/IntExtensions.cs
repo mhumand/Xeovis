@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Xeovis.Base
+﻿namespace Xeovis.Base
 {
     public static class IntExtensions
     {

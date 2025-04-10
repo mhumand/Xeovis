@@ -9,8 +9,7 @@
 		Width="400"
 		Height="400"
 		WindowStartupLocation="CenterScreen"
-		ShowInTaskbar="False"
-		Icon="/XeovisLogo.png">
+		ShowInTaskbar="False">
 
 	<StackPanel Margin="10" Spacing="10">
 		<userControls:LabelSpinnerControl x:Name="lsc1" />

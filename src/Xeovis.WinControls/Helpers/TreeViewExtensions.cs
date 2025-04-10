@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-
-namespace Xeovis.WinControls
+﻿namespace Xeovis.WinControls
 {
     public static class TreeViewExtensions
     {
