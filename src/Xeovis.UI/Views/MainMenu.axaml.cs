@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using MsBox.Avalonia;
 using System;
 using System.Threading.Tasks;
 using Xeovis.UI.Models.Enums;

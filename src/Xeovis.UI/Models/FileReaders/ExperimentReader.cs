@@ -34,15 +34,16 @@ namespace Xeovis.UI.Models.FileReaders
 
                 if (folder == null || folder.Tag is not DirectoryInfo info) continue;
 
+                progressData.PrimaryValue = index * 1.0 / _folders.Count * 100.0;
+                progressData.PrimaryLabel = $"Loading {folder.Label}";
+                progress.Report(progressData);
+
                 var experiment = new Experiment(folder.Label);
                 experiment.DirectoryInfo = info;
                 ReadExperimentFile(experiment);
                 ReadPhasesFile(experiment);
                 experiments.Add(experiment);
 
-                progressData.PrimaryValue = index * 1.0 / _folders.Count * 100.0;
-                progressData.PrimaryLabel = $"Loading {folder.Label}";
-                progress.Report(progressData);
                 index++;
             }
 

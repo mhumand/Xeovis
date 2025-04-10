@@ -2,6 +2,7 @@
 {
     public enum DialogResultType
     {
+        None,
         OK,
         Cancel,
         Yes,
