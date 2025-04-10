@@ -1,5 +1,7 @@
 using Avalonia.Controls;
+using MsBox.Avalonia;
 using System;
+using System.Threading.Tasks;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.Models.Events;
 using Xeovis.UI.Models.FileReaders;
@@ -46,9 +48,26 @@ public partial class MainMenu : UserControl
 
         if (result == DialogResultType.OK)
         {
-            var expReader = new ExperimentReader(dialog.ViewModel.SelectedFolders, dialog.ViewModel.SubfolderDirectory);
-            var experiments = expReader.GetExperiments();
-            ExperimentsLoaded?.Invoke(this, new ExperimentsLoadedEventArgs(experiments, dialog.ViewModel));
+            var progressDialog = new ProgressBarDialog();
+            progressDialog.ShowDialog(Parent);
+
+            var progress = progressDialog.ProgressReporter;
+            var token = progressDialog.Token;
+
+            try
+            {
+                var expReader = new ExperimentReader(dialog.ViewModel.SelectedFolders, dialog.ViewModel.SubfolderDirectory);
+                var experiments = await Task.Run(() => expReader.GetExperiments(progress, token));
+                ExperimentsLoaded?.Invoke(this, new ExperimentsLoadedEventArgs(experiments, dialog.ViewModel));
+            }
+            catch (OperationCanceledException)
+            {
+
+            }
+            finally
+            {
+                progressDialog.Close();
+            }
         }
     }
 

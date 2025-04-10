@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Xeovis.Base;
 using Xeovis.Domain;
 
@@ -20,12 +22,16 @@ namespace Xeovis.UI.Models.FileReaders
             _subdirectory = subdirectory;
         }
 
-        public List<Experiment> GetExperiments()
+        public async Task<List<Experiment>> GetExperiments(IProgress<ProgressBarData> progress, CancellationToken token)
         {
             var experiments = new List<Experiment>();
 
+            var progressData = new ProgressBarData(0, "Loading");
+            int index = 1;
             foreach (var folder in _folders)
             {
+                token.ThrowIfCancellationRequested();
+
                 if (folder == null || folder.Tag is not DirectoryInfo info) continue;
 
                 var experiment = new Experiment(folder.Label);
@@ -33,6 +39,11 @@ namespace Xeovis.UI.Models.FileReaders
                 ReadExperimentFile(experiment);
                 ReadPhasesFile(experiment);
                 experiments.Add(experiment);
+
+                progressData.PrimaryValue = index * 1.0 / _folders.Count * 100.0;
+                progressData.PrimaryLabel = $"Loading {folder.Label}";
+                progress.Report(progressData);
+                index++;
             }
 
             return experiments;
@@ -62,7 +73,6 @@ namespace Xeovis.UI.Models.FileReaders
             var expFile = subFiles.FirstOrDefault(f => f.Name.ToLower().Contains("experiment.xls"));
             if (expFile == null) return;
 
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             using (var stream = File.Open(expFile.FullName, FileMode.Open, FileAccess.Read))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))

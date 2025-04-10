@@ -18,6 +18,8 @@ namespace Xeovis.UI.Views
         {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
             PrepareUI();
         }
 
@@ -33,7 +35,6 @@ namespace Xeovis.UI.Views
 
         private void MainMenu_ExperimentsLoaded(object? sender, Models.Events.ExperimentsLoadedEventArgs e)
         {
-            //_viewModel.ExperimentNodes.Clear();
             tvDataManager.Items.Clear();
             foreach (var exp in e.Experiments)
             {
@@ -44,7 +45,6 @@ namespace Xeovis.UI.Views
                     expNode.Children.Add(phaseNode);
                 }
 
-                //_viewModel.ExperimentNodes.Add(expNode);
                 tvDataManager.Items.Add(expNode);
             }
         }

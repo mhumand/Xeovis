@@ -22,5 +22,6 @@
 		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
 		<StyleInclude Source="/Views/Styles/Textboxes.axaml"/>
 		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
+		<StyleInclude Source="/Views/Styles/ProgressBars.axaml"/>
 	</Application.Styles>
 </Application>

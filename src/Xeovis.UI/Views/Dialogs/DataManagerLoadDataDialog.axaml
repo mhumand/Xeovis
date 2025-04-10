@@ -31,16 +31,9 @@
 
 		<!-- Top Section - Directory + Scan -->
 		<Grid x:Name="topGrid"
-			  DockPanel.Dock="Top">
-
-			<Grid.RowDefinitions>
-				<RowDefinition Height="2*"/>
-				<RowDefinition Height="1*"/>
-			</Grid.RowDefinitions>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="80"/>
-			</Grid.ColumnDefinitions>
+			  DockPanel.Dock="Top"
+			  RowDefinitions="60,40"
+			  ColumnDefinitions="*,80">
 			<userControls:LabelBrowseDirectoryControl x:Name="lbdcDirectory"
 													  Grid.Row="0"
 													  Grid.Column="0"
@@ -49,7 +42,6 @@
 			<Button x:Name="btnScan"
 					Grid.Row="0" Grid.Column="1"
 					Classes="Primary"
-					Margin="0,0,0,5"
 					VerticalAlignment="Bottom"
 					HorizontalAlignment="Right"
 					Content="Scan"
