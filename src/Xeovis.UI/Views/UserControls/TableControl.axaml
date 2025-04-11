@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="500"
+			 MinHeight="300"
+			 MinWidth="300"
+			 xmlns:vm="using:Xeovis.UI.ViewModels"
+			 x:DataType="vm:TableControlViewModel"
+             x:Class="Xeovis.UI.TableControl">
+
+	<UserControl.Styles>
+		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
+
+		<Style Selector="DataGridColumnHeader">
+			<Setter Property="Padding" Value="5 0"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Setter Property="Margin" Value="0"/>
+			<Setter Property="Foreground" Value="Black"/>
+			<Setter Property="FontWeight" Value="SemiBold"/>
+		</Style>
+	</UserControl.Styles>
+
+	<DataGrid x:Name="dataGrid" BorderBrush="Gray" BorderThickness="1"/>
+	
+</UserControl>

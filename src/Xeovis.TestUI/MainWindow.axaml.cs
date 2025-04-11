@@ -44,5 +44,11 @@ namespace Xeovis.TestUI
             var dialog = new FrmLabelBrowseDirectoryControl();
             dialog.ShowDialog(this);
         }
+
+        private void btnTableControl_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var dialog = new FrmTableControl();
+            dialog.ShowDialog(this);
+        }
     }
 }
