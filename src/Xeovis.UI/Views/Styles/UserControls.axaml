@@ -10,4 +10,8 @@
 		<Setter Property="FontFamily" Value="Segoe UI"/>
 		<Setter Property="FontSize" Value="14"/>
 	</Style>
+
+	<Style Selector="TextBox">
+		<Setter Property="SelectionBrush" Value="SkyBlue"/>
+	</Style>
 </Styles>

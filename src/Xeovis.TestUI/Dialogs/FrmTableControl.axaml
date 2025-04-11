@@ -1,0 +1,46 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
+        x:Class="Xeovis.TestUI.FrmTableControl"
+        Title="FrmTableControl"
+		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+		Width="1000"
+		Height="600"
+		WindowStartupLocation="CenterScreen"
+		ShowInTaskbar="False">
+
+	<Window.Styles>
+		<Style Selector="Button">
+			<Setter Property="HorizontalAlignment" Value="Center"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		</Style>		
+	</Window.Styles>
+	
+	<Grid ColumnDefinitions="1*,1*" RowDefinitions="50,*">
+			<Button x:Name="btn1"
+					Grid.Row="0"
+					Grid.Column="0"
+					Content="Fill Table"
+					Click="btn1_Click" />
+		
+			<userControls:TableControl x:Name="table1"
+									   Margin="20"
+									   Grid.Row="1"
+									   Grid.Column="0"/>
+
+			<Button x:Name="btn2"
+					Grid.Row="0" 
+					Grid.Column="1"
+					Content="Fill Table (ReadOnly)"
+					Click="btn2_Click" />
+		
+			<userControls:TableControl x:Name="table2"
+									   Margin="20"
+									   Grid.Row="1"
+									   Grid.Column="1"/>
+	</Grid>
+
+
+</Window>

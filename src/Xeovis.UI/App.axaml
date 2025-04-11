@@ -18,6 +18,8 @@
 			</FluentTheme.Palettes>
 		</FluentTheme>
 
+		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+		
 		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
 		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
 		<StyleInclude Source="/Views/Styles/Textboxes.axaml"/>
