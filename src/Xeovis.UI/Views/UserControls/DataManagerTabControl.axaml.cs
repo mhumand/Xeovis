@@ -1,0 +1,88 @@
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+using System.Collections.Generic;
+using System.Linq;
+using Xeovis.Domain;
+using Xeovis.UI.Models;
+using Xeovis.UI.ViewModels;
+
+namespace Xeovis.UI;
+
+public partial class DataManagerTabControl : UserControl
+{
+    private DataManagerTabControlViewModel _viewModel = new DataManagerTabControlViewModel();
+
+    public DataManagerTabControlViewModel ViewModel
+    {
+        get { return _viewModel; }
+        set
+        {
+            _viewModel = value;
+        }
+    }
+
+    public DataManagerTabControl()
+    {
+        InitializeComponent();
+        PrepareUI();
+    }
+
+    private void PrepareUI()
+    {
+        lcbExperiment.ViewModel = new LabelComboBoxControlViewModel() { Label = "Experiment" };
+        lcbExperiment.ListSelectionChanged += lcbExperiment_ListSelectionChanged;
+
+        lcbPhaseInExperiment.ViewModel = new LabelComboBoxControlViewModel() { Label = "Phase" };
+        lcbPhaseInExperiment.ListSelectionChanged += lcbPhaseInExperiment_ListSelectionChanged;
+
+        lcbPhases.ViewModel = new LabelComboBoxControlViewModel() { Label = "Phase" };
+        lcbPhases.ListSelectionChanged += lcbPhases_ListSelectionChanged;
+    }
+
+    public void SetExperiments(List<Experiment> experiments)
+    {
+        tableExperiment.ClearTable();
+        tablePhaseInExperiment.ClearTable();
+        tablePhases.ClearTable();
+        tablePhasesSummary.ClearTable();
+        lcbExperiment.ClearItems();
+        lcbPhaseInExperiment.ClearItems();
+        lcbPhases.ClearItems();
+
+        _viewModel.CreateExperimentItems(experiments);
+        lcbExperiment.SetItems(_viewModel.ExperimentItems.ToList());
+        lcbPhases.SetItems(_viewModel.GetPhaseTypeItemList());
+    }
+
+    private void lcbPhases_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    {
+        tablePhases.ClearTable();
+        tablePhasesSummary.ClearTable();
+        if (e.SelectedItem is not ListableItem phaseItem) return;
+        var table = _viewModel.CreatePhasesTableModel(phaseItem);
+        tablePhases.FillTable(table);
+        var summaryTable = _viewModel.CreatePhasesSummaryTableModel();
+        tablePhasesSummary.FillTable(summaryTable);
+    }
+
+    private void lcbPhaseInExperiment_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    {
+        tablePhaseInExperiment.ClearTable();
+        if (e.SelectedItem is not ListableItem phaseInExperimentItem) return;
+        var table = _viewModel.CreatePhaseInExperimentTableModel(lcbExperiment.ViewModel.SelectedItem, phaseInExperimentItem);
+        tablePhaseInExperiment.FillTable(table);
+    }
+
+    private void lcbExperiment_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    {
+        tableExperiment.ClearTable();
+        lcbPhaseInExperiment.ClearItems();
+        if (e.SelectedItem is not ListableItem experimentItem) return;
+        var table = _viewModel.CreateExperimentTableModel(experimentItem);
+        tableExperiment.FillTable(table);
+
+        _viewModel.CreatePhaseInExperimentItems(experimentItem);
+        lcbPhaseInExperiment.SetItems(_viewModel.PhaseInExperimentItems.ToList());
+    }
+}

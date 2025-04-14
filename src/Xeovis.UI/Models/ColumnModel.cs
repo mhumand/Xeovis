@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Xeovis.UI.Models
 {
@@ -27,14 +28,16 @@ namespace Xeovis.UI.Models
 
         [ObservableProperty]
         private bool canResize;
+        private string v;
+        private List<DateTime> dateTimes;
 
         public Guid Id { get; set; }
 
-        public int DataCount => values != null ? values.Count : 0;
+        public int DataCount => Values != null ? Values.Count : 0;
 
         public bool HasData => DataCount > 0;
 
-        public Type ValueType => HasData ? values[0].GetType() : typeof(string);
+        public Type ValueType => HasData ? Values[0].GetType() : typeof(string);
 
         public ColumnModel()
         {
@@ -52,6 +55,36 @@ namespace Xeovis.UI.Models
         {
             Header = header;
             Values = new ObservableCollection<object>(values);
+        }
+
+        public ColumnModel(string header, List<string> values) : this()
+        {
+            Header = header;
+            Values = new ObservableCollection<object>(values);
+        }
+
+        public ColumnModel(string header, List<double> values) : this()
+        {
+            Header = header;
+            Values = new ObservableCollection<object>(values.Cast<object>());
+        }
+
+        public ColumnModel(string header, List<int> values) : this()
+        {
+            Header = header;
+            Values = new ObservableCollection<object>(values.Cast<object>());
+        }
+
+        public ColumnModel(string header, List<bool> values) : this()
+        {
+            Header = header;
+            Values = new ObservableCollection<object>(values.Cast<object>());
+        }
+
+        public ColumnModel(string header, List<DateTime> values) : this()
+        {
+            Header = header;
+            Values = new ObservableCollection<object>(values.Cast<object>());
         }
 
         public override string ToString()

@@ -30,6 +30,29 @@
 			<Setter Property="Margin" Value="5"/>
 			<Setter Property="CornerRadius" Value="5"/>
 		</Style>
+
+		<Style Selector="Button.Tabs">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="Content" Value="✕"/>
+			<Setter Property="Padding" Value="0,-3,0,0"/>
+			<Setter Property="Width" Value="20"/>
+			<Setter Property="Height" Value="20"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="HorizontalAlignment" Value="Right"/>
+		</Style>
+
+		<Style Selector="TabItem">
+			<Setter Property="FontFamily" Value="Segoe UI" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontWeight" Value="SemiBold" />
+			<Setter Property="Padding" Value="10 0" />
+		</Style>
+
+		<Style Selector="StackPanel.Tabs">
+			<Setter Property="Orientation" Value="Horizontal"/>
+			<Setter Property="Spacing" Value="5"/>
+		</Style>
+
 	</Window.Styles>
 
 	<DockPanel>
@@ -95,16 +118,25 @@
 
 			<!-- Main Pane -->
 			<Border Grid.Column="2" Classes="Panels" >
-				<TabControl x:Name="TabControl">
-					<TabItem Header="Tab 1">
-						<TextBlock Margin="5">This is tab 1 content</TextBlock>
-					</TabItem>
-					<TabItem Header="Tab 2">
-						<TextBlock Margin="5">This is tab 2 content</TextBlock>
-					</TabItem>
-					<TabItem Header="Tab 3">
-						<TextBlock Margin="5">This is tab 3 content</TextBlock>
-					</TabItem>
+				<TabControl x:Name="tabControl"
+							ItemsSource="{Binding TabControls}">
+
+					<TabControl.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Classes="Tabs" IsVisible="{Binding IsVisible}">
+								<TextBlock Text="{Binding Header}" />
+								<Button Classes="Tabs"
+										IsVisible="{Binding CanBeRemoved}"/>
+							</StackPanel>
+						</DataTemplate>
+					</TabControl.ItemTemplate>
+
+					<TabControl.ContentTemplate>
+						<DataTemplate DataType="vm:TabControlViewModelBase">
+							<UserControl Content="{Binding OwnerTabControl}" IsVisible="{Binding IsVisible}"/>
+						</DataTemplate>
+					</TabControl.ContentTemplate>
+
 				</TabControl>
 			</Border>
 		</Grid>

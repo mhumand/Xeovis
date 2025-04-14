@@ -26,7 +26,7 @@
 				<TextBlock Margin="0 5" FontStyle="Italic" VerticalAlignment="Center">"zee-oh-vis"</TextBlock>
 			</StackPanel>
 
-			<TextBlock Margin="0 5" xml:space="preserve">An x-eos visualization software.</TextBlock>
+			<TextBlock Margin="0 5" xml:space="preserve">An x-eos visualizer.</TextBlock>
 
 			<Separator/>
 

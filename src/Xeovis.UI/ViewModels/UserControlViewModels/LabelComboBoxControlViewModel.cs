@@ -10,12 +10,15 @@ namespace Xeovis.UI.ViewModels
         private ObservableCollection<ListableItem> items;
 
         [ObservableProperty]
-        private int selectedIndex;
+        private ListableItem? selectedItem;
+
+        [ObservableProperty]
+        private bool isStackedHorizontally;
 
         public LabelComboBoxControlViewModel()
         {
-            SelectedIndex = 0;
             Items = new ObservableCollection<ListableItem>();
+            IsStackedHorizontally = false;
         }
     }
 }

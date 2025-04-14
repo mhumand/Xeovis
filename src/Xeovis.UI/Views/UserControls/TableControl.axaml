@@ -2,9 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="500"
-			 MinHeight="300"
-			 MinWidth="300"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
+			 MinHeight="100"
+			 MinWidth="200"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
 			 x:DataType="vm:TableControlViewModel"
              x:Class="Xeovis.UI.TableControl">
@@ -18,9 +18,14 @@
 			<Setter Property="Margin" Value="0"/>
 			<Setter Property="Foreground" Value="Black"/>
 			<Setter Property="FontWeight" Value="SemiBold"/>
+			<Setter Property="FontSize" Value="14"/>
 		</Style>
 	</UserControl.Styles>
 
-	<DataGrid x:Name="dataGrid" BorderBrush="Gray" BorderThickness="1"/>
-	
+	<Grid>
+		<DataGrid x:Name="dataGrid"
+				  BorderBrush="Gray"
+				  BorderThickness="1"/>
+	</Grid>
+
 </UserControl>
