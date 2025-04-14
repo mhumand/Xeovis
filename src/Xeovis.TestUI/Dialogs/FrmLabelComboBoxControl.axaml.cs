@@ -49,9 +49,23 @@ public partial class FrmLabelComboBoxControl : Window
             new UI.Models.ListableItem("Item 4", description:"Description 4"),
         };
         vm2.ToolTip = "It's a simple tooltip for combobox label";
-        vm2.SelectedIndex = 2;
+        vm2.SelectedItem = vm2.Items[2];
         lcbc2.ViewModel = vm2;
         lcbc2.ListSelectionChanged += lcbc2_ListSelectionChanged;
+
+        var vm3 = new LabelComboBoxControlViewModel();
+        vm3.Label = "ComboBox 3";
+        vm3.IsStackedHorizontally = true;
+        vm3.Items = new ObservableCollection<UI.Models.ListableItem>()
+        {
+            new UI.Models.ListableItem("Item 1", description:"Description 1"),
+            new UI.Models.ListableItem("Item 2", description:"Description 2"),
+            new UI.Models.ListableItem("Item 3", description:"Description 3"),
+            new UI.Models.ListableItem("Item 4", description:"Description 4"),
+        };
+        vm3.ToolTip = "Horizontally stacked combobox!";
+        vm3.SelectedItem = vm3.Items[1];
+        lcbc3.ViewModel = vm3;
     }
 
     private void lcbc2_ListSelectionChanged(object? sender, UI.Models.Events.ListSelectionChangedEventArgs e)

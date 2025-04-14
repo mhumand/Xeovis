@@ -2,9 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="60"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="51"
 			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
-			 MinHeight="60"
+			 MinHeight="50"
 			 MinWidth="200"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
              x:Class="Xeovis.UI.LabelComboBoxControl"
@@ -22,10 +22,11 @@
 		</StackPanel>
 
 		<ComboBox x:Name="comboBox"
-				  SelectedIndex="{Binding SelectedIndex}"
+				  SelectedItem="{Binding SelectedItem}"
 				  ItemsSource="{Binding Items}"
 				  HorizontalAlignment="Stretch"
 				  SelectionChanged="comboBox_SelectionChanged"
+				  MinHeight="20"
 				  MaxDropDownHeight="300">
 			<ComboBox.ItemTemplate>
 				<DataTemplate>

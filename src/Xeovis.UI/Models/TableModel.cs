@@ -20,10 +20,10 @@ namespace Xeovis.UI.Models
         public bool CanResizeColumns { get; set; } = true;
         public bool CanSortColumns { get; set; } = true;
         public bool CanReorderColumns { get; set; } = true;
-
         public bool IsMultiSelect {  get; set; } = true;
         public bool IsRowSelect {  get; set; } = false;
         public bool CopyToClipboardWithHeaders { get; set; } = true;
+        public int FrozenColumnCount { get; set; } = 0;
 
         public TableModel()
         {

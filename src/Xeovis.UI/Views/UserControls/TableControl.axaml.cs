@@ -32,22 +32,21 @@ public partial class TableControl : UserControl
 
         dataGrid.CellEditEnding += DataGrid_CellEditEnding;
         dataGrid.CellEditEnded += DataGrid_CellEditEnded;
+        dataGrid.KeyDown += DataGrid_KeyDown;
     }
 
-    private void DataGrid_CellEditEnded(object? sender, DataGridCellEditEndedEventArgs e)
+    public void ClearTable()
     {
-
-    }
-
-    private void DataGrid_CellEditEnding(object? sender, DataGridCellEditEndingEventArgs e)
-    {
-
+        dataGrid.Columns.Clear();
+        dataGrid.ItemsSource = null;
+        _viewModel = null;
     }
 
     public void FillTable(TableModel tableModel)
     {
         dataGrid.Columns.Clear();
         dataGrid.ItemsSource = null;
+        if (tableModel == null) return;
 
         _viewModel = new TableControlViewModel(tableModel);
 
@@ -95,6 +94,7 @@ public partial class TableControl : UserControl
             }
         }
 
+        dataGrid.FrozenColumnCount = tableModel.FrozenColumnCount;
         dataGrid.MinColumnWidth = 70;
         dataGrid.ItemsSource = _rows;
         dataGrid.IsReadOnly = tableModel.IsReadOnly;
@@ -103,5 +103,22 @@ public partial class TableControl : UserControl
         dataGrid.CanUserReorderColumns = tableModel.CanReorderColumns;
         dataGrid.SelectionMode = tableModel.IsMultiSelect ? DataGridSelectionMode.Extended : DataGridSelectionMode.Single;
         dataGrid.ClipboardCopyMode = tableModel.CopyToClipboardWithHeaders ? DataGridClipboardCopyMode.IncludeHeader : DataGridClipboardCopyMode.ExcludeHeader;
+    }
+
+
+    private void DataGrid_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
+    {
+        if (e.Key == Avalonia.Input.Key.Escape)
+            dataGrid.SelectedIndex = -1;
+    }
+
+    private void DataGrid_CellEditEnded(object? sender, DataGridCellEditEndedEventArgs e)
+    {
+
+    }
+
+    private void DataGrid_CellEditEnding(object? sender, DataGridCellEditEndingEventArgs e)
+    {
+
     }
 }
