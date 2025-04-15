@@ -19,6 +19,8 @@ public partial class CheckBoxControl : UserControl
         }
     }
 
+    public bool IsChecked => _viewModel.IsChecked;
+
     public event EventHandler<CheckStateChangedEventArgs> CheckStateChanged;
 
     public CheckBoxControl()

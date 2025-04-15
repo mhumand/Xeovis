@@ -18,8 +18,8 @@ public partial class DataManagerLoadDataDialog : Window
         get { return _viewModel; }
         set
         {
-            _viewModel = value;
-            DataContext = value;
+            _viewModel = value ?? new DataManagerLoadDataViewModel();
+            DataContext = _viewModel;
             PrepareUI();
         }
     }
@@ -27,7 +27,6 @@ public partial class DataManagerLoadDataDialog : Window
     public DataManagerLoadDataDialog()
     {
         InitializeComponent();
-        PrepareUI();
     }
 
     private void PrepareUI()
@@ -100,7 +99,7 @@ public partial class DataManagerLoadDataDialog : Window
         }
     }
 
-    private void llcFolders_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    private void llcFolders_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs? e)
     {
         var contents = _viewModel.GetFolderContents(e.SelectedItem as ListableItem);
         if (contents == null) return;
@@ -109,14 +108,16 @@ public partial class DataManagerLoadDataDialog : Window
 
     private async void btnScan_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(lbdcDirectory.ViewModel.Directory))
+        var directory = lbdcDirectory.GetDirectory();
+        if (string.IsNullOrWhiteSpace(directory))
         {
             var msgBox = MessageBoxManager.GetMessageBoxStandard("Error", "Directory is empty!", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
             await msgBox.ShowWindowDialogAsync(this);
             return;
         }
 
-        var folders = _viewModel.GetEligibleFoldersList(lbdcDirectory.ViewModel.Directory, ckbxSubfolder.ViewModel.IsChecked);
+        _viewModel.FolderDirectory = directory;
+        var folders = _viewModel.GetEligibleFoldersList(directory, ckbxSubfolder.ViewModel.IsChecked);
         
         if (folders == null || folders.Count == 0)
         {
@@ -146,6 +147,8 @@ public partial class DataManagerLoadDataDialog : Window
         }
 
         _viewModel.SelectedFolders = selectedFolders;
+        _viewModel.IsSubfolderChecked = ckbxSubfolder.IsChecked;
+        _viewModel.SubfolderDirectory = txtSubfolder.Text;
 
         this.Close(DialogResultType.OK);
     }

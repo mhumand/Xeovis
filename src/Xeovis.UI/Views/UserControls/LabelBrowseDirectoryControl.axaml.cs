@@ -84,4 +84,9 @@ public partial class LabelBrowseDirectoryControl : UserControl
             this.Focus();
         }
     }
+
+    public string GetDirectory()
+    {
+        return _viewModel.Directory;
+    }
 }
