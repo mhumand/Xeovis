@@ -97,7 +97,7 @@ namespace Xeovis.UI.Models.FileReaders
                         var cells = table.Rows[i].ItemArray;
                         var run = new ExpRun();
 
-                        if (indexIndex >= 0)
+                        if (indexIndex >= 0 && !string.IsNullOrWhiteSpace(cells[indexIndex].ToString()))
                             run.ReadingIndex = (int)DoubleExtensions.GetDoubleValueFromText(cells[indexIndex].ToString());
 
                         run.Name = cells[nameIndex].ToString();
@@ -165,18 +165,18 @@ namespace Xeovis.UI.Models.FileReaders
                         var result = reader.AsDataSet();
                         var table = result.Tables[0];
                         var headerRow = table.Rows[0].ItemArray.ToList();
-                        int experimentIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().ToLower().Contains("index")));
+                        int runIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().ToLower().Contains("index")));
                         int commentIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().ToLower().Contains("comment")));
 
-                        if (experimentIndex < 0) continue;
+                        if (runIndex < 0) continue;
 
                         for (int i = 1; i < table.Rows.Count; i++)
                         {
                             var cells = table.Rows[i].ItemArray;
-                            var experimentName = cells[experimentIndex].ToString();
-                            if (string.IsNullOrEmpty(experimentName)) continue;
-                            int.TryParse(experimentName, out int intName); // some runs are read by their index in experiment.xls file
-                            var run = experiment.Runs.FirstOrDefault(r => r.Name == experimentName || r.ReadingIndex == intName);
+                            var runName = cells[runIndex].ToString();
+                            if (string.IsNullOrEmpty(runName)) continue;
+                            int.TryParse(runName, out int intName); // some runs are read by their index in experiment.xls file
+                            var run = experiment.Runs.FirstOrDefault(r => r.Name == runName || r.ReadingIndex == intName);
                             if (run == null) continue;
                             var runPhase = run.Phases.FirstOrDefault(ph => ph.Type == phaseType);
                             if (runPhase == null) continue;

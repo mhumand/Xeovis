@@ -2,8 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="56"
-			 MinHeight="56"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="55"
+			 MinHeight="55"
 			 MinWidth="200"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
 			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
@@ -16,15 +16,15 @@
 		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
 	</UserControl.Styles>
 	
-	<StackPanel Spacing="5">
-		<StackPanel Orientation="Horizontal" Spacing="5">
+	<Grid RowDefinitions="23,32">
+		<StackPanel Grid.Row="0" VerticalAlignment="Center" Orientation="Horizontal" Spacing="5">
 			<TextBlock x:Name="tbLabel"
 					   Text="{Binding Label}"/>
 			
 			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>
 
-		<Grid x:Name="txtBtnGrid">
+		<Grid Grid.Row="1" x:Name="txtBtnGrid">
 			<TextBox x:Name="tbInput" 
 					 Text="{Binding Directory, UpdateSourceTrigger=PropertyChanged}"/>
 			
@@ -37,5 +37,5 @@
 				</Button.Content>
 			</Button>
 		</Grid>
-	</StackPanel>
+	</Grid>
 </UserControl>

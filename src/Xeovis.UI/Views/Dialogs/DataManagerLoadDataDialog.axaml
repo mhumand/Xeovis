@@ -32,7 +32,7 @@
 		<!-- Top Section - Directory + Scan -->
 		<Grid x:Name="topGrid"
 			  DockPanel.Dock="Top"
-			  RowDefinitions="60,40"
+			  RowDefinitions="55,40"
 			  ColumnDefinitions="*,80">
 			<userControls:LabelBrowseDirectoryControl x:Name="lbdcDirectory"
 													  Grid.Row="0"

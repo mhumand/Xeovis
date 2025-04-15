@@ -11,5 +11,6 @@
 		<Setter Property="BorderThickness" Value="0.6"/>
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
 		<Setter Property="SelectionBrush" Value="SkyBlue"/>
+		<Setter Property="MinHeight" Value="25"/>
 	</Style>
 </Styles>
