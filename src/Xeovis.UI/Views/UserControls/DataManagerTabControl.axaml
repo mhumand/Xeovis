@@ -32,7 +32,7 @@
 					<RowDefinition Height="1*" MinHeight="160"/>
 				</Grid.RowDefinitions>
 				
-				<Grid Grid.Row="0" RowDefinitions="55,*">
+				<Grid Grid.Row="0" RowDefinitions="55,*" Margin="0 5">
 					<userControls:LabelComboBoxControl x:Name="lcbExperiment"
 													   Grid.Row="0"
 													   Width="250"
@@ -47,7 +47,7 @@
 							  BorderThickness="3.5"
 							  Margin="0 2"/>
 
-				<Grid Grid.Row="2" RowDefinitions="55,*">
+				<Grid Grid.Row="2" RowDefinitions="55,*" Margin="0 5">
 					<userControls:LabelComboBoxControl x:Name="lcbPhaseInExperiment"
 													   Grid.Row="0"
 													   Width="250"
@@ -61,7 +61,7 @@
 
 		<!--Phases Tab-->
 		<TabItem x:Name="tabPhases" Header="Phases">
-			<Grid>
+			<Grid Margin="0 5">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="*" MinHeight="160"/>
 					<RowDefinition Height="5"/>
