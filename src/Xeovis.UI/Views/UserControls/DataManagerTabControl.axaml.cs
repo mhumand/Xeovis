@@ -83,6 +83,6 @@ public partial class DataManagerTabControl : UserControl
         tableExperiment.FillTable(table);
 
         _viewModel.CreatePhaseInExperimentItems(experimentItem);
-        lcbPhaseInExperiment.SetItems(_viewModel.PhaseInExperimentItems.ToList());
+        lcbPhaseInExperiment.SetItems(_viewModel.PhaseInExperimentItems.OrderBy(i => i.Label).ToList());
     }
 }
