@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.Models.Events;
 using Xeovis.UI.Models.FileReaders;
+using Xeovis.UI.ViewModels.DialogsViewModels;
 
 namespace Xeovis.UI;
 
@@ -12,6 +13,8 @@ public partial class MainMenu : UserControl
     public event EventHandler<ExperimentsLoadedEventArgs> ExperimentsLoaded;
 
     public Window Parent;
+
+    private DataManagerLoadDataViewModel _loadDataViewModel;
 
     public MainMenu()
     {
@@ -43,10 +46,12 @@ public partial class MainMenu : UserControl
     {
         if (Parent == null) return;
         var dialog = new DataManagerLoadDataDialog();
+        dialog.ViewModel = _loadDataViewModel;
         var result = await dialog.ShowDialog<DialogResultType>(Parent);
 
         if (result == DialogResultType.OK)
         {
+            _loadDataViewModel = dialog.ViewModel;
             var progressDialog = new ProgressBarDialog();
             progressDialog.ShowDialog(Parent);
 
@@ -55,7 +60,8 @@ public partial class MainMenu : UserControl
 
             try
             {
-                var expReader = new ExperimentReader(dialog.ViewModel.SelectedFolders, dialog.ViewModel.SubfolderDirectory);
+                var vm = dialog.ViewModel;
+                var expReader = new ExperimentReader(vm.SelectedFolders, vm.SubfolderDirectory, vm.IsSubfolderChecked);
                 var experiments = await Task.Run(() => expReader.GetExperiments(progress, token));
                 ExperimentsLoaded?.Invoke(this, new ExperimentsLoadedEventArgs(experiments, dialog.ViewModel));
             }

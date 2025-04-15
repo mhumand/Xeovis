@@ -35,7 +35,6 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
         {
             if (string.IsNullOrWhiteSpace(directory)) return null;
 
-            FolderDirectory = directory;
             eligibleFolders = new List<ListableItem>();
             if (Directory.Exists(directory))
             {

@@ -1,6 +1,7 @@
 ﻿using ExcelDataReader;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -15,11 +16,13 @@ namespace Xeovis.UI.Models.FileReaders
         private List<ListableItem> _folders;
         private string _subdirectory;
         private bool _hasSubdirectory => !string.IsNullOrWhiteSpace(_subdirectory);
+        private bool _useSubdirectory;
 
-        public ExperimentReader(List<ListableItem> folders, string subdirectory = null)
+        public ExperimentReader(List<ListableItem> folders, string subdirectory = null, bool useSubdirectory = false)
         {
             _folders = folders;
             _subdirectory = subdirectory;
+            _useSubdirectory = useSubdirectory;
         }
 
         public async Task<List<Experiment>> GetExperiments(IProgress<ProgressBarData> progress, CancellationToken token)
@@ -56,7 +59,7 @@ namespace Xeovis.UI.Models.FileReaders
 
             List<FileInfo> subFiles = experiment.DirectoryInfo.GetFiles().Where(f => f.Extension.StartsWith(".xls")).ToList();
 
-            if (_hasSubdirectory)
+            if (_useSubdirectory && _hasSubdirectory)
             {
                 string subPath = experiment.DirectoryInfo.FullName + $"\\{_subdirectory}";
                 if (Directory.Exists(subPath))
@@ -145,6 +148,51 @@ namespace Xeovis.UI.Models.FileReaders
             }
         }
 
+        private bool FindIndexOfHeaderByName(List<DataRow> rows, string headerName, out int index)
+        {
+            var headerRow = rows[0].ItemArray.ToList();
+            int runIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains(headerName, StringComparison.CurrentCultureIgnoreCase)));
+            if (runIndex < 0)
+            {
+                index = runIndex;
+                return false;
+            }
+
+            bool isEmptyColumn = rows.Select(r => r.ItemArray.ToList()[runIndex]).Skip(1).All(x => string.IsNullOrWhiteSpace(x.ToString()));
+            index = runIndex;
+
+            return runIndex >= 0 && !isEmptyColumn;
+        }
+
+        private int FindRunHeaderIndex(DataTable table, Experiment experiment)
+        {
+            var rowList = table.Rows.OfType<DataRow>().ToList();
+            var headerRow = rowList[0].ItemArray.ToList();
+
+            int runIndex = -1;
+            var test1 = FindIndexOfHeaderByName(rowList, "index",out runIndex);
+
+            bool test2 = true;
+            if (!test1)
+                test2 = FindIndexOfHeaderByName(rowList, "experiment", out runIndex);
+
+            if (!test2)
+            {
+                var indexes = new List<int>();
+                foreach (ExpRun run in experiment.Runs)
+                {
+                    var innerIndex = rowList.Select(r => r.ItemArray.ToList().FindIndex(x => x.ToString().Equals(run.Name, StringComparison.CurrentCultureIgnoreCase))).FirstOrDefault(x => x > 0, -1);
+                    if (innerIndex >= 0)
+                        indexes.Add(innerIndex);
+                }
+
+                // choosing the most occured index
+                runIndex = indexes.Count > 0 ? (int)indexes.GroupBy(n => n).OrderByDescending(g => g.Count()).First().Key: -1;
+            }
+
+            return runIndex;
+        }
+
         private void ReadPhasesFile(Experiment experiment)
         {
             var phaseFiles = experiment.Files.Except(experiment.Files.Where(f => Path.GetFileNameWithoutExtension(f.FullName).ToLower().Contains("experiment")));
@@ -165,7 +213,8 @@ namespace Xeovis.UI.Models.FileReaders
                         var result = reader.AsDataSet();
                         var table = result.Tables[0];
                         var headerRow = table.Rows[0].ItemArray.ToList();
-                        int runIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().ToLower().Contains("index")));
+
+                        int runIndex = FindRunHeaderIndex(table, experiment);
                         int commentIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().ToLower().Contains("comment")));
 
                         if (runIndex < 0) continue;

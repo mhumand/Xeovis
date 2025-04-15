@@ -18,6 +18,10 @@
 			<Setter Property="Margin" Value="0 5"/>
 		</Style>
 
+		<Style Selector="TreeViewItem">
+			<Setter Property="MinHeight" Value="25"/>
+		</Style>
+
 		<Style Selector="GridSplitter">
 			<Setter Property="Background" Value="LightGray"/>
 			<Setter Property="BorderThickness" Value="3"/>
