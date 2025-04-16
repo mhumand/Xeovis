@@ -50,5 +50,11 @@ namespace Xeovis.TestUI
             var dialog = new FrmTableControl();
             dialog.ShowDialog(this);
         }
+
+        private void btnChartControl_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var dialog = new FrmChartControl();
+            dialog.ShowDialog(this);
+        }
     }
 }

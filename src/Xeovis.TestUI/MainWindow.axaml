@@ -16,7 +16,7 @@
 			<Setter Property="HorizontalContentAlignment" Value="Center" />
 		</Style>
 	</Window.Styles>
-	
+
 	<StackPanel Margin="20" Spacing="15">
 		<Button x:Name="btnLabelInputControl"
 				Content="Label Input Control"
@@ -45,6 +45,10 @@
 		<Button x:Name="btnTableControl"
 				Content="Table Control"
 				Click="btnTableControl_Click" />
+
+		<Button x:Name="btnChartControl"
+				Content="Chart Control"
+				Click="btnChartControl_Click" />
 
 	</StackPanel>
 </Window>

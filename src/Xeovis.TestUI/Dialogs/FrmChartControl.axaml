@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        x:Class="Xeovis.TestUI.FrmChartControl"
+        Title="FrmChartControl"
+		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+		Width="1000"
+		Height="600"
+		WindowStartupLocation="CenterScreen"
+		ShowInTaskbar="False">
+
+	<Window.Styles>
+		<Style Selector="Button">
+			<Setter Property="HorizontalAlignment" Value="Center"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Setter Property="Width" Value="70"/>
+			<Setter Property="Height" Value="32"/>
+		</Style>
+	</Window.Styles>
+
+	<Grid RowDefinitions="50,*" ColumnDefinitions="1*,1*" Margin="10">
+		<Button Grid.Row="0" Grid.Column="0" x:Name="btnPlot1" Content="Plot" Click="btnPlot1_Click"/>
+		<userControls:ChartControl x:Name="chartControl1" Grid.Row="1" Grid.Column="0"/>
+
+		<Button Grid.Row="0" Grid.Column="1" x:Name="btnPlot2" Content="Plot" Click="btnPlot2_Click"/>
+		<userControls:ChartControl x:Name="chartControl2" Grid.Row="1" Grid.Column="1"/>
+	</Grid>
+
+</Window>
