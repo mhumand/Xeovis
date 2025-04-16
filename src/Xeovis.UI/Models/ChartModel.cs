@@ -18,7 +18,8 @@ namespace Xeovis.UI.Models
         public bool IsTitleVisible { get; set; }
         public bool IsXAxisLabelVisible { get; set; }
         public bool IsYAxisLabelVisible { get; set; }
-        public bool AutoScale { get; set; }
+        public bool LockAxes {  get; set; }
+        public bool IsGridVisible {  get; set; }
 
         public ChartModel()
         {
@@ -32,7 +33,8 @@ namespace Xeovis.UI.Models
             IsXAxisLabelVisible = true;
             IsYAxisLabelVisible = true;
             IsTitleVisible = true;
-            AutoScale = false;
+            LockAxes = false;
+            IsGridVisible = true;
         }
 
         public override string ToString()

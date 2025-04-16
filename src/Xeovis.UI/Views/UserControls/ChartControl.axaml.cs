@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using ScottPlot;
-using ScottPlot.Avalonia;
 using ScottPlot.Plottables;
 using System;
 using System.Collections.Generic;
@@ -53,7 +52,7 @@ public partial class ChartControl : UserControl
             {
                 CurveType.Scatter => AddScatter(curve),
                 CurveType.Line => AddLine(curve),
-                CurveType.CrossHair => AddCrossHair(curve),
+                CurveType.Crosshair => AddCrosshair(curve),
                 _ => false,
             };
 
@@ -64,16 +63,61 @@ public partial class ChartControl : UserControl
         }
 
         SetProperties();
-        if (resetZoom) scottPlot.Plot.Axes.AutoScale();
+        SetContextMenu();
+
+        if (resetZoom)
+            scottPlot.Plot.Axes.AutoScale();
+
         scottPlot.Refresh();
         return true;
     }
 
+    private void SetContextMenu()
+    {
+        scottPlot.Menu?.Clear();
+
+        scottPlot.Menu?.Add("Show/Hide Legend", (plot) =>
+        {
+            if (plot.Legend.IsVisible)
+            {
+                plot.HideLegend();
+                _chartModel.Legend.IsVisible = false;
+            }
+            else
+            {
+                plot.ShowLegend();
+                _chartModel.Legend.IsVisible = true;
+            }
+        });
+
+        scottPlot.Menu?.Add("Show/Hide Grids", (plot) =>
+        {
+            if (plot.Grid.IsVisible)
+            {
+                plot.HideGrid();
+                _chartModel.IsGridVisible = false;
+            }
+            else
+            {
+                plot.ShowGrid();
+                _chartModel.IsGridVisible = true;
+            }
+        });
+
+        scottPlot.Menu?.AddSeparator();
+
+        scottPlot.Menu?.Add("Reset Zoom", (plot) =>
+        {
+            plot.Axes.AutoScale();
+        });
+    }
+
     private void SetProperties()
     {
+        scottPlot.Plot.Axes.SquareUnits(_chartModel.HasEqualDimensions);
         scottPlot.Plot.Axes.Left.Label.Text = _chartModel.XAxisLabel;
         scottPlot.Plot.Axes.Bottom.Label.Text = _chartModel.YAxisLabel;
-        
+
         scottPlot.Plot.Axes.Title.Label.Text = _chartModel.Title;
         scottPlot.Plot.Axes.Title.IsVisible = _chartModel.IsTitleVisible;
 
@@ -83,41 +127,64 @@ public partial class ChartControl : UserControl
         scottPlot.Plot.Legend.ShadowColor = Color.FromColor(System.Drawing.Color.Transparent);
         scottPlot.Plot.Legend.OutlineWidth = 0.5f;
 
-        scottPlot.Plot.Axes.SquareUnits(_chartModel.HasEqualDimensions);
+        scottPlot.Plot.Grid.IsVisible = _chartModel.IsGridVisible;
     }
 
     private bool AddScatter(CurveModel curve)
     {
-        var x = curve.Xvals.ToArray();
-        var y = curve.Yvals.ToArray();
-
-        var scatter = scottPlot.Plot.Add.Scatter(x, y);
-        scatter.LineStyle.IsVisible = curve.IsLineVisible;
+        var scatter = scottPlot.Plot.Add.Scatter(curve.Xvals.ToArray(), curve.Yvals.ToArray());
         scatter.LineColor = Color.FromColor(curve.LineColor);
-        scatter.LineStyle.Width = curve.LineWidth;
-        scatter.LineStyle.Pattern = GetScottPlotLinePattern(curve.LineType);
-        scatter.LineStyle.AntiAlias = curve.IsLineAntiAlis;
-
-        scatter.MarkerStyle.Size = curve.MarkerSize;
+        SetLineStyle(scatter.LineStyle, curve);
         scatter.MarkerColor = Color.FromColor(curve.MarkerColor);
-        //scatter.MarkerStyle.OutlineStyle.Color = Color.FromColor(curve.MarkerColor);
-        scatter.MarkerStyle.IsVisible = curve.IsMarkerVisible;
-        scatter.MarkerStyle.Shape = GetScottPlotMarkerShape(curve.MarkerType);
+        SetMarkerStyle(scatter.MarkerStyle, curve);
         scatter.LegendText = curve.Name;
 
         _plottedCurves.Add(curve.Id, scatter);
-
         return true;
     }
 
     private bool AddLine(CurveModel curve)
     {
+        if (curve.Xvals.Count < 1 || curve.Yvals.Count < 1) return false;
+
+        var line = scottPlot.Plot.Add.Line(curve.Xvals[0], curve.Yvals[0], curve.Xvals[1], curve.Yvals[1]);
+        line.LineColor = Color.FromColor(curve.LineColor);
+        SetLineStyle(line.LineStyle, curve);
+        line.MarkerColor = Color.FromColor(curve.MarkerColor);
+        SetMarkerStyle(line.MarkerStyle, curve);
+        line.LegendText = curve.Name;
+
+        _plottedCurves.Add(curve.Id, line);
         return true;
     }
 
-    private bool AddCrossHair(CurveModel curve)
+    private bool AddCrosshair(CurveModel curve)
     {
+        var crosshair = scottPlot.Plot.Add.Crosshair(curve.Xvals[0], curve.Yvals[0]);
+        crosshair.LineColor = Color.FromColor(curve.LineColor);
+        crosshair.LinePattern = GetScottPlotLinePattern(curve.LineType);
+        crosshair.IsVisible = curve.IsLineVisible;
+        crosshair.LineWidth = curve.LineWidth;
+        crosshair.MarkerColor = Color.FromColor(curve.MarkerColor);
+        SetMarkerStyle(crosshair.MarkerStyle, curve);
+
+        _plottedCurves.Add(curve.Id, crosshair);
         return true;
+    }
+
+    private void SetLineStyle(LineStyle lineStyle, CurveModel curve)
+    {
+        lineStyle.IsVisible = curve.IsLineVisible;
+        lineStyle.Width = curve.LineWidth;
+        lineStyle.Pattern = GetScottPlotLinePattern(curve.LineType);
+        lineStyle.AntiAlias = curve.IsLineAntiAlis;
+    }
+
+    private void SetMarkerStyle(MarkerStyle markerStyle, CurveModel curve)
+    {
+        markerStyle.Size = curve.MarkerSize;
+        markerStyle.IsVisible = curve.IsMarkerVisible;
+        markerStyle.Shape = GetScottPlotMarkerShape(curve.MarkerType);
     }
 
     private LinePattern GetScottPlotLinePattern(LineType linePattern)
@@ -174,7 +241,9 @@ public partial class ChartControl : UserControl
     private void ScottPlot_SizeChanged(object? sender, SizeChangedEventArgs e)
     {
         if (_chartModel.HasEqualDimensions)
+        {
             scottPlot.Width = e.NewSize.Height;
+        }
     }
 
     private void ScottPlot_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
@@ -186,7 +255,7 @@ public partial class ChartControl : UserControl
             var b = plottable.GetNearest(plotCoords, scottPlot.Plot.LastRender, 10);
         }
 
-        var bounds = scottPlot.Plot.Legend.GetLayout(new PixelSize(1,1));
+        //var bounds = scottPlot.Plot.Legend.GetLayout(new PixelSize(1,1));
     }
     #endregion
 }

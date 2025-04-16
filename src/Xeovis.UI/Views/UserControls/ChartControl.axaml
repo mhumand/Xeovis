@@ -14,7 +14,7 @@
 		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
 	</UserControl.Styles>
 
-	<Grid>
+	<Grid x:Name="containerGrid">
 		<ScottPlot:AvaPlot x:Name="scottPlot"/>
 	</Grid>
 

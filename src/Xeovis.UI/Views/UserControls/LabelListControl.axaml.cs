@@ -78,7 +78,8 @@ public partial class LabelListControl : UserControl
         var removeAll = new MenuItem();
         removeAll.Header = "Remove All";
         removeAll.Click += RemoveAll_Click;
-        if (_viewModel.IsRemovable) menu.Items.Add(removeAll);
+        if (_viewModel.IsRemovable)
+            menu.Items.Add(removeAll);
 
         return menu.ItemCount == 0 ? null : menu;
     }

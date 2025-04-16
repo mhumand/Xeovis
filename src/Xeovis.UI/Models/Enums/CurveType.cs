@@ -4,6 +4,6 @@
     {
         Scatter,
         Line,
-        CrossHair
+        Crosshair
     }
 }
