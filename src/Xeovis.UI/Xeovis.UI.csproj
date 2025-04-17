@@ -16,6 +16,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Remove="Assets\ZoomIn16x16.png" />
+    <AvaloniaResource Remove="Assets\ZoomOut16x16.png" />
+    <AvaloniaResource Remove="Assets\ZoomRectangle16x16.png" />
+    <AvaloniaResource Remove="Assets\ZoomReset16x16.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Assets\browse.png" />
     <None Remove="Assets\clear.png" />
     <None Remove="Assets\delete.png" />
@@ -44,6 +51,7 @@
     <PackageReference Include="ExcelDataReader" Version="3.7.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.7.0" />
     <PackageReference Include="MessageBox.Avalonia" Version="3.2.0" />
+    <PackageReference Include="ScottPlot.Avalonia" Version="5.0.55" />
   </ItemGroup>
 
   <ItemGroup>
