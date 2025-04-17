@@ -50,6 +50,17 @@ namespace Xeovis.UI.Models
             CurveType = CurveType.Scatter;
         }
 
+        public int GetPointIndex(double x, double y)
+        {
+            var indX = Xvals.IndexOf(x);
+            var indY = Yvals.IndexOf(y);
+
+            if (indX == indY)
+                return indX;
+            else
+                return -1;
+        }
+
         public override string ToString()
         {
             return Name;

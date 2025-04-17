@@ -10,31 +10,29 @@ namespace Xeovis.UI.Models
         public string Title { get; set; }
         public List<CurveModel> Curves { get; set; }
         public Guid ID { get; set; }
-        public string XAxisLabel { get; set; }
-        public string YAxisLabel { get; set; }
         public int MaxDataCount => Curves.Max(c => c.DataCount);
         public bool HasEqualDimensions { get; set; }
         public LegendModel Legend { get; set; }
         public bool IsTitleVisible { get; set; }
-        public bool IsXAxisLabelVisible { get; set; }
-        public bool IsYAxisLabelVisible { get; set; }
-        public bool LockAxes {  get; set; }
         public bool IsGridVisible {  get; set; }
+        public AxisModel XAxis { get; set; }
+        public AxisModel YAxis { get; set; }
 
         public ChartModel()
         {
             Title = "ChartModelTitle";
-            XAxisLabel = "X Axis";
-            YAxisLabel = "Y Axis";
+            XAxis = new AxisModel("X Axis");
+            YAxis = new AxisModel("Y Axis");
             Curves = new List<CurveModel>();
             Legend = new LegendModel();
             ID = Guid.NewGuid();
-
-            IsXAxisLabelVisible = true;
-            IsYAxisLabelVisible = true;
             IsTitleVisible = true;
-            LockAxes = false;
             IsGridVisible = true;
+        }
+
+        public CurveModel GerCurveById(Guid id)
+        {
+            return Curves.FirstOrDefault(c => c.Id == id);
         }
 
         public override string ToString()

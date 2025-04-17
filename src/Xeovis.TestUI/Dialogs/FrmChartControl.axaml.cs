@@ -1,9 +1,9 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using ScottPlot.Avalonia;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using Xeovis.UI;
 using Xeovis.UI.Models;
 
 namespace Xeovis.TestUI;
@@ -14,6 +14,7 @@ public partial class FrmChartControl : Window
     {
         InitializeComponent();
         DataContext = this;
+        btnToggleVisibility.IsCheckedChanged += btnToggleVisibility_IsCheckedChanged;
     }
 
     private void btnPlot1_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -52,7 +53,7 @@ public partial class FrmChartControl : Window
 
         var cross1 = new CurveModel();
         cross1.Name = "Crosshair 1";
-        cross1.Xvals = new List<double>() { 0.7};
+        cross1.Xvals = new List<double>() { 0.47};
         cross1.Yvals = new List<double>() { 0.2};
         cross1.LineColor = Color.Orange;
         cross1.CurveType = UI.Models.Enums.CurveType.Crosshair;
@@ -74,7 +75,38 @@ public partial class FrmChartControl : Window
         chartModel.Curves.Add(cross1);
         chartModel.HasEqualDimensions = true;
         chartModel.IsGridVisible = false;
+        chartModel.XAxis = new AxisModel("Label for X Axis", 0, 1);
+        chartModel.YAxis = new AxisModel("Label for Y Axis", 0, 1);
 
         chartControl2.Plot(chartModel);
+        chartControl2.SetAxisLimits(0, 0, 1, 1);
+        chartControl2.EnableCrosshairPointSelection();
+        chartControl2.ChartPointSelected += ChartControl2_ChartPointSelected;
+    }
+
+    private void ChartControl2_ChartPointSelected(object? sender, UI.Models.Events.ChartPointSelectedEventArgs e)
+    {
+        if (sender is not ChartControl chart) return;
+
+        if (e.HasValidCurveId && e.HasValidPoint)
+            txt2.Text = $"User selected point ({e.X},{e.Y}) from curve '{chart.ViewModel.ChartModel.GerCurveById(e.CurveId)}'";
+        else
+            txt2.Text = string.Empty;
+    }
+
+
+    private void btnToggleVisibility_IsCheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (chartControl2.ViewModel.ChartModel.Curves.Any())
+            chartControl2.SetCurveVisibilty(chartControl2.ViewModel.ChartModel.Curves[0].Id, (bool)btnToggleVisibility.IsChecked);
+    }
+
+    private void btnSelectPoint_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (chartControl2.ViewModel.ChartModel.Curves.Any())
+        {
+            var curve = chartControl2.ViewModel.ChartModel.Curves[1];
+            chartControl2.SelectPoint(curve.Id, new Random().Next(curve.DataCount - 1));
+        }
     }
 }
