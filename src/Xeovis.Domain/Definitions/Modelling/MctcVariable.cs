@@ -4,13 +4,15 @@
     {
         public string Name { get; set; }
         public int Index { get; set; }
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
+        public Guid mctcBundleId { get; set; }
         public List<double> Values { get; set; }
         public double StartingValue { get; set; }
         public double Range { get; set; }
 
         public mctcVariable()
         {
+            Id = Guid.NewGuid();
             Values = new List<double>();
         }
 

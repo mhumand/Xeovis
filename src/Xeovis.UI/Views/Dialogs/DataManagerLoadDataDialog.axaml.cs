@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
+using System.IO;
 using System.Linq;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
@@ -49,6 +50,7 @@ public partial class DataManagerLoadDataDialog : Window
         vmFolders.ToolTip = "Those that contain excel files.";
         vmFolders.IsCheckable = true;
         vmFolders.SetItems(_viewModel.EligibleFolders);
+        vmFolders.SelectionMode = ItemSelectionMode.AlwaysSelected;
         foreach (var item in _viewModel.SelectedFolders)
             vmFolders.Items.First(i => i.Id == item.Id).IsChecked = true;
 
@@ -65,10 +67,10 @@ public partial class DataManagerLoadDataDialog : Window
         vmSelected.IsRemovable = true;
         vmSelected.SetItems(_viewModel.SelectedFolders);
         llcSelected.ViewModel = vmSelected;
-        llcSelected.ItemRemoved += LlcSelected_ItemRemoved;
+        llcSelected.ItemRemoved += llcSelected_ItemRemoved;
     }
 
-    private void LlcSelected_ItemRemoved(object? sender, Models.Events.ListableItemRemovedEventArgs e)
+    private void llcSelected_ItemRemoved(object? sender, Models.Events.ListableItemRemovedEventArgs e)
     {
         if (e.Item != null)
         {
@@ -109,9 +111,9 @@ public partial class DataManagerLoadDataDialog : Window
     private async void btnScan_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         var directory = lbdcDirectory.GetDirectory();
-        if (string.IsNullOrWhiteSpace(directory))
+        if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
         {
-            var msgBox = MessageBoxManager.GetMessageBoxStandard("Error", "Directory is empty!", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
+            var msgBox = MessageBoxManager.GetMessageBoxStandard("Error", "Directory does not exist!", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
             await msgBox.ShowWindowDialogAsync(this);
             return;
         }

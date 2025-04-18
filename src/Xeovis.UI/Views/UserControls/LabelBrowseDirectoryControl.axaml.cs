@@ -60,7 +60,7 @@ public partial class LabelBrowseDirectoryControl : UserControl
 
             var folders = await topLevel.StorageProvider.OpenFolderPickerAsync(options);
             if (folders.Count > 0)
-                _viewModel.Directory = folders[0].Path.AbsolutePath;
+                _viewModel.Directory = Uri.UnescapeDataString(folders[0].Path.AbsolutePath);
         }
         else
         {
@@ -73,7 +73,7 @@ public partial class LabelBrowseDirectoryControl : UserControl
 
             var files = await topLevel.StorageProvider.OpenFilePickerAsync(options);
             if (files.Count > 0)
-                _viewModel.Directory = files[0].Path.AbsolutePath;
+                _viewModel.Directory = Uri.UnescapeDataString(files[0].Path.AbsolutePath);
         }
     }
 

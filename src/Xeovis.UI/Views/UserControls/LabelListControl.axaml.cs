@@ -3,7 +3,6 @@ using System;
 using System.Linq;
 using Xeovis.UI.Models.Events;
 using Xeovis.UI.ViewModels;
-using Xeovis.UI.Views.Helpers;
 
 namespace Xeovis.UI;
 
@@ -28,6 +27,7 @@ public partial class LabelListControl : UserControl
     {
         InitializeComponent();
         lbItems.SelectionChanged += lbItems_SelectionChanged;
+        lbItems.KeyDown += lbItems_KeyDown;
         Loaded += LabelListControl_Loaded;
     }
 
@@ -103,4 +103,11 @@ public partial class LabelListControl : UserControl
         foreach (var item in _viewModel.Items)
             item.IsChecked = true;
     }
+
+    private void lbItems_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
+    {
+        if (e.Key == Avalonia.Input.Key.Escape)
+            lbItems.SelectedIndex = -1;
+    }
+
 }

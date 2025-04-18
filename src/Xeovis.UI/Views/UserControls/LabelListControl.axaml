@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
 			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+			 xmlns:converters="clr-namespace:Xeovis.UI.Views.Helpers.Converters;assembly=Xeovis.UI"
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="300"
 			 MinWidth="100"
 			 MinHeight="100"
@@ -11,6 +12,11 @@
 			 x:DataType="vm:LabelListControlViewModel"
 			 x:Name="control">
 
+	<UserControl.Resources>
+		<converters:ColorConverter x:Key="colorConverter" />
+		<converters:SelectionModeConverter x:Key="selectionModeConverter" />
+	</UserControl.Resources>
+	
 	<UserControl.Styles>
 		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
 		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
@@ -22,8 +28,6 @@
 		
 	</UserControl.Styles>
 	
-	<!--I'm using Grid instead of StackPanel becuase the vertical scrollbar in ListBox
-	does not appear automatically when using a StackPanel - M.H. 02/04/2025-->
 	<Grid Margin="2" VerticalAlignment="Top">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="30"/>
@@ -40,13 +44,13 @@
 		<ListBox Grid.Row="1" x:Name="lbItems"
 				 IsEnabled="{Binding !IsReadOnly}"
 				 ItemsSource="{Binding Items}"
-				 SelectionMode="AlwaysSelected"
+				 SelectionMode="{Binding SelectionMode, Converter={StaticResource selectionModeConverter}}"
 				 SelectedIndex="{Binding SelectedIndex}">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<Grid VerticalAlignment="Center">
 						<TextBlock Text="{Binding Label}"
-								   Foreground="{Binding Color}"
+								   Foreground="{Binding Color,Converter={StaticResource colorConverter}}"
 								   VerticalAlignment="Center"/>
 
 						<StackPanel HorizontalAlignment="Right"
@@ -56,6 +60,7 @@
 							
 							<TextBlock VerticalAlignment="Center"
 									   Text="{Binding Description}"
+									   Foreground="{Binding DescriptionColor,Converter={StaticResource colorConverter}}"
 									   FontWeight="Light"
 									   IsVisible="{Binding HasDescription}"/>
 
