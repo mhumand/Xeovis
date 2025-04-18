@@ -22,6 +22,7 @@ public partial class MainMenu : UserControl
         DataContext = this;
     }
 
+    // Project
     public void Project_New()
     {
 
@@ -42,6 +43,7 @@ public partial class MainMenu : UserControl
         Environment.Exit(0);
     }
 
+    // Data Manager
     public async void DataManager_LoadData()
     {
         if (Parent == null) return;
@@ -81,16 +83,18 @@ public partial class MainMenu : UserControl
 
     }
 
-    public void MctcReader_NewPlot()
+    // MCTC Reader
+    public void MctcPlots_NewPlot()
     {
 
     }
 
-    public void MctcReader_Settings()
+    public void MctcPlots_Settings()
     {
 
     }
 
+    // About
     public void About()
     {
         if (Parent == null) return;

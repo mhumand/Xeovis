@@ -5,27 +5,36 @@
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="250"
              x:Class="Xeovis.UI.MainMenu"
 			 DataContext="{Binding RelativeSource={RelativeSource Self}}">
-	
-		<Menu VerticalAlignment="Top">
-			<MenuItem Header="_Project">
-				<MenuItem Header="_New" Command="{Binding Project_New}"/>
-				<MenuItem Header="_Open" Command="{Binding Project_Open}"/>
-				<MenuItem Header="_Save" Command="{Binding Project_Save}"/>
-				<Separator/>
-				<MenuItem Header="_Preferences" IsVisible="False"/>
-				<MenuItem Header="_Quit" Command="{Binding Project_Quit}"/>
-			</MenuItem>
-			<MenuItem Header="_Data Manager">
-				<MenuItem Header="_Load Data" Command="{Binding DataManager_LoadData}"/>
-				<MenuItem Header="_Settings" Command="{Binding DataManager_Settings}"/>
-			</MenuItem>
-			<MenuItem Header="_MCTC Reader">
-				<MenuItem Header="_Read Data" Command="{Binding MctcReader_NewPlot}"/>
-				<MenuItem Header="_New Plot" Command="{Binding MctcReader_NewPlot}"/>
-				<MenuItem Header="_Settings" Command="{Binding MctcReader_Settings}"/>
-			</MenuItem>
-			<MenuItem Header="_About" Command="{Binding About}">
-			</MenuItem>
-		</Menu>
+
+	<UserControl.Styles>
+		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
+		<Style Selector="MenuItem">
+			<Setter Property="FontWeight" Value="SemiBold"/>
+		</Style>
+	</UserControl.Styles>
+
+	<Menu VerticalAlignment="Top">
+		
+		<MenuItem Header="_Project">
+			<MenuItem Header="_New" Command="{Binding Project_New}"/>
+			<MenuItem Header="_Open" Command="{Binding Project_Open}"/>
+			<MenuItem Header="_Save" Command="{Binding Project_Save}"/>
+			<Separator/>
+			<MenuItem Header="_Preferences" IsVisible="False"/>
+			<MenuItem Header="_Quit" Command="{Binding Project_Quit}"/>
+		</MenuItem>
+		
+		<MenuItem Header="_Data Manager">
+			<MenuItem Header="_Load Data" Command="{Binding DataManager_LoadData}"/>
+			<MenuItem Header="_Settings" Command="{Binding DataManager_Settings}"/>
+		</MenuItem>
+		
+		<MenuItem Header="_MCTC Plots">
+			<MenuItem Header="_New Plot" Command="{Binding MctcPlots_NewPlot}"/>
+			<MenuItem Header="_Settings" Command="{Binding MctcPlots_Settings}"/>
+		</MenuItem>
+		
+		<MenuItem Header="_About" Command="{Binding About}" />
+	</Menu>
 
 </UserControl>
