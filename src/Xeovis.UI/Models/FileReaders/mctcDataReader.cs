@@ -1,9 +1,7 @@
-﻿using Avalonia.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xeovis.Base;
@@ -62,7 +60,6 @@ namespace Xeovis.UI.Models.FileReaders
             return mctcBundle;
         }
 
-
         private void ReadBatchLines()
         {
             var lines = ReadFileLines("batchlines");
@@ -77,8 +74,8 @@ namespace Xeovis.UI.Models.FileReaders
                 var batch = new Batch();
                 int.TryParse(Line1[0], out int index);
                 batch.Index = index;
-                batch.Experiment = new Experiment(Line1[1]);
-                batch.ExpRun = new ExpRun() { Name = Line1[2], Experiment = batch.Experiment };
+                batch.ExperimentName = Line1[1];
+                batch.ExpRunName = Line1[2];
 
                 //batch data
                 i++;
@@ -98,8 +95,8 @@ namespace Xeovis.UI.Models.FileReaders
                 for (int j = 1; j < varianceIndex; j++)
                     batch.Phases.Add(PhaseTypeExtensions.GetPhaseTypeByName(Line2[j]));
 
-                batch.ExpRun.Pressure = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 3]);
-                batch.ExpRun.Temperature = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 4]);
+                batch.ExpRunPressure = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 3]);
+                batch.ExpRunTemperature = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 4]);
 
                 _batches.Add(batch);
             }
@@ -139,17 +136,19 @@ namespace Xeovis.UI.Models.FileReaders
                 var varData = lines[i].Split(new char[] { '(', ')', '-' }).ToList();
                 varData.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
-                var modelVariable = new xeosVariable();
-                modelVariable.PhaseType = PhaseTypeExtensions.GetPhaseTypeByName(varData[1]);
-                modelVariable.VariableType = EnumExtensions.GetValueFromDescription<ModelVariableType>(varData[0]);
+                var xeosVariable = new xeosVariable();
+                xeosVariable.PhaseType = PhaseTypeExtensions.GetPhaseTypeByName(varData[1]);
+                xeosVariable.VariableType = EnumExtensions.GetValueFromDescription<ModelVariableType>(varData[0]);
+
                 int.TryParse(varData[2].TrimStart(new char[] { 'b' }), out int batchIndex);
-                modelVariable.Batch = _batches.FirstOrDefault(b => b.Index == batchIndex);
+                var batch = _batches.FirstOrDefault(b => b.Index == batchIndex);
+                xeosVariable.BatchId = batch.Id;
 
                 i++;
-                modelVariable.ObsVal = DoubleExtensions.GetDoubleValueFromText(lines[i]);
+                xeosVariable.ObsVal = DoubleExtensions.GetDoubleValueFromText(lines[i]);
 
-                modelVariable.Batch.xeosVariables.Add(modelVariable);
-                _xeosVariables.Add(modelVariable);
+                batch.xeosVariables.Add(xeosVariable);
+                _xeosVariables.Add(xeosVariable);
             }
         }
 

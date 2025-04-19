@@ -98,7 +98,7 @@
 								  ItemsSource="{Binding ExperimentNodes}">
 							<TreeView.ItemTemplate>
 								<TreeDataTemplate ItemsSource="{Binding Children}">
-									<TextBlock Classes="Primary" Text="{Binding Label}"/>
+									<TextBlock Text="{Binding Label}"/>
 								</TreeDataTemplate>
 							</TreeView.ItemTemplate>
 						</TreeView>
@@ -111,19 +111,18 @@
 					<Grid Grid.Row="2" Margin="10 5" RowDefinitions="25,*">
 						<TextBlock Grid.Row="0"
 								   Classes="Primary"
-								   Text="Plots" />
-						<TreeView x:Name="tvMctcPlots"
+								   Text="mctc Bundles" />
+						<TreeView x:Name="tvMctcBundles"
 								  Grid.Row="1"
-								  ItemsSource="{Binding MctcPlotNodes}">
+								  ItemsSource="{Binding MctcBundleNodes}">
 							<TreeView.ItemTemplate>
 								<TreeDataTemplate ItemsSource="{Binding Children}">
-									<TextBlock Classes="Primary" Text="{Binding Label}"/>
+									<TextBlock Text="{Binding Label}"/>
 								</TreeDataTemplate>
 							</TreeView.ItemTemplate>
 						</TreeView>
 					</Grid>
-
-
+					
 				</Grid>
 			</Border>
 

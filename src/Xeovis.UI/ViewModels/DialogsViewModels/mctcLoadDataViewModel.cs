@@ -10,15 +10,19 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
     public partial class mctcLoadDataViewModel : ViewModelBase
     {
         [ObservableProperty]
+        private string mctcBundleName;
+
+        [ObservableProperty]
         private string folderDirectory;
 
         public List<ListableItem> RequiredFiles;
 
-        public bool HasRequiredFiles => RequiredFiles != null && RequiredFiles.Any();
+        public bool HasRequiredFiles => RequiredFiles != null && RequiredFiles.Count > 0;
 
         public mctcLoadDataViewModel()
         {
             FolderDirectory = string.Empty;
+            mctcBundleName = "Bundle 1";
             RequiredFiles = new List<ListableItem>();
         }
 

@@ -1,5 +1,6 @@
 using Avalonia.Controls;
-using System.Linq;
+using System.Collections.Generic;
+using Xeovis.Domain;
 using Xeovis.UI.Models;
 using Xeovis.UI.ViewModels;
 
@@ -16,6 +17,8 @@ namespace Xeovis.UI.Views
 
         private DataManagerTabControl? _dataManagerTab;
 
+        private List<mctcBundle> _mctcBundles = new List<mctcBundle>();
+        private List<Experiment> _experiments = new List<Experiment>();
 
         public MainWindow()
         {
@@ -40,11 +43,21 @@ namespace Xeovis.UI.Views
         private void PrepareUI()
         {
             mainMenu.ExperimentsLoaded += MainMenu_ExperimentsLoaded;
+            mainMenu.mctcBundleLoaded += MainMenu_mctcBundleLoaded;
+        }
+
+        private void MainMenu_mctcBundleLoaded(object? sender, Models.Events.mctcBundleLoadedEventArgs e)
+        {
+            var bundle = e.mctcBundle;
+            _mctcBundles.Add(bundle);
+            var mctcNode = new TreeNode(bundle.Name) { Tag = bundle.Id };
+            tvMctcBundles.Items.Add(mctcNode);
         }
 
         private void MainMenu_ExperimentsLoaded(object? sender, Models.Events.ExperimentsLoadedEventArgs e)
         {
             tvDataManager.Items.Clear();
+            _experiments = e.Experiments;
             foreach (var exp in e.Experiments)
             {
                 var expNode = new TreeNode(exp.Name);

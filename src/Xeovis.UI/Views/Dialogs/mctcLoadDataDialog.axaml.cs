@@ -38,6 +38,9 @@ public partial class mctcLoadDataDialog : Window
     {
         if (_viewModel == null) return;
 
+        var vmName = new LabelInputControlViewModel("Name", _viewModel.MctcBundleName);
+        licName.ViewModel = vmName;
+
         var vmDirectory = new LabelBrowseDirectoryControlViewModel("Directory", isFolderBrowser: true);
         vmDirectory.Directory = _viewModel.FolderDirectory;
         lbdcDirectory.ViewModel = vmDirectory;
@@ -81,6 +84,8 @@ public partial class mctcLoadDataDialog : Window
             if (result != ButtonResult.Yes)
                 return;
         }
+
+        _viewModel.MctcBundleName = licName.ViewModel.Value;
 
         this.Close(DialogResultType.OK);
     }

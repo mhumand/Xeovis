@@ -107,6 +107,8 @@ public partial class MainMenu : UserControl
                 var vm = dialog.ViewModel;
                 var mctcReader = new mctcDataReader(vm.FolderDirectory);
                 var mctcBundle = await Task.Run(() => mctcReader.ReadData(progress, token));
+                mctcBundle.Name = vm.MctcBundleName;
+                mctcBundle.FilesDirectory = vm.FolderDirectory;
                 mctcBundleLoaded?.Invoke(this, new mctcBundleLoadedEventArgs(mctcBundle));
             }
             catch (OperationCanceledException)

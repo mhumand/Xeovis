@@ -2,15 +2,19 @@
 {
     public class Batch
     {
-        public string Name => $"{Index} - {Experiment.Name} - {ExpRun.Name}";
+        public string Name => $"{Index} - {ExperimentName} - {ExpRunName}";
         public List<PhaseType> Phases { get; set; }
         public int Index { get; set; }
         public Guid Id { get; set; }
         public Guid mctcBundleId { get; set; }
         public Experiment Experiment { get; set; }//todo: will be removed
+        public string ExperimentName { get; set; }
         public Guid ExperimentId { get; set; }
         public ExpRun ExpRun { get; set; }//todo: will be removed
+        public string ExpRunName { get; set; }
         public Guid ExpRunId { get; set; }
+        public double ExpRunPressure { get; set; }
+        public double ExpRunTemperature { get; set; }
         public List<double> BulkComposition { get; set; }
         public List<OxideType> BulkOxides { get; set; }
         public Dictionary<int, bool> IsFailed { get; set; } // int being the index of the mctc run => shows in which run group the batch has failed
