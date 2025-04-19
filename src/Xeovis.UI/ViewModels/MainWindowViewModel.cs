@@ -13,7 +13,7 @@ namespace Xeovis.UI.ViewModels
         private ObservableCollection<TreeNode> experimentNodes;
 
         [ObservableProperty]
-        private ObservableCollection<TreeNode> mctcPlotNodes;
+        private ObservableCollection<TreeNode> mctcBundleNodes;
 
         [ObservableProperty]
         private ObservableCollection<TabControlViewModelBase> tabControls;
@@ -23,7 +23,7 @@ namespace Xeovis.UI.ViewModels
         public MainWindowViewModel()
         {
             ExperimentNodes = new ObservableCollection<TreeNode>();
-            mctcPlotNodes = new ObservableCollection<TreeNode>();
+            mctcBundleNodes = new ObservableCollection<TreeNode>();
             TabControls = new ObservableCollection<TabControlViewModelBase>();
             Experiments = new List<Experiment>();
         }

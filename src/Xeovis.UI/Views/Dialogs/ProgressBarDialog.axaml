@@ -8,35 +8,45 @@
         x:Class="Xeovis.UI.ProgressBarDialog"
 		DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Loading..."
+        SystemDecorations="None"
 		CanResize="False">
 
 	<Window.Styles>
-		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
 		<StyleInclude Source="/Views/Styles/ProgressBars.axaml"/>
 		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+
+		<Style Selector="TextBlock">
+			<Setter Property="FontWeight" Value="SemiBold"/>
+		</Style>
 	</Window.Styles>
 
-	<Grid RowDefinitions="*,40" Margin="15">
-		<StackPanel Grid.Row="0"
-					VerticalAlignment="Center">
-			<TextBlock x:Name="txtPrimary"
-					   HorizontalAlignment="Center"/>
-			<ProgressBar  x:Name="pbPrimary"
-						  Classes="Primary"/>
+	<Border BorderBrush="#1C39BB"
+			BorderThickness="3"
+			CornerRadius="10 0 10 0">
+		
+		<Grid RowDefinitions="*,40" Margin="15">
+			<StackPanel Grid.Row="0"
+						VerticalAlignment="Center">
+				<TextBlock x:Name="txtPrimary"
+						   HorizontalAlignment="Center"/>
+				<ProgressBar  x:Name="pbPrimary"
+							  Classes="Primary"/>
 
-			<TextBlock x:Name="txtSecondary"
-					   Margin="0,10,0,0"
-					   HorizontalAlignment="Center"/>
-			<ProgressBar  x:Name="pbSecondary"
-						  Classes="Secondary"/>
-		</StackPanel>
+				<TextBlock x:Name="txtSecondary"
+						   Margin="0,10,0,0"
+						   HorizontalAlignment="Center"/>
+				<ProgressBar  x:Name="pbSecondary"
+							  Classes="Secondary"/>
+			</StackPanel>
 
-		<Button x:Name="btnCancel"
-				Grid.Row="1"
-				HorizontalAlignment="Right"
-				Content="Cancel"
-				Click="btnCancel_Click"
-				Classes="Primary"/>
-	</Grid>
+			<Button x:Name="btnCancel"
+					Grid.Row="1"
+					HorizontalAlignment="Right"
+					Content="Cancel"
+					Click="btnCancel_Click"
+					Classes="Primary"/>
+		</Grid>
+	</Border>
+
 
 </Window>

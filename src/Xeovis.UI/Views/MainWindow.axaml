@@ -3,6 +3,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+		MinHeight="500"
+		MinWidth="700"
         x:Class="Xeovis.UI.Views.MainWindow"
 		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
 		xmlns:vm="using:Xeovis.UI.ViewModels"
@@ -12,8 +14,12 @@
 		WindowState="Maximized">
 
 	<Window.Styles>
-		<StyleInclude Source="/Views/Styles/Dialogs.axaml"></StyleInclude>
+		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
 
+		<Style Selector="TextBlock.Primary">
+			<Setter Property="FontWeight" Value="SemiBold"/>
+		</Style>
+		
 		<Style Selector="TreeView">
 			<Setter Property="Margin" Value="0 5"/>
 		</Style>
@@ -71,7 +77,7 @@
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="250" MinWidth="250" />
 				<ColumnDefinition Width="5" MinWidth="5" />
-				<ColumnDefinition Width="*" MinWidth="500" />
+				<ColumnDefinition Width="*" MinWidth="450" />
 			</Grid.ColumnDefinitions>
 
 			<!-- Tree Views -->
@@ -84,7 +90,9 @@
 					</Grid.RowDefinitions>
 
 					<Grid Grid.Row="0" Margin="10 5" RowDefinitions="25,*">
-						<TextBlock Grid.Row="0" Text="Experiments" />
+						<TextBlock Grid.Row="0"
+								   Classes="Primary"
+								   Text="Experiments" />
 						<TreeView x:Name="tvDataManager"
 								  Grid.Row="1"
 								  ItemsSource="{Binding ExperimentNodes}">
@@ -101,10 +109,12 @@
 								  ResizeDirection="Rows"/>
 
 					<Grid Grid.Row="2" Margin="10 5" RowDefinitions="25,*">
-						<TextBlock Grid.Row="0" Text="Plots" />
-						<TreeView x:Name="tvMctcPlots"
+						<TextBlock Grid.Row="0"
+								   Classes="Primary"
+								   Text="mctc Bundles" />
+						<TreeView x:Name="tvMctcBundles"
 								  Grid.Row="1"
-								  ItemsSource="{Binding MctcPlotNodes}">
+								  ItemsSource="{Binding MctcBundleNodes}">
 							<TreeView.ItemTemplate>
 								<TreeDataTemplate ItemsSource="{Binding Children}">
 									<TextBlock Text="{Binding Label}"/>
@@ -112,8 +122,7 @@
 							</TreeView.ItemTemplate>
 						</TreeView>
 					</Grid>
-
-
+					
 				</Grid>
 			</Border>
 

@@ -11,10 +11,12 @@ namespace Xeovis.UI;
 public partial class MainMenu : UserControl
 {
     public event EventHandler<ExperimentsLoadedEventArgs> ExperimentsLoaded;
+    public event EventHandler<mctcBundleLoadedEventArgs> mctcBundleLoaded;
 
     public Window Parent;
 
-    private DataManagerLoadDataViewModel _loadDataViewModel;
+    private DataManagerLoadDataViewModel _dataManagerLoadDataViewModel;
+    private mctcLoadDataViewModel _mctcLoadDataViewModel;
 
     public MainMenu()
     {
@@ -22,6 +24,7 @@ public partial class MainMenu : UserControl
         DataContext = this;
     }
 
+    // Project
     public void Project_New()
     {
 
@@ -42,16 +45,17 @@ public partial class MainMenu : UserControl
         Environment.Exit(0);
     }
 
+    // Data Manager
     public async void DataManager_LoadData()
     {
         if (Parent == null) return;
         var dialog = new DataManagerLoadDataDialog();
-        dialog.ViewModel = _loadDataViewModel;
+        dialog.ViewModel = _dataManagerLoadDataViewModel;
         var result = await dialog.ShowDialog<DialogResultType>(Parent);
 
         if (result == DialogResultType.OK)
         {
-            _loadDataViewModel = dialog.ViewModel;
+            _dataManagerLoadDataViewModel = dialog.ViewModel;
             var progressDialog = new ProgressBarDialog();
             progressDialog.ShowDialog(Parent);
 
@@ -81,16 +85,54 @@ public partial class MainMenu : UserControl
 
     }
 
-    public void MctcReader_NewPlot()
+    // MCTC Reader
+    public async void MctcPlots_LoadData()
+    {
+        if (Parent == null) return;
+        var dialog = new mctcLoadDataDialog();
+        dialog.ViewModel = _mctcLoadDataViewModel;
+        var result = await dialog.ShowDialog<DialogResultType>(Parent);
+
+        if (result == DialogResultType.OK)
+        {
+            _mctcLoadDataViewModel = dialog.ViewModel;
+            var progressDialog = new ProgressBarDialog();
+            progressDialog.ShowDialog(Parent);
+
+            var progress = progressDialog.ProgressReporter;
+            var token = progressDialog.Token;
+
+            try
+            {
+                var vm = dialog.ViewModel;
+                var mctcReader = new mctcDataReader(vm.FolderDirectory);
+                var mctcBundle = await Task.Run(() => mctcReader.ReadData(progress, token));
+                mctcBundle.Name = vm.MctcBundleName;
+                mctcBundle.FilesDirectory = vm.FolderDirectory;
+                mctcBundleLoaded?.Invoke(this, new mctcBundleLoadedEventArgs(mctcBundle));
+            }
+            catch (OperationCanceledException)
+            {
+
+            }
+            finally
+            {
+                progressDialog.Close();
+            }
+        }
+    }
+
+    public void MctcPlots_NewPlot()
     {
 
     }
 
-    public void MctcReader_Settings()
+    public void MctcPlots_Settings()
     {
 
     }
 
+    // About
     public void About()
     {
         if (Parent == null) return;

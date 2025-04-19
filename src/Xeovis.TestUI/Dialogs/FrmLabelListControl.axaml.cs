@@ -42,10 +42,13 @@ public partial class FrmLabelListControl : Window
         }
 
         vm.Items[0].Description = "item 1";
+        vm.Items[0].DescriptionColor = Color.Red;
         vm.Items[1].Description = "item 2";
+        vm.Items[1].DescriptionColor = Color.Blue;
         vm.Items[1].Color = Color.DarkRed;
         vm.Items[5].IsChecked = true;
         vm.Items[7].IsChecked = true;
+        vm.Items[7].Color = Color.Green;
 
         vm.Label = "Simple Label";
         vm.ToolTip = "Simple tooltip for label";

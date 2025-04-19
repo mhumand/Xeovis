@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xeovis.UI.Models.FileReaders;
 
 namespace Xeovis.UI.Models
 {

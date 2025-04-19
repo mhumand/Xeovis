@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
-using System.ComponentModel;
 using System.Drawing;
 using Xeovis.UI.Models.Events;
 
@@ -26,6 +25,9 @@ namespace Xeovis.UI.Models
         private Color color;
 
         [ObservableProperty]
+        private Color descriptionColor;
+
+        [ObservableProperty]
         private bool isVisible;
 
         [ObservableProperty]
@@ -41,6 +43,8 @@ namespace Xeovis.UI.Models
         {
             IsVisible = true;
             Id = Guid.NewGuid();
+            Color = Color.Black;
+            DescriptionColor = Color.Black;
         }
 
         public ListableItem(object item) : this()

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using Xeovis.UI.Models.Enums;
 
-namespace Xeovis.UI.Models.FileReaders
+namespace Xeovis.UI.Models
 {
     public class LegendModel
     {

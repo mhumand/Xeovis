@@ -14,9 +14,9 @@ namespace Xeovis.UI.Models
             Label = label;
         }
 
-        public TreeNode(string title, ObservableCollection<TreeNode> children)
+        public TreeNode(string label, ObservableCollection<TreeNode> children)
         {
-            Label = title;
+            Label = label;
             Children = children;
         }
     }

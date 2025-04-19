@@ -1,8 +1,12 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Markup.Xaml.Converters;
+using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Xeovis.UI.Models;
+using Xeovis.UI.Models.Enums;
 using Xeovis.UI.Models.Events;
 
 namespace Xeovis.UI.ViewModels
@@ -13,7 +17,7 @@ namespace Xeovis.UI.ViewModels
         private ObservableCollection<ListableItem> items;
 
         [ObservableProperty]
-        private bool isMultiSelect;
+        private ItemSelectionMode selectionMode;
 
         [ObservableProperty]
         private int selectedIndex;
@@ -29,6 +33,9 @@ namespace Xeovis.UI.ViewModels
         public LabelListControlViewModel()
         {
             selectedIndex = 0;
+            IsCheckable = false;
+            IsRemovable = false;
+            SelectionMode = ItemSelectionMode.SingleToggle;
             Items = new ObservableCollection<ListableItem>();
         }
 
@@ -61,6 +68,5 @@ namespace Xeovis.UI.ViewModels
                 item.CheckStateChanged += Item_CheckStateChanged;
             }
         }
-
     }
 }
