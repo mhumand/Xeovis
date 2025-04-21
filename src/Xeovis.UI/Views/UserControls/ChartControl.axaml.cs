@@ -36,8 +36,9 @@ public partial class ChartControl : UserControl
         scottPlot.UserInputProcessor.LeftClickDragPan(false);
         scottPlot.UserInputProcessor.DoubleLeftClickBenchmark(false);
         scottPlot.UserInputProcessor.RightClickDragZoom(false);
+        scottPlot.UserInputProcessor.RemoveAll<ScottPlot.Interactivity.UserActionResponses.MouseDragZoomRectangle>();
 
-        btnRectangleZoom.Click += btnRectangleZoom_Click;
+        btnRectangleZoom.IsCheckedChanged += btnRectangleZoom_IsCheckedChanged;
         btnResetZoom.Click += btnResetZoom_Click;
         btnZoomIn.Click += btnZoomIn_Click;
         btnZoomOut.Click += btnZoomOut_Click;
@@ -314,9 +315,17 @@ public partial class ChartControl : UserControl
         scottPlot.Refresh();
     }
 
-    private void btnRectangleZoom_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void btnRectangleZoom_IsCheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-
+        //bool hasZoomRectangle = scottPlot.UserInputProcessor.UserActionResponses.OfType<ScottPlot.Interactivity.UserActionResponses.MouseDragZoomRectangle>().Any()
+        if ((bool)btnRectangleZoom.IsChecked)
+        {
+            scottPlot.UserInputProcessor.UserActionResponses.Add(new ScottPlot.Interactivity.UserActionResponses.MouseDragZoomRectangle(ScottPlot.Interactivity.StandardMouseButtons.Left));
+        }
+        else
+        {
+            scottPlot.UserInputProcessor.RemoveAll<ScottPlot.Interactivity.UserActionResponses.MouseDragZoomRectangle>();
+        }
     }
 
     private void btnLegend_IsCheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
