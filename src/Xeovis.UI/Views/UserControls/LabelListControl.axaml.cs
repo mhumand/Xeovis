@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using System;
 using System.Linq;
+using Xeovis.UI.Models;
 using Xeovis.UI.Models.Events;
 using Xeovis.UI.ViewModels;
 
@@ -110,4 +111,8 @@ public partial class LabelListControl : UserControl
             lbItems.SelectedIndex = -1;
     }
 
+    public ListableItem GetSelectedItem()
+    {
+        return lbItems.SelectedItem as ListableItem;
+    }
 }

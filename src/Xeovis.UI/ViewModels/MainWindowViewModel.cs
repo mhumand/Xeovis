@@ -19,6 +19,7 @@ namespace Xeovis.UI.ViewModels
         private ObservableCollection<TabControlViewModelBase> tabControls;
 
         public List<Experiment> Experiments { get; set; }
+        public List<mctcBundle> mctcBundles { get; set; }
 
         public MainWindowViewModel()
         {
@@ -26,6 +27,7 @@ namespace Xeovis.UI.ViewModels
             mctcBundleNodes = new ObservableCollection<TreeNode>();
             TabControls = new ObservableCollection<TabControlViewModelBase>();
             Experiments = new List<Experiment>();
+            mctcBundles = new List<mctcBundle>();
         }
 
         public DataManagerTabControlViewModel CreateDataManagerTabVM()

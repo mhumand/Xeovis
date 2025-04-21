@@ -26,7 +26,7 @@
 
 	<DockPanel Margin="15">
 		
-		<!-- Top Section - Directory + Scan -->
+		<!-- Top Section - Name + Directory + Scan -->
 		<Grid DockPanel.Dock="Top"
 			  RowDefinitions="55,10,55"
 			  ColumnDefinitions="*,80">

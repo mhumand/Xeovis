@@ -4,6 +4,7 @@
     {
         public string Name{ get; set; }
         public Guid Id { get; set; }
+        public DateTime TimeLoaded { get; set; }
         public string FilesDirectory { get; set; }
         public List<Batch> Batches { get; set; }
         public List<mctcVariable> mctcVariables { get; set; }

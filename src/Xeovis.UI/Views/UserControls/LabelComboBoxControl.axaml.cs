@@ -16,10 +16,9 @@ public partial class LabelComboBoxControl : UserControl
         get { return _viewModel; }
         set
         {
-            _viewModel = value;
-            DataContext = value;
-            if (_viewModel != null )
-                comboBox.SelectedItem = _viewModel.SelectedItem;
+            _viewModel = value ?? new LabelComboBoxControlViewModel();
+            DataContext = _viewModel;
+            comboBox.SelectedItem = _viewModel.SelectedItem;
         }
     }
 

@@ -34,6 +34,9 @@ namespace Xeovis.UI.Models
         private object tag;
 
         [ObservableProperty]
+        private Guid presenterId;
+
+        [ObservableProperty]
         private bool isChecked;
         partial void OnIsCheckedChanged(bool oldValue, bool newValue) => CheckStateChanged?.Invoke(this, new CheckStateChangedEventArgs(newValue, this));
 
@@ -51,6 +54,12 @@ namespace Xeovis.UI.Models
         {
             Label = item.ToString().Trim();
             Tag = item;
+        }
+
+        public ListableItem(string label, Guid presenterId) : this()
+        {
+            Label = label;
+            PresenterId = presenterId;
         }
 
         public ListableItem(string label, object tag = null, bool isVisible = true, string description = null) : this()
