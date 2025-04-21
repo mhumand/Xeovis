@@ -90,14 +90,13 @@
 						</Button.Content>
 					</Button>
 
-					<Button x:Name="btnRectangleZoom"
-							IsVisible="False"
+					<ToggleButton x:Name="btnRectangleZoom"
 							Classes="ToolBar"
 							ToolTip.Tip="Rectangle Zoom">
 						<Button.Content>
 							<Image Source="/Assets/Chart/ZoomRectangle.png" />
 						</Button.Content>
-					</Button>
+					</ToggleButton>
 
 					<ToggleButton x:Name="btnLegend"
 								  Classes="ToolBar"

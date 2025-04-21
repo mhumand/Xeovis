@@ -17,9 +17,6 @@ namespace Xeovis.UI.Views
 
         private DataManagerTabControl? _dataManagerTab;
 
-        private List<mctcBundle> _mctcBundles = new List<mctcBundle>();
-        private List<Experiment> _experiments = new List<Experiment>();
-
         public MainWindow()
         {
             InitializeComponent();
@@ -31,7 +28,7 @@ namespace Xeovis.UI.Views
 
         private void MainWindow_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            mainMenu.Parent = this;
+            mainMenu.ParentWindow = this;
             tabControl.ItemsSource = _viewModel.TabControls;
 
             var dataManagerViewModel = _viewModel.CreateDataManagerTabVM();
@@ -49,7 +46,7 @@ namespace Xeovis.UI.Views
         private void MainMenu_mctcBundleLoaded(object? sender, Models.Events.mctcBundleLoadedEventArgs e)
         {
             var bundle = e.mctcBundle;
-            _mctcBundles.Add(bundle);
+            _viewModel.mctcBundles.Add(bundle);
             var mctcNode = new TreeNode(bundle.Name) { Tag = bundle.Id };
             tvMctcBundles.Items.Add(mctcNode);
         }
@@ -57,7 +54,7 @@ namespace Xeovis.UI.Views
         private void MainMenu_ExperimentsLoaded(object? sender, Models.Events.ExperimentsLoadedEventArgs e)
         {
             tvDataManager.Items.Clear();
-            _experiments = e.Experiments;
+            _viewModel.Experiments = e.Experiments;
             foreach (var exp in e.Experiments)
             {
                 var expNode = new TreeNode(exp.Name);
@@ -75,6 +72,12 @@ namespace Xeovis.UI.Views
                 _dataManagerTab.SetExperiments(e.Experiments);
                 _dataManagerTab.ViewModel.IsVisible = e.Experiments.Count > 0;
             }
+        }
+
+        public void CreateMctcPlot(mctcPlotDto mctcPlotDto)
+        {
+            if (mctcPlotDto == null) return;
+
         }
     }
 }

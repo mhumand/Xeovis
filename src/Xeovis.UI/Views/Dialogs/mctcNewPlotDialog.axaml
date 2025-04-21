@@ -1,0 +1,104 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+		MinHeight="400"
+		MinWidth="600"
+		Height="600"
+		Width="800"
+		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+		xmlns:vm="using:Xeovis.UI.ViewModels.DialogsViewModels"
+		xmlns:vmc="using:Xeovis.UI.ViewModels"
+		x:DataType="vm:mctcNewPlotViewModel"
+        x:Class="Xeovis.UI.mctcNewPlotDialog"
+        Title="MCTC - New Plot">
+
+	<Window.Styles>
+		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
+		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+		<StyleInclude Source="/Views/Styles/Textboxes.axaml"/>
+
+		<Style Selector="Border.Custom">
+			<Setter Property="BorderThickness" Value="1.5"/>
+			<Setter Property="CornerRadius" Value="5"/>
+			<Setter Property="Margin" Value="5 0"/>
+			<Setter Property="Padding" Value="5 0"/>
+		</Style>
+	</Window.Styles>
+
+	<DockPanel Margin="15">
+
+		<!-- Top Section - name + mctc bundle -->
+		<userControls:LabelInputControl x:Name="txtName"
+										Height="70"
+										Margin="5 0"
+										DockPanel.Dock="Top"
+										HorizontalAlignment="Left"
+										Width="250"/>
+		
+		<userControls:LabelComboBoxControl x:Name="lcbcMctcBundles"
+										   Margin="5 0"
+										   DockPanel.Dock="Top"
+										   Width="250"
+										   HorizontalAlignment="Left"
+										   VerticalAlignment="Bottom"/>
+
+		<!-- Middle Section - Label List Controls -->
+		<Grid DockPanel.Dock="Top"
+			  VerticalAlignment="Stretch"
+			  Margin="0,20,0,0"
+			  ColumnDefinitions="2*,1*"
+			  RowDefinitions="*,50">
+
+			<Border Classes="Custom"
+					Grid.Column="0"
+					BorderBrush="#1C39BB">
+
+				<Grid ColumnDefinitions="1*,1*">
+					<userControls:LabelListControl x:Name="llcPhase"
+												   Grid.Column="0"
+												   Margin="5"/>
+					<userControls:LabelListControl x:Name="llcXeosVariables"
+												   Grid.Column="1"
+												   Margin="5"/>
+				</Grid>
+
+			</Border>
+
+			<Border Classes="Custom" Grid.Column="1" BorderBrush="Gray">
+				<userControls:LabelListControl x:Name="llcSelected"/>
+			</Border>
+
+			<!-- Bottom Section - Dialog Buttons -->
+			<userControls:CheckBoxControl x:Name="ckbxTileView"
+										  VerticalAlignment="Bottom"
+										  Margin="5"
+										  Grid.Row="1"
+										  Grid.Column="0"/>
+			
+			<StackPanel Orientation="Horizontal"
+						Grid.Row="1"
+						Grid.Column="1"
+						Spacing="5"
+						VerticalAlignment="Bottom"
+						HorizontalAlignment="Right">
+
+				<Button x:Name="btnCancel"
+						Classes="Primary"
+						Content="Cancel"
+						Click="btnCancel_Click"/>
+
+				<Button x:Name="btnPlot"
+						Classes="Primary"
+						Margin="5 0"
+						Content="Plot"
+						Click="btnPlot_Click"/>
+
+			</StackPanel>
+
+		</Grid>
+
+	</DockPanel>
+
+</Window>
