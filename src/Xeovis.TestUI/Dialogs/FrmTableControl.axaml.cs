@@ -19,7 +19,7 @@ public partial class FrmTableControl : Window
     {
         var tableModel = GetSampleTableModel();
         
-        table1.FillTable(tableModel);
+        table1.PopulateTable(tableModel);
 
     }
 
@@ -28,7 +28,7 @@ public partial class FrmTableControl : Window
         var tableModel = GetSampleTableModel();
         tableModel.IsReadOnly = true;
 
-        table2.FillTable(tableModel);
+        table2.PopulateTable(tableModel);
     }
 
     private TableModel GetSampleTableModel()

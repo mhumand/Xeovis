@@ -61,9 +61,9 @@ public partial class DataManagerTabControl : UserControl
         tablePhasesSummary.ClearTable();
         if (e.SelectedItem is not ListableItem phaseItem) return;
         var table = _viewModel.CreatePhasesTableModel(phaseItem);
-        tablePhases.FillTable(table);
+        tablePhases.PopulateTable(table);
         var summaryTable = _viewModel.CreatePhasesSummaryTableModel();
-        tablePhasesSummary.FillTable(summaryTable);
+        tablePhasesSummary.PopulateTable(summaryTable);
     }
 
     private void lcbPhaseInExperiment_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
@@ -71,7 +71,7 @@ public partial class DataManagerTabControl : UserControl
         tablePhaseInExperiment.ClearTable();
         if (e.SelectedItem is not ListableItem phaseInExperimentItem) return;
         var table = _viewModel.CreatePhaseInExperimentTableModel(lcbExperiment.ViewModel.SelectedItem, phaseInExperimentItem);
-        tablePhaseInExperiment.FillTable(table);
+        tablePhaseInExperiment.PopulateTable(table);
     }
 
     private void lcbExperiment_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
@@ -80,7 +80,7 @@ public partial class DataManagerTabControl : UserControl
         lcbPhaseInExperiment.ClearItems();
         if (e.SelectedItem is not ListableItem experimentItem) return;
         var table = _viewModel.CreateExperimentTableModel(experimentItem);
-        tableExperiment.FillTable(table);
+        tableExperiment.PopulateTable(table);
 
         _viewModel.CreatePhaseInExperimentItems(experimentItem);
         lcbPhaseInExperiment.SetItems(_viewModel.PhaseInExperimentItems.OrderBy(i => i.Label).ToList());

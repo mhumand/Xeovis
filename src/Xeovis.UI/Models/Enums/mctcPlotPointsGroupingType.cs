@@ -1,6 +1,6 @@
 ﻿namespace Xeovis.UI.Models.Enums
 {
-    public enum PlotPointsGroupingType
+    public enum mctcPlotPointsGroupingType
     {
         Batch,
         Temperature,

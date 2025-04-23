@@ -19,7 +19,7 @@
 		<Style Selector="TextBlock.Primary">
 			<Setter Property="FontWeight" Value="SemiBold"/>
 		</Style>
-		
+
 		<Style Selector="TreeView">
 			<Setter Property="Margin" Value="0 5"/>
 		</Style>
@@ -122,7 +122,7 @@
 							</TreeView.ItemTemplate>
 						</TreeView>
 					</Grid>
-					
+
 				</Grid>
 			</Border>
 
@@ -138,7 +138,10 @@
 						<DataTemplate>
 							<StackPanel Classes="Tabs" IsVisible="{Binding IsVisible}">
 								<TextBlock Text="{Binding Header}" />
-								<Button Classes="Tabs"
+								<Button x:Name="btnCloseTab"
+										Classes="Tabs"
+										Tag="{Binding Id}"
+										Click="btnCloseTab_Click"
 										IsVisible="{Binding CanBeRemoved}"/>
 							</StackPanel>
 						</DataTemplate>

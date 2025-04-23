@@ -247,6 +247,9 @@ namespace Xeovis.UI.Models.FileReaders
                                 double value = DoubleExtensions.GetDoubleValueFromText(cells[oxideIndex].ToString());
                                 runPhase.Composition.Add(double.IsNaN(value) ? 0 : value);
                             }
+
+                            if (runPhase.Composition.All(x => x == 0))
+                                run.Phases.Remove(runPhase);
                         }
                     }
                 }

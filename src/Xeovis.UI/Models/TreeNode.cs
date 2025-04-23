@@ -8,6 +8,9 @@ namespace Xeovis.UI.Models
         [ObservableProperty]
         private ObservableCollection<TreeNode> children;
 
+        [ObservableProperty]
+        private bool isExpanded;
+
         public TreeNode(string label)
         {
             Children = new ObservableCollection<TreeNode>();

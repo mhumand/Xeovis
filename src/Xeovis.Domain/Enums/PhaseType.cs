@@ -27,9 +27,6 @@ namespace Xeovis.Domain
         [Description("clinopyroxene")]
         cpx,
 
-        [Description("pigeonite")]
-        pig,
-
         [Description("omphacite")]
         omp,
 
@@ -163,6 +160,8 @@ namespace Xeovis.Domain
         [Description("opaque")]
         opaque,
 
+        [Description("pigeonite")]
+        pig,
     }
 
     public static class PhaseTypeExtensions
@@ -183,7 +182,12 @@ namespace Xeovis.Domain
                 case "cpx":
                 case "clinopyroxene":
                 case "clino-pyroxene":
+                case "aug":
+                case "augite":
                     return PhaseType.cpx;
+                case "pig":
+                case "pigeonite":
+                    return PhaseType.pig;
                 case "opx":
                 case "orthopyroxene":
                 case "ortho-pyroxene":
@@ -231,9 +235,6 @@ namespace Xeovis.Domain
                 case "chl":
                 case "chlorite":
                     return PhaseType.chl;
-                case "pig":
-                case "pigeonite":
-                    return PhaseType.pig;
                 case "omp":
                 case "omph":
                 case "omphacite":

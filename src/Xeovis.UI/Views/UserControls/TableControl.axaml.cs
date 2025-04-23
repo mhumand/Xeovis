@@ -16,9 +16,9 @@ public partial class TableControl : UserControl
         get { return _viewModel; }
         set
         {
-            _viewModel = value;
-            if (_viewModel != null && _viewModel.TableModel != null)
-                FillTable(_viewModel.TableModel);
+            _viewModel = value ?? new TableControlViewModel();
+            DataContext = _viewModel;
+            PopulateTable(_viewModel.TableModel);
         }
     }
 
@@ -42,18 +42,18 @@ public partial class TableControl : UserControl
         _viewModel = null;
     }
 
-    public void FillTable(TableModel tableModel)
+    public bool PopulateTable(TableModel tableModel)
     {
         dataGrid.Columns.Clear();
         dataGrid.ItemsSource = null;
-        if (tableModel == null) return;
+        if (tableModel == null || tableModel.GetMaxRowCount() == 0) return false;
 
         _viewModel = new TableControlViewModel(tableModel);
 
         // Generate columns dynamically based on the keys in the first row
         foreach (var key in _rows[0].Keys)
         {
-            var column = tableModel.Columns.FirstOrDefault(c => c.Id.ToString() == key);
+            var column = _tableModel.Columns.FirstOrDefault(c => c.Id.ToString() == key);
             if (column == null || !column.IsVisible) continue;
 
             string header = column.Header;
@@ -94,17 +94,22 @@ public partial class TableControl : UserControl
             }
         }
 
-        dataGrid.FrozenColumnCount = tableModel.FrozenColumnCount;
-        dataGrid.MinColumnWidth = 70;
-        dataGrid.ItemsSource = _rows;
-        dataGrid.IsReadOnly = tableModel.IsReadOnly;
-        dataGrid.CanUserResizeColumns = tableModel.CanResizeColumns;
-        dataGrid.CanUserSortColumns = tableModel.CanSortColumns;
-        dataGrid.CanUserReorderColumns = tableModel.CanReorderColumns;
-        dataGrid.SelectionMode = tableModel.IsMultiSelect ? DataGridSelectionMode.Extended : DataGridSelectionMode.Single;
-        dataGrid.ClipboardCopyMode = tableModel.CopyToClipboardWithHeaders ? DataGridClipboardCopyMode.IncludeHeader : DataGridClipboardCopyMode.ExcludeHeader;
+        SetDataGridProperties();
+        return true;
     }
 
+    private void SetDataGridProperties()
+    {
+        dataGrid.FrozenColumnCount = _tableModel.FrozenColumnCount;
+        dataGrid.MinColumnWidth = 70;
+        dataGrid.ItemsSource = _rows;
+        dataGrid.IsReadOnly = _tableModel.IsReadOnly;
+        dataGrid.CanUserResizeColumns = _tableModel.CanResizeColumns;
+        dataGrid.CanUserSortColumns = _tableModel.CanSortColumns;
+        dataGrid.CanUserReorderColumns = _tableModel.CanReorderColumns;
+        dataGrid.SelectionMode = _tableModel.IsMultiSelect ? DataGridSelectionMode.Extended : DataGridSelectionMode.Single;
+        dataGrid.ClipboardCopyMode = _tableModel.CopyToClipboardWithHeaders ? DataGridClipboardCopyMode.IncludeHeader : DataGridClipboardCopyMode.ExcludeHeader;
+    }
 
     private void DataGrid_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
     {

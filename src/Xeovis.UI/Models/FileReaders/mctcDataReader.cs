@@ -57,6 +57,8 @@ namespace Xeovis.UI.Models.FileReaders
             progress.Report(progressData);
 
             var mctcBundle = new mctcBundle(_batches, _mctcVariables, _xeosVariables);
+            _xeosVariables.ForEach(x => x.mctcBundleId = mctcBundle.Id);
+            _mctcVariables.ForEach(x => x.mctcBundleId = mctcBundle.Id);
             return mctcBundle;
         }
 

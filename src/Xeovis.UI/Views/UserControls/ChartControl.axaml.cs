@@ -45,7 +45,7 @@ public partial class ChartControl : UserControl
         btnLegend.IsCheckedChanged += btnLegend_IsCheckedChanged;
     }
 
-    public bool Plot(ChartModel chartModel, bool reBuild = true, bool resetZoom = true)
+    public bool PopulateChart(ChartModel chartModel, bool reBuild = true, bool resetZoom = true)
     {
         if (chartModel == null) return false;
         _viewModel = new ChartControlViewModel(chartModel);
@@ -141,6 +141,7 @@ public partial class ChartControl : UserControl
         _plot.Axes.Left.Label.AntiAliasText = true;
         _plot.Axes.Bottom.Label.Text = _chartModel.YAxis.Label;
         _plot.Axes.Bottom.Label.AntiAliasText = true;
+        SetAxisLimits(_chartModel.XAxis.MinLimit, _chartModel.YAxis.MinLimit, _chartModel.XAxis.MaxLimit, _chartModel.YAxis.MaxLimit);
 
         _plot.Axes.Title.Label.Text = _chartModel.Title;
         _plot.Axes.Title.IsVisible = _chartModel.IsTitleVisible;

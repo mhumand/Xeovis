@@ -51,7 +51,7 @@ public partial class mctcNewPlotDialog : Window
         this.mctcPlotDto = mctcPlotDto;
         _viewModel.mctcBundles = mctcBundles;
         _viewModel.SelectedBundleId = mctcPlotDto.mctcBundleId;
-        _viewModel.SelectedXeosVariables = mctcPlotDto.xeosVariables;
+        _viewModel.SelectedXeosVariables = mctcPlotDto.SampleXeosVariables;
         _viewModel.MakePhaseVaribleItemsDictionary(mctcBundles.FirstOrDefault(b => b.Id == mctcPlotDto.mctcBundleId));
         PrepareUI();
     }

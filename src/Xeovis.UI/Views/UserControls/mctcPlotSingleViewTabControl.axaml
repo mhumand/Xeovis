@@ -1,0 +1,82 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
+			 xmlns:vm="using:Xeovis.UI.ViewModels"
+			 xmlns:uc="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+			 x:DataType="vm:mctcPlotSingleViewModel"
+             x:Class="Xeovis.UI.mctcPlotSingleViewTabControl">
+
+	<UserControl.Styles>
+		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
+
+		<Style Selector="Border.Custom">
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="BorderBrush" Value="DarkGray"/>
+			<Setter Property="Padding" Value="5 5" />
+			<Setter Property="Margin" Value="5" />
+			<Setter Property="CornerRadius" Value="5"/>
+		</Style>
+	</UserControl.Styles>
+
+	<DockPanel>
+
+		<!-- Top Section - xoesVar combobox + mctc Slider-->
+		<Grid DockPanel.Dock="Top"
+			  Margin="5 5"
+			  VerticalAlignment="Top"
+			  Height="70"
+			  ColumnDefinitions="150, 150, *">
+			<uc:LabelComboBoxControl x:Name="lcbcXeosVariable"
+									 Grid.Column="0"
+									 Margin="10 0"
+									 MinWidth="100"
+									 HorizontalAlignment="Stretch"/>
+
+			<uc:LabelSpinnerControl x:Name="spinner"
+									Margin="5 0"
+									Grid.Column="1"/>
+
+			<uc:TableControl x:Name="tableMctcRuns"
+							 MinHeight="50"
+							 Grid.Column="2"/>
+		</Grid>
+
+
+		<!-- Main Section - Batches + Plot + Table-->
+		<Border Classes="Custom"
+				DockPanel.Dock="Top">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="100" />
+					<ColumnDefinition Width="1*" MinWidth="200"/>
+					<ColumnDefinition Width="5"/>
+					<ColumnDefinition Width="1*" MinWidth="200"/>
+				</Grid.ColumnDefinitions>
+
+				<ScrollViewer x:Name="scrollViewer"
+							  Background="AliceBlue"
+							  Grid.Column="0"/>
+
+				<uc:ChartControl x:Name="chartControl"
+								 Margin="5 0"
+								 Grid.Column="1"/>
+
+				<GridSplitter Background="DarkGray"
+							  Margin="3"
+							  ResizeDirection="Columns"
+							  CornerRadius="4"
+							  Opacity="0.5"
+							  Grid.Column="2"/>
+
+				<uc:TableControl x:Name="tableControl"
+								 Margin="5 0"
+								 Grid.Column="3"/>
+
+			</Grid>
+		</Border>
+
+	</DockPanel>
+
+</UserControl>

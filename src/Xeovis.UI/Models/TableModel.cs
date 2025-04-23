@@ -20,8 +20,8 @@ namespace Xeovis.UI.Models
         public bool CanResizeColumns { get; set; } = true;
         public bool CanSortColumns { get; set; } = true;
         public bool CanReorderColumns { get; set; } = true;
-        public bool IsMultiSelect {  get; set; } = true;
-        public bool IsRowSelect {  get; set; } = false;
+        public bool IsMultiSelect { get; set; } = true;
+        public bool IsRowSelect { get; set; } = false;
         public bool CopyToClipboardWithHeaders { get; set; } = true;
         public int FrozenColumnCount { get; set; } = 0;
 
@@ -40,7 +40,7 @@ namespace Xeovis.UI.Models
 
         public int GetMaxRowCount()
         {
-            return Columns.Max(c => c.Values.Count);
+            return Columns.Count == 0 ? 0 : Columns.Max(c => c.Values.Count);
         }
 
         public override string ToString()
