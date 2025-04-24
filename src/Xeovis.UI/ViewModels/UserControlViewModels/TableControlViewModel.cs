@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Xeovis.UI.Models;
+using Xeovis.UI.Models.Events;
 
 namespace Xeovis.UI.ViewModels
 {
@@ -10,20 +10,14 @@ namespace Xeovis.UI.ViewModels
     {
         [ObservableProperty]
         private string name;
-
-        [ObservableProperty]
-        private ObservableCollection<Dictionary<string, object>> rows;
-
-        [ObservableProperty]
-        private TableModel tableModel;
-
+        public List<Dictionary<string, object>> Rows { get; set; }
+        public TableModel TableModel { get; set; }
         public Guid Id { get; set; }
-
         public TableControlViewModel()
         {
             Id = Guid.NewGuid();
             Name = "TABLE";
-            Rows = new ObservableCollection<Dictionary<string, object>>();
+            Rows = new List<Dictionary<string, object>>();
             TableModel = new TableModel();
         }
 
@@ -32,7 +26,7 @@ namespace Xeovis.UI.ViewModels
             TableModel = tableModel;
             Name = tableModel.Name;
 
-            rows = new ObservableCollection<Dictionary<string, object>>();
+            Rows = new List<Dictionary<string, object>>();
             for (int i = 0; i < tableModel.GetMaxRowCount(); i++)
             {
                 var row = new Dictionary<string, object>();
@@ -49,7 +43,7 @@ namespace Xeovis.UI.ViewModels
                     row.Add(col.Id.ToString(), col.Values[i]);
                 }
 
-                rows.Add(row);
+                Rows.Add(row);
             }
         }
 

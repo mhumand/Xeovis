@@ -1,9 +1,11 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Templates;
 using Avalonia.Data;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Xeovis.UI.Models;
+using Xeovis.UI.Models.Events;
 using Xeovis.UI.ViewModels;
 
 namespace Xeovis.UI;
@@ -23,7 +25,10 @@ public partial class TableControl : UserControl
     }
 
     private TableModel _tableModel => _viewModel.TableModel;
-    private ObservableCollection<Dictionary<string, object>> _rows => _viewModel.Rows;
+    private List<Dictionary<string, object>> _rows => _viewModel.Rows;
+
+    public event EventHandler<TableSelectionChangedEventArgs>? SelectionChanged;
+    public event EventHandler<TableCellValueChangedEventArgs>? CellValueChanged;
 
     public TableControl()
     {
@@ -33,6 +38,7 @@ public partial class TableControl : UserControl
         dataGrid.CellEditEnding += DataGrid_CellEditEnding;
         dataGrid.CellEditEnded += DataGrid_CellEditEnded;
         dataGrid.KeyDown += DataGrid_KeyDown;
+        dataGrid.SelectionChanged += DataGrid_SelectionChanged;
     }
 
     public void ClearTable()
@@ -78,6 +84,41 @@ public partial class TableControl : UserControl
                     Tag = column,
                 });
             }
+            else if (column.HasOptions)
+            {
+                dataGrid.Columns.Add(new DataGridTemplateColumn
+                {
+                    Header = header,
+                    IsReadOnly = isReadOnly,
+                    CanUserSort = canSort,
+                    CanUserReorder = canReorder,
+                    CanUserResize = canResize,
+                    Tag = column,
+
+                    CellTemplate = new FuncDataTemplate<object>((item, _) =>
+                    {
+                        return new TextBlock
+                        {
+                            Padding = new Avalonia.Thickness(10, 0),
+                            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                            [!TextBlock.TextProperty] = new Binding($"[{key}]")
+                        };
+                    }),
+
+                    CellEditingTemplate = new FuncDataTemplate<object>((item, _) =>
+                    {
+                        var optionsComboBox = new ComboBox
+                        {
+                            ItemsSource = column.Options,
+                            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                            [!ComboBox.SelectedItemProperty] = new Binding($"[{key}]")
+                        };
+                        optionsComboBox.Tag = column.Id;
+                        optionsComboBox.SelectionChanged += optionsComboBox_SelectionChanged;
+                        return optionsComboBox;
+                    })
+                });
+            }
             else
             {
                 // Default to text column (for strings, numbers, etc.)
@@ -96,6 +137,19 @@ public partial class TableControl : UserControl
 
         SetDataGridProperties();
         return true;
+    }
+
+    private void optionsComboBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        var cmbx = sender as ComboBox;
+        if (cmbx.IsDropDownOpen && e.AddedItems.Count > 0)
+        {
+            var column = _tableModel.GetColumnById((Guid)cmbx.Tag);
+            var trueIndex = dataGrid.ItemsSource.Cast<object>().ToList().IndexOf(dataGrid.SelectedItem);
+            var value = e.AddedItems[0];
+            column.Values[trueIndex] = value;
+            CellValueChanged?.Invoke(this, new TableCellValueChangedEventArgs(value, trueIndex, column.Id));
+        }
     }
 
     private void SetDataGridProperties()
@@ -125,5 +179,19 @@ public partial class TableControl : UserControl
     private void DataGrid_CellEditEnding(object? sender, DataGridCellEditEndingEventArgs e)
     {
 
+    }
+
+    private void DataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        var rowIndex = dataGrid.SelectedIndex;
+        SelectionChanged?.Invoke(this, new TableSelectionChangedEventArgs(10, 0, e.AddedItems.Count > 0 ? e.AddedItems[0] : null));
+    }
+
+    public void SelectRow(int rowIndex)
+    {
+        dataGrid.SelectionChanged -= DataGrid_SelectionChanged;
+        dataGrid.SelectedIndex = rowIndex;
+        dataGrid.ScrollIntoView(dataGrid.SelectedItem, dataGrid.Columns[0]);
+        dataGrid.SelectionChanged += DataGrid_SelectionChanged;
     }
 }
