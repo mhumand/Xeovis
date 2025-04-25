@@ -11,9 +11,10 @@ namespace Xeovis.UI.Models
         public List<double> Xvals { get; set; }
         public List<double> Yvals { get; set; }
         public Guid Id { get; set; }
-        public bool IsHidden { get; set; }
+        public bool IsVisible { get; set; }
         public int TransparencyIn100 { get; set; }
         public CurveType CurveType { get; set; }
+        public bool IsVisibleInLegend { get; set; }
 
         // Line Properties
         public Color LineColor { get; set; }
@@ -43,6 +44,8 @@ namespace Xeovis.UI.Models
             MarkerColor = Color.Black;
             MarkerSize = 6;
             LineWidth = 2;
+            IsVisible = true;
+            IsVisibleInLegend = true;
             IsLineVisible = true;
             IsMarkerVisible = true;
             IsLineAntiAlis = true;

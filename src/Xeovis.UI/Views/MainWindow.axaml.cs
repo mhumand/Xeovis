@@ -92,7 +92,7 @@ namespace Xeovis.UI.Views
             {
                 var viewModel = new mctcPlotSingleViewModel() { Header = mctcPlotDto.Name, PresentedId = mctcPlotDto.Id };
                 var plotTab = new mctcPlotSingleViewTabControl() { ViewModel = viewModel };
-                var successful = plotTab.FillUI(mctcPlotDto, mctcBundle);
+                var successful = plotTab.PopulateUI(mctcPlotDto, mctcBundle);
 
                 if (successful)
                 {

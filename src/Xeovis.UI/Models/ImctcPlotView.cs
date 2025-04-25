@@ -10,6 +10,6 @@ namespace Xeovis.UI.Models
         public string Name { get; set; }
         public mctcPlotViewType ViewType { get; set; }
 
-        public bool FillUI(mctcPlotDto mctcPlotDto, mctcBundle mctcBundle);
+        public bool PopulateUI(mctcPlotDto mctcPlotDto, mctcBundle mctcBundle);
     }
 }

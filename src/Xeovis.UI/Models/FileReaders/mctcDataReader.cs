@@ -14,7 +14,6 @@ namespace Xeovis.UI.Models.FileReaders
         private readonly string _directory;
         private List<string> _files;
         private List<Batch> _batches;
-        private List<xeosVariable> _xeosVariables;
         private List<mctcVariable> _mctcVariables;
 
         public mctcDataReader(string directory)
@@ -22,7 +21,6 @@ namespace Xeovis.UI.Models.FileReaders
             _directory = directory;
             _files = new List<string>();
             _batches = new List<Batch>();
-            _xeosVariables = new List<xeosVariable>();
             _mctcVariables = new List<mctcVariable>();
         }
 
@@ -56,9 +54,10 @@ namespace Xeovis.UI.Models.FileReaders
             progressData.PrimaryValue = 100;
             progress.Report(progressData);
 
-            var mctcBundle = new mctcBundle(_batches, _mctcVariables, _xeosVariables);
-            _xeosVariables.ForEach(x => x.mctcBundleId = mctcBundle.Id);
+            var mctcBundle = new mctcBundle(_batches, _mctcVariables);
             _mctcVariables.ForEach(x => x.mctcBundleId = mctcBundle.Id);
+            _batches.ForEach(x => x.mctcBundleId = mctcBundle.Id);
+            _batches.SelectMany(b => b.xeosVariables).ToList().ForEach(x => x.mctcBundleId = mctcBundle.Id);
             return mctcBundle;
         }
 
@@ -132,7 +131,6 @@ namespace Xeovis.UI.Models.FileReaders
             if (lines == null || lines.Count == 0) return;
 
             lines = CleanAndSplitLine(lines[0], includeDot: false);
-            _xeosVariables = new List<xeosVariable>();
             for (int i = 0; i < lines.Count; i++)
             {
                 var varData = lines[i].Split(new char[] { '(', ')', '-' }).ToList();
@@ -150,7 +148,6 @@ namespace Xeovis.UI.Models.FileReaders
                 xeosVariable.ObsVal = DoubleExtensions.GetDoubleValueFromText(lines[i]);
 
                 batch.xeosVariables.Add(xeosVariable);
-                _xeosVariables.Add(xeosVariable);
             }
         }
 
@@ -237,10 +234,7 @@ namespace Xeovis.UI.Models.FileReaders
 
                     var otherModelVars = batch.xeosVariables.Except(modelVarsInResults).ToList();
                     foreach (var modelVar in otherModelVars)
-                    {
-                        _xeosVariables.Remove(modelVar);
                         batch.xeosVariables.Remove(modelVar);
-                    }
                 }
             }
         }

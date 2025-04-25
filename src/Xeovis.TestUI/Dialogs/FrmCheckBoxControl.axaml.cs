@@ -1,4 +1,6 @@
 using Avalonia.Controls;
+using System.Drawing;
+using Xeovis.UI;
 using Xeovis.UI.ViewModels;
 
 namespace Xeovis.TestUI;
@@ -19,10 +21,12 @@ public partial class FrmCheckBoxControl : Window
         vm1.Label = "label1";
         vm1.ToolTip = "simple tooltip";
         vm1.IsChecked = true;
+        vm1.Image = GraphicsGenerator.GetCircle(8, Color.Green);
         cbcBox1.ViewModel = vm1;
         cbcBox1.CheckStateChanged += cbcBox1_CheckStateChanged;
 
         var vm2 = new CheckBoxControlViewModel("label 2");
+        vm2.Image = GraphicsGenerator.GetDiamond(16, Color.Magenta);
         cbcBox2.ViewModel = vm2;
         cbcBox2.CheckStateChanged += cbcBox2_CheckStateChanged;
 

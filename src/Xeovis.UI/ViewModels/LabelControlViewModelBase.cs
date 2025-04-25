@@ -8,7 +8,7 @@ namespace Xeovis.UI.ViewModels
         private string? label;
 
         [ObservableProperty]
-        private string? toolTip;
+        private string? toolTip = string.Empty;
 
         [ObservableProperty]
         private bool isReadOnly;

@@ -8,6 +8,7 @@ using Xeovis.UI.ViewModels;
 using ScottPlot.Plottables;
 using Xeovis.UI.Models.Events;
 using System.Linq;
+using Avalonia.Media.Imaging;
 
 namespace Xeovis.UI;
 
@@ -54,7 +55,7 @@ public partial class ChartControl : UserControl
 
         foreach (var curve in _chartModel.Curves)
         {
-            if (curve.IsHidden || curve.DataCount == 0) continue;
+            if (!curve.IsVisible || curve.DataCount == 0) continue;
 
             bool successful = curve.CurveType switch
             {
@@ -87,8 +88,8 @@ public partial class ChartControl : UserControl
         SetLineStyle(scatter.LineStyle, curve);
         scatter.MarkerColor = Color.FromColor(curve.MarkerColor);
         SetMarkerStyle(scatter.MarkerStyle, curve);
-        scatter.LegendText = curve.Name;
-        
+        scatter.LegendText = curve.IsVisibleInLegend ? curve.Name : null;
+
         _plottedCurves.Add(curve.Id, scatter);
         return true;
     }
@@ -102,7 +103,7 @@ public partial class ChartControl : UserControl
         SetLineStyle(line.LineStyle, curve);
         line.MarkerColor = Color.FromColor(curve.MarkerColor);
         SetMarkerStyle(line.MarkerStyle, curve);
-        line.LegendText = curve.Name;
+        line.LegendText = curve.IsVisibleInLegend ? curve.Name : null;
 
         _plottedCurves.Add(curve.Id, line);
         return true;
@@ -137,13 +138,14 @@ public partial class ChartControl : UserControl
     private void SetProperties()
     {
         //_plot.Axes.SquareUnits(_chartModel.HasEqualDimensions);
-        _plot.Axes.Left.Label.Text = _chartModel.XAxis.Label;
+        _plot.Axes.Left.Label.Text = _chartModel.YAxis.Label;
         _plot.Axes.Left.Label.AntiAliasText = true;
-        _plot.Axes.Bottom.Label.Text = _chartModel.YAxis.Label;
+        _plot.Axes.Bottom.Label.Text = _chartModel.XAxis.Label;
         _plot.Axes.Bottom.Label.AntiAliasText = true;
         SetAxisLimits(_chartModel.XAxis.MinLimit, _chartModel.YAxis.MinLimit, _chartModel.XAxis.MaxLimit, _chartModel.YAxis.MaxLimit);
 
         _plot.Axes.Title.Label.Text = _chartModel.Title;
+        _plot.Axes.Title.Label.FontSize = 20;
         _plot.Axes.Title.IsVisible = _chartModel.IsTitleVisible;
 
         _plot.Legend.IsVisible = _chartModel.Legend.IsVisible;
@@ -155,7 +157,6 @@ public partial class ChartControl : UserControl
 
         _plot.Grid.IsVisible = _chartModel.IsGridVisible;
         _plot.Font.Set(Fonts.Serif);
-
     }
 
     private void SetLineStyle(LineStyle lineStyle, CurveModel curve)
@@ -262,6 +263,7 @@ public partial class ChartControl : UserControl
             _selectedPointCrosshair = _plot.Add.Crosshair(x, y);
             _selectedPointCrosshair.LineColor = Color.FromColor(System.Drawing.Color.Red);
             _selectedPointCrosshair.LineWidth = 0.7f;
+            _selectedPointCrosshair.LinePattern = LinePattern.DenselyDashed;
         }
         else
         {
@@ -280,15 +282,15 @@ public partial class ChartControl : UserControl
     {
         var plottables = _plot.GetPlottables<Scatter>();
 
-        foreach (var plottable in plottables)
+        foreach (var plottable in plottables.Where(x => x.IsVisible))
         {
             var point = plottable.GetNearest(coordinates, _plot.LastRender, 5);
             if (!point.Equals(DataPoint.None))
             {
                 var id = _plottedCurves.FirstOrDefault(x => x.Value == plottable).Key;
                 CurveId = id;
-                var curve = _chartModel.GerCurveById(id);
-                Index = curve.GetPointIndex(coordinates.X, coordinates.Y);
+                var curve = _chartModel.GetCurveById(id);
+                Index = curve.GetPointIndex(point.X, point.Y);
                 return point;
             }
         }
@@ -306,7 +308,7 @@ public partial class ChartControl : UserControl
 
     private void btnZoomIn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        _plot.Axes.ZoomIn(1.2,1.2);
+        _plot.Axes.ZoomIn(1.2, 1.2);
         scottPlot.Refresh();
     }
 
@@ -386,16 +388,19 @@ public partial class ChartControl : UserControl
     public void SetCurveVisibilty(Guid curveID, bool visible, bool resetZoom = false)
     {
         var plottable = _plottedCurves[curveID];
+        var curve = _chartModel.GetCurveById(curveID);
+        if (plottable == null || curve == null) return;
         plottable.IsVisible = visible;
+        curve.IsVisible = visible;
         if (resetZoom) _plot.Axes.AutoScale();
         scottPlot.Refresh();
     }
 
     public void SelectPoint(Guid curveId, int pointIndex)
     {
-        var curve = _chartModel.GerCurveById(curveId);
+        var curve = _chartModel.GetCurveById(curveId);
 
-        if (pointIndex < 0 || curveId == Guid.Empty || curve == null || pointIndex >= curve.DataCount)
+        if (pointIndex < 0 || curveId == Guid.Empty || curve == null || !curve.IsVisible || pointIndex >= curve.DataCount)
         {
             RemoveSelectedPointCrosshair();
         }
@@ -405,6 +410,22 @@ public partial class ChartControl : UserControl
         }
 
         scottPlot.Refresh();
+    }
+
+    public Bitmap? GetMarkerGraphic(Guid curveID)
+    {
+        var curve = _chartModel.GetCurveById(curveID);
+        if (curve == null) return null;
+        int size = 12;
+        return curve.MarkerType switch
+        {
+            MarkerType.FilledCircle => GraphicsGenerator.GetCircle(size, curve.MarkerColor),
+            MarkerType.FilledSquare => GraphicsGenerator.GetSquare(size, curve.MarkerColor),
+            MarkerType.FilledTriangleUp => GraphicsGenerator.GetTriangleUp(size, curve.MarkerColor),
+            MarkerType.FilledTriangleDown => GraphicsGenerator.GetTriangleDown(size, curve.MarkerColor),
+            MarkerType.FilledDiamond => GraphicsGenerator.GetDiamond(size, curve.MarkerColor),
+            _ => null
+        };
     }
     #endregion
 }

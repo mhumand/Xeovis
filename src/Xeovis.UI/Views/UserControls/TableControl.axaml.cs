@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
+using Avalonia.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -97,16 +98,6 @@ public partial class TableControl : UserControl
 
                     CellTemplate = new FuncDataTemplate<object>((item, _) =>
                     {
-                        return new TextBlock
-                        {
-                            Padding = new Avalonia.Thickness(10, 0),
-                            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                            [!TextBlock.TextProperty] = new Binding($"[{key}]")
-                        };
-                    }),
-
-                    CellEditingTemplate = new FuncDataTemplate<object>((item, _) =>
-                    {
                         var optionsComboBox = new ComboBox
                         {
                             ItemsSource = column.Options,
@@ -115,8 +106,34 @@ public partial class TableControl : UserControl
                         };
                         optionsComboBox.Tag = column.Id;
                         optionsComboBox.SelectionChanged += optionsComboBox_SelectionChanged;
+                        optionsComboBox.IsEnabled = !isReadOnly && !_tableModel.IsReadOnly;
+                        optionsComboBox.BorderBrush = Brushes.Transparent;
+                        optionsComboBox.Background = Brushes.Transparent;
                         return optionsComboBox;
-                    })
+                    }),
+
+                    //CellTemplate = new FuncDataTemplate<object>((item, _) =>
+                    //{
+                    //    return new TextBlock
+                    //    {
+                    //        Padding = new Avalonia.Thickness(10, 0),
+                    //        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    //        [!TextBlock.TextProperty] = new Binding($"[{key}]")
+                    //    };
+                    //}),
+                    
+                    //CellEditingTemplate = new FuncDataTemplate<object>((item, _) =>
+                    //{
+                    //    var optionsComboBox = new ComboBox
+                    //    {
+                    //        ItemsSource = column.Options,
+                    //        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                    //        [!ComboBox.SelectedItemProperty] = new Binding($"[{key}]")
+                    //    };
+                    //    optionsComboBox.Tag = column.Id;
+                    //    optionsComboBox.SelectionChanged += optionsComboBox_SelectionChanged;
+                    //    return optionsComboBox;
+                    //})
                 });
             }
             else
@@ -155,7 +172,7 @@ public partial class TableControl : UserControl
     private void SetDataGridProperties()
     {
         dataGrid.FrozenColumnCount = _tableModel.FrozenColumnCount;
-        dataGrid.MinColumnWidth = 70;
+        //dataGrid.MinColumnWidth = 70;
         dataGrid.ItemsSource = _rows;
         dataGrid.IsReadOnly = _tableModel.IsReadOnly;
         dataGrid.CanUserResizeColumns = _tableModel.CanResizeColumns;
@@ -168,7 +185,15 @@ public partial class TableControl : UserControl
     private void DataGrid_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
     {
         if (e.Key == Avalonia.Input.Key.Escape)
-            dataGrid.SelectedIndex = -1;
+        {
+            ClearSelection();
+        }
+    }
+
+    private void ClearSelection()
+    {
+        dataGrid.SelectedIndex = -1;
+        SelectionChanged?.Invoke(this, new TableSelectionChangedEventArgs(-1, -1));
     }
 
     private void DataGrid_CellEditEnded(object? sender, DataGridCellEditEndedEventArgs e)

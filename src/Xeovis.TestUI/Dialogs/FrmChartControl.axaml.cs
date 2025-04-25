@@ -89,7 +89,7 @@ public partial class FrmChartControl : Window
         if (sender is not ChartControl chart) return;
 
         if (e.HasValidCurveId && e.HasValidPoint)
-            txt2.Text = $"User selected point ({e.X},{e.Y}) from curve '{chart.ViewModel.ChartModel.GerCurveById(e.CurveId)}'";
+            txt2.Text = $"User selected point ({e.X},{e.Y}) from curve '{chart.ViewModel.ChartModel.GetCurveById(e.CurveId)}'";
         else
             txt2.Text = string.Empty;
     }

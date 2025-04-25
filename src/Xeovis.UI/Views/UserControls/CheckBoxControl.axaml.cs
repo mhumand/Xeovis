@@ -14,8 +14,8 @@ public partial class CheckBoxControl : UserControl
         get { return _viewModel; }
         set
         {
-            _viewModel = value;
-            DataContext = value;
+            _viewModel = value ?? new CheckBoxControlViewModel();
+            DataContext = _viewModel;
         }
     }
 
@@ -40,6 +40,6 @@ public partial class CheckBoxControl : UserControl
 
     private void checkBox_CheckChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        CheckStateChanged?.Invoke(sender, new CheckStateChangedEventArgs((bool)checkBox.IsChecked));
+        CheckStateChanged?.Invoke(this, new CheckStateChangedEventArgs((bool)checkBox.IsChecked));
     }
 }
