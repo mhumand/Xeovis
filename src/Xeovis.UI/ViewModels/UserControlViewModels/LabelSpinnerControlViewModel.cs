@@ -15,7 +15,8 @@ namespace Xeovis.UI.ViewModels
 
         public LabelSpinnerControlViewModel()
         {
-            minValue = 0;
+            MinValue = 0;
+            Value = 0;
         }
 
         public LabelSpinnerControlViewModel(string label, int value, int minValue, int maxValue)

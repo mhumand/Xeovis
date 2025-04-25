@@ -19,6 +19,8 @@ namespace Xeovis.UI.ViewModels
 
         public Guid Id { get; set; }
 
+        public Guid PresentedId { get; set; }
+
         public TabControlViewModelBase()
         {
             Header = "Default tab";

@@ -19,7 +19,7 @@ public partial class FrmTableControl : Window
     {
         var tableModel = GetSampleTableModel();
         
-        table1.FillTable(tableModel);
+        table1.PopulateTable(tableModel);
 
     }
 
@@ -28,7 +28,7 @@ public partial class FrmTableControl : Window
         var tableModel = GetSampleTableModel();
         tableModel.IsReadOnly = true;
 
-        table2.FillTable(tableModel);
+        table2.PopulateTable(tableModel);
     }
 
     private TableModel GetSampleTableModel()
@@ -37,7 +37,11 @@ public partial class FrmTableControl : Window
         var col2 = new ColumnModel("Date", new List<DateTime>() { DateTime.Now, DateTime.Now.AddHours(1), DateTime.Now.AddDays(1) });
         var col3 = new ColumnModel("Visible", [true, false, true, true, null]);
         var col4 = new ColumnModel("Value", new List<double>() { 2e6, 1.56e-2, 1.564, 418.1, double.NaN, double.PositiveInfinity, 888.444 });
+        var col5 = new ColumnModel("Options", new List<string>() { "option 1", "option 2", "option 0" })
+        {
+            Options = new List<object>() { "option 1", "option 2", "option 0" },
+        };
 
-        return new TableModel("Sample Table", [col1, col2, col3, col4]);
+        return new TableModel("Sample Table", [col1, col2, col3, col4, col5]);
     }
 }

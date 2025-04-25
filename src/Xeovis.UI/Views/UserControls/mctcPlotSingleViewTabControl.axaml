@@ -1,0 +1,139 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
+			 xmlns:vm="using:Xeovis.UI.ViewModels"
+			 xmlns:uc="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+			 x:DataType="vm:mctcPlotSingleViewModel"
+             x:Class="Xeovis.UI.mctcPlotSingleViewTabControl">
+
+	<UserControl.Styles>
+		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
+		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+
+		<Style Selector="Border.Custom">
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="BorderBrush" Value="DarkGray"/>
+			<Setter Property="Padding" Value="5 5" />
+			<Setter Property="Margin" Value="3" />
+			<Setter Property="CornerRadius" Value="5"/>
+		</Style>
+
+		<Style Selector="GridSplitter">
+			<Setter Property="Background" Value="DarkGray"/>
+			<Setter Property="BorderBrush" Value="White"/>
+			<Setter Property="BorderThickness" Value="3"/>
+			<Setter Property="Margin" Value="1"/>
+			<Setter Property="CornerRadius" Value="4"/>
+			<Setter Property="Opacity" Value="0.3"/>
+		</Style>
+	</UserControl.Styles>
+
+	<DockPanel>
+
+		<!-- Top Section - xoesVar combobox + mctc Slider-->
+		<Grid DockPanel.Dock="Top"
+			  Margin="5 5"
+			  VerticalAlignment="Top"
+			  Height="70"
+			  ColumnDefinitions="150, 150, *">
+			<uc:LabelComboBoxControl x:Name="lcbcXeosVariable"
+									 Grid.Column="0"
+									 Margin="10 0"
+									 MinWidth="100"
+									 VerticalAlignment="Bottom"
+									 HorizontalAlignment="Stretch"/>
+
+			<uc:LabelSpinnerControl x:Name="spinner"
+									Margin="5 0"
+									VerticalAlignment="Bottom"
+									Grid.Column="1"/>
+
+			<uc:TableControl x:Name="tableMctcRuns"
+							 MinHeight="50"
+							 Grid.Column="2"/>
+		</Grid>
+
+
+		<!-- Main Section - Batches + Plot + Table-->
+		<Border Classes="Custom"
+				DockPanel.Dock="Top">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="250" />
+					<ColumnDefinition Width="1*" MinWidth="200"/>
+					<ColumnDefinition Width="10"/>
+					<ColumnDefinition Width="1*" MinWidth="200"/>
+				</Grid.ColumnDefinitions>
+
+				<!--Left Panel-->
+				<Grid Grid.Column="0">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="1*" MinHeight="150"/>
+						<RowDefinition Height="10"/>
+						<RowDefinition Height="1*" MinHeight="150"/>
+					</Grid.RowDefinitions>
+
+					<!--Phase Filters-->
+					<Border Grid.Row="0" Classes="Custom">
+						<Grid RowDefinitions="25,*">
+							<TextBlock Grid.Row="0"
+									   Margin="5 0"
+									   Text="Phase Filters" />
+							
+							<Grid Grid.Row="1"
+								  RowDefinitions="*,40"	>
+								<uc:TableControl x:Name="tableFilter"
+												 Grid.Row="0"
+												 MinWidth="100"
+												 MinHeight="70"/>
+
+								<Button x:Name="btnClearFilters"
+										Classes="Primary"
+										HorizontalAlignment="Right"
+										VerticalAlignment="Bottom"
+										Width="100"
+										Grid.Row="1"
+										Click="btnClearFilters_Click"
+										Content="Clear Filters"/>
+							</Grid>
+						</Grid>
+					</Border>
+
+					<GridSplitter Grid.Row="1"
+								  ResizeDirection="Rows"/>
+
+					<!--Chart Legend-->
+					<Border Grid.Row="2"
+							Classes="Custom">
+						<Grid RowDefinitions="25,*">
+							<TextBlock Grid.Row="0"
+									   Margin="5 0"
+									   Text="Chart Legend" />
+							<ScrollViewer Grid.Row="1">
+								<StackPanel x:Name="stackLegend"
+											Margin="5 0"/>
+							</ScrollViewer>
+						</Grid>
+					</Border>
+				</Grid>
+
+				<!--Chart and Table-->
+				<uc:ChartControl x:Name="chartControl"
+								 Margin="5 0"
+								 Grid.Column="1"/>
+
+				<GridSplitter Grid.Column="2"
+							  ResizeDirection="Columns"/>
+
+				<uc:TableControl x:Name="tableControl"
+								 Margin="5 0"
+								 Grid.Column="3"/>
+
+			</Grid>
+		</Border>
+
+	</DockPanel>
+
+</UserControl>

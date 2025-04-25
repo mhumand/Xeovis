@@ -38,7 +38,7 @@ public partial class FrmChartControl : Window
         chartModel.Curves.Add(curve1);
         chartModel.Curves.Add(curve2);
 
-        chartControl1.Plot(chartModel);
+        chartControl1.PopulateChart(chartModel);
     }
 
     private void btnPlot2_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -78,7 +78,7 @@ public partial class FrmChartControl : Window
         chartModel.XAxis = new AxisModel("Label for X Axis", 0, 1);
         chartModel.YAxis = new AxisModel("Label for Y Axis", 0, 1);
 
-        chartControl2.Plot(chartModel);
+        chartControl2.PopulateChart(chartModel);
         chartControl2.SetAxisLimits(0, 0, 1, 1);
         chartControl2.EnableCrosshairPointSelection();
         chartControl2.ChartPointSelected += ChartControl2_ChartPointSelected;
@@ -89,7 +89,7 @@ public partial class FrmChartControl : Window
         if (sender is not ChartControl chart) return;
 
         if (e.HasValidCurveId && e.HasValidPoint)
-            txt2.Text = $"User selected point ({e.X},{e.Y}) from curve '{chart.ViewModel.ChartModel.GerCurveById(e.CurveId)}'";
+            txt2.Text = $"User selected point ({e.X},{e.Y}) from curve '{chart.ViewModel.ChartModel.GetCurveById(e.CurveId)}'";
         else
             txt2.Text = string.Empty;
     }

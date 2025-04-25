@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Media.Imaging;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Xeovis.UI.ViewModels
 {
@@ -7,9 +8,14 @@ namespace Xeovis.UI.ViewModels
         [ObservableProperty]
         private bool isChecked;
 
+        [ObservableProperty]
+        private Bitmap? image;
+
+        public bool HasImage => image != null;
+
         public CheckBoxControlViewModel()
         {
-            
+            image = null;
         }
 
         public CheckBoxControlViewModel(string label, bool isChecked = false) : this()

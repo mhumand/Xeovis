@@ -2,8 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="35"
-			 MinHeight="35"
+             mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="20"
+			 MinHeight="20"
 			 MinWidth="100"
 			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
@@ -13,16 +13,28 @@
 	<UserControl.Styles>
 		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
 	</UserControl.Styles>
-	
+
 	<StackPanel VerticalAlignment="Top"
 				Orientation="Horizontal"
 				Margin="0"
 				Spacing="5">
 		<CheckBox x:Name="checkBox"
-				  Content="{Binding Label}"
 				  IsChecked="{Binding IsChecked}"
 				  Checked="checkBox_CheckChanged"
-				  Unchecked="checkBox_CheckChanged"/>
+				  VerticalContentAlignment="Center"
+				  Unchecked="checkBox_CheckChanged">
+			<CheckBox.Content>
+				<StackPanel Orientation="Horizontal" Spacing="5">
+					<Image x:Name="image"
+						   Width="16"
+						   Height="16"
+						   Stretch="None"
+						   Source="{Binding Image}"
+						   IsVisible="{Binding HasImage}"/>
+					<TextBlock Text="{Binding Label}"/>
+				</StackPanel>
+			</CheckBox.Content>
+		</CheckBox>
 		<userControls:ToolTipControl x:Name="toolTip"/>
 	</StackPanel>
 

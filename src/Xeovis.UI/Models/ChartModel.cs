@@ -29,7 +29,7 @@ namespace Xeovis.UI.Models
             IsGridVisible = true;
         }
 
-        public CurveModel GerCurveById(Guid id)
+        public CurveModel GetCurveById(Guid id)
         {
             return Curves.FirstOrDefault(c => c.Id == id);
         }

@@ -1,92 +1,73 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Xeovis.UI.Models
 {
-    public partial class ColumnModel : ObservableObject
+    public class ColumnModel
     {
-        [ObservableProperty]
-        private string header;
-
-        [ObservableProperty]
-        private ObservableCollection<object> values;
-
-        [ObservableProperty]
-        private bool isReadOnly;
-
-        [ObservableProperty]
-        private bool isVisible;
-
-        [ObservableProperty]
-        private bool canSort;
-
-        [ObservableProperty]
-        private bool canReorder;
-
-        [ObservableProperty]
-        private bool canResize;
-        private string v;
-        private List<DateTime> dateTimes;
-
+        public string Header { get; set; }
+        public List<object> Values { get; set; }
+        public bool IsReadOnly { get; set; }
+        public bool IsVisible { get; set; }
+        public bool CanSort { get; set; }
+        public bool CanReorder { get; set; }
+        public bool CanResize { get; set; }
+        public List<object> Options { get; set; }
+        public bool HasOptions => Options != null && Options.Count > 0;
         public Guid Id { get; set; }
-
         public int DataCount => Values != null ? Values.Count : 0;
-
         public bool HasData => DataCount > 0;
-
         public Type ValueType => HasData ? Values[0].GetType() : typeof(string);
 
         public ColumnModel()
         {
             Id = Guid.NewGuid();
-            Values = new ObservableCollection<object>();
+            Values = new List<object>();
+            Options = new List<object>();
             Header = "COLUMN";
             IsReadOnly = false;
             IsVisible = true;
             CanSort = true;
-            canReorder = true;
-            canResize = true;
+            CanReorder = true;
+            CanResize = true;
         }
 
         public ColumnModel(string header, List<object> values) : this()
         {
             Header = header;
-            Values = new ObservableCollection<object>(values);
+            Values = new List<object>(values);
         }
 
         public ColumnModel(string header, List<string> values) : this()
         {
             Header = header;
-            Values = new ObservableCollection<object>(values);
+            Values = new List<object>(values);
         }
 
         public ColumnModel(string header, List<double> values) : this()
         {
             Header = header;
-            Values = new ObservableCollection<object>(values.Cast<object>());
+            Values = new List<object>(values.Cast<object>());
         }
 
         public ColumnModel(string header, List<int> values) : this()
         {
             Header = header;
-            Values = new ObservableCollection<object>(values.Cast<object>());
+            Values = new List<object>(values.Cast<object>());
         }
 
         public ColumnModel(string header, List<bool> values) : this()
         {
             Header = header;
-            Values = new ObservableCollection<object>(values.Cast<object>());
+            Values = new List<object>(values.Cast<object>());
         }
 
         public ColumnModel(string header, List<DateTime> values) : this()
         {
             Header = header;
-            Values = new ObservableCollection<object>(values.Cast<object>());
+            Values = new List<object>(values.Cast<object>());
         }
-
         public override string ToString()
         {
             return Header;
