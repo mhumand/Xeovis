@@ -84,30 +84,35 @@ namespace Xeovis.UI.Views
             var mctcBundle = _viewModel.mctcBundles.FirstOrDefault(b => b.Id == mctcPlotDto.mctcBundleId);
             if (mctcBundle == null) return;
 
-            if (mctcPlotDto.IsGridView)
+            bool successful = false;
+            TabControlViewModelBase viewModel;
+            UserControl plotTab;
+            if (mctcPlotDto.IsGridView && mctcPlotDto.SampleXeosVariables.Count > 1)
             {
-
+                viewModel = new mctcPlotGridViewModel() { Header = mctcPlotDto.Name, PresentedId = mctcPlotDto.Id };
+                plotTab = new mctcPlotGridViewTabControl() { ViewModel = viewModel as mctcPlotGridViewModel };
+                successful = (plotTab as mctcPlotGridViewTabControl).PopulateUI(mctcPlotDto, mctcBundle);
             }
             else
             {
-                var viewModel = new mctcPlotSingleViewModel() { Header = mctcPlotDto.Name, PresentedId = mctcPlotDto.Id };
-                var plotTab = new mctcPlotSingleViewTabControl() { ViewModel = viewModel };
-                var successful = plotTab.PopulateUI(mctcPlotDto, mctcBundle);
+                viewModel = new mctcPlotSingleViewModel() { Header = mctcPlotDto.Name, PresentedId = mctcPlotDto.Id };
+                plotTab = new mctcPlotSingleViewTabControl() { ViewModel = viewModel as mctcPlotSingleViewModel };
+                successful = (plotTab as mctcPlotSingleViewTabControl).PopulateUI(mctcPlotDto, mctcBundle);
+            }
 
-                if (successful)
+            if (successful)
+            {
+                viewModel.OwnerTabControl = plotTab;
+                viewModel.CanBeRemoved = true;
+                _viewModel.TabControls.Add(viewModel);
+                tabControl.SelectedIndex = tabControl.Items.IndexOf(viewModel);
+
+                var plotNode = new TreeNode(mctcPlotDto.Name) { PresenterId = mctcPlotDto.Id };
+                var mctcBundleNode = tvMctcBundles.Items.FirstOrDefault(x => (x as TreeNode).PresenterId == mctcBundle.Id) as TreeNode;
+                if (mctcBundleNode != null)
                 {
-                    viewModel.OwnerTabControl = plotTab;
-                    viewModel.CanBeRemoved = true;
-                    _viewModel.TabControls.Add(viewModel);
-                    tabControl.SelectedIndex = tabControl.Items.IndexOf(viewModel);
-
-                    var plotNode = new TreeNode(mctcPlotDto.Name) { PresenterId = mctcPlotDto.Id };
-                    var mctcBundleNode = tvMctcBundles.Items.FirstOrDefault(x => (x as TreeNode).PresenterId == mctcBundle.Id) as TreeNode;
-                    if (mctcBundleNode != null)
-                    {
-                        mctcBundleNode.Children.Add(plotNode);
-                        mctcBundleNode.IsExpanded = true; //todo: bind to UI - M.H. 23/04/2025
-                    }
+                    mctcBundleNode.Children.Add(plotNode);
+                    mctcBundleNode.IsExpanded = true; //todo: bind to UI - M.H. 23/04/2025
                 }
             }
         }
@@ -116,17 +121,23 @@ namespace Xeovis.UI.Views
         {
             if (sender is not Button button) return;
             if (button.Tag is not Guid Id) return;
-            var tabViewModel = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase).Id == Id);
-            if (tabViewModel is not mctcPlotSingleViewModel viewModel) return;
+            var tabViewModel = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase).Id == Id) as TabControlViewModelBase;
+            
 
-            var msgBox = MessageBoxManager.GetMessageBoxStandard("Warning", $"You are about to remove {viewModel.Header}.\nAre you sure you want to continue?", ButtonEnum.YesNoCancel, MsBox.Avalonia.Enums.Icon.Warning);
+            var msgBox = MessageBoxManager.GetMessageBoxStandard("Warning", $"You are about to remove {tabViewModel.Header}.\nAre you sure you want to continue?", ButtonEnum.YesNoCancel, MsBox.Avalonia.Enums.Icon.Warning);
             var result = await msgBox.ShowWindowDialogAsync(this);
             if (result == ButtonResult.Yes)
             {
-                _viewModel.TabControls.Remove(viewModel);
-                var bundleNode = tvMctcBundles.Items.FirstOrDefault(x => (x as TreeNode).PresenterId == viewModel.mctcBundle.Id) as TreeNode;
+                _viewModel.TabControls.Remove(tabViewModel);
+                
+                TreeNode bundleNode = null;
+                if (tabViewModel is mctcPlotSingleViewModel singleViewModel)
+                    bundleNode = tvMctcBundles.Items.FirstOrDefault(x => (x as TreeNode).PresenterId == singleViewModel.mctcBundle.Id) as TreeNode;
+                else if (tabViewModel is mctcPlotGridViewModel gridViewModel)
+                    bundleNode = tvMctcBundles.Items.FirstOrDefault(x => (x as TreeNode).PresenterId == gridViewModel.mctcBundle.Id) as TreeNode;
+
                 if (bundleNode == null) return;
-                var plotNode = bundleNode.Children.FirstOrDefault(x => x.PresenterId == viewModel.PresentedId);
+                var plotNode = bundleNode.Children.FirstOrDefault(x => x.PresenterId == tabViewModel.PresentedId);
                 bundleNode.Children.Remove(plotNode);
             }
         }
