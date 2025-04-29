@@ -41,6 +41,7 @@
 			<MenuItem Header="_Load Data" Command="{Binding MctcPlots_LoadData}"/>
 			<Separator/>
 			<MenuItem Header="_New Plot" Command="{Binding MctcPlots_NewPlot}"/>
+			<Separator/>
 			<MenuItem Header="_Settings" Command="{Binding MctcPlots_Settings}"/>
 		</MenuItem>
 

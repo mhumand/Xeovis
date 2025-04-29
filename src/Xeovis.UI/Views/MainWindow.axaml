@@ -75,9 +75,9 @@
 
 		<Grid DockPanel.Dock="Top">
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="200" MinWidth="150" />
+				<ColumnDefinition Width="200" MinWidth="150" MaxWidth="400" />
 				<ColumnDefinition Width="5" MinWidth="5" />
-				<ColumnDefinition Width="*" MinWidth="450" />
+				<ColumnDefinition Width="*" MinWidth="500" />
 			</Grid.ColumnDefinitions>
 
 			<!-- Tree Views -->

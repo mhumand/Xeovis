@@ -13,10 +13,9 @@ namespace Xeovis.UI;
 public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
 {
     public Guid Id { get; set; }
-    public string Name { get; set; }
     public mctcPlotViewType ViewType { get; set; }
 
-    private mctcPlotSingleViewModel _viewModel;
+    private mctcPlotSingleViewModel _viewModel = new mctcPlotSingleViewModel();
     public mctcPlotSingleViewModel ViewModel
     {
         get { return _viewModel; }
@@ -67,7 +66,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         lcbcXeosVariable.SetItems(_viewModel.GetXeosVarItems());
 
         PopulateMctcRunsTable();
-        PopulatePhaseAndLegendFilters();
+        PopulatePhaseFilters();
 
         return true;
     }
@@ -78,7 +77,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         tableMctcRuns.PopulateTable(tableModel);
     }
 
-    private void PopulatePhaseAndLegendFilters()
+    private void PopulatePhaseFilters()
     {
         var tableModel = _viewModel.CreateFiltersTableModel();
         tableFilter.PopulateTable(tableModel);
@@ -94,16 +93,16 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         if (lcbcXeosVariable.ViewModel.SelectedItem is not ListableItem item) return;
         if (item.Tag is not xeosVariable sampleVar) return;
 
-        var xeosVarGroups = _viewModel.GetGroupedFilteredXeosVariables(sampleVar);
-        if (xeosVarGroups.Count == 0)
+        var successful = _viewModel.GroupAndFilterXeosVariables(sampleVar);
+        if (!successful)
         {
             tableControl.ClearTable();
             chartControl.ClearPlot();
             return;
         }
 
-        PopulateChart(xeosVarGroups);
-        PopulateTable(xeosVarGroups);
+        PopulateChart();
+        PopulateTable();
         PopulateLegend();
     }
 
@@ -180,21 +179,15 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         chartControl.SetCurveVisibilty(curve.Id, e.IsChecked);
     }
 
-    private void PopulateChart(List<IGrouping<object, xeosVariable>> groups)
+    private void PopulateChart()
     {
-        if (groups == null || groups.Count == 0) return;
-        if (lcbcXeosVariable.ViewModel.SelectedItem.Tag is not xeosVariable sampleVar) return;
-
-        var chartModel = _viewModel.CreateChartModel(groups, sampleVar);
+        var chartModel = _viewModel.CreateChartModel();
         var successful = chartControl.PopulateChart(chartModel);
     }
 
-    private void PopulateTable(List<IGrouping<object, xeosVariable>> groups)
+    private void PopulateTable()
     {
-        if (groups == null || groups.Count == 0) return;
-        if (lcbcXeosVariable.ViewModel.SelectedItem.Tag is not xeosVariable sampleVar) return;
-
-        var tableModel = _viewModel.CreateTableModel(groups, sampleVar);
+        var tableModel = _viewModel.CreateTableModel();
         var successful = tableControl.PopulateTable(tableModel);
     }
 
@@ -254,7 +247,12 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
 
     private void btnClearFilters_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        PopulatePhaseAndLegendFilters();
+        PopulatePhaseFilters();
         UpdateChartAndTable();
+    }
+
+    private void btnSidePanel_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        splitView.IsPaneOpen = !splitView.IsPaneOpen;
     }
 }
