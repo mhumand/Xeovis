@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xeovis.UI", "Xeovis.UI\Xeov
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xeovis.TestUI", "Xeovis.TestUI\Xeovis.TestUI.csproj", "{2AD64F6B-A95D-4559-997B-A8E853FEA53A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xeovis.Helpers", "Xeovis.Helpers\Xeovis.Helpers.csproj", "{99818AE6-D406-45B0-BE1E-045B419A700C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xeovis.Base", "Xeovis.Base\Xeovis.Base.csproj", "{99818AE6-D406-45B0-BE1E-045B419A700C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xeovis.Domain", "Xeovis.Domain\Xeovis.Domain.csproj", "{59852A27-DE75-4A92-BFE8-515B28709584}"
 EndProject

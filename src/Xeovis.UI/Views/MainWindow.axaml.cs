@@ -122,14 +122,14 @@ namespace Xeovis.UI.Views
             if (sender is not Button button) return;
             if (button.Tag is not Guid Id) return;
             var tabViewModel = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase).Id == Id) as TabControlViewModelBase;
-            
+
 
             var msgBox = MessageBoxManager.GetMessageBoxStandard("Warning", $"You are about to remove {tabViewModel.Header}.\nAre you sure you want to continue?", ButtonEnum.YesNoCancel, MsBox.Avalonia.Enums.Icon.Warning);
             var result = await msgBox.ShowWindowDialogAsync(this);
             if (result == ButtonResult.Yes)
             {
                 _viewModel.TabControls.Remove(tabViewModel);
-                
+
                 TreeNode bundleNode = null;
                 if (tabViewModel is mctcPlotSingleViewModel singleViewModel)
                     bundleNode = tvMctcBundles.Items.FirstOrDefault(x => (x as TreeNode).PresenterId == singleViewModel.mctcBundle.Id) as TreeNode;
