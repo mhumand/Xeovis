@@ -73,15 +73,15 @@
 			<userControls:MainMenu x:Name="mainMenu" />
 		</Grid>
 
-		<Grid DockPanel.Dock="Top">
+		<Grid DockPanel.Dock="Top" x:Name="mainGrid">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="200" MinWidth="150" MaxWidth="400" />
 				<ColumnDefinition Width="5" MinWidth="5" />
 				<ColumnDefinition Width="*" MinWidth="500" />
 			</Grid.ColumnDefinitions>
 
-			<!-- Tree Views -->
-			<Border Grid.Column="0" Classes="Panels">
+			<!-- Tree Lists -->
+			<Border Grid.Column="0" Classes="Panels" x:Name="borderTreeLists">
 				<Grid x:Name="TreeGrid">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="1*" MinHeight="200"/>
@@ -127,7 +127,8 @@
 			</Border>
 
 			<GridSplitter Grid.Column="1"
-			  ResizeDirection="Columns"/>
+						  x:Name="splitterVertical"
+						  ResizeDirection="Columns"/>
 
 			<!-- Main Pane -->
 			<Border Grid.Column="2" Classes="Panels" >

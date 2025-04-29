@@ -155,6 +155,12 @@ public partial class MainMenu : UserControl
 
     }
 
+    // View
+    public void View_ShowLeftPanel()
+    {
+        ParentWindow?.ToggleLeftPanelVisibility(itemShowLeftPanel.IsChecked);
+    }
+
     // Help
     public void Help()
     {

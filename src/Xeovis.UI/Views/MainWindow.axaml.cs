@@ -78,6 +78,32 @@ namespace Xeovis.UI.Views
             }
         }
 
+        private async void btnCloseTab_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (sender is not Button button) return;
+            if (button.Tag is not Guid Id) return;
+            var tabViewModel = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase).Id == Id) as TabControlViewModelBase;
+
+
+            var msgBox = MessageBoxManager.GetMessageBoxStandard("Warning", $"You are about to remove {tabViewModel.Header}.\nAre you sure you want to continue?", ButtonEnum.YesNoCancel, MsBox.Avalonia.Enums.Icon.Warning);
+            var result = await msgBox.ShowWindowDialogAsync(this);
+            if (result == ButtonResult.Yes)
+            {
+                _viewModel.TabControls.Remove(tabViewModel);
+
+                TreeNode bundleNode = null;
+                if (tabViewModel is mctcPlotSingleViewModel singleViewModel)
+                    bundleNode = tvMctcBundles.Items.FirstOrDefault(x => (x as TreeNode).PresenterId == singleViewModel.mctcBundle.Id) as TreeNode;
+                else if (tabViewModel is mctcPlotGridViewModel gridViewModel)
+                    bundleNode = tvMctcBundles.Items.FirstOrDefault(x => (x as TreeNode).PresenterId == gridViewModel.mctcBundle.Id) as TreeNode;
+
+                if (bundleNode == null) return;
+                var plotNode = bundleNode.Children.FirstOrDefault(x => x.PresenterId == tabViewModel.PresentedId);
+                bundleNode.Children.Remove(plotNode);
+            }
+        }
+
+        #region Public Methods
         public void CreateMctcPlot(mctcPlotDto mctcPlotDto)
         {
             if (mctcPlotDto == null) return;
@@ -117,29 +143,31 @@ namespace Xeovis.UI.Views
             }
         }
 
-        private async void btnCloseTab_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        public void ToggleLeftPanelVisibility(bool visible)
         {
-            if (sender is not Button button) return;
-            if (button.Tag is not Guid Id) return;
-            var tabViewModel = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase).Id == Id) as TabControlViewModelBase;
-
-
-            var msgBox = MessageBoxManager.GetMessageBoxStandard("Warning", $"You are about to remove {tabViewModel.Header}.\nAre you sure you want to continue?", ButtonEnum.YesNoCancel, MsBox.Avalonia.Enums.Icon.Warning);
-            var result = await msgBox.ShowWindowDialogAsync(this);
-            if (result == ButtonResult.Yes)
+            var column = mainGrid.ColumnDefinitions[0];
+            var splitter = mainGrid.ColumnDefinitions[1];
+            if (!visible)
             {
-                _viewModel.TabControls.Remove(tabViewModel);
+                column.MinWidth = 0;
+                column.Width = new GridLength(0);
 
-                TreeNode bundleNode = null;
-                if (tabViewModel is mctcPlotSingleViewModel singleViewModel)
-                    bundleNode = tvMctcBundles.Items.FirstOrDefault(x => (x as TreeNode).PresenterId == singleViewModel.mctcBundle.Id) as TreeNode;
-                else if (tabViewModel is mctcPlotGridViewModel gridViewModel)
-                    bundleNode = tvMctcBundles.Items.FirstOrDefault(x => (x as TreeNode).PresenterId == gridViewModel.mctcBundle.Id) as TreeNode;
-
-                if (bundleNode == null) return;
-                var plotNode = bundleNode.Children.FirstOrDefault(x => x.PresenterId == tabViewModel.PresentedId);
-                bundleNode.Children.Remove(plotNode);
+                splitter.MinWidth = 0;
+                splitter.Width = new GridLength(0);
             }
+            else
+            {
+                column.MinWidth = 150;
+                column.Width = new GridLength(200);
+
+                splitter.MinWidth = 5;
+                splitter.Width = new GridLength(5);
+            }
+
+            borderTreeLists.IsVisible = visible;
+            splitterVertical.IsVisible = visible;
         }
+
+        #endregion
     }
 }
