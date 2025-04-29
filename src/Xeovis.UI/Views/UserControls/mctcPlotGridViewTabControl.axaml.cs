@@ -92,6 +92,7 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
             var viewModel = new ChartControlViewModel();
             var chartControl = new ChartControl();
             chartControl.ViewModel = viewModel;
+            chartControl.SetScrollZooming(false);
 
             var chartModel = _viewModel.CreateChartModel(sampleVar);
             var successful = chartControl.PopulateChart(chartModel);

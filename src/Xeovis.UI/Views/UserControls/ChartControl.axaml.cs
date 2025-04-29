@@ -427,5 +427,14 @@ public partial class ChartControl : UserControl
             _ => null
         };
     }
+
+    public void SetScrollZooming(bool enabled)
+    {
+        scottPlot.UserInputProcessor.RemoveAll<ScottPlot.Interactivity.UserActionResponses.MouseWheelZoom>();
+        if (enabled)
+        {
+            scottPlot.UserInputProcessor.UserActionResponses.Add(new ScottPlot.Interactivity.UserActionResponses.MouseWheelZoom(ScottPlot.Interactivity.StandardKeys.Shift, ScottPlot.Interactivity.StandardKeys.Control) { ZoomFraction = 0.15 });
+        }
+    }
     #endregion
 }

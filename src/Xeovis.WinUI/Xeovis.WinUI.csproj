@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Xeovis.Base\Xeovis.Base.csproj" />
     <ProjectReference Include="..\Xeovis.Domain\Xeovis.Domain.csproj" />
-    <ProjectReference Include="..\Xeovis.Helpers\Xeovis.Helpers.csproj" />
     <ProjectReference Include="..\Xeovis.Persistence\Xeovis.Persistence.csproj" />
     <ProjectReference Include="..\Xeovis.WinControls\Xeovis.WinControls.csproj" />
   </ItemGroup>

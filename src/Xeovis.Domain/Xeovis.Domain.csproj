@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Xeovis.Helpers\Xeovis.Helpers.csproj" />
+    <ProjectReference Include="..\Xeovis.Base\Xeovis.Base.csproj" />
   </ItemGroup>
 
 </Project>

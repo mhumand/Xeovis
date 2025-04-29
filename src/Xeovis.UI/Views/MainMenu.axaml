@@ -35,14 +35,23 @@
 			<Separator/>
 			<MenuItem Header="_Settings" Command="{Binding DataManager_Settings}"/>
 		</MenuItem>
-
-		<MenuItem Header="_MCTC Plots">
+		
+		<MenuItem Header="_mctc Plots">
 			<MenuItem Header="_Reload" ToolTip.Tip="Reloads the last mctc bundle from its directory"/>
 			<MenuItem Header="_Load Data" Command="{Binding MctcPlots_LoadData}"/>
 			<Separator/>
 			<MenuItem Header="_New Plot" Command="{Binding MctcPlots_NewPlot}"/>
 			<Separator/>
 			<MenuItem Header="_Settings" Command="{Binding MctcPlots_Settings}"/>
+		</MenuItem>
+
+		<MenuItem Header="View">
+			<MenuItem x:Name="itemShowLeftPanel"
+					  ToggleType="CheckBox"
+					  IsChecked="True"
+					  Header="Show Left Panel"
+					  ToolTip.Tip="Show the experiments and mctc plots tree list panels on the left."
+					  Command="{Binding View_ShowLeftPanel}"/>
 		</MenuItem>
 
 		<MenuItem Header="_Help">
