@@ -250,4 +250,9 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         PopulatePhaseFilters();
         UpdateChartAndTable();
     }
+
+    private void btnSidePanel_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        splitView.IsPaneOpen = !splitView.IsPaneOpen;
+    }
 }

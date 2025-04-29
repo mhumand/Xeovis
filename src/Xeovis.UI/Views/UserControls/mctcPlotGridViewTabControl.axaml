@@ -80,7 +80,7 @@
 				DockPanel.Dock="Top">
 
 			<SplitView x:Name="splitView"
-					   IsPaneOpen="False"
+					   IsPaneOpen="True"
 					   OpenPaneLength="250"
 					   PanePlacement="Left"
 					   CompactPaneLength="30"

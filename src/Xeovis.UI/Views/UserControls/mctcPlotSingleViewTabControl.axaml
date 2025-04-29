@@ -13,8 +13,8 @@
 		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
 
 		<Style Selector="Border.Custom">
-			<Setter Property="BorderThickness" Value="1"/>
-			<Setter Property="BorderBrush" Value="DarkGray"/>
+			<Setter Property="BorderThickness" Value="2"/>
+			<Setter Property="BorderBrush" Value="#AF6A0B"/>
 			<Setter Property="Padding" Value="5 5" />
 			<Setter Property="Margin" Value="3" />
 			<Setter Property="CornerRadius" Value="5"/>
@@ -55,83 +55,117 @@
 							 Grid.Column="2"/>
 		</Grid>
 
-
 		<!-- Main Section - Batches + Plot + Table-->
 		<Border Classes="Custom"
 				DockPanel.Dock="Top">
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="250" />
-					<ColumnDefinition Width="1*" MinWidth="200"/>
-					<ColumnDefinition Width="10"/>
-					<ColumnDefinition Width="1*" MinWidth="200"/>
-				</Grid.ColumnDefinitions>
+
+			<SplitView x:Name="splitView"
+					   IsPaneOpen="True"
+					   OpenPaneLength="250"
+					   PanePlacement="Left"
+					   CompactPaneLength="30"
+					   DisplayMode="CompactInline">
 
 				<!--Left Panel-->
-				<Grid Grid.Column="0">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="1*" MinHeight="150"/>
-						<RowDefinition Height="10"/>
-						<RowDefinition Height="1*" MinHeight="150"/>
-					</Grid.RowDefinitions>
+				<SplitView.Pane>
+					<Grid RowDefinitions="30, *">
 
-					<!--Phase Filters-->
-					<Border Grid.Row="0" Classes="Custom">
-						<Grid RowDefinitions="25,*">
-							<TextBlock Grid.Row="0"
-									   Margin="5 0"
-									   Text="Phase Filters" />
-							
-							<Grid Grid.Row="1"
-								  RowDefinitions="*,40"	>
-								<uc:TableControl x:Name="tableFilter"
-												 Grid.Row="0"
-												 MinWidth="100"
-												 MinHeight="70"/>
+						<!--Buttons-->
+						<Button Grid.Row="0"
+								x:Name="btnSidePanel"
+								Click="btnSidePanel_Click"
+								Margin="3 3"
+								Background="Transparent"
+								ToolTip.Tip="Show/Hide Filter Panel"
+								Classes="InLine">
+							<Button.Content>
+								<Image Width="16" Height="16" Source="/Assets/filter.png"/>
+							</Button.Content>
+						</Button>
 
-								<Button x:Name="btnClearFilters"
-										Classes="Primary"
-										HorizontalAlignment="Right"
-										VerticalAlignment="Bottom"
-										Width="100"
-										Grid.Row="1"
-										Click="btnClearFilters_Click"
-										Content="Clear Filters"/>
-							</Grid>
+						<Button x:Name="btnClearFilters"
+								Classes="Primary"
+								Grid.Row="0"
+								HorizontalAlignment="Left"
+								VerticalAlignment="Top"
+								Width="100"
+								Margin="5"
+								IsVisible="{Binding IsPaneOpen, ElementName=splitView}"
+								Click="btnClearFilters_Click"
+								Content="Clear Filters"/>
+
+
+						<Grid Grid.Row="1"
+							  IsVisible="{Binding IsPaneOpen, ElementName=splitView}">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="1*" MinHeight="150"/>
+								<RowDefinition Height="10"/>
+								<RowDefinition Height="1*" MinHeight="150"/>
+							</Grid.RowDefinitions>
+
+							<!--Phase Filters-->
+							<Border Grid.Row="0"
+									Classes="Custom"
+									Margin="3">
+								<Grid RowDefinitions="25,*">
+									<TextBlock Grid.Row="0"
+											   Margin="5 3 5 0"
+											   FontWeight="SemiBold"
+											   Text="Phase Filters" />
+
+									<uc:TableControl x:Name="tableFilter"
+													 Grid.Row="1"
+													 MinWidth="100"
+													 MinHeight="70"/>
+								</Grid>
+							</Border>
+
+							<GridSplitter Grid.Row="1"
+										  ResizeDirection="Rows"/>
+
+							<!--Chart Legend-->
+							<Border Grid.Row="2"
+									Classes="Custom"
+									Margin="3">
+								<Grid RowDefinitions="25,*">
+									<TextBlock Grid.Row="0"
+											   Margin="5 3 5 0"
+											   FontWeight="SemiBold"
+											   Text="Chart Legend" />
+									<ScrollViewer Grid.Row="1">
+										<StackPanel x:Name="stackLegend"
+													Margin="5 0"/>
+									</ScrollViewer>
+								</Grid>
+							</Border>
 						</Grid>
-					</Border>
+					</Grid>
 
-					<GridSplitter Grid.Row="1"
-								  ResizeDirection="Rows"/>
-
-					<!--Chart Legend-->
-					<Border Grid.Row="2"
-							Classes="Custom">
-						<Grid RowDefinitions="25,*">
-							<TextBlock Grid.Row="0"
-									   Margin="5 0"
-									   Text="Chart Legend" />
-							<ScrollViewer Grid.Row="1">
-								<StackPanel x:Name="stackLegend"
-											Margin="5 0"/>
-							</ScrollViewer>
-						</Grid>
-					</Border>
-				</Grid>
+				</SplitView.Pane>
 
 				<!--Chart and Table-->
-				<uc:ChartControl x:Name="chartControl"
-								 Margin="5 0"
-								 Grid.Column="1"/>
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="1*" MinWidth="200"/>
+						<ColumnDefinition Width="10"/>
+						<ColumnDefinition Width="1*" MinWidth="200"/>
+					</Grid.ColumnDefinitions>
 
-				<GridSplitter Grid.Column="2"
-							  ResizeDirection="Columns"/>
+					<uc:ChartControl x:Name="chartControl"
+									 Margin="5 0"
+									 Grid.Column="0"/>
 
-				<uc:TableControl x:Name="tableControl"
-								 Margin="5 0"
-								 Grid.Column="3"/>
+					<GridSplitter Grid.Column="1"
+								  ResizeDirection="Columns"/>
 
-			</Grid>
+					<uc:TableControl x:Name="tableControl"
+									 Margin="5 0"
+									 Grid.Column="2"/>
+
+				</Grid>
+
+			</SplitView>
+
 		</Border>
 
 	</DockPanel>
