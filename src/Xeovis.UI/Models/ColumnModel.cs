@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xeovis.Base.Validations;
 
 namespace Xeovis.UI.Models
 {
@@ -19,6 +20,7 @@ namespace Xeovis.UI.Models
         public int DataCount => Values != null ? Values.Count : 0;
         public bool HasData => DataCount > 0;
         public Type ValueType => HasData ? Values[0].GetType() : typeof(string);
+        public List<IValidationRule<string>> ValidationRules { get; set; }
 
         public ColumnModel()
         {
@@ -31,6 +33,7 @@ namespace Xeovis.UI.Models
             CanSort = true;
             CanReorder = true;
             CanResize = true;
+            ValidationRules = new List<IValidationRule<string>>();
         }
 
         public ColumnModel(string header, List<object> values) : this()

@@ -1,10 +1,13 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xeovis.Base;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Events;
 using Xeovis.UI.ViewModels;
@@ -121,7 +124,7 @@ public partial class TableControl : UserControl
                     //        [!TextBlock.TextProperty] = new Binding($"[{key}]")
                     //    };
                     //}),
-                    
+
                     //CellEditingTemplate = new FuncDataTemplate<object>((item, _) =>
                     //{
                     //    var optionsComboBox = new ComboBox
@@ -198,12 +201,59 @@ public partial class TableControl : UserControl
 
     private void DataGrid_CellEditEnded(object? sender, DataGridCellEditEndedEventArgs e)
     {
+        //if (e.Column.Tag is not ColumnModel columnModel) return;
+        //var rowIndex = dataGrid.ItemsSource.Cast<object>().ToList().IndexOf(dataGrid.SelectedItem);
 
+        //var row = e.Row.DataContext as Dictionary<string, object>;
+        //var column = dataGrid.Columns.IndexOf(e.Column);
+        //var value = row.ToList()[column].Value.ToString();
+
+        //columnModel.Values[rowIndex] = value;
     }
 
     private void DataGrid_CellEditEnding(object? sender, DataGridCellEditEndingEventArgs e)
     {
+        if (e.Column.Tag is not ColumnModel columnModel) return;
+        var rowIndex = dataGrid.ItemsSource.Cast<object>().ToList().IndexOf(dataGrid.SelectedItem);
 
+        var row = e.Row.DataContext as Dictionary<string, object>;
+        var column = dataGrid.Columns.IndexOf(e.Column);
+        var value = row.ToList()[column].Value.ToString();
+
+        foreach (var rule in columnModel.ValidationRules)
+        {
+            if (!rule.Validate(value))
+            {
+                e.Cancel = true;
+                var cell = e.EditingElement as TextBox;
+
+                var popup = new Popup
+                {
+                    PlacementTarget = cell,
+                    Placement = PlacementMode.Bottom,
+                    IsLightDismissEnabled = true,
+                    Child = new Border
+                    {
+                        Background = Brushes.AntiqueWhite,
+                        BorderBrush = Brushes.Red,
+                        BorderThickness = new Thickness(0, 0, 0, 2),
+                        CornerRadius = new CornerRadius(2),
+                        Padding = new Thickness(8),
+                        Child = new TextBlock { Text = rule.ErrorMessage }
+                    }
+                };
+
+                popup.IsOpen = true;
+            }
+        }
+
+        if (!e.Cancel)
+        {
+            if (columnModel.ValueType == typeof(double))
+                columnModel.Values[rowIndex] = DoubleExtensions.GetDoubleValueFromText(value);
+            else
+                columnModel.Values[rowIndex] = value;
+        }
     }
 
     private void DataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
