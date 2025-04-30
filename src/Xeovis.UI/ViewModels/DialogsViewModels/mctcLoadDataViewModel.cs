@@ -15,8 +15,9 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
         [ObservableProperty]
         private string folderDirectory;
 
-        public List<ListableItem> RequiredFiles;
+        public List<string> ExisitingBundleNames { get; set; }
 
+        public List<ListableItem> RequiredFiles;
         public bool HasRequiredFiles => RequiredFiles != null && RequiredFiles.Count > 0;
 
         public mctcLoadDataViewModel()
@@ -24,6 +25,7 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
             FolderDirectory = string.Empty;
             mctcBundleName = "Bundle 1";
             RequiredFiles = new List<ListableItem>();
+            ExisitingBundleNames = new List<string>();
         }
 
         public List<ListableItem> GetRequiredFilesItems()

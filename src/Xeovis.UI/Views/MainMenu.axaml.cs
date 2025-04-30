@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.Models.Events;
@@ -19,7 +20,6 @@ public partial class MainMenu : UserControl
     public MainWindow? ParentWindow;
 
     private DataManagerLoadDataViewModel _dataManagerLoadDataViewModel;
-    private mctcLoadDataViewModel _mctcLoadDataViewModel;
 
     public MainMenu()
     {
@@ -92,13 +92,14 @@ public partial class MainMenu : UserControl
     public async void MctcPlots_LoadData()
     {
         if (ParentWindow == null) return;
-        var dialog = new mctcLoadDataDialog();
-        dialog.ViewModel = _mctcLoadDataViewModel;
+        var viewModel = new mctcLoadDataViewModel();
+        viewModel.ExisitingBundleNames = ParentWindow.ViewModel.mctcBundles.Select(x => x.Name).ToList();
+        var dialog = new mctcLoadDataDialog() { ViewModel = viewModel };
+
         var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
 
         if (result == DialogResultType.OK)
         {
-            _mctcLoadDataViewModel = dialog.ViewModel;
             var progressDialog = new ProgressBarDialog();
             progressDialog.ShowDialog(ParentWindow);
 
@@ -140,13 +141,17 @@ public partial class MainMenu : UserControl
             return;
         }
 
-        var dialog = new mctcNewPlotDialog(ParentWindow.ViewModel.mctcBundles);
+        var viewModel = new mctcNewPlotViewModel();
+        viewModel.mctcBundles = ParentWindow.ViewModel.mctcBundles;
+        viewModel.ExistingPlotNames = ParentWindow.ViewModel.MctcBundleNodes.SelectMany(b => b.Children.Select(x => x.Label)).ToList();
+        var dialog = new mctcNewPlotDialog() { ViewModel = viewModel };
+
         var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
 
         if (result == DialogResultType.OK)
         {
-            dialog.mctcPlotDto.TimeCreated = DateTime.Now;
-            ParentWindow.CreateMctcPlot(dialog.mctcPlotDto);
+            dialog.ViewModel.mctcPlotDto.TimeCreated = DateTime.Now;
+            ParentWindow.CreateMctcPlot(dialog.ViewModel.mctcPlotDto);
         }
     }
 

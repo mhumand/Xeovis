@@ -11,7 +11,7 @@
 
 	<Window.Styles>
 		<Style Selector="Button">
-			<Setter Property="Width" Value="250" />
+			<Setter Property="Width" Value="300" />
 			<Setter Property="HorizontalAlignment" Value="Center" />
 			<Setter Property="HorizontalContentAlignment" Value="Center" />
 		</Style>
@@ -49,6 +49,10 @@
 		<Button x:Name="btnChartControl"
 				Content="Chart Control"
 				Click="btnChartControl_Click" />
+
+		<Button x:Name="btnRenameDialog"
+				Content="Rename Dialog (taken name = Plot)"
+				Click="btnRenameDialog_Click" />
 
 	</StackPanel>
 </Window>

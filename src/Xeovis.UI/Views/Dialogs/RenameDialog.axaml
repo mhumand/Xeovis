@@ -1,0 +1,50 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="180"
+		Width="400"
+		Height="180"
+		DataContext="{Binding RelativeSource={RelativeSource Self}}"
+		xmlns:uc="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+        x:Class="Xeovis.UI.RenameDialog"
+		CanResize="False"
+        Title="Rename">
+
+	<Window.Styles>
+		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
+		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+	</Window.Styles>
+
+	<Grid RowDefinitions="90, 40" 
+		  VerticalAlignment="Center"
+		  Margin="20">
+		<uc:LabelInputControl x:Name="textBox"
+							  Grid.Row="0"
+							  HorizontalAlignment="Center"
+							  VerticalAlignment="Top"
+							  Width="350"/>
+
+		<StackPanel Orientation="Horizontal"
+			Grid.Row="1"
+			Spacing="10"
+			VerticalAlignment="Bottom"
+			HorizontalAlignment="Right">
+
+			<Button x:Name="btnCancel"
+					Classes="Primary"
+					Content="Cancel"
+					IsCancel="True"
+					Click="btnCancel_Click"/>
+
+			<Button x:Name="btnOK"
+					Classes="Primary"
+					Content="OK"
+					IsDefault="True"
+					Click="btnOK_Click"/>
+
+		</StackPanel>
+		
+	</Grid>
+
+</Window>

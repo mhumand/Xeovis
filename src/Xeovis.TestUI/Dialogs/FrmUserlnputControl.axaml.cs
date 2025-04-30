@@ -21,6 +21,7 @@ public partial class FrmUserInputControl : Window
         licNumber.TextInputChanged += LicNumber_TextInputChanged;
 
         var vmSimpleText = new LabelInputControlViewModel("Simple Text", "It's a simple text.");
+        vmSimpleText.ValidationRules.Add(new NotEmptyOrWhitespaceRule());
         licSimpleText.ViewModel = vmSimpleText;
 
         var vmSimpleTextReadOnly = new LabelInputControlViewModel("Read-only Text", "read-only text", true);

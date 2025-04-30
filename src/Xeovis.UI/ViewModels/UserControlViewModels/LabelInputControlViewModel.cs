@@ -18,10 +18,7 @@ namespace Xeovis.UI.ViewModels
         {
             Value = string.Empty;
             this.PropertyChanged += LabelInputControlViewModel_PropertyChanged;
-            ValidationRules = new List<IValidationRule<string>>()
-            {
-                new NotEmptyOrWhitespaceRule()
-            };
+            ValidationRules = new List<IValidationRule<string>>();
         }
 
         public LabelInputControlViewModel(string label, string value, bool isReadOnly = false) : this()

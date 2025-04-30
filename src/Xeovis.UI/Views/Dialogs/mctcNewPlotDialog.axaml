@@ -31,8 +31,7 @@
 
 		<!-- Top Section - name + mctc bundle -->
 		<userControls:LabelInputControl x:Name="txtName"
-										Height="70"
-										Margin="5 0"
+										Margin="5 0 5 10"
 										DockPanel.Dock="Top"
 										HorizontalAlignment="Left"
 										Width="250"/>

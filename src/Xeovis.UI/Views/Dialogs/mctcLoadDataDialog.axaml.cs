@@ -8,6 +8,8 @@ using Xeovis.UI.ViewModels.DialogsViewModels;
 using System.IO;
 using System.Linq;
 using Xeovis.UI.Models.Enums;
+using Xeovis.Base.Validations;
+using Xeovis.Base.Utilities;
 
 namespace Xeovis.UI;
 
@@ -38,7 +40,10 @@ public partial class mctcLoadDataDialog : Window
     {
         if (_viewModel == null) return;
 
-        var vmName = new LabelInputControlViewModel("Name", _viewModel.MctcBundleName);
+        var suggestedName = NameSuggestor.SuggestNewName_Numeric(_viewModel.ExisitingBundleNames, "Bundle", " ");
+        var vmName = new LabelInputControlViewModel("Name", suggestedName);
+        vmName.ValidationRules.Add(new NotEmptyOrWhitespaceRule());
+        vmName.ValidationRules.Add(new DuplicateNameRule(_viewModel.ExisitingBundleNames));
         licName.ViewModel = vmName;
 
         var vmDirectory = new LabelBrowseDirectoryControlViewModel("Directory", isFolderBrowser: true);
