@@ -43,8 +43,10 @@ namespace Xeovis.UI.Views
 
         private void PrepareUI()
         {
+            tvMctcBundles.ItemsSource = _viewModel.MctcBundleNodes;
             mainMenu.ExperimentsLoaded += MainMenu_ExperimentsLoaded;
             mainMenu.mctcBundleLoaded += MainMenu_mctcBundleLoaded;
+            //tabControl.ContextMenu = new ContextMenu();
         }
 
         private void MainMenu_mctcBundleLoaded(object? sender, Models.Events.mctcBundleLoadedEventArgs e)
@@ -52,7 +54,7 @@ namespace Xeovis.UI.Views
             var bundle = e.mctcBundle;
             _viewModel.mctcBundles.Add(bundle);
             var mctcNode = new TreeNode(bundle.Name) { PresenterId = bundle.Id };
-            tvMctcBundles.Items.Add(mctcNode);
+            _viewModel.MctcBundleNodes.Add(mctcNode);
         }
 
         private void MainMenu_ExperimentsLoaded(object? sender, Models.Events.ExperimentsLoadedEventArgs e)

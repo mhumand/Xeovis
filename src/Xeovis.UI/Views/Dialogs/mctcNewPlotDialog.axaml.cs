@@ -9,6 +9,8 @@ using Xeovis.UI.Models.Enums;
 using Xeovis.UI.Models.Events;
 using Xeovis.UI.ViewModels;
 using Xeovis.UI.ViewModels.DialogsViewModels;
+using Xeovis.Base.Validations;
+using Xeovis.Base.Utilities;
 
 namespace Xeovis.UI;
 
@@ -27,38 +29,39 @@ public partial class mctcNewPlotDialog : Window
         }
     }
 
-    public mctcPlotDto mctcPlotDto { get; set; }
+    private mctcPlotDto mctcPlotDto => _viewModel.mctcPlotDto;
 
     private List<mctcBundle> _bundles => _viewModel.mctcBundles;
 
     public mctcNewPlotDialog()
     {
         InitializeComponent();
-        mctcPlotDto = new mctcPlotDto();
         llcSelected.ItemRemoved += llcSelected_ItemRemoved;
         lcbcMctcBundles.ListSelectionChanged += lcbcMctcBundles_ListSelectionChanged;
         llcPhase.ListSelectionChanged += llcPhase_ListSelectionChanged;
     }
 
-    public mctcNewPlotDialog(List<mctcBundle> mctcBundles) : this()
-    {
-        _viewModel.mctcBundles = mctcBundles;
-        PrepareUI();
-    }
+    //public mctcNewPlotDialog(List<mctcBundle> mctcBundles) : this()
+    //{
+    //    _viewModel.mctcBundles = mctcBundles;
+    //}
 
-    public mctcNewPlotDialog(List<mctcBundle> mctcBundles, mctcPlotDto mctcPlotDto) : this()
-    {
-        this.mctcPlotDto = mctcPlotDto;
-        _viewModel.mctcBundles = mctcBundles;
-        _viewModel.SelectedBundleId = mctcPlotDto.mctcBundleId;
-        _viewModel.SelectedXeosVariables = mctcPlotDto.SampleXeosVariables;
-        _viewModel.MakePhaseVaribleItemsDictionary(mctcBundles.FirstOrDefault(b => b.Id == mctcPlotDto.mctcBundleId));
-        PrepareUI();
-    }
+    //public mctcNewPlotDialog(List<mctcBundle> mctcBundles, mctcPlotDto mctcPlotDto) : this()
+    //{
+    //    _viewModel.mctcPlotDto = mctcPlotDto;
+    //    _viewModel.mctcBundles = mctcBundles;
+    //    _viewModel.SelectedBundleId = mctcPlotDto.mctcBundleId;
+    //    _viewModel.SelectedXeosVariables = mctcPlotDto.SampleXeosVariables;
+    //    _viewModel.MakePhaseVaribleItemsDictionary(mctcBundles.FirstOrDefault(b => b.Id == mctcPlotDto.mctcBundleId));
+    //    PrepareUI();
+    //}
 
     public void PrepareUI()
     {
-        var vmName = new LabelInputControlViewModel("Name", mctcPlotDto.Name);
+        var suggestedName = NameSuggestor.SuggestNewName_Numeric(_viewModel.ExistingPlotNames, "Plot", " ");
+        var vmName = new LabelInputControlViewModel("Name", mctcPlotDto != null ? mctcPlotDto.Name : suggestedName);
+        vmName.ValidationRules.Add(new NotEmptyOrWhitespaceRule());
+        vmName.ValidationRules.Add(new DuplicateNameRule(_viewModel.ExistingPlotNames));
         txtName.ViewModel = vmName;
 
         var vmPhase = new LabelListControlViewModel();
@@ -163,12 +166,12 @@ public partial class mctcNewPlotDialog : Window
             var result = await msgBox.ShowWindowDialogAsync(this);
             if (result != ButtonResult.Yes)
             {
-                mctcPlotDto = null;
+                _viewModel.mctcPlotDto = null;
                 return;
             }
         }
 
-        mctcPlotDto = new mctcPlotDto(_viewModel.SelectedXeosVariables, _viewModel.SelectedBundleId)
+        _viewModel.mctcPlotDto = new mctcPlotDto(_viewModel.SelectedXeosVariables, _viewModel.SelectedBundleId)
         {
             Name = txtName.ViewModel.Value,
             IsGridView = ckbxTileView.IsChecked

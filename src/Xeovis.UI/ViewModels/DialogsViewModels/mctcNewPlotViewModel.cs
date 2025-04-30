@@ -13,12 +13,16 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
         public Guid SelectedBundleId { get; set; }
         public List<xeosVariable> SelectedXeosVariables { get; set; }
         public Dictionary<ListableItem, List<ListableItem>> AllPhaseVariableItems { get; set; }
+        public List<string> ExistingPlotNames { get; set; }
+        public mctcPlotDto? mctcPlotDto { get; set; }
 
         public mctcNewPlotViewModel()
         {
             mctcBundles = new List<mctcBundle>();
             SelectedXeosVariables = new List<xeosVariable>();
             AllPhaseVariableItems = new Dictionary<ListableItem, List<ListableItem>>();
+            ExistingPlotNames = new List<string>();
+            mctcPlotDto = null;
         }
 
         public Dictionary<ListableItem, List<ListableItem>> MakePhaseVaribleItemsDictionary(mctcBundle bundle)

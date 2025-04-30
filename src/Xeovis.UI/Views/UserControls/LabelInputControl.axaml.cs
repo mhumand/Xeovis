@@ -37,6 +37,7 @@ public partial class LabelInputControl : UserControl
 
     private void TbInput_LostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        tbInput.Text = tbInput.Text.Trim();
         if (_viewModel.HasErrors)
             Dispatcher.UIThread.Post(() => tbInput.Focus(), DispatcherPriority.Input);
     }
@@ -49,11 +50,8 @@ public partial class LabelInputControl : UserControl
     private void LabelInputControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         btnClear.IsVisible = false;
-        if (_viewModel != null)
-        {
-            toolTip.IsVisible = _viewModel.HasToolTip;
-            toolTip.ToolTipText = _viewModel.ToolTip;
-        }
+        toolTip.IsVisible = _viewModel.HasToolTip;
+        toolTip.ToolTipText = _viewModel.ToolTip;
     }
 
     private void txtBtnGrid_PointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
