@@ -1,4 +1,7 @@
 using Avalonia.Controls;
+using System.IO;
+using Xeovis.UI;
+using Xeovis.UI.Models.Enums;
 
 namespace Xeovis.TestUI
 {
@@ -55,6 +58,12 @@ namespace Xeovis.TestUI
         {
             var dialog = new FrmChartControl();
             dialog.ShowDialog(this);
+        }
+
+        private async void btnRenameDialog_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var dialog = new RenameDialog("test name", new System.Collections.Generic.List<string>() { "Plot", "plot", "check", "test" });
+            var result = await dialog.ShowDialog<DialogResultType>(this);
         }
     }
 }
