@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Threading;
 using System;
 using Xeovis.UI.Models.Events;
 using Xeovis.UI.ViewModels;
@@ -29,8 +30,15 @@ public partial class LabelInputControl : UserControl
         Loaded += LabelInputControl_Loaded;
         tbInput.KeyDown += tbInput_KeyDown;
         tbInput.TextChanged += tbInput_TextChanged;
+        tbInput.LostFocus += TbInput_LostFocus;
         txtBtnGrid.PointerEntered += txtBtnGrid_PointerEntered;
         txtBtnGrid.PointerExited += txtBtnGrid_PointerExited;
+    }
+
+    private void TbInput_LostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (_viewModel.HasErrors)
+            Dispatcher.UIThread.Post(() => tbInput.Focus(), DispatcherPriority.Input);
     }
 
     private void tbInput_TextChanged(object? sender, TextChangedEventArgs e)

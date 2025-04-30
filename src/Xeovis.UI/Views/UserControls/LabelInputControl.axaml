@@ -3,8 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="60"
-			 MinHeight="60"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="55"
+			 MinHeight="55"
 			 MinWidth="200"
 			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
              x:Class="Xeovis.UI.LabelInputControl"
@@ -18,10 +18,10 @@
 
 	<StackPanel Spacing="5">
 		<StackPanel Orientation="Horizontal" Spacing="5">
-			
+
 			<TextBlock x:Name="tbLabel"
 					   Text="{Binding Label}"/>
-			
+
 			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>
 
@@ -30,9 +30,10 @@
 					 Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
 					 IsReadOnly="{Binding IsReadOnly}"
 					 Focusable="{Binding !IsReadOnly}"/>
-			
+
 			<Button x:Name="btnClear"
 					Classes="InLine"
+					VerticalAlignment="Top"
 					Opacity="0.5"
 					Click="btnClear_Click"
 					IsVisible="{Binding !IsReadOnly}">
