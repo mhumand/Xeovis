@@ -9,7 +9,7 @@
 
         public static double GetDoubleValueFromText(string text)
         {
-            if (string.IsNullOrEmpty(text))
+            if (string.IsNullOrWhiteSpace(text))
                 return double.NaN;
 
             var isNumeric = double.TryParse(text, out double dval);
