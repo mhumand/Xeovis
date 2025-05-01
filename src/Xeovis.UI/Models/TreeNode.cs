@@ -11,6 +11,8 @@ namespace Xeovis.UI.Models
         [ObservableProperty]
         private bool isExpanded;
 
+        public bool HasChildren => Children != null && Children.Count > 0;
+
         public TreeNode(string label)
         {
             Children = new ObservableCollection<TreeNode>();

@@ -8,6 +8,7 @@
         x:Class="Xeovis.UI.Views.MainWindow"
 		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
 		xmlns:vm="using:Xeovis.UI.ViewModels"
+		xmlns:vmModels="using:Xeovis.UI.Models"
         x:DataType="vm:MainWindowViewModel"
         Title="Xeovis"
 		ShowInTaskbar="True"
@@ -24,8 +25,9 @@
 			<Setter Property="Margin" Value="0 5"/>
 		</Style>
 
-		<Style Selector="TreeViewItem">
+		<Style Selector="TreeViewItem"  x:DataType="vmModels:TreeNode">
 			<Setter Property="MinHeight" Value="25"/>
+			<Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
 		</Style>
 
 		<Style Selector="GridSplitter">
@@ -93,7 +95,7 @@
 						<TextBlock Grid.Row="0"
 								   Classes="Primary"
 								   Text="Experiments" />
-						<TreeView x:Name="tvDataManager"
+						<TreeView x:Name="tvExperiments"
 								  Grid.Row="1"
 								  ItemsSource="{Binding ExperimentNodes}">
 							<TreeView.ItemTemplate>

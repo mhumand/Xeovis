@@ -18,6 +18,7 @@ public partial class RenameDialog : Window
     {
         InitializeComponent();
         DataContext = this;
+        this.Loaded += RenameDialog_Loaded;
 
         var vm = new LabelInputControlViewModel();
         vm.Label = "Name";
@@ -25,6 +26,11 @@ public partial class RenameDialog : Window
 
         _newName = string.Empty;
         _inUseNames = new List<string>();
+    }
+
+    private void RenameDialog_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        textBox.FocusAndSelectAll();
     }
 
     public RenameDialog(string currentName, List<string>? InUseNames = null) : this()

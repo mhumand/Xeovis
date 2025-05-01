@@ -78,4 +78,10 @@ public partial class LabelInputControl : UserControl
             this.Focus();
         }
     }
+
+    public void FocusAndSelectAll()
+    {
+        tbInput.Focus();
+        tbInput.SelectAll();
+    }
 }
