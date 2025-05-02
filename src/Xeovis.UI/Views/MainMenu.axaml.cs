@@ -19,8 +19,6 @@ public partial class MainMenu : UserControl
 
     public MainWindow? ParentWindow;
 
-    private DataManagerLoadDataViewModel _dataManagerLoadDataViewModel;
-
     public MainMenu()
     {
         InitializeComponent();
@@ -52,13 +50,13 @@ public partial class MainMenu : UserControl
     public async void DataManager_LoadData()
     {
         if (ParentWindow == null) return;
+        var viewModel = new DataManagerLoadDataViewModel();
         var dialog = new DataManagerLoadDataDialog();
-        dialog.ViewModel = _dataManagerLoadDataViewModel;
+        dialog.ViewModel = viewModel;
         var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
 
         if (result == DialogResultType.OK)
         {
-            _dataManagerLoadDataViewModel = dialog.ViewModel;
             var progressDialog = new ProgressBarDialog();
             progressDialog.ShowDialog(ParentWindow);
 
@@ -130,7 +128,17 @@ public partial class MainMenu : UserControl
         }
     }
 
+    public void LoadMctcBundle(string folderDirectory)
+    {
+        // todo - M.H. 01/05/2025
+    }
+
     public async void MctcPlots_NewPlot()
+    {
+        LoadNewPlotDialog(Guid.Empty);
+    }
+
+    public async void LoadNewPlotDialog(Guid selectedBundleId)
     {
         if (ParentWindow == null) return;
         var hasMctcBundle = ParentWindow.ViewModel.mctcBundles.Count > 0;
@@ -144,8 +152,9 @@ public partial class MainMenu : UserControl
         var viewModel = new mctcNewPlotViewModel();
         viewModel.mctcBundles = ParentWindow.ViewModel.mctcBundles;
         viewModel.ExistingPlotNames = ParentWindow.ViewModel.MctcBundleNodes.SelectMany(b => b.Children.Select(x => x.Label)).ToList();
-        var dialog = new mctcNewPlotDialog() { ViewModel = viewModel };
+        viewModel.SelectedBundleId = selectedBundleId;
 
+        var dialog = new mctcNewPlotDialog() { ViewModel = viewModel };
         var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
 
         if (result == DialogResultType.OK)

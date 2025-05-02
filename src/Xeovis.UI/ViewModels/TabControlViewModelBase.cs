@@ -19,7 +19,7 @@ namespace Xeovis.UI.ViewModels
 
         public Guid Id { get; set; }
 
-        public Guid PresentedId { get; set; }
+        public Guid PresenterId { get; set; }
 
         public TabControlViewModelBase()
         {

@@ -15,6 +15,8 @@ namespace Xeovis.UI.ViewModels
         [ObservableProperty]
         private bool isStackedHorizontally;
 
+        public bool HasItems => Items != null && Items.Count > 0;
+
         public LabelComboBoxControlViewModel()
         {
             Items = new ObservableCollection<ListableItem>();

@@ -16,12 +16,12 @@ public partial class LabelBrowseDirectoryControl : UserControl
         get { return _viewModel; }
         set
         {
-            _viewModel = value;
-            DataContext = value;
+            _viewModel = value ?? new LabelBrowseDirectoryControlViewModel();
+            DataContext = _viewModel;
         }
     }
 
-    public event EventHandler<TextInputChangedEventArgs> TextInputChanged;
+    public event EventHandler<TextInputChangedEventArgs>? TextInputChanged;
 
     public LabelBrowseDirectoryControl()
     {

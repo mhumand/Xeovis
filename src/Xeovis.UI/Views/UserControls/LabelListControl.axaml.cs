@@ -16,13 +16,13 @@ public partial class LabelListControl : UserControl
         get { return _viewModel; }
         set
         {
-            _viewModel = value;
-            DataContext = value;
+            _viewModel = value ?? new LabelListControlViewModel();
+            DataContext = _viewModel;
         }
     }
 
-    public event EventHandler<ListSelectionChangedEventArgs> ListSelectionChanged;
-    public event EventHandler<ListableItemRemovedEventArgs> ItemRemoved;
+    public event EventHandler<ListSelectionChangedEventArgs>? ListSelectionChanged;
+    public event EventHandler<ListableItemRemovedEventArgs>? ItemRemoved;
 
     public LabelListControl()
     {
@@ -30,16 +30,13 @@ public partial class LabelListControl : UserControl
         lbItems.SelectionChanged += lbItems_SelectionChanged;
         lbItems.KeyDown += lbItems_KeyDown;
         Loaded += LabelListControl_Loaded;
+        toolTip.IsVisible = false;
     }
 
     private void LabelListControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (_viewModel != null)
-        {
-            toolTip.ToolTipText = _viewModel.ToolTip;
-            toolTip.IsVisible = _viewModel.HasToolTip;
-        }
-
+        toolTip.ToolTipText = _viewModel.ToolTip;
+        toolTip.IsVisible = _viewModel.HasToolTip;
         lbItems.ContextMenu = GetContextMenu();
     }
 

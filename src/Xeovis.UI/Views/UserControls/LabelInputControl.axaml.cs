@@ -15,18 +15,19 @@ public partial class LabelInputControl : UserControl
         get { return _viewModel; }
         set
         {
-            _viewModel = value;
-            DataContext = value;
+            _viewModel = value ?? new LabelInputControlViewModel();
+            DataContext = _viewModel;
         }
     }
 
-    public event EventHandler<TextInputChangedEventArgs> TextInputChanged;
+    public event EventHandler<TextInputChangedEventArgs>? TextInputChanged;
 
     public LabelInputControl()
     {
         InitializeComponent();
         Focusable = true;
         btnClear.IsVisible = false;
+        toolTip.IsVisible = false;
         Loaded += LabelInputControl_Loaded;
         tbInput.KeyDown += tbInput_KeyDown;
         tbInput.TextChanged += tbInput_TextChanged;
@@ -49,7 +50,6 @@ public partial class LabelInputControl : UserControl
 
     private void LabelInputControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        btnClear.IsVisible = false;
         toolTip.IsVisible = _viewModel.HasToolTip;
         toolTip.ToolTipText = _viewModel.ToolTip;
     }
@@ -77,5 +77,11 @@ public partial class LabelInputControl : UserControl
         {
             this.Focus();
         }
+    }
+
+    public void FocusAndSelectAll()
+    {
+        tbInput.Focus();
+        tbInput.SelectAll();
     }
 }

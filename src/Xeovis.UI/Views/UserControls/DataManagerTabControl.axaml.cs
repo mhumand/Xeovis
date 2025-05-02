@@ -1,6 +1,5 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xeovis.Domain;
@@ -78,11 +77,27 @@ public partial class DataManagerTabControl : UserControl
     {
         tableExperiment.ClearTable();
         lcbPhaseInExperiment.ClearItems();
+        //tablePhases.ClearTable();
         if (e.SelectedItem is not ListableItem experimentItem) return;
         var table = _viewModel.CreateExperimentTableModel(experimentItem);
         tableExperiment.PopulateTable(table);
 
         _viewModel.CreatePhaseInExperimentItems(experimentItem);
         lcbPhaseInExperiment.SetItems(_viewModel.PhaseInExperimentItems.OrderBy(i => i.Label).ToList());
+    }
+
+    public void DeleteExperiments(List<Guid> Ids)
+    {
+        _viewModel.DeleteExperiments(Ids);
+        lcbExperiment.SetItems(_viewModel.ExperimentItems.ToList());
+        lcbPhases.SetItems(_viewModel.GetPhaseTypeItemList());
+    }
+
+
+    public void OpenExperiment(Guid Id)
+    {
+        var item = _viewModel.ExperimentItems.FirstOrDefault(x => x.PresenterId == Id);
+        lcbExperiment.ViewModel.SelectedItem = item;
+        tabControl.SelectedItem = tabExperiments;
     }
 }

@@ -21,12 +21,13 @@ public partial class CheckBoxControl : UserControl
 
     public bool IsChecked => _viewModel.IsChecked;
 
-    public event EventHandler<CheckStateChangedEventArgs> CheckStateChanged;
+    public event EventHandler<CheckStateChangedEventArgs>? CheckStateChanged;
 
     public CheckBoxControl()
     {
         InitializeComponent();
         Loaded += CheckBoxControl_Loaded;
+        toolTip.IsVisible = false;
     }
 
     private void CheckBoxControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
