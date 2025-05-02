@@ -14,28 +14,26 @@ public partial class LabelSpinnerControl : UserControl
         get { return _viewModel; }
         set
         {
-            _viewModel = value;
-            DataContext = value;
+            _viewModel = value ?? new LabelSpinnerControlViewModel();
+            DataContext = _viewModel;
         }
     }
 
 
-    public event EventHandler<SpinnerValueChangedEventArgs> ValueChanged;
+    public event EventHandler<SpinnerValueChangedEventArgs>? ValueChanged;
 
     public LabelSpinnerControl()
     {
         InitializeComponent();
         Loaded += LabelSpinnerControl_Loaded;
         Focusable = true;
+        toolTip.IsVisible = false;
     }
 
     private void LabelSpinnerControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (_viewModel != null)
-        {
-            toolTip.ToolTipText = _viewModel.ToolTip;
-            toolTip.IsVisible = _viewModel.HasToolTip;
-        }
+        toolTip.ToolTipText = _viewModel.ToolTip;
+        toolTip.IsVisible = _viewModel.HasToolTip;
     }
 
     private void spinner_ValueChanged(object? sender, Avalonia.Controls.NumericUpDownValueChangedEventArgs e)

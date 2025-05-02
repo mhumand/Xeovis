@@ -18,16 +18,17 @@ public partial class LabelComboBoxControl : UserControl
         {
             _viewModel = value ?? new LabelComboBoxControlViewModel();
             DataContext = _viewModel;
-            comboBox.SelectedItem = _viewModel.SelectedItem;
+            _viewModel.SelectedItem = _viewModel.SelectedItem ?? (_viewModel.HasItems ? _viewModel.Items[0] : null);
         }
     }
 
-    public event EventHandler<ListSelectionChangedEventArgs> ListSelectionChanged;
+    public event EventHandler<ListSelectionChangedEventArgs>? ListSelectionChanged;
 
     public LabelComboBoxControl()
     {
         InitializeComponent();
         Loaded += LabelComboBoxControl_Loaded;
+        toolTip.IsVisible = false;
     }
 
     private void LabelComboBoxControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -46,13 +47,15 @@ public partial class LabelComboBoxControl : UserControl
         ListSelectionChanged?.Invoke(sender, new ListSelectionChangedEventArgs(comboBox.SelectedItem, comboBox.SelectedIndex));
     }
 
-    public void SetItems(List<ListableItem> items)
+    public void SetItems(List<ListableItem> items, int? selectedIndex = null)
     {
         _viewModel.Items = new System.Collections.ObjectModel.ObservableCollection<ListableItem>(items);
         if (_viewModel.Items.Count > 0)
         {
-            _viewModel.SelectedItem = _viewModel.Items[0];
-            comboBox.SelectedItem = _viewModel.Items[0];
+            if (selectedIndex != null && selectedIndex < items.Count)
+                _viewModel.SelectedItem = _viewModel.Items[(int)selectedIndex];
+            else
+                _viewModel.SelectedItem = _viewModel.Items[0];
         }
     }
 

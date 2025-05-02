@@ -1,13 +1,10 @@
 using Avalonia.Controls;
-using System.ComponentModel;
 
 namespace Xeovis.UI;
 
-public partial class ToolTipControl : UserControl, INotifyPropertyChanged
+public partial class ToolTipControl : UserControl
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    private string toolTipText;
+    private string toolTipText = string.Empty;
 
     public string ToolTipText
     {
@@ -15,10 +12,9 @@ public partial class ToolTipControl : UserControl, INotifyPropertyChanged
         set
         {
             toolTipText = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ToolTipText)));
+            ToolTip.SetTip(image, value);
         }
     }
-
 
     public ToolTipControl()
     {
