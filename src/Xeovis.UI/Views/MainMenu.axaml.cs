@@ -19,8 +19,6 @@ public partial class MainMenu : UserControl
 
     public MainWindow? ParentWindow;
 
-    private DataManagerLoadDataViewModel _dataManagerLoadDataViewModel;
-
     public MainMenu()
     {
         InitializeComponent();
@@ -52,13 +50,13 @@ public partial class MainMenu : UserControl
     public async void DataManager_LoadData()
     {
         if (ParentWindow == null) return;
+        var viewModel = new DataManagerLoadDataViewModel();
         var dialog = new DataManagerLoadDataDialog();
-        dialog.ViewModel = _dataManagerLoadDataViewModel;
+        dialog.ViewModel = viewModel;
         var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
 
         if (result == DialogResultType.OK)
         {
-            _dataManagerLoadDataViewModel = dialog.ViewModel;
             var progressDialog = new ProgressBarDialog();
             progressDialog.ShowDialog(ParentWindow);
 

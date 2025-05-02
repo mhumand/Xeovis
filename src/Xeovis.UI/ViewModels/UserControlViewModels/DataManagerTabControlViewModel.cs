@@ -42,13 +42,13 @@ namespace Xeovis.UI.ViewModels
             ExperimentItems.Clear();
             foreach (var experiment in _experiments)
             {
-                ExperimentItems.Add(new ListableItem(experiment.Name, tag: experiment, description: experiment.ShortName));
+                ExperimentItems.Add(new ListableItem(experiment.Name, description: experiment.ShortName) { PresenterId = experiment.Id });
             }
         }
 
         public TableModel CreateExperimentTableModel(ListableItem experimentItem)
         {
-            var exp = _experiments.FirstOrDefault(e => e == experimentItem.Tag as Experiment);
+            var exp = _experiments.FirstOrDefault(e => e.Id == experimentItem.PresenterId);
             if (exp == null || exp.Runs.Count == 0) return null;
 
             var columns = new List<ColumnModel>
@@ -74,7 +74,7 @@ namespace Xeovis.UI.ViewModels
 
         public void CreatePhaseInExperimentItems(ListableItem experimentItem)
         {
-            var exp = _experiments.FirstOrDefault(e => e == experimentItem.Tag as Experiment);
+            var exp = _experiments.FirstOrDefault(e => e.Id == experimentItem.PresenterId);
             if (exp == null) return;
 
             PhaseInExperimentItems.Clear();
@@ -84,7 +84,7 @@ namespace Xeovis.UI.ViewModels
 
         public TableModel CreatePhaseInExperimentTableModel(ListableItem experimentItem, ListableItem phaseItem)
         {
-            var exp = _experiments.FirstOrDefault(e => e == experimentItem.Tag as Experiment);
+            var exp = _experiments.FirstOrDefault(e => e.Id == experimentItem.PresenterId);
             if (exp == null || exp.Runs.Count == 0) return null;
 
             var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(phaseItem.Label);
@@ -183,6 +183,16 @@ namespace Xeovis.UI.ViewModels
             var expRun = GetExpRun(phase);
             if (expRun == null) return null;
             return _experiments.FirstOrDefault(e => e.Runs.Contains(expRun));
+        }
+
+        public void DeleteExperiments(List<Guid> Ids)
+        {
+            foreach (var id in Ids)
+            {
+                var item = ExperimentItems.FirstOrDefault(x => x.PresenterId == id);
+                if (item == null) continue;
+                ExperimentItems.Remove(item);
+            }
         }
     }
 }

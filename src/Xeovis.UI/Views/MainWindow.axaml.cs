@@ -51,6 +51,10 @@ namespace Xeovis.UI.Views
             tvMctcBundles.ContextRequested += tvMctcBundles_ContextRequested;
             mainMenu.ExperimentsLoaded += MainMenu_ExperimentsLoaded;
             mainMenu.mctcBundleLoaded += MainMenu_mctcBundleLoaded;
+
+            _viewModel.ExperimentsDeleted += _viewModel_ExperimentsDeleted;
+            _viewModel.mctcBundlesDeleted += _viewModel_mctcBundlesDeleted;
+            _viewModel.mctcPlotsDeleted += _viewModel_mctcPlotsDeleted;
         }
 
         #region Events
@@ -117,8 +121,8 @@ namespace Xeovis.UI.Views
                 reloadItem.Click += (s, e) => mainMenu.LoadMctcBundle(bundle.FilesDirectory);
                 menu.Items.Insert(1, reloadItem);
 
-                deleteItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteMctcBundle(node.PresenterId), node.Label);
-                deleteAllItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteAllMctcBundles(), "all mctc bundles");
+                deleteItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteMctcBundle(node.PresenterId), $"{node.Label} and its plots");
+                deleteAllItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteAllMctcBundles(), "all mctc bundles and their plots");
 
                 if (node.HasChildren)
                 {
@@ -139,7 +143,7 @@ namespace Xeovis.UI.Views
             }
             else
             {
-                var tab = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase).PresentedId == node.PresenterId) as TabControlViewModelBase;
+                var tab = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase).PresenterId == node.PresenterId) as TabControlViewModelBase;
                 var openItem = new MenuItem() { Header = "Open" };
                 openItem.Click += (s, e) =>
                 {
@@ -191,6 +195,11 @@ namespace Xeovis.UI.Views
             var menu = new ContextMenu();
 
             var openItem = new MenuItem() { Header = "Open" };
+            openItem.Click += (s, e) =>
+            {
+                _dataManagerTab?.OpenExperiment(node.PresenterId);
+                tabControl.SelectedItem = _dataManagerTab.ViewModel;
+            };
             menu.Items.Add(openItem);
 
             menu.Items.Add(new Separator());
@@ -252,27 +261,35 @@ namespace Xeovis.UI.Views
                 menu.Items.Add(expandItem);
             }
 
-            var expandAllItem = new MenuItem() { Header = "Expand All" };
-            expandAllItem.Click += (s, e) =>
+            if ((isExperimentNode && _viewModel.ExperimentNodes.Any(x => !x.IsExpanded)) ||
+                (!isExperimentNode && _viewModel.MctcBundleNodes.Any(x => !x.IsExpanded)))
             {
-                if (isExperimentNode)
-                    _viewModel.ExperimentNodes.ToList().ForEach(x => x.IsExpanded = true);
-                else
-                    _viewModel.MctcBundleNodes.ToList().ForEach(x => x.IsExpanded = true);
-            };
+                var expandAllItem = new MenuItem() { Header = "Expand All" };
+                expandAllItem.Click += (s, e) =>
+                {
+                    if (isExperimentNode)
+                        _viewModel.ExperimentNodes.ToList().ForEach(x => x.IsExpanded = true);
+                    else
+                        _viewModel.MctcBundleNodes.ToList().ForEach(x => x.IsExpanded = true);
+                };
 
-            menu.Items.Add(expandAllItem);
+                menu.Items.Add(expandAllItem);
+            }
 
-            var collapseAllItem = new MenuItem() { Header = "Collapse All" };
-            collapseAllItem.Click += (s, e) =>
+            if ((isExperimentNode && _viewModel.ExperimentNodes.Any(x => x.IsExpanded)) ||
+                (!isExperimentNode && _viewModel.MctcBundleNodes.Any(x => x.IsExpanded)))
             {
-                if (isExperimentNode)
-                    _viewModel.ExperimentNodes.ToList().ForEach(x => x.IsExpanded = false);
-                else
-                    _viewModel.MctcBundleNodes.ToList().ForEach(x => x.IsExpanded = false);
-            };
+                var collapseAllItem = new MenuItem() { Header = "Collapse All" };
+                collapseAllItem.Click += (s, e) =>
+                {
+                    if (isExperimentNode)
+                        _viewModel.ExperimentNodes.ToList().ForEach(x => x.IsExpanded = false);
+                    else
+                        _viewModel.MctcBundleNodes.ToList().ForEach(x => x.IsExpanded = false);
+                };
 
-            menu.Items.Add(collapseAllItem);
+                menu.Items.Add(collapseAllItem);
+            }
         }
 
         private void mctcBundleRenamed(mctcBundle bundle)
@@ -287,12 +304,43 @@ namespace Xeovis.UI.Views
             var bundleNode = _viewModel.MctcBundleNodes.FirstOrDefault(x => x.PresenterId == plot.mctcBundleId);
             if (bundleNode == null) return;
             var plotNode = bundleNode.Children.FirstOrDefault(x => x.PresenterId == plot.Id);
-            var tab = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase).PresentedId == plot.Id) as TabControlViewModelBase;
+            var tab = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase).PresenterId == plot.Id) as TabControlViewModelBase;
             if (plotNode != null && tab != null)
             {
                 plotNode.Label = plot.Name;
                 tab.Header = plot.Name;
             }
+        }
+
+        private void _viewModel_mctcPlotsDeleted(object? sender, Models.Events.mctcPlotsDeletedEventArgs e)
+        {
+            foreach (var id in e.PlotIds)
+            {
+                var tab = GetTabById(id);
+                if (tab == null) continue;
+                _viewModel.TabControls.Remove(tab);
+            }
+        }
+
+        private void _viewModel_mctcBundlesDeleted(object? sender, Models.Events.mctcBundlesDeletedEventArgs e)
+        {
+            foreach (var id in e.BundleIds)
+            {
+                var plots = _viewModel.mctcPlotDtos.Where(x => x.mctcBundleId == id);
+                foreach (var plot in plots)
+                {
+                    var tab = GetTabById(plot.Id);
+                    if (tab == null) continue;
+                    _viewModel.TabControls.Remove(tab);
+                }
+            }
+        }
+
+        private void _viewModel_ExperimentsDeleted(object? sender, Models.Events.ExperimentsDeletedEventArgs e)
+        {
+            if (_dataManagerTab == null) return;
+            _dataManagerTab?.DeleteExperiments(e.ExperimentIds);
+            _dataManagerTab.ViewModel.IsVisible = _viewModel.Experiments.Count > 0;
         }
         #endregion
 
@@ -313,11 +361,16 @@ namespace Xeovis.UI.Views
             void action()
             {
                 _viewModel.TabControls.Remove(tabViewModel);
-                var plotNode = bundleNode.Children.FirstOrDefault(x => x.PresenterId == tabViewModel.PresentedId);
+                var plotNode = bundleNode.Children.FirstOrDefault(x => x.PresenterId == tabViewModel.PresenterId);
                 bundleNode.Children.Remove(plotNode);
             }
 
             RequestRemovalConfirmationAndProceed(action, $"{tabViewModel.Header} in {bundleNode.Label}");
+        }
+
+        private TabControlViewModelBase GetTabById(Guid id)
+        {
+            return tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase).PresenterId == id) as TabControlViewModelBase;
         }
 
         #region Public Methods
@@ -332,13 +385,13 @@ namespace Xeovis.UI.Views
             UserControl plotTab;
             if (mctcPlotDto.IsGridView && mctcPlotDto.SampleXeosVariables.Count > 1)
             {
-                viewModel = new mctcPlotGridViewModel() { Header = mctcPlotDto.Name, PresentedId = mctcPlotDto.Id };
+                viewModel = new mctcPlotGridViewModel() { Header = mctcPlotDto.Name, PresenterId = mctcPlotDto.Id };
                 plotTab = new mctcPlotGridViewTabControl() { ViewModel = viewModel as mctcPlotGridViewModel };
                 successful = (plotTab as mctcPlotGridViewTabControl).PopulateUI(mctcPlotDto, mctcBundle);
             }
             else
             {
-                viewModel = new mctcPlotSingleViewModel() { Header = mctcPlotDto.Name, PresentedId = mctcPlotDto.Id };
+                viewModel = new mctcPlotSingleViewModel() { Header = mctcPlotDto.Name, PresenterId = mctcPlotDto.Id };
                 plotTab = new mctcPlotSingleViewTabControl() { ViewModel = viewModel as mctcPlotSingleViewModel };
                 successful = (plotTab as mctcPlotSingleViewTabControl).PopulateUI(mctcPlotDto, mctcBundle);
             }

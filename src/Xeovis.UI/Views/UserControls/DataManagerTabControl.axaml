@@ -21,7 +21,7 @@
 	</UserControl.Styles>
 
 
-	<TabControl TabStripPlacement="Left">
+	<TabControl x:Name="tabControl" TabStripPlacement="Left">
 
 		<!--Experiments Tab-->
 		<TabItem x:Name="tabExperiments" Header="Experiments">

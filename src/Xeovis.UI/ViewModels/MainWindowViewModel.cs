@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Xeovis.Domain;
 using Xeovis.UI.Models;
+using Xeovis.UI.Models.Events;
 
 namespace Xeovis.UI.ViewModels
 {
@@ -22,6 +23,10 @@ namespace Xeovis.UI.ViewModels
         public List<Experiment> Experiments { get; set; }
         public List<mctcBundle> mctcBundles { get; set; }
         public List<mctcPlotDto> mctcPlotDtos { get; set; }
+
+        public event EventHandler<ExperimentsDeletedEventArgs>? ExperimentsDeleted;
+        public event EventHandler<mctcBundlesDeletedEventArgs>? mctcBundlesDeleted;
+        public event EventHandler<mctcPlotsDeletedEventArgs>? mctcPlotsDeleted;
 
         public MainWindowViewModel()
         {
@@ -54,15 +59,16 @@ namespace Xeovis.UI.ViewModels
             {
                 Experiments.Remove(exp);
                 ExperimentNodes.Remove(node);
-                //todo: notify
+                ExperimentsDeleted?.Invoke(this, new ExperimentsDeletedEventArgs(Id));
             }
         }
 
         public void DeleteAllExperiments()
         {
+            var idList = Experiments.Select(x => x.Id).ToList();
             Experiments.Clear();
             ExperimentNodes.Clear();
-            //todo: notify
+            ExperimentsDeleted?.Invoke(this, new ExperimentsDeletedEventArgs(idList));
         }
 
         public void DeleteMctcBundle(Guid Id)
@@ -73,15 +79,16 @@ namespace Xeovis.UI.ViewModels
             {
                 mctcBundles.Remove(bundle);
                 MctcBundleNodes.Remove(node);
-                //todo: notify
+                mctcBundlesDeleted?.Invoke(this, new mctcBundlesDeletedEventArgs(Id));
             }
         }
 
         public void DeleteAllMctcBundles()
         {
+            var idList = mctcBundles.Select(x => x.Id).ToList();
             mctcBundles.Clear();
             MctcBundleNodes.Clear();
-            //todo: notify
+            mctcBundlesDeleted?.Invoke(this, new mctcBundlesDeletedEventArgs(idList));
         }
 
         public void DeleteMctcPlot(Guid Id)
@@ -92,7 +99,7 @@ namespace Xeovis.UI.ViewModels
             if (bundleNode == null) return;
             var plotNode = bundleNode.Children.FirstOrDefault(x => x.PresenterId == Id);
             bundleNode.Children.Remove(plotNode);
-            // notify
+            mctcPlotsDeleted?.Invoke(this, new mctcPlotsDeletedEventArgs(Id));
         }
 
         public void DeleteAllMctcPlotsInBundle(Guid Id)
@@ -101,8 +108,9 @@ namespace Xeovis.UI.ViewModels
             if (plotDto == null) return;
             var bundleNode = mctcBundleNodes.FirstOrDefault(x => x.PresenterId == plotDto.mctcBundleId);
             if (bundleNode == null) return;
+            var idList = bundleNode.Children.Select(x => x.PresenterId).ToList();
             bundleNode.Children.Clear();
-            // notify
+            mctcPlotsDeleted?.Invoke(this, new mctcPlotsDeletedEventArgs(idList));
         }
     }
 }
