@@ -13,10 +13,10 @@
 		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
 
 		<Style Selector="Border.Custom">
-			<Setter Property="BorderThickness" Value="2"/>
+			<Setter Property="BorderThickness" Value="1.5"/>
 			<Setter Property="BorderBrush" Value="#AF6A0B"/>
-			<Setter Property="Padding" Value="5 5" />
-			<Setter Property="Margin" Value="3" />
+			<Setter Property="Padding" Value="3" />
+			<Setter Property="Margin" Value="0" />
 			<Setter Property="CornerRadius" Value="5"/>
 		</Style>
 
@@ -34,13 +34,12 @@
 
 		<!-- Top Section - mctc table-->
 		<Grid DockPanel.Dock="Top"
-			  Margin="5 5"
+			  Margin="0 0 0 5"
 			  VerticalAlignment="Top"
 			  Height="70"
-			  ColumnDefinitions="150, *, 300">
+			  ColumnDefinitions="130, *, 300">
 
 			<uc:LabelSpinnerControl x:Name="spinnerMctcRun"
-									Margin="5 0"
 									MinWidth="100"
 									VerticalAlignment="Bottom"
 									Grid.Column="0"/>
@@ -48,10 +47,10 @@
 			<uc:TableControl x:Name="tableMctcRuns"
 							 MinWidth="100"
 							 MinHeight="50"
+							 Margin="5 0"
 							 Grid.Column="1"/>
 
 			<Border Classes="Custom"
-					Margin="5 0"
 					Grid.Column="2">
 
 				<Grid ColumnDefinitions="1*,1*">
@@ -60,7 +59,7 @@
 
 					<StackPanel Grid.Column="1"
 								VerticalAlignment="Bottom"
-								Margin="10 0">
+								Margin="5 0">
 						<TextBlock Text="Zoom" HorizontalAlignment="Center"/>
 						<Slider	x:Name="slider"
 								VerticalAlignment="Bottom"
@@ -83,7 +82,7 @@
 					   IsPaneOpen="True"
 					   OpenPaneLength="250"
 					   PanePlacement="Left"
-					   CompactPaneLength="30"
+					   CompactPaneLength="25"
 					   DisplayMode="CompactInline">
 
 				<!--Side Panel-->
@@ -94,7 +93,6 @@
 						<Button Grid.Row="0"
 								x:Name="btnSidePanel"
 								Click="btnSidePanel_Click"
-								Margin="3 3"
 								Background="Transparent"
 								ToolTip.Tip="Show/Hide Filter Panel"
 								Classes="InLine">
@@ -108,8 +106,9 @@
 								Grid.Row="0"
 								HorizontalAlignment="Left"
 								VerticalAlignment="Top"
-								Width="100"
-								Margin="5"
+								Width="90"
+								Margin="3"
+								Height="25"
 								IsVisible="{Binding IsPaneOpen, ElementName=splitView}"
 								Click="btnClearFilters_Click"
 								Content="Clear Filters"/>
@@ -125,10 +124,10 @@
 							<!--Phase Filters-->
 							<Border Grid.Row="0"
 									Classes="Custom"
-									Margin="3">
+									Margin="1">
 								<Grid RowDefinitions="25,*">
 									<TextBlock Grid.Row="0"
-											   Margin="5 3 5 0"
+											   Margin="3 0"
 											   FontWeight="SemiBold"
 											   Text="Phase Filters" />
 
@@ -146,15 +145,14 @@
 							<!--Global Legend-->
 							<Border Grid.Row="2"
 									Classes="Custom"
-									Margin="3">
+									Margin="1">
 								<Grid RowDefinitions="25,*">
 									<TextBlock Grid.Row="0"
-											   Margin="5 3 5 0"
+											   Margin="3 0"
 											   FontWeight="SemiBold"
 											   Text="Global Legend" />
 									<ScrollViewer Grid.Row="1">
-										<StackPanel x:Name="stackLegend"
-													Margin="5 0"/>
+										<StackPanel x:Name="stackLegend"/>
 									</ScrollViewer>
 								</Grid>
 							</Border>

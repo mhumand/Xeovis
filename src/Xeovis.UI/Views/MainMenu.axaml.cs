@@ -81,6 +81,11 @@ public partial class MainMenu : UserControl
         }
     }
 
+    public void DataManager_Export()
+    {
+
+    }
+
     public void DataManager_Settings()
     {
 

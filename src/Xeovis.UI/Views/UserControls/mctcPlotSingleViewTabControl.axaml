@@ -13,10 +13,10 @@
 		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
 
 		<Style Selector="Border.Custom">
-			<Setter Property="BorderThickness" Value="2"/>
+			<Setter Property="BorderThickness" Value="1.5"/>
 			<Setter Property="BorderBrush" Value="#AF6A0B"/>
-			<Setter Property="Padding" Value="5 5" />
-			<Setter Property="Margin" Value="3" />
+			<Setter Property="Padding" Value="3" />
+			<Setter Property="Margin" Value="0" />
 			<Setter Property="CornerRadius" Value="5"/>
 		</Style>
 
@@ -34,24 +34,25 @@
 
 		<!-- Top Section - xoesVar combobox + mctc Slider-->
 		<Grid DockPanel.Dock="Top"
-			  Margin="5 5"
+			  Margin="0 0 0 5"
 			  VerticalAlignment="Top"
 			  Height="70"
-			  ColumnDefinitions="150, 150, *">
+			  ColumnDefinitions="130, 130, *">
 			<uc:LabelComboBoxControl x:Name="lcbcXeosVariable"
 									 Grid.Column="0"
-									 Margin="10 0"
+									 Margin="0 0 5 0"
 									 MinWidth="100"
 									 VerticalAlignment="Bottom"
 									 HorizontalAlignment="Stretch"/>
 
 			<uc:LabelSpinnerControl x:Name="spinner"
-									Margin="5 0"
+									Margin="2 0"
 									VerticalAlignment="Bottom"
 									Grid.Column="1"/>
 
 			<uc:TableControl x:Name="tableMctcRuns"
 							 MinHeight="50"
+							 Margin="5 0 0 0"
 							 Grid.Column="2"/>
 		</Grid>
 
@@ -63,7 +64,7 @@
 					   IsPaneOpen="True"
 					   OpenPaneLength="250"
 					   PanePlacement="Left"
-					   CompactPaneLength="30"
+					   CompactPaneLength="25"
 					   DisplayMode="CompactInline">
 
 				<!--Left Panel-->
@@ -74,7 +75,6 @@
 						<Button Grid.Row="0"
 								x:Name="btnSidePanel"
 								Click="btnSidePanel_Click"
-								Margin="3 3"
 								Background="Transparent"
 								ToolTip.Tip="Show/Hide Filter Panel"
 								Classes="InLine">
@@ -88,8 +88,9 @@
 								Grid.Row="0"
 								HorizontalAlignment="Left"
 								VerticalAlignment="Top"
-								Width="100"
-								Margin="5"
+								Width="90"
+								Height="25"
+								Margin="3"
 								IsVisible="{Binding IsPaneOpen, ElementName=splitView}"
 								Click="btnClearFilters_Click"
 								Content="Clear Filters"/>
@@ -106,10 +107,10 @@
 							<!--Phase Filters-->
 							<Border Grid.Row="0"
 									Classes="Custom"
-									Margin="3">
+									Margin="1">
 								<Grid RowDefinitions="25,*">
 									<TextBlock Grid.Row="0"
-											   Margin="5 3 5 0"
+											   Margin="3 0"
 											   FontWeight="SemiBold"
 											   Text="Phase Filters" />
 
@@ -126,15 +127,14 @@
 							<!--Chart Legend-->
 							<Border Grid.Row="2"
 									Classes="Custom"
-									Margin="3">
+									Margin="1">
 								<Grid RowDefinitions="25,*">
 									<TextBlock Grid.Row="0"
-											   Margin="5 3 5 0"
+											   Margin="3 0"
 											   FontWeight="SemiBold"
 											   Text="Chart Legend" />
 									<ScrollViewer Grid.Row="1">
-										<StackPanel x:Name="stackLegend"
-													Margin="5 0"/>
+										<StackPanel x:Name="stackLegend"/>
 									</ScrollViewer>
 								</Grid>
 							</Border>
@@ -152,14 +152,14 @@
 					</Grid.ColumnDefinitions>
 
 					<uc:ChartControl x:Name="chartControl"
-									 Margin="5 0"
+									 Margin="3 0"
 									 Grid.Column="0"/>
 
 					<GridSplitter Grid.Column="1"
 								  ResizeDirection="Columns"/>
 
 					<uc:TableControl x:Name="tableControl"
-									 Margin="5 0"
+									 Margin="3 0 0 0"
 									 Grid.Column="2"/>
 
 				</Grid>

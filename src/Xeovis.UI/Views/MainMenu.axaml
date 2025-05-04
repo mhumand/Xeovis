@@ -31,7 +31,7 @@
 
 		<MenuItem Header="_Data Manager">
 			<MenuItem Header="_Load Data" Command="{Binding DataManager_LoadData}"/>
-			<MenuItem Header="_Export" Command="{Binding DataManager_LoadData}"/>
+			<MenuItem Header="_Export" Command="{Binding DataManager_Export}"/>
 			<Separator/>
 			<MenuItem Header="_Settings" Command="{Binding DataManager_Settings}"/>
 		</MenuItem>

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
-			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+			 xmlns:uc="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
 			 x:DataType="vm:DataManagerTabControlViewModel"
              x:Class="Xeovis.UI.DataManagerTabControl">
 
@@ -31,14 +31,14 @@
 					<RowDefinition Height="5"/>
 					<RowDefinition Height="1*" MinHeight="160"/>
 				</Grid.RowDefinitions>
-				
-				<Grid Grid.Row="0" RowDefinitions="55,*" Margin="0 5">
-					<userControls:LabelComboBoxControl x:Name="lcbExperiment"
+
+				<Grid Grid.Row="0"
+					  RowDefinitions="60,*">
+					<uc:LabelComboBoxControl x:Name="lcbExperiment"
 													   Grid.Row="0"
 													   Width="250"
 													   HorizontalAlignment="Left"/>
-					<userControls:TableControl x:Name="tableExperiment"
-											   Margin="0 5"
+					<uc:TableControl x:Name="tableExperiment"
 											   Grid.Row="1" />
 				</Grid>
 
@@ -47,33 +47,32 @@
 							  BorderThickness="3.5"
 							  Margin="0 2"/>
 
-				<Grid Grid.Row="2" RowDefinitions="55,*" Margin="0 5">
-					<userControls:LabelComboBoxControl x:Name="lcbPhaseInExperiment"
+				<Grid Grid.Row="2"
+					  RowDefinitions="60,*">
+					<uc:LabelComboBoxControl x:Name="lcbPhaseInExperiment"
 													   Grid.Row="0"
 													   Width="250"
 													   HorizontalAlignment="Left"/>
-					<userControls:TableControl x:Name="tablePhaseInExperiment"
-											   Margin="0 5"
-											   Grid.Row="1" />
+					<uc:TableControl x:Name="tablePhaseInExperiment"
+											   Grid.Row="1"/>
 				</Grid>
 			</Grid>
 		</TabItem>
 
 		<!--Phases Tab-->
 		<TabItem x:Name="tabPhases" Header="Phases">
-			<Grid Margin="0 5">
+			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="*" MinHeight="160"/>
 					<RowDefinition Height="5"/>
 					<RowDefinition Height="150" MinHeight="150"/>
 				</Grid.RowDefinitions>
-				<Grid Grid.Row="0" RowDefinitions="55,*">
-					<userControls:LabelComboBoxControl x:Name="lcbPhases"
+				<Grid Grid.Row="0" RowDefinitions="60,*">
+					<uc:LabelComboBoxControl x:Name="lcbPhases"
 													   Grid.Row="0"
 													   Width="250"
 													   HorizontalAlignment="Left"/>
-					<userControls:TableControl x:Name="tablePhases"
-											   Margin="0 5"
+					<uc:TableControl x:Name="tablePhases"
 											   Grid.Row="1" />
 				</Grid>
 
@@ -83,8 +82,7 @@
 							  Margin="0 2"/>
 
 				<Grid Grid.Row="2" RowDefinitions="*">
-					<userControls:TableControl x:Name="tablePhasesSummary"
-											   Margin="0 5"
+					<uc:TableControl x:Name="tablePhasesSummary"
 											   Grid.Row="0" />
 				</Grid>
 			</Grid>
@@ -92,8 +90,7 @@
 
 		<!--Compare Tab-->
 		<TabItem x:Name="tabCompare" Header="Compare">
-			<userControls:TableControl x:Name="tableCompare"
-									   Margin="0 5"/>
+			<uc:TableControl x:Name="tableCompare"/>
 		</TabItem>
 
 
