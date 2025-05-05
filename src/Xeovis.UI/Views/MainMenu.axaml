@@ -36,13 +36,11 @@
 			<MenuItem Header="_Settings" Command="{Binding DataManager_Settings}"/>
 		</MenuItem>
 		
-		<MenuItem Header="_mctc Plots">
+		<MenuItem Header="_MCTC">
 			<MenuItem Header="_Reload" ToolTip.Tip="Reloads the last mctc bundle from its directory"/>
-			<MenuItem Header="_Load Data" Command="{Binding MctcPlots_LoadData}"/>
+			<MenuItem Header="_Load Bundle" Command="{Binding MctcPlots_LoadBundle}"/>
 			<Separator/>
 			<MenuItem Header="_New Plot" Command="{Binding MctcPlots_NewPlot}"/>
-			<Separator/>
-			<MenuItem Header="_Settings" Command="{Binding MctcPlots_Settings}"/>
 		</MenuItem>
 
 		<MenuItem Header="View">
