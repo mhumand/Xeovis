@@ -27,6 +27,7 @@ public partial class LabelBrowseDirectoryControl : UserControl
     {
         InitializeComponent();
         Loaded += LabelBrowseDirectoryControl_Loaded;
+        toolTip.IsVisible = false;
         tbInput.KeyDown += tbInput_KeyDown;
         tbInput.TextChanged += tbInput_TextChanged;
     }
@@ -38,11 +39,8 @@ public partial class LabelBrowseDirectoryControl : UserControl
 
     private void LabelBrowseDirectoryControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (_viewModel != null)
-        {
-            toolTip.IsVisible = _viewModel.HasToolTip;
-            toolTip.ToolTipText = _viewModel.ToolTip;
-        }
+        toolTip.IsVisible = _viewModel.HasToolTip;
+        toolTip.ToolTipText = _viewModel.ToolTip;
     }
 
     private async void btnBrowse_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

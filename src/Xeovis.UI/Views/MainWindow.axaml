@@ -16,6 +16,7 @@
 
 	<Window.Styles>
 		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
+		<StyleInclude Source="/Views/Styles/TabItems.axaml"/>
 
 		<Style Selector="TextBlock.Primary">
 			<Setter Property="FontWeight" Value="SemiBold"/>
@@ -49,14 +50,10 @@
 			<Setter Property="Padding" Value="0"/>
 			<Setter Property="Width" Value="20"/>
 			<Setter Property="Height" Value="20"/>
+			<Setter Property="FontWeight" Value="Bold"/>
 			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
 			<Setter Property="HorizontalAlignment" Value="Right"/>
-		</Style>
-
-		<Style Selector="TabItem">
-			<Setter Property="FontFamily" Value="Segoe UI" />
-			<Setter Property="FontSize" Value="14" />
-			<Setter Property="FontWeight" Value="SemiBold" />
 		</Style>
 
 		<Style Selector="StackPanel.Tabs">

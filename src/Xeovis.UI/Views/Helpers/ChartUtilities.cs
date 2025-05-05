@@ -43,11 +43,7 @@ namespace Xeovis.UI
             var highColor = Color.Red;
             var lowColor = Color.Blue;
 
-            var R = (highColor.R - lowColor.R) * index / count + lowColor.R;
-            var G = (highColor.G - lowColor.G) * index / count + lowColor.G;
-            var B = (highColor.B - lowColor.B) * index / count + lowColor.B;
-
-            return Color.FromArgb(R, G, B);
+            return GetColorInGradient(lowColor, highColor, index, count);
         }
 
         public static Color GetColor_ColorblindFriendlyPallete(int index)

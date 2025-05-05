@@ -2,11 +2,11 @@
 {
     public class NumericRule : IValidationRule<string>
     {
-        private string _errorMessage { get; set; }
+        private string _errorMessage { get; set; } = string.Empty;
         public string ErrorMessage => _errorMessage;
 
-        private readonly double? _min;
-        private readonly double? _max;
+        private double? _min;
+        private double? _max;
 
         public NumericRule(double? min = null, double? max = null)
         {
@@ -35,6 +35,12 @@
         {
             var number = DoubleExtensions.GetDoubleValueFromText(value);
             return Validate(number);
+        }
+
+        public void SetMinMaxLimits(double min, double max)
+        {
+            _min = min;
+            _max = max;
         }
     }
 }

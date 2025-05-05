@@ -92,7 +92,7 @@ public partial class MainMenu : UserControl
     }
 
     // MCTC Reader
-    public async void MctcPlots_LoadData()
+    public async void MctcPlots_LoadBundle()
     {
         if (ParentWindow == null) return;
         var viewModel = new mctcLoadDataViewModel();
@@ -167,11 +167,6 @@ public partial class MainMenu : UserControl
             dialog.ViewModel.mctcPlotDto.TimeCreated = DateTime.Now;
             ParentWindow.CreateMctcPlot(dialog.ViewModel.mctcPlotDto);
         }
-    }
-
-    public void MctcPlots_Settings()
-    {
-
     }
 
     // View

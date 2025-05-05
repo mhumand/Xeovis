@@ -14,7 +14,7 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
         public List<xeosVariable> SelectedXeosVariables { get; set; }
         public Dictionary<ListableItem, List<ListableItem>> AllPhaseVariableItems { get; set; }
         public List<string> ExistingPlotNames { get; set; }
-        public mctcPlotDto? mctcPlotDto { get; set; }
+        public mctcPlotDto mctcPlotDto { get; set; }
 
         public mctcNewPlotViewModel()
         {
@@ -22,7 +22,7 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
             SelectedXeosVariables = new List<xeosVariable>();
             AllPhaseVariableItems = new Dictionary<ListableItem, List<ListableItem>>();
             ExistingPlotNames = new List<string>();
-            mctcPlotDto = null;
+            mctcPlotDto = new mctcPlotDto();
         }
 
         public Dictionary<ListableItem, List<ListableItem>> MakePhaseVaribleItemsDictionary(mctcBundle bundle)

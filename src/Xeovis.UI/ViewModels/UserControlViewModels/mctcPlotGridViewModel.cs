@@ -52,5 +52,11 @@ namespace Xeovis.UI.ViewModels
         {
             return mctcPlotViewModelUtilities.CreateFiltersTableModel(mctcBundle, PhaseFilters);
         }
+
+        public void ClearInUseMarkersAndColors()
+        {
+            _inUseColors.Clear();
+            _inUseMarkers.Clear();
+        }
     }
 }
