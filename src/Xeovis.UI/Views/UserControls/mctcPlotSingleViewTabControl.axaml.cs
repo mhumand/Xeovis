@@ -7,6 +7,8 @@ using Xeovis.Domain;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
+using Xeovis.UI.ViewModels.DialogsViewModels;
+using Xeovis.UI.Views;
 
 namespace Xeovis.UI;
 
@@ -26,6 +28,8 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
             PrepareUI();
         }
     }
+
+    public MainWindow? ParentWindow { get; set; }
 
     public mctcPlotSingleViewTabControl()
     {
@@ -65,6 +69,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         spinner.ViewModel.MaxValue = mctcBundle.mctcVariables[0].Values.Count;
         lcbcXeosVariable.SetItems(_viewModel.GetXeosVarItems());
 
+        _viewModel.ClearInUseMarkersAndColors();
         PopulateMctcRunsTable();
         PopulatePhaseFilters();
 
@@ -118,6 +123,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
             checkboxControl.CheckStateChanged += checkboxControl_CheckStateChanged;
             checkboxControl.PointerPressed += checkboxControl_PointerPressed;
             checkboxControl.ContextMenu = GetLegendCheckboxContextMenu();
+            checkboxControl.Margin = new Avalonia.Thickness(5, 0);
             stackLegend.Children.Add(checkboxControl);
         }
     }
@@ -200,7 +206,18 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
             var curve = chartControl.ViewModel.ChartModel.Curves.FirstOrDefault(c => c.Id == e.CurveId);
             if (curve != null)
             {
-                index = Enumerable.Range(0, columns.Min(c => c.DataCount)).ToList().FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y && columns[3].Values[i].ToString() == curve.Name, -1);
+                if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Batch)
+                {
+                    index = Enumerable.Range(0, columns.Min(c => c.DataCount)).ToList().FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y && columns[3].Values[i].ToString() == curve.Name, -1);
+                }
+                else if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Temperature)
+                {
+                    index = Enumerable.Range(0, columns.Min(c => c.DataCount)).ToList().FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y && columns[6].Values[i].ToString() == curve.Name, -1);
+                }
+                else if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Pressure)
+                {
+                    index = Enumerable.Range(0, columns.Min(c => c.DataCount)).ToList().FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y && columns[5].Values[i].ToString() == curve.Name, -1);
+                }
             }
         }
 
@@ -218,13 +235,22 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         var values = ((Dictionary<string, object>)e.Value).Values.ToList();
         var x = DoubleExtensions.GetDoubleValueFromText(values[1].ToString());
         var y = DoubleExtensions.GetDoubleValueFromText(values[2].ToString());
-        var name = values[3].ToString();
+
+        var name = _viewModel.mctcPlotDto.PointsGroupingType switch
+        {
+            mctcPlotPointsGroupingType.Batch => values[3].ToString(),
+            mctcPlotPointsGroupingType.Temperature => values[6].ToString(),
+            mctcPlotPointsGroupingType.Pressure => values[5].ToString(),
+            _ => null
+        };
+
         var curve = chartControl.ViewModel.ChartModel.Curves.FirstOrDefault(c => c.Name == name);
         if (curve == null) return;
-        var indexX = curve.Xvals.IndexOf(x);
-        var indexY = curve.Yvals.IndexOf(y);
-        if (indexX < 0 || indexY < 0 || indexX != indexY) return;
-        chartControl.SelectPoint(curve.Id, indexY);
+        var index = Enumerable.Range(0, Math.Min(curve.Xvals.Count, curve.Yvals.Count)).FirstOrDefault(i => curve.Xvals[i] == x && curve.Yvals[i] == y, -1);
+        if (index < 0)
+            chartControl.SelectPoint(Guid.Empty, -1);
+        else
+            chartControl.SelectPoint(curve.Id, index);
     }
 
     private void spinner_ValueChanged(object? sender, Models.Events.SpinnerValueChangedEventArgs e)
@@ -254,5 +280,21 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
     private void btnSidePanel_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         splitView.IsPaneOpen = !splitView.IsPaneOpen;
+    }
+
+    private async void btnSettings_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (ParentWindow == null) return;
+        var otherNames = ParentWindow.ViewModel.mctcPlotDtos.Except(new List<mctcPlotDto> { _viewModel.mctcPlotDto }).Select(x => x.Name).ToList();
+        var viewModel = new mctcPlotSettingsViewModel(_viewModel.mctcPlotDto, otherNames);
+        var dialog = new mctcPlotSettingsDialog();
+        dialog.ViewModel = viewModel;
+        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
+
+        if (result == DialogResultType.OK)
+        {
+            PopulateUI(_viewModel.mctcPlotDto, _viewModel.mctcBundle);
+            ParentWindow.OnMctcPlotRenamed(_viewModel.mctcPlotDto);
+        }
     }
 }

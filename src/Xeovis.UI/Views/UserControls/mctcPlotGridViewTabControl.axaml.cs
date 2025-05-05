@@ -7,6 +7,8 @@ using Xeovis.Domain;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
+using Xeovis.UI.ViewModels.DialogsViewModels;
+using Xeovis.UI.Views;
 
 namespace Xeovis.UI;
 
@@ -26,6 +28,8 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
             PrepareUI();
         }
     }
+
+    public MainWindow? ParentWindow { get; set; }
 
     public mctcPlotGridViewTabControl()
     {
@@ -60,6 +64,7 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
         spinnerColumnNo.ViewModel.MaxValue = mctcPlotDto.SampleXeosVariables.Count;
         spinnerColumnNo.ViewModel.Value = Math.Min(3, mctcPlotDto.SampleXeosVariables.Count);
 
+        _viewModel.ClearInUseMarkersAndColors();
         PopulateMctcRunsTable();
         PopulatePhaseFilters();
         PopulateGridCharts();
@@ -127,6 +132,7 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
                 checkboxControl.CheckStateChanged += checkboxControl_CheckStateChanged; ;
                 checkboxControl.PointerPressed += checkboxControl_PointerPressed; ;
                 checkboxControl.ContextMenu = GetLegendCheckboxContextMenu();
+                checkboxControl.Margin = new Avalonia.Thickness(5, 0);
                 stackLegend.Children.Add(checkboxControl);
             }
         }
@@ -227,5 +233,21 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
     {
         uniformGrid.Columns = e.Value;
         uniformGrid.Rows = uniformGrid.Children.Count / e.Value + 1;
+    }
+
+    private async void btnSettings_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (ParentWindow == null) return;
+        var otherNames = ParentWindow.ViewModel.mctcPlotDtos.Except(new List<mctcPlotDto> { _viewModel.mctcPlotDto }).Select(x => x.Name).ToList();
+        var viewModel = new mctcPlotSettingsViewModel(_viewModel.mctcPlotDto, otherNames);
+        var dialog = new mctcPlotSettingsDialog();
+        dialog.ViewModel = viewModel;
+        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
+
+        if (result == DialogResultType.OK)
+        {
+            PopulateUI(_viewModel.mctcPlotDto, _viewModel.mctcBundle);
+            ParentWindow.OnMctcPlotRenamed(_viewModel.mctcPlotDto);
+        }
     }
 }

@@ -1,0 +1,68 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="500"
+		Width="500"
+		Height="500"
+		xmlns:uc="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+		xmlns:vm="using:Xeovis.UI.ViewModels.DialogsViewModels"
+		x:DataType="vm:mctcPlotSettingsViewModel"
+        x:Class="Xeovis.UI.mctcPlotSettingsDialog"
+        Title="MCTC Plot - Settings"
+		CanResize="False">
+
+	<Window.Styles>
+		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
+		<StyleInclude Source="/Views/Styles/TabItems.axaml"/>
+		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+	</Window.Styles>
+
+	<Grid RowDefinitions="*, 50">
+		<TabControl Grid.Row="0">
+			<TabItem Header="General Settings">
+				<Grid Margin="10" RowDefinitions="80, 80, 160, *">
+					<uc:LabelInputControl x:Name="licName" Grid.Row="0" />
+					<uc:LabelInputControl x:Name="licNote" Grid.Row="1" />
+					<uc:LabelListControl x:Name="llcCategoryType" Grid.Row="2" />
+					<uc:CheckBoxControl x:Name="ckbxExcludeIrrelevantBatches" Grid.Row="3" />
+				</Grid>
+			</TabItem>
+
+			<TabItem Header="Charts Settings">
+				<StackPanel Margin="15" Spacing="0">
+					<uc:CheckBoxControl x:Name="ckbxLockAxesLimits" />
+					<Separator Margin="0 20" />
+					<uc:CheckBoxControl x:Name="ckbxGlobalAxisLimits"/>
+					<Grid ColumnDefinitions="1*,15,1*">
+						<uc:LabelInputControl x:Name="licAxesMinLimit" Grid.Column="0"/>
+						<uc:LabelInputControl x:Name="licAxesMaxLimit" Grid.Column="2"/>
+					</Grid>
+					<Separator Margin="0 20" />
+					<uc:CheckBoxControl x:Name="ckbxShowChartTitle" />
+					<uc:CheckBoxControl x:Name="ckbxShowAxesTitle" />
+
+				</StackPanel>
+			</TabItem>
+		</TabControl>
+
+		<StackPanel Grid.Row="1"
+					HorizontalAlignment="Right"
+					VerticalAlignment="Center"
+					Margin="10 0"
+					Spacing="5"
+					Orientation="Horizontal">
+
+			<Button x:Name="btnCancel"
+					Classes="Primary"
+					Content="Cancel"
+					Click="btnCancel_Click"/>
+
+			<Button x:Name="btnSave"
+					Classes="Primary"
+					Content="Save"
+					Click="btnSave_Click"/>
+		</StackPanel>
+	</Grid>
+
+</Window>

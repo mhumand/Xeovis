@@ -81,11 +81,11 @@ namespace Xeovis.UI.ViewModels
             }
             else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Temperature)
             {
-                allGroups = xeosVariables.GroupBy(mv => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == mv.BatchId).ExpRun.Temperature).ToList();
+                allGroups = xeosVariables.GroupBy(mv => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == mv.BatchId).ExpRunTemperature).ToList();
             }
             else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Pressure)
             {
-                allGroups = xeosVariables.GroupBy(mv => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == mv.BatchId).ExpRun.Pressure).ToList();
+                allGroups = xeosVariables.GroupBy(mv => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == mv.BatchId).ExpRunPressure).ToList();
             }
 
             var selectedGroups = new List<IGrouping<object, xeosVariable>>();
@@ -120,7 +120,7 @@ namespace Xeovis.UI.ViewModels
                         var excludedVariables = new List<xeosVariable>();
                         foreach (var modelVar in xeosVarGroup)
                         {
-                            var phases = modelVar.Batch.Phases.Except(new List<PhaseType>() { modelVar.PhaseType });
+                            var phases = mctcBundle.Batches.FirstOrDefault(b => b.Id == modelVar.BatchId).Phases.Except(new List<PhaseType>() { modelVar.PhaseType });
                             var varType = modelVar.VariableType;
 
                             var phaseAllCations = new List<CationType>();
@@ -138,13 +138,13 @@ namespace Xeovis.UI.ViewModels
                         var leftXeosVars = xeosVarGroup.Except(excludedVariables).ToList();
                         if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Temperature)
                         {
-                            var grp = leftXeosVars.GroupBy(x => (object)x.Batch.ExpRun.Temperature).FirstOrDefault();
+                            var grp = leftXeosVars.GroupBy(x => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == x.BatchId).ExpRunTemperature).FirstOrDefault();
                             if (grp != null && grp.Count() != 0)
                                 selectedGroups.Add(grp);
                         }
                         else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Pressure)
                         {
-                            var grp = leftXeosVars.GroupBy(x => (object)x.Batch.ExpRun.Pressure).FirstOrDefault();
+                            var grp = leftXeosVars.GroupBy(x => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == x.BatchId).ExpRunPressure).FirstOrDefault();
                             if (grp != null && grp.Count() != 0)
                                 selectedGroups.Add(grp);
                         }
@@ -169,10 +169,13 @@ namespace Xeovis.UI.ViewModels
             chartModel.XAxis.Label = $"Observed {sampleVar}";
             chartModel.YAxis.Label = $"Calculated {sampleVar}";
             chartModel.Legend.IsVisible = false;
+            chartModel.YAxis.IsLabelVisible = mctcPlotDto.ChartSettings.ShowAxesTitle;
+            chartModel.XAxis.IsLabelVisible = mctcPlotDto.ChartSettings.ShowAxesTitle;
+            chartModel.IsTitleVisible = mctcPlotDto.ChartSettings.ShowChartTitle;
 
-            int colorIndex = 0;
-            int markerIndex = 0;
             int counter = inUseMarkers == null || inUseColors == null ? 0 : Math.Max(inUseColors.Count, inUseMarkers.Count);
+            if (mctcPlotDto.PointsGroupingType != mctcPlotPointsGroupingType.Batch)
+                counter = 0;//todo: temp
             foreach (var modelVarGroup in xeosVarGroups)
             {
                 var curve = new CurveModel();
@@ -196,8 +199,8 @@ namespace Xeovis.UI.ViewModels
                 }
                 else
                 {
-                    curve.MarkerColor = ChartUtilities.GetColorInGradient(counter, xeosVarGroups.Count);
-                    curve.MarkerType = MarkerType.FilledSquare;
+                    curve.MarkerColor = ChartUtilities.GetColorInGradient(ColorTranslator.FromHtml("#1F77B4"), ColorTranslator.FromHtml("#D62728"), counter, xeosVarGroups.Count);
+                    curve.MarkerType = MarkerType.FilledCircle;
                 }
 
                 curve.MarkerSize = 8;

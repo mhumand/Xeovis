@@ -12,20 +12,25 @@ namespace Xeovis.UI.ViewModels
         [ObservableProperty]
         private string value;
 
+        [ObservableProperty]
+        private bool isMultiLine;
+
         public List<IValidationRule<string>> ValidationRules { get; set; }
 
         public LabelInputControlViewModel()
         {
             Value = string.Empty;
+            IsMultiLine = false;
             this.PropertyChanged += LabelInputControlViewModel_PropertyChanged;
             ValidationRules = new List<IValidationRule<string>>();
         }
 
-        public LabelInputControlViewModel(string label, string value, bool isReadOnly = false) : this()
+        public LabelInputControlViewModel(string label, string value, bool isReadOnly = false, bool isMultiLine = false) : this()
         {
             Label = label;
             Value = value;
             IsReadOnly = isReadOnly;
+            IsMultiLine = isMultiLine;
         }
 
         private void LabelInputControlViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)

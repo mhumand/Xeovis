@@ -20,6 +20,8 @@ public partial class LabelInputControl : UserControl
         }
     }
 
+    public string Value => _viewModel.Value;
+
     public event EventHandler<TextInputChangedEventArgs>? TextInputChanged;
 
     public LabelInputControl()
@@ -38,7 +40,7 @@ public partial class LabelInputControl : UserControl
 
     private void TbInput_LostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        tbInput.Text = tbInput.Text.Trim();
+        tbInput.Text = tbInput.Text?.Trim();
         if (_viewModel.HasErrors)
             Dispatcher.UIThread.Post(() => tbInput.Focus(), DispatcherPriority.Input);
     }
@@ -61,8 +63,7 @@ public partial class LabelInputControl : UserControl
 
     private void txtBtnGrid_PointerEntered(object? sender, Avalonia.Input.PointerEventArgs e)
     {
-        if (_viewModel != null && !_viewModel.IsReadOnly)
-            btnClear.IsVisible = true;
+        btnClear.IsVisible = !_viewModel.IsReadOnly;
     }
 
     private void btnClear_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

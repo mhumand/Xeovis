@@ -29,7 +29,8 @@ public partial class mctcNewPlotDialog : Window
         }
     }
 
-    private mctcPlotDto mctcPlotDto => _viewModel.mctcPlotDto;
+    private mctcPlotDto _mctcPlotDto => _viewModel.mctcPlotDto;
+    private mctcPlotDto _settingsPlotDto = new mctcPlotDto();
 
     private List<mctcBundle> _bundles => _viewModel.mctcBundles;
 
@@ -59,7 +60,7 @@ public partial class mctcNewPlotDialog : Window
     public void PrepareUI()
     {
         var suggestedName = NameSuggestor.SuggestNewName_Numeric(_viewModel.ExistingPlotNames, "Plot", " ");
-        var vmName = new LabelInputControlViewModel("Name", mctcPlotDto != null ? mctcPlotDto.Name : suggestedName);
+        var vmName = new LabelInputControlViewModel("Name", _mctcPlotDto == null || string.IsNullOrWhiteSpace(_mctcPlotDto.Name) ? suggestedName : _mctcPlotDto.Name);
         vmName.ValidationRules.Add(new NotEmptyOrWhitespaceRule());
         vmName.ValidationRules.Add(new DuplicateNameRule(_viewModel.ExistingPlotNames));
         txtName.ViewModel = vmName;
@@ -165,17 +166,17 @@ public partial class mctcNewPlotDialog : Window
             var msgBox = MessageBoxManager.GetMessageBoxStandard("Warning", "No x-eos variable was selected.\nAre you sure you want to continue?", ButtonEnum.YesNoCancel, MsBox.Avalonia.Enums.Icon.Warning);
             var result = await msgBox.ShowWindowDialogAsync(this);
             if (result != ButtonResult.Yes)
-            {
-                _viewModel.mctcPlotDto = null;
                 return;
-            }
+            else
+                this.Close(DialogResultType.Yes);
         }
 
-        _viewModel.mctcPlotDto = new mctcPlotDto(_viewModel.SelectedXeosVariables, _viewModel.SelectedBundleId)
-        {
-            Name = txtName.ViewModel.Value,
-            IsGridView = ckbxTileView.IsChecked
-        };
+        _mctcPlotDto.SampleXeosVariables = _viewModel.SelectedXeosVariables;
+        _mctcPlotDto.mctcBundleId = _viewModel.SelectedBundleId;
+        _mctcPlotDto.Name = txtName.Value;
+        _mctcPlotDto.IsGridView = ckbxTileView.IsChecked;
+        _mctcPlotDto.PointsGroupingType = _settingsPlotDto.PointsGroupingType;
+        _mctcPlotDto.ChartSettings = _settingsPlotDto.ChartSettings.Copy();
 
         this.Close(DialogResultType.OK);
     }
@@ -183,5 +184,20 @@ public partial class mctcNewPlotDialog : Window
     private void btnCancel_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         this.Close(DialogResultType.Cancel);
+    }
+
+    private async void btnSettings_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        _settingsPlotDto.Name = txtName.Value;
+        var viewModel = new mctcPlotSettingsViewModel(_settingsPlotDto, _viewModel.ExistingPlotNames);
+        var dialog = new mctcPlotSettingsDialog();
+        dialog.ViewModel = viewModel;
+        var result = await dialog.ShowDialog<DialogResultType>(this);
+
+        if (result == DialogResultType.OK)
+        {
+            _settingsPlotDto = dialog.ViewModel.mctcPlotDto;
+            txtName.ViewModel.Value = _settingsPlotDto.Name;
+        }
     }
 }

@@ -4,10 +4,12 @@ using MsBox.Avalonia.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xeovis.Domain;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
+using Xeovis.UI.ViewModels.DialogsViewModels;
 
 namespace Xeovis.UI.Views
 {
@@ -136,7 +138,7 @@ namespace Xeovis.UI.Views
                 void Rename(mctcBundle mctcBundle, string newName)
                 {
                     mctcBundle.Name = newName;
-                    mctcBundleRenamed(mctcBundle);
+                    OnMctcBundleRenamed(mctcBundle);
                 }
 
                 renameItem.Click += (s, e) => RenameObjectWithDialog(bundle, otherNames, x => x.Name, Rename);
@@ -173,7 +175,7 @@ namespace Xeovis.UI.Views
                 void Rename(mctcPlotDto plotDto, string newName)
                 {
                     plotDto.Name = newName;
-                    mctcPlotRenamed(plotDto);
+                    OnMctcPlotRenamed(plotDto);
                 }
 
                 renameItem.Click += (s, e) => RenameObjectWithDialog(mctcPlotDto, otherNames, x => x.Name, Rename);
@@ -182,6 +184,13 @@ namespace Xeovis.UI.Views
             menu.Items.Add(new Separator());
 
             var settingsItem = new MenuItem() { Header = "Settings" };
+            if (isMctcBundle)
+            {
+                //settingsItem.Click += (s, e)
+            }
+            else
+                settingsItem.Click += (s, e) => ShowMctcPlotSettingsDialog(node.PresenterId);
+
             menu.Items.Add(settingsItem);
 
             tvMctcBundles.ContextMenu = menu;
@@ -292,14 +301,14 @@ namespace Xeovis.UI.Views
             }
         }
 
-        private void mctcBundleRenamed(mctcBundle bundle)
+        private void OnMctcBundleRenamed(mctcBundle bundle)
         {
             var node = _viewModel.MctcBundleNodes.FirstOrDefault(x => x.PresenterId == bundle.Id);
             if (node != null)
                 node.Label = bundle.Name;
         }
 
-        private void mctcPlotRenamed(mctcPlotDto plot)
+        public void OnMctcPlotRenamed(mctcPlotDto plot)
         {
             var bundleNode = _viewModel.MctcBundleNodes.FirstOrDefault(x => x.PresenterId == plot.mctcBundleId);
             if (bundleNode == null) return;
@@ -342,6 +351,26 @@ namespace Xeovis.UI.Views
             _dataManagerTab?.DeleteExperiments(e.ExperimentIds);
             _dataManagerTab.ViewModel.IsVisible = _viewModel.Experiments.Count > 0;
         }
+
+        private async void ShowMctcPlotSettingsDialog(Guid Id)
+        {
+            var mctcPlotDto = _viewModel.mctcPlotDtos.FirstOrDefault(x => x.Id == Id);
+            if (mctcPlotDto == null) return;
+            var otherNames = _viewModel.mctcPlotDtos.Except(new List<mctcPlotDto> { mctcPlotDto }).Select(x => x.Name).ToList();
+            var viewModel = new mctcPlotSettingsViewModel(mctcPlotDto, otherNames);
+            var dialog = new mctcPlotSettingsDialog();
+            dialog.ViewModel = viewModel;
+            var result = await dialog.ShowDialog<DialogResultType>(this);
+            if (result == DialogResultType.OK)
+            {
+                OnMctcPlotRenamed(mctcPlotDto);
+                var tabVM = _viewModel.TabControls.FirstOrDefault(x => x.PresenterId == Id);
+                var bundle = _viewModel.mctcBundles.FirstOrDefault(x => x.Id == mctcPlotDto.mctcBundleId);
+                if (tabVM != null && bundle != null)
+                     (tabVM.OwnerTabControl as ImctcPlotView).PopulateUI(mctcPlotDto, bundle);
+            }
+        }
+
         #endregion
 
         private void btnCloseTab_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -386,13 +415,13 @@ namespace Xeovis.UI.Views
             if (mctcPlotDto.IsGridView && mctcPlotDto.SampleXeosVariables.Count > 1)
             {
                 viewModel = new mctcPlotGridViewModel() { Header = mctcPlotDto.Name, PresenterId = mctcPlotDto.Id };
-                plotTab = new mctcPlotGridViewTabControl() { ViewModel = viewModel as mctcPlotGridViewModel };
+                plotTab = new mctcPlotGridViewTabControl() { ViewModel = viewModel as mctcPlotGridViewModel, ParentWindow = this };
                 successful = (plotTab as mctcPlotGridViewTabControl).PopulateUI(mctcPlotDto, mctcBundle);
             }
             else
             {
                 viewModel = new mctcPlotSingleViewModel() { Header = mctcPlotDto.Name, PresenterId = mctcPlotDto.Id };
-                plotTab = new mctcPlotSingleViewTabControl() { ViewModel = viewModel as mctcPlotSingleViewModel };
+                plotTab = new mctcPlotSingleViewTabControl() { ViewModel = viewModel as mctcPlotSingleViewModel, ParentWindow = this };
                 successful = (plotTab as mctcPlotSingleViewTabControl).PopulateUI(mctcPlotDto, mctcBundle);
             }
 

@@ -25,9 +25,9 @@ public partial class ChartControl : UserControl
     private ChartModel _chartModel => _viewModel.ChartModel;
     private Dictionary<Guid, IPlottable> _plottedCurves = new Dictionary<Guid, IPlottable>();
     private Plot _plot => scottPlot.Plot;
-    private Crosshair _selectedPointCrosshair;
+    private Crosshair? _selectedPointCrosshair;
 
-    public event EventHandler<ChartPointSelectedEventArgs> ChartPointSelected;
+    public event EventHandler<ChartPointSelectedEventArgs>? ChartPointSelected;
 
     public ChartControl()
     {
@@ -139,8 +139,10 @@ public partial class ChartControl : UserControl
     {
         //_plot.Axes.SquareUnits(_chartModel.HasEqualDimensions);
         _plot.Axes.Left.Label.Text = _chartModel.YAxis.Label;
+        _plot.Axes.Left.Label.IsVisible = _chartModel.YAxis.IsLabelVisible;
         _plot.Axes.Left.Label.AntiAliasText = true;
         _plot.Axes.Bottom.Label.Text = _chartModel.XAxis.Label;
+        _plot.Axes.Bottom.Label.IsVisible = _chartModel.XAxis.IsLabelVisible;
         _plot.Axes.Bottom.Label.AntiAliasText = true;
         SetAxisLimits(_chartModel.XAxis.MinLimit, _chartModel.YAxis.MinLimit, _chartModel.XAxis.MaxLimit, _chartModel.YAxis.MaxLimit);
 

@@ -16,8 +16,11 @@
 		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
 	</UserControl.Styles>
 
-	<StackPanel Spacing="5">
-		<StackPanel Orientation="Horizontal" Spacing="5">
+	<Grid RowDefinitions="25, *" >
+		<StackPanel Grid.Row="0"
+					VerticalAlignment="Top"
+					Orientation="Horizontal"
+					Spacing="5">
 
 			<TextBlock x:Name="tbLabel"
 					   Text="{Binding Label}"/>
@@ -25,23 +28,26 @@
 			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>
 
-		<Grid x:Name="txtBtnGrid">
+		<Grid x:Name="txtBtnGrid" Grid.Row="1">
 			<TextBox x:Name="tbInput"
+					 VerticalAlignment="Top"
+					 VerticalContentAlignment="Top"
 					 Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
 					 IsReadOnly="{Binding IsReadOnly}"
-					 Focusable="{Binding !IsReadOnly}"/>
+					 Focusable="{Binding !IsReadOnly}"
+					 AcceptsReturn="{Binding IsMultiLine}"/>
 
 			<Button x:Name="btnClear"
 					Classes="InLine"
 					VerticalAlignment="Top"
+					Margin="0 2 2 0"
 					Opacity="0.5"
-					Click="btnClear_Click"
-					IsVisible="{Binding !IsReadOnly}">
+					Click="btnClear_Click">
 				<Button.Content>
 					<Image x:Name="image" Width="16" Height="16" Source="/Assets/clear.png"/>
 				</Button.Content>
 			</Button>
 		</Grid>
-	</StackPanel>
+	</Grid>
 
 </UserControl>
