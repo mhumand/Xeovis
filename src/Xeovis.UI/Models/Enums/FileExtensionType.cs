@@ -5,6 +5,7 @@
         All,
         Excel,
         JSON,
-        Txt
+        Txt,
+        XVS
     }
 }

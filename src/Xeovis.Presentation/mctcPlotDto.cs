@@ -10,6 +10,7 @@ namespace Xeovis.Presentation
         public string Note { get; set; }
         public Color Color { get; set; }
         public DateTime TimeCreated { get; set; }
+        public bool IsVisible { get; set; }
 
         public Guid mctcBundleId { get; set; }
         public List<xeosVariable> SampleXeosVariables { get; set; }
@@ -25,6 +26,7 @@ namespace Xeovis.Presentation
             Color = Color.Black;
             Name = string.Empty;
             Note = string.Empty;
+            IsVisible = true;
             SampleXeosVariables = new List<xeosVariable>();
             IsGridView = false;
             PointsGroupingType = mctcPlotPointsGroupingType.Batch;

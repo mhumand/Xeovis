@@ -58,8 +58,7 @@ namespace Xeovis.WinUI
                     var files = info.GetFiles("*.xls", ckbxSubDirectory.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
                     if (!files.Any()) continue;
 
-                    Experiment experiment = new Experiment(info.Name);
-                    experiment.DirectoryInfo = info;
+                    Experiment experiment = new Experiment(info.Name, info.FullName);
                     _Experiments.Add(experiment);
                     cklbxExperiments.Items.Add(experiment);
                 }
@@ -100,7 +99,7 @@ namespace Xeovis.WinUI
 
         private void ReadExperimentFile(Experiment experiment)
         {
-            DirectoryInfo info = experiment.DirectoryInfo;
+            var info = new DirectoryInfo(experiment.Path);
             if (info == null) return;
             List<FileInfo> subFiles = info.GetFiles().Where(f => f.Extension.StartsWith(".xls")).ToList();
             if (ckbxSubDirectory.Checked)
@@ -117,7 +116,7 @@ namespace Xeovis.WinUI
 
             if (subFiles == null || subFiles.Count == 0) return;
             subFiles.Remove(subFiles.FirstOrDefault(f => Path.GetFileNameWithoutExtension(f.FullName) == info.Name));
-            experiment.Files = subFiles;
+            experiment.FilesPath = subFiles.Select(x => x.FullName).ToList();
             var expFile = subFiles.FirstOrDefault(f => f.Name.ToLower().Contains("experiment.xls"));
             if (expFile == null) return;
 
@@ -242,19 +241,19 @@ namespace Xeovis.WinUI
         private void ReadPhasesData(Experiment experiment)
         {
             var exp = experiment;
-            var info = exp.DirectoryInfo;
-            var phaseFiles = exp.Files.Except(exp.Files.Where(f => Path.GetFileNameWithoutExtension(f.FullName).ToLower().Contains("experiment")));
+            var info = new DirectoryInfo(exp.Path);
+            var phaseFiles = exp.FilesPath.Except(exp.FilesPath.Where(f => Path.GetFileNameWithoutExtension(f).ToLower().Contains("experiment")));
             if (phaseFiles == null || phaseFiles.Count() == 0) return;
             exp.PhasesWithData.Clear();
             foreach (var file in phaseFiles)
             {
-                string phaseName = Path.GetFileNameWithoutExtension(file.FullName);
+                string phaseName = Path.GetFileNameWithoutExtension(file);
                 var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(phaseName.ToLower());
 
                 if (!exp.PhasesWithData.Contains(phaseType))
                     exp.PhasesWithData.Add(phaseType);
 
-                using (var stream = File.Open(file.FullName, FileMode.Open, FileAccess.Read))
+                using (var stream = File.Open(file, FileMode.Open, FileAccess.Read))
                 {
                     using (var reader = ExcelReaderFactory.CreateReader(stream))
                     {
@@ -351,7 +350,7 @@ namespace Xeovis.WinUI
             {
                 var exp = cklbxExperiments.SelectedItem as Experiment;
                 if (exp == null) return;
-                Process.Start(exp.DirectoryInfo.FullName);
+                Process.Start(exp.Path);
             }
 
         }

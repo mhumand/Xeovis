@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Xml;
 using Xeovis.Base;
 using Xeovis.Domain;
-using Xeovis.Persistence;
+using Xeovis.Persistence.Old;
 using Xeovis.WinControls;
 
 namespace Xeovis.WinUI
@@ -14,13 +14,13 @@ namespace Xeovis.WinUI
         private string _directory;
         private List<string> _files;
         private ContextMenuStrip _contextMenu;
-        private ProjectFile _dataFile;
-        private ProjectSettings _projectSettings;
+        private ProjectFile_Old _dataFile;
+        private ProjectSettings_Old _projectSettings;
 
         private List<Batch> _batches;
         private List<xeosVariable> _allModelVariables;
         private Dictionary<xeosVariable, List<xeosVariable>> _selectedModelVariables;
-        private mctcPlotSettings _mctcPlotSettings;
+        private mctcPlotSettings_Old _mctcPlotSettings;
         private List<mctcVariable> _mctcVariables;
         private int _mctcRunIndex;
 
@@ -33,8 +33,8 @@ namespace Xeovis.WinUI
         private void PrepareUI()
         {
             MakeContextMenu();
-            _mctcPlotSettings = new mctcPlotSettings();
-            _projectSettings = new ProjectSettings();
+            _mctcPlotSettings = new mctcPlotSettings_Old();
+            _projectSettings = new ProjectSettings_Old();
             tvCaseSelection.ContextMenuStrip = _contextMenu;
             tcBatchDetails.TableRowSelected += tcPlotInfo_RowSelected;
             ccMctcPlot.ChartPointSelected += ccMctcPlot_ChartPointSelected;
@@ -866,7 +866,7 @@ namespace Xeovis.WinUI
 
         private void SaveAsJSON(string fileName)
         {
-            _dataFile = new ProjectFile();
+            _dataFile = new ProjectFile_Old();
             _dataFile.Batches = _batches;
             _dataFile.AllxeosVariables = _allModelVariables;
             //_dataFile.SelectedModelVariables = _selectedModelVariables;
@@ -887,7 +887,7 @@ namespace Xeovis.WinUI
         private void OpenJSON(string fileName)
         {
             var json = File.ReadAllText(fileName);
-            _dataFile = JsonConvert.DeserializeObject<ProjectFile>(json);
+            _dataFile = JsonConvert.DeserializeObject<ProjectFile_Old>(json);
             _batches = _dataFile.Batches;
             _allModelVariables = _dataFile.AllxeosVariables;
             //_selectedModelVariables = _dataFile.SelectedModelVariables;

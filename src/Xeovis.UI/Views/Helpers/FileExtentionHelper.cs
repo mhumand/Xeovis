@@ -26,6 +26,11 @@ namespace Xeovis.UI.Views.Helpers
             {
                 case FileExtensionType.All:
                     return FilePickerFileTypes.All;
+                case FileExtensionType.XVS:
+                    return new FilePickerFileType("Xeovis File")
+                    {
+                        Patterns = ["*.xvs"]
+                    };
                 case FileExtensionType.Excel:
                     return new FilePickerFileType("Excel")
                     {

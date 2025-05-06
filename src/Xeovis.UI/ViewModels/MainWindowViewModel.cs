@@ -42,7 +42,7 @@ namespace Xeovis.UI.ViewModels
         public DataManagerTabControlViewModel CreateDataManagerTabVM()
         {
             var viewModel = new DataManagerTabControlViewModel(Experiments) { Header = "Data Manager" };
-            TabControls.Add(viewModel);
+            TabControls.Insert(0, viewModel);
             return viewModel;
         }
 
@@ -50,6 +50,16 @@ namespace Xeovis.UI.ViewModels
         {
             if (TabControls == null || TabControls.Count == 0) return null;
             return TabControls.FirstOrDefault(t => t is DataManagerTabControlViewModel) as DataManagerTabControlViewModel;
+        }
+
+        public void ClearAll()
+        {
+            ExperimentNodes.Clear();
+            MctcBundleNodes.Clear();
+            TabControls.Clear();
+            Experiments.Clear();
+            mctcBundles.Clear();
+            mctcPlotDtos.Clear();
         }
 
         public void DeleteExperiment(Guid Id)

@@ -6,26 +6,26 @@
         public string ShortName { get; }
         public Guid Id { get; set; }
         public List<ExpRun> Runs { get; set; }
-        public DirectoryInfo DirectoryInfo { get; set; }
-        public List<FileInfo> Files { get; set; }
+        public string Path { get; set; }
+        public List<string> FilesPath { get; set; }
         public List<PhaseType> PhasesWithData { get; set; }
 
         public Experiment()
         {
             Name = "string.Empty";
             ShortName = string.Empty;
+            Path = string.Empty;
             Id = Guid.NewGuid();
             Runs = new List<ExpRun>();
-            Files = new List<FileInfo>();
+            FilesPath = new List<string>();
             PhasesWithData = new List<PhaseType>();
-            DirectoryInfo = new DirectoryInfo(Name);
         }
 
-        public Experiment(string name) : this()
+        public Experiment(string name, string path) : this()
         {
             Name = name;
             ShortName = GetShortName();
-            DirectoryInfo = new DirectoryInfo(name);
+            Path = path;
         }
 
         private string GetShortName()

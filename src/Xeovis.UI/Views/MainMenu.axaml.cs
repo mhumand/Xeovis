@@ -1,21 +1,25 @@
 using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Xeovis.Persistence;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.Models.Events;
 using Xeovis.UI.Models.FileReaders;
 using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.UI.Views;
+using Xeovis.UI.Views.Helpers;
 
 namespace Xeovis.UI;
 
 public partial class MainMenu : UserControl
 {
-    public event EventHandler<ExperimentsLoadedEventArgs> ExperimentsLoaded;
-    public event EventHandler<mctcBundleLoadedEventArgs> mctcBundleLoaded;
+    public event EventHandler<ExperimentsLoadedEventArgs>? ExperimentsLoaded;
+    public event EventHandler<mctcBundleLoadedEventArgs>? mctcBundleLoaded;
+    public event EventHandler<ProjectFileLoadedEventArgs>? ProjectLoaded;
 
     public MainWindow? ParentWindow;
 
@@ -31,12 +35,65 @@ public partial class MainMenu : UserControl
 
     }
 
-    public void Project_Open()
+    public async void Project_Open()
     {
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel == null) return;
+        var options = new FilePickerOpenOptions()
+        {
+            Title = "Save",
+            AllowMultiple = false,
+            FileTypeFilter = [FileExtentionHelper.GetFilePickerFileType(FileExtensionType.XVS)]
+        };
 
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(options);
+        if (files == null || files.Count == 0) return;
+        var path = Uri.UnescapeDataString(files[0].Path.AbsolutePath);
+        var projectFile = ProjectFileManager.Load(path);
+        if (projectFile == null)
+        {
+            // log
+            return;
+        }
+
+        ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(projectFile, path));
     }
 
-    public void Project_Save()
+    public async void Project_Save()
+    {
+        var projectFile = GetProjectFile();
+        if (projectFile == null) return;
+
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel == null) return;
+        var options = new FilePickerSaveOptions()
+        {
+            Title = "Save",
+            ShowOverwritePrompt = true,
+            FileTypeChoices = [FileExtentionHelper.GetFilePickerFileType(FileExtensionType.XVS)]
+        };
+
+        var files = await topLevel.StorageProvider.SaveFilePickerAsync(options);
+        if (files == null) return;
+        var path = Uri.UnescapeDataString(files.Path.AbsolutePath);
+        var result = ProjectFileManager.Save(projectFile, path);
+        if (!result)
+        {
+            //log
+        }
+    }
+
+    private ProjectFile GetProjectFile()
+    {
+        if (ParentWindow == null) return null;
+        var projectFile = new ProjectFile();
+        projectFile.Experiments = ParentWindow.ViewModel.Experiments;
+        projectFile.mctcBundles = ParentWindow.ViewModel.mctcBundles;
+        projectFile.mctcPlotDtos = ParentWindow.ViewModel.mctcPlotDtos;
+        return projectFile;
+    }
+
+    public void Project_SaveAs()
     {
 
     }
@@ -138,7 +195,7 @@ public partial class MainMenu : UserControl
         // todo - M.H. 01/05/2025
     }
 
-    public async void MctcPlots_NewPlot()
+    public void MctcPlots_NewPlot()
     {
         LoadNewPlotDialog(Guid.Empty);
     }

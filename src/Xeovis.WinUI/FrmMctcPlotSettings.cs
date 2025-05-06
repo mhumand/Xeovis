@@ -1,12 +1,12 @@
-﻿using Xeovis.Persistence;
+﻿using Xeovis.Persistence.Old;
 
 namespace Xeovis.WinUI
 {
     public partial class FrmMctcPlotSettings : Form
     {
-        public mctcPlotSettings Settings;
+        public mctcPlotSettings_Old Settings;
 
-        public FrmMctcPlotSettings(mctcPlotSettings settings)
+        public FrmMctcPlotSettings(mctcPlotSettings_Old settings)
         {
             Settings = settings;
             InitializeComponent();

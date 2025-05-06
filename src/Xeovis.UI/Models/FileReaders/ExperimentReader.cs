@@ -41,8 +41,7 @@ namespace Xeovis.UI.Models.FileReaders
                 progressData.PrimaryLabel = $"Loading {folder.Label}";
                 progress.Report(progressData);
 
-                var experiment = new Experiment(folder.Label);
-                experiment.DirectoryInfo = info;
+                var experiment = new Experiment(folder.Label, info.FullName);
                 ReadExperimentFile(experiment);
                 ReadPhasesFile(experiment);
                 experiments.Add(experiment);
@@ -55,13 +54,14 @@ namespace Xeovis.UI.Models.FileReaders
 
         private void ReadExperimentFile(Experiment experiment)
         {
-            if (experiment == null || experiment.DirectoryInfo == null) return;
+            if (experiment == null || string.IsNullOrWhiteSpace(experiment.Path)) return;
 
-            List<FileInfo> subFiles = experiment.DirectoryInfo.GetFiles().Where(f => f.Extension.StartsWith(".xls")).ToList();
+            var dirInfo = new DirectoryInfo(experiment.Path);
+            List<FileInfo> subFiles = dirInfo.GetFiles().Where(f => f.Extension.StartsWith(".xls")).ToList();
 
             if (_useSubdirectory && _hasSubdirectory)
             {
-                string subPath = experiment.DirectoryInfo.FullName + $"\\{_subdirectory}";
+                string subPath = dirInfo.FullName + $"\\{_subdirectory}";
                 if (Directory.Exists(subPath))
                 {
                     var filePaths = Directory.GetFiles(subPath, "*.xls").ToList();
@@ -72,8 +72,8 @@ namespace Xeovis.UI.Models.FileReaders
             }
 
             if (subFiles == null || subFiles.Count == 0) return;
-            subFiles.Remove(subFiles.FirstOrDefault(f => Path.GetFileNameWithoutExtension(f.FullName) == experiment.DirectoryInfo.Name));
-            experiment.Files = subFiles;
+            subFiles.Remove(subFiles.FirstOrDefault(f => Path.GetFileNameWithoutExtension(f.FullName) == dirInfo.Name));
+            experiment.FilesPath = subFiles.Select(x => x.FullName).ToList();
             var expFile = subFiles.FirstOrDefault(f => f.Name.ToLower().Contains("experiment.xls"));
             if (expFile == null) return;
 
@@ -195,18 +195,18 @@ namespace Xeovis.UI.Models.FileReaders
 
         private void ReadPhasesFile(Experiment experiment)
         {
-            var phaseFiles = experiment.Files.Except(experiment.Files.Where(f => Path.GetFileNameWithoutExtension(f.FullName).ToLower().Contains("experiment")));
+            var phaseFiles = experiment.FilesPath.Except(experiment.FilesPath.Where(f => Path.GetFileNameWithoutExtension(f).ToLower().Contains("experiment")));
             if (phaseFiles == null || phaseFiles.Count() == 0) return;
             experiment.PhasesWithData.Clear();
             foreach (var file in phaseFiles)
             {
-                string phaseName = Path.GetFileNameWithoutExtension(file.FullName);
+                string phaseName = Path.GetFileNameWithoutExtension(file);
                 var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(phaseName.ToLower());
 
                 if (!experiment.PhasesWithData.Contains(phaseType))
                     experiment.PhasesWithData.Add(phaseType);
 
-                using (var stream = File.Open(file.FullName, FileMode.Open, FileAccess.Read))
+                using (var stream = File.Open(file, FileMode.Open, FileAccess.Read))
                 {
                     using (var reader = ExcelReaderFactory.CreateReader(stream))
                     {
