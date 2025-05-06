@@ -167,7 +167,7 @@ namespace Xeovis.WinUI
                         foreach (var ph in phases)
                         {
                             var phase = new Phase(ph.Trim());
-                            phase.ExpRun = run;
+                            phase.ExpRunId = run.Id;
                             run.Phases.Add(phase);
                         }
 
@@ -186,7 +186,7 @@ namespace Xeovis.WinUI
                         }
 
                         run.Index = i;
-                        run.Experiment = experiment;
+                        run.ExperimentId = experiment.Id;
                         experiment.Runs.Add(run);
                     }
                 }
@@ -324,7 +324,7 @@ namespace Xeovis.WinUI
                 var row = new List<object>
                 {
                     phaseInstance.Comment,
-                    phaseInstance.ExpRun
+                    exp.Runs.FirstOrDefault(x => x.Id ==  phaseInstance.ExpRunId)
                 };
 
                 foreach (var comp in phaseInstance.Composition)
@@ -606,14 +606,6 @@ namespace Xeovis.WinUI
 
         private void btnGenerateRuns_Click(object sender, EventArgs e)
         {
-            var SubsetRuns = new List<SubsetRun>();
-
-            var Experiments = new List<Experiment>();
-            foreach (var experiment in Experiments)
-            {
-                var runs = new List<ExpRun>();
-
-            }
         }
 
         private void PrepareAdvancedDataManagerUI()
@@ -657,6 +649,7 @@ namespace Xeovis.WinUI
             var Rows = new List<List<object>>();
             int counter = 1;
             int expCounter = 0;
+            var experiments = cmbxExperiments.Items.Cast<Experiment>().ToList();
             foreach (Experiment exp in cmbxExperiments.Items)
             {
                 var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(cmbxDMAdvancedPhaseList.SelectedItem.ToString());
@@ -669,14 +662,15 @@ namespace Xeovis.WinUI
                 bool hasData = false;
                 foreach (var phaseInstance in allInstances.Where(x => x.Composition.Any()))
                 {
+                    var expRun = experiments.SelectMany(x => x.Runs).FirstOrDefault(x => x.Id == phaseInstance.ExpRunId);
                     var row = new List<object>
                     {
                         counter++.ToString("000"),
-                        phaseInstance.ExpRun.Experiment.ShortName,
-                        phaseInstance.ExpRun.Name,
-                        phaseInstance.ExpRun.Temperature,
-                        phaseInstance.ExpRun.Pressure,
-                        phaseInstance.ExpRun.GetPhaseAssemblageString()
+                        experiments.FirstOrDefault(x => x.Runs.Select(r => r.Id).Contains(phaseInstance.ExpRunId)).ShortName,
+                        expRun.Name,
+                        expRun.Temperature,
+                        expRun.Pressure,
+                        expRun.GetPhaseAssemblageString()
                     };
 
                     foreach (var oxide in oxides)

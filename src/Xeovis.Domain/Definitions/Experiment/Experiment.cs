@@ -4,7 +4,7 @@
     {
         public string Name { get; set; }
         public string ShortName { get; }
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public List<ExpRun> Runs { get; set; }
         public DirectoryInfo DirectoryInfo { get; set; }
         public List<FileInfo> Files { get; set; }
@@ -12,18 +12,20 @@
 
         public Experiment()
         {
-            Name = "#NullExp";
+            Name = "string.Empty";
+            ShortName = string.Empty;
+            Id = Guid.NewGuid();
+            Runs = new List<ExpRun>();
+            Files = new List<FileInfo>();
+            PhasesWithData = new List<PhaseType>();
             DirectoryInfo = new DirectoryInfo(Name);
         }
 
-        public Experiment(string name)
+        public Experiment(string name) : this()
         {
             Name = name;
             ShortName = GetShortName();
-            Runs = new List<ExpRun>();
             DirectoryInfo = new DirectoryInfo(name);
-            Files = new List<FileInfo>();
-            PhasesWithData = new List<PhaseType>();
         }
 
         private string GetShortName()
@@ -35,7 +37,7 @@
 
         public List<PhaseType> GetAllPhaseTypes()
         {
-            var phaseTypes = Runs.SelectMany<ExpRun, PhaseType>(r => r.Phases.Select(p => p.Type));
+            var phaseTypes = Runs.SelectMany(r => r.Phases.Select(p => p.Type));
             var distinctPhases = phaseTypes.Distinct().ToList();
             distinctPhases.Sort();
             return distinctPhases;

@@ -3,7 +3,7 @@
     public class XEOS
     {
         public string Name { get; set; }
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public PhaseType PhaseType { get; set; }
         public List<EndMember> EndMembers { get; set; }
         public List<EnergyParameter> Ws { get; set; }
@@ -11,6 +11,8 @@
         public List<xeosVariable> Variables { get; set; }
         public XEOS()
         {
+            Id = Guid.NewGuid();
+            Name = string.Empty;
             EndMembers = new List<EndMember>();
             Ws = new List<EnergyParameter>();
             Alphas = new List<AlphaParameter>();

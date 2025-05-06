@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Reflection;
+using System.Xml;
 using Xeovis.Base;
 using Xeovis.Domain;
 using Xeovis.Persistence;
@@ -144,7 +145,7 @@ namespace Xeovis.WinUI
 
             Cursor = Cursors.Default;
 
-            _allModelVariables?.RemoveAll(mv => mv.Batch.IsAllFailed());
+            _allModelVariables?.RemoveAll(mv => _batches.FirstOrDefault(x => x.Id == mv.BatchId).IsAllFailed());
             _batches?.RemoveAll(b => b.IsAllFailed());
 
             if (_batches.Count == 0 || _mctcVariables == null) return;
@@ -244,8 +245,8 @@ namespace Xeovis.WinUI
                 var batch = new Batch();
                 int.TryParse(Line1[0], out int index);
                 batch.Index = index;
-                batch.Experiment = new Experiment(Line1[1]);
-                batch.ExpRun = new ExpRun() { Name = Line1[2], Experiment = batch.Experiment };
+                batch.ExperimentName = Line1[1];
+                batch.ExpRunName = Line1[2];
 
                 //batch data
                 i++;
@@ -265,8 +266,8 @@ namespace Xeovis.WinUI
                 for (int j = 1; j < varianceIndex; j++)
                     batch.Phases.Add(PhaseTypeExtensions.GetPhaseTypeByName(Line2[j]));
 
-                batch.ExpRun.Pressure = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 3]);
-                batch.ExpRun.Temperature = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 4]);
+                batch.ExpRunPressure = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 3]);
+                batch.ExpRunTemperature = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 4]);
 
                 _batches.Add(batch);
             }
@@ -310,12 +311,13 @@ namespace Xeovis.WinUI
                 modelVariable.PhaseType = PhaseTypeExtensions.GetPhaseTypeByName(varData[1]);
                 modelVariable.VariableType = EnumExtensions.GetValueFromDescription<ModelVariableType>(varData[0]);
                 int.TryParse(varData[2].TrimStart(new char[] {'b'}), out int batchIndex);
-                modelVariable.Batch = _batches.FirstOrDefault(b => b.Index == batchIndex);
+                var batch = _batches.FirstOrDefault(b => b.Index == batchIndex);
+                modelVariable.BatchId = batch.Id;
 
                 i++;
                 modelVariable.ObsVal = DoubleExtensions.GetDoubleValueFromText(lines[i]);
 
-                modelVariable.Batch.xeosVariables.Add(modelVariable);
+                batch.xeosVariables.Add(modelVariable);
                 _allModelVariables.Add(modelVariable);
             }
         }
@@ -631,10 +633,10 @@ namespace Xeovis.WinUI
                     mvar.ObsVal,
                     mvar.CalcVals[_mctcRunIndex],
                     Math.Round(100.0 * Math.Abs(1.0 - mvar.CalcVals[_mctcRunIndex] / mvar.ObsVal), 1),
-                    mvar.Batch.GetPhaseAssemblageString(),
-                    mvar.Batch,
-                    mvar.Batch.ExpRun.Pressure,
-                    mvar.Batch.ExpRun.Temperature
+                    _batches.FirstOrDefault(x => x.Id == mvar.BatchId).GetPhaseAssemblageString(),
+                    _batches.FirstOrDefault(x => x.Id == mvar.BatchId),
+                    _batches.FirstOrDefault(x => x.Id == mvar.BatchId).ExpRunPressure,
+                    _batches.FirstOrDefault(x => x.Id == mvar.BatchId).ExpRunTemperature
                 };
 
                 rows.Add(row);
@@ -652,11 +654,11 @@ namespace Xeovis.WinUI
             var modelVarGroups = new List<IGrouping<object, xeosVariable>>();
 
             if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Batch)
-                modelVarGroups = modelVars.GroupBy(mv => (object)mv.Batch.GetPhaseAssemblageString()).ToList();
+                modelVarGroups = modelVars.GroupBy(mv => (object)_batches.FirstOrDefault(x => x.Id == mv.BatchId).GetPhaseAssemblageString()).ToList();
             else if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Temperature)
-                modelVarGroups = modelVars.GroupBy(mv => (object)mv.Batch.ExpRun.Temperature).ToList();
+                modelVarGroups = modelVars.GroupBy(mv => (object)_batches.FirstOrDefault(x => x.Id == mv.BatchId).ExpRunTemperature).ToList();
             else if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Pressure)
-                modelVarGroups = modelVars.GroupBy(mv => (object)mv.Batch.ExpRun.Pressure).ToList();
+                modelVarGroups = modelVars.GroupBy(mv => (object)_batches.FirstOrDefault(x => x.Id == mv.BatchId).ExpRunPressure).ToList();
 
             var selectedGroups = new List<IGrouping<object, xeosVariable>>();
             if (ckbxExcludeIrrelevantBatches.Checked)
@@ -666,7 +668,7 @@ namespace Xeovis.WinUI
                     foreach (var modelVarGroup in modelVarGroups)
                     {
                         var modelVar = modelVarGroup.FirstOrDefault();
-                        var phases = modelVar.Batch.Phases.Except(new List<PhaseType>() { modelVar.PhaseType });
+                        var phases = _batches.FirstOrDefault(x => x.Id == modelVar.BatchId).Phases.Except(new List<PhaseType>() { modelVar.PhaseType });
                         var varType = modelVar.VariableType;
 
                         var phaseAllCations = new List<CationType>();
@@ -690,7 +692,7 @@ namespace Xeovis.WinUI
                         var exclude = new List<xeosVariable>();
                         foreach (var modelVar in modelVarGroup)
                         {
-                            var phases = modelVar.Batch.Phases.Except(new List<PhaseType>() { modelVar.PhaseType });
+                            var phases = _batches.FirstOrDefault(x => x.Id == modelVar.BatchId).Phases.Except(new List<PhaseType>() { modelVar.PhaseType });
                             var varType = modelVar.VariableType;
 
                             var phaseAllCations = new List<CationType>();
@@ -708,13 +710,13 @@ namespace Xeovis.WinUI
                         var flt = modelVarGroup.Except(exclude).ToList();
                         if (cmbxPlotPointsGrouping.SelectedItem is PlotPointsGroupingType.Temperature)
                         {
-                            var grp = flt.GroupBy(x => (object)x.Batch.ExpRun.Temperature).FirstOrDefault();
+                            var grp = flt.GroupBy(x => (object)_batches.FirstOrDefault(b => b.Id == x.BatchId).ExpRunTemperature).FirstOrDefault();
                             if (grp != null && grp.Count() != 0)
                                 selectedGroups.Add(grp);
                         }
                         else
                         {
-                            var grp = flt.GroupBy(x => (object)x.Batch.ExpRun.Pressure).FirstOrDefault();
+                            var grp = flt.GroupBy(x => (object)_batches.FirstOrDefault(b => b.Id == x.BatchId).ExpRunPressure).FirstOrDefault();
                             if (grp != null && grp.Count() != 0)
                                 selectedGroups.Add(grp);
                         }
@@ -827,7 +829,7 @@ namespace Xeovis.WinUI
             var purePhasesOnlyString = new List<string>();
             var solutionPhasesString = new List<string>();
             var currentPhase = modelVars.FirstOrDefault().PhaseType;
-            foreach (PhaseType phase in modelVars.SelectMany(v => v.Batch.Phases).Distinct().Except(new List<PhaseType> { currentPhase }))
+            foreach (PhaseType phase in modelVars.SelectMany(v => _batches.FirstOrDefault(x => x.Id == v.BatchId).Phases).Distinct().Except(new List<PhaseType> { currentPhase }))
             {
                 var phaseState = phase.GetPhaseState();
                 if (phaseState == PhaseState.Pure)
@@ -876,7 +878,7 @@ namespace Xeovis.WinUI
             var jsonSettings = new JsonSerializerSettings();
             jsonSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             jsonSettings.NullValueHandling = NullValueHandling.Ignore;
-            jsonSettings.Formatting = Formatting.Indented;
+            jsonSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
             jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
             var json = JsonConvert.SerializeObject(_dataFile, jsonSettings);
             File.WriteAllText(fileName, json);

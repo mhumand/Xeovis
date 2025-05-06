@@ -8,11 +8,9 @@
         public Guid Id { get; set; }
         public Guid mctcBundleId { get; set; }
 
-        public Experiment Experiment { get; set; }//todo: will be removed
         public string ExperimentName { get; set; }
         public Guid ExperimentId { get; set; }
 
-        public ExpRun ExpRun { get; set; }//todo: will be removed
         public string ExpRunName { get; set; }
         public double ExpRunPressure { get; set; }
         public double ExpRunTemperature { get; set; }
@@ -26,6 +24,8 @@
         public Batch()
         {
             Id = Guid.NewGuid();
+            ExperimentName = string.Empty;
+            ExpRunName = string.Empty;
             Phases = new List<PhaseType>();
             BulkComposition = new List<double>();
             BulkOxides = new List<OxideType>();
