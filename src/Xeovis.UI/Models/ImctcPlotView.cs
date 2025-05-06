@@ -1,6 +1,6 @@
 ﻿using System;
 using Xeovis.Domain;
-using Xeovis.UI.Models.Enums;
+using Xeovis.Presentation;
 
 namespace Xeovis.UI.Models
 {

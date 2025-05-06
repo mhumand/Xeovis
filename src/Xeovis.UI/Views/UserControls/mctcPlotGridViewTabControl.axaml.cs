@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xeovis.Base;
 using Xeovis.Domain;
+using Xeovis.Presentation;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
@@ -72,7 +73,7 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
         return true;
     }
 
-    private void tableFilter_CellValueChanged(object? sender, Models.Events.TableCellValueChangedEventArgs e)
+    private void tableFilter_CellValueChanged(object? sender, TableCellValueChangedEventArgs e)
     {
         var column = tableFilter.ViewModel.TableModel.GetColumnById(e.ColumnId);
         if (column != null && column.HasOptions && !column.IsReadOnly)

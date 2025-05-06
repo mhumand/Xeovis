@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using Xeovis.UI.Models.Enums;
+﻿using System.Drawing;
 
-namespace Xeovis.UI.Models
+namespace Xeovis.Presentation
 {
     public class CurveModel
     {

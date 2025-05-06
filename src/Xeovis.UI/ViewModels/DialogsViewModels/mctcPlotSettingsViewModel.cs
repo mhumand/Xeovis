@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Xeovis.Base;
-using Xeovis.Domain;
+using Xeovis.Presentation;
 using Xeovis.UI.Models;
-using Xeovis.UI.Models.Enums;
 
 namespace Xeovis.UI.ViewModels.DialogsViewModels
 {

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Xeovis.UI.Models;
-using Xeovis.UI.Models.Enums;
+using Xeovis.Presentation;
 
 namespace Xeovis.UI
 {

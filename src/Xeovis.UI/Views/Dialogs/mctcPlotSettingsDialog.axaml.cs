@@ -3,7 +3,7 @@ using Avalonia.Data;
 using System;
 using System.Linq;
 using Xeovis.Base.Validations;
-using Xeovis.Domain;
+using Xeovis.Presentation;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
 using Xeovis.UI.ViewModels.DialogsViewModels;

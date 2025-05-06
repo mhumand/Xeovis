@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Xeovis.UI.Models.Events
+﻿namespace Xeovis.Presentation
 {
     public class TableSelectionChangedEventArgs : EventArgs
     {

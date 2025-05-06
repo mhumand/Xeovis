@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Xeovis.Domain;
+using Xeovis.Presentation;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Events;
 

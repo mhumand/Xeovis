@@ -57,6 +57,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Xeovis.Domain\Xeovis.Domain.csproj" />
     <ProjectReference Include="..\Xeovis.Persistence\Xeovis.Persistence.csproj" />
+    <ProjectReference Include="..\Xeovis.Presentation\Xeovis.Presentation.csproj" />
   </ItemGroup>
 
   <ItemGroup>

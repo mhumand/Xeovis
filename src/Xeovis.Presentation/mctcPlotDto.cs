@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using Xeovis.UI.Models;
-using Xeovis.UI.Models.Enums;
+﻿using System.Drawing;
+using Xeovis.Domain;
 
-namespace Xeovis.Domain
+namespace Xeovis.Presentation
 {
     public class mctcPlotDto
     {

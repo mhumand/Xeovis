@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
-using Xeovis.UI.Models.Enums;
 
-namespace Xeovis.UI.Models
+namespace Xeovis.Presentation
 {
     public class LegendModel
     {
