@@ -13,6 +13,7 @@
         public mctcVariable()
         {
             Id = Guid.NewGuid();
+            Name = string.Empty;
             Values = new List<double>();
         }
 

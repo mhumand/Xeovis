@@ -3,12 +3,18 @@
     public class EndMember
     {
         public string Name { get; set; }
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
         public EndMemberType Type { get; set; }
-        public Phase Phase { get; set; }//todo: will be removed.
         public Guid PhaseId { get; set; }
         public string Formula { get; set; }
         public bool IsOrderEndMember { get; set; }
+
+        public EndMember()
+        {
+            Id = Guid.NewGuid();
+            Name = string.Empty;
+            Formula = string.Empty;
+        }
 
         public override string ToString()
         {

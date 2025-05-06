@@ -2,7 +2,7 @@
 {
     public class mctcBundle
     {
-        public string Name{ get; set; }
+        public string Name { get; set; }
         public Guid Id { get; set; }
         public DateTime TimeLoaded { get; set; }
         public string FilesDirectory { get; set; }
