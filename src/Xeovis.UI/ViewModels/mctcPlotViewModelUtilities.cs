@@ -3,9 +3,9 @@ using System.Linq;
 using System;
 using Xeovis.Base;
 using Xeovis.Domain;
-using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using System.Drawing;
+using Xeovis.Presentation;
 
 namespace Xeovis.UI.ViewModels
 {

@@ -4,7 +4,6 @@ using System.Diagnostics;
 using Xeovis.Domain;
 using Xeovis.WinControls;
 using Xeovis.Base;
-using Xeovis.Domain.Definitions.OnHold;
 
 namespace Xeovis.WinUI
 {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xeovis.Base;
 using Xeovis.Domain;
+using Xeovis.Presentation;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
@@ -197,7 +198,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         var successful = tableControl.PopulateTable(tableModel);
     }
 
-    private void chartControl_ChartPointSelected(object? sender, Models.Events.ChartPointSelectedEventArgs e)
+    private void chartControl_ChartPointSelected(object? sender, ChartPointSelectedEventArgs e)
     {
         int index = -1;
         if (e.Index >= 0 && e.CurveId != Guid.Empty)
@@ -224,7 +225,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         tableControl.SelectRow(index);
     }
 
-    private void tableControl_SelectionChanged(object? sender, Models.Events.TableSelectionChangedEventArgs e)
+    private void tableControl_SelectionChanged(object? sender, TableSelectionChangedEventArgs e)
     {
         if (e.Value == null)
         {
@@ -260,7 +261,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         UpdateChartAndTable();
     }
 
-    private void tableFilter_CellValueChanged(object? sender, Models.Events.TableCellValueChangedEventArgs e)
+    private void tableFilter_CellValueChanged(object? sender, TableCellValueChangedEventArgs e)
     {
         var column = tableFilter.ViewModel.TableModel.GetColumnById(e.ColumnId);
         if (column != null && column.HasOptions && !column.IsReadOnly)

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Xeovis.UI.Models
+﻿namespace Xeovis.Presentation
 {
     public class AxisModel
     {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Xeovis.UI.Models
+﻿namespace Xeovis.Presentation
 {
     public class ChartModel
     {

@@ -2,13 +2,12 @@ using Avalonia.Controls;
 using ScottPlot;
 using System;
 using System.Collections.Generic;
-using Xeovis.UI.Models;
-using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
 using ScottPlot.Plottables;
 using Xeovis.UI.Models.Events;
 using System.Linq;
 using Avalonia.Media.Imaging;
+using Xeovis.Presentation;
 
 namespace Xeovis.UI;
 

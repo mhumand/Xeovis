@@ -1,4 +1,4 @@
-﻿namespace Xeovis.UI.Models.Enums
+﻿namespace Xeovis.Presentation
 {
     public enum MarkerType
     {

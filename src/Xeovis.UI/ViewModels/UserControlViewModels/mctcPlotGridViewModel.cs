@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using Xeovis.Domain;
-using Xeovis.UI.Models;
+using Xeovis.Presentation;
 using Xeovis.UI.Models.Enums;
 
 namespace Xeovis.UI.ViewModels

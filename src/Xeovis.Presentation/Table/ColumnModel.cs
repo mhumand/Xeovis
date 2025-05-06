@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Xeovis.Base.Validations;
+﻿using Xeovis.Base.Validations;
 
-namespace Xeovis.UI.Models
+namespace Xeovis.Presentation
 {
     public class ColumnModel
     {

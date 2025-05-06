@@ -1,8 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Xeovis.UI.Models;
+using Xeovis.Presentation;
 
 namespace Xeovis.UI.ViewModels
 {

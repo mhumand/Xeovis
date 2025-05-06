@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
-using Xeovis.UI.Models;
+using Xeovis.Presentation;
 
 namespace Xeovis.UI.ViewModels
 {

@@ -1,4 +1,4 @@
-﻿namespace Xeovis.UI.Models
+﻿namespace Xeovis.Presentation
 {
     public class mctcChartSettings
     {

@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xeovis.Base;
-using Xeovis.UI.Models;
+using Xeovis.Presentation;
 using Xeovis.UI.Models.Events;
 using Xeovis.UI.ViewModels;
 

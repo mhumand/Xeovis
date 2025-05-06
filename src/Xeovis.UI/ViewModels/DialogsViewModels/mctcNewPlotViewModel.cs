@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xeovis.Base;
 using Xeovis.Domain;
+using Xeovis.Presentation;
 using Xeovis.UI.Models;
 
 namespace Xeovis.UI.ViewModels.DialogsViewModels

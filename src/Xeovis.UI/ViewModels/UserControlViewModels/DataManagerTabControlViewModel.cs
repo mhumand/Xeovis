@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Xeovis.Base;
 using Xeovis.Domain;
+using Xeovis.Presentation;
 using Xeovis.UI.Models;
 
 namespace Xeovis.UI.ViewModels
