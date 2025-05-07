@@ -7,7 +7,7 @@ namespace Xeovis.UI
 {
     public static class ChartUtilities
     {
-        public static List<Color> ColorPallete_ColorblindFriendly = new List<Color>()
+        public static List<Color> ColorPalette_ColorblindFriendly = new List<Color>()
         {
             ColorTranslator.FromHtml("#000000"),
             ColorTranslator.FromHtml("#E69F00"),
@@ -17,6 +17,28 @@ namespace Xeovis.UI
             ColorTranslator.FromHtml("#0072B2"),
             ColorTranslator.FromHtml("#D55E00"),
             ColorTranslator.FromHtml("#CC79A7"),
+        };
+
+        public static List<Color> ColorPalette_18 = new List<Color>()
+        {
+            ColorTranslator.FromHtml("#1F77B4"),
+            ColorTranslator.FromHtml("#FF7F0E"),
+            ColorTranslator.FromHtml("#2CA02C"),
+            ColorTranslator.FromHtml("#D62728"),
+            ColorTranslator.FromHtml("#9467BD"),
+            ColorTranslator.FromHtml("#8C564B"),
+            ColorTranslator.FromHtml("#E377C2"),
+            ColorTranslator.FromHtml("#BCBD22"),
+            ColorTranslator.FromHtml("#17BECF"),
+            ColorTranslator.FromHtml("#AEC7E8"),
+            ColorTranslator.FromHtml("#FFBB78"),
+            ColorTranslator.FromHtml("#98DF8A"),
+            ColorTranslator.FromHtml("#FF9896"),
+            ColorTranslator.FromHtml("#C5B0D5"),
+            ColorTranslator.FromHtml("#C49C94"),
+            ColorTranslator.FromHtml("#F7B6D2"),
+            ColorTranslator.FromHtml("#DBDB8D"),
+            ColorTranslator.FromHtml("#9EDAE5"),
         };
 
         public static List<MarkerType> MarkerTypes = new List<MarkerType>()
@@ -45,10 +67,10 @@ namespace Xeovis.UI
             return GetColorInGradient(lowColor, highColor, index, count);
         }
 
-        public static Color GetColor_ColorblindFriendlyPallete(int index)
+        public static Color GetColor_ColorblindFriendlyPalete(int index)
         {
-            if (index < ColorPallete_ColorblindFriendly.Count)
-                return ColorPallete_ColorblindFriendly[index];
+            if (index < ColorPalette_ColorblindFriendly.Count)
+                return ColorPalette_ColorblindFriendly[index];
             else
                 return Color.Transparent;
         }
@@ -63,12 +85,14 @@ namespace Xeovis.UI
 
         public static void SetColorAndMarker(CurveModel curve, int index)
         {
-            if (index >= MarkerTypes.Count * ColorPallete_ColorblindFriendly.Count)
+            var pallete = ColorPalette_18;
+
+            if (index >= MarkerTypes.Count * pallete.Count)
                 throw new IndexOutOfRangeException();
 
-            var markerIndex = index / ColorPallete_ColorblindFriendly.Count;
-            var colorIndex = index % ColorPallete_ColorblindFriendly.Count;
-            curve.MarkerColor = ColorPallete_ColorblindFriendly[colorIndex];
+            var markerIndex = index / pallete.Count;
+            var colorIndex = index % pallete.Count;
+            curve.MarkerColor = pallete[colorIndex];
             curve.MarkerType = MarkerTypes[markerIndex];
         }
     }

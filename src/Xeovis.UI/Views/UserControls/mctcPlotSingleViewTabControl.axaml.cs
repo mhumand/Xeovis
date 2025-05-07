@@ -68,11 +68,11 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         _viewModel.mctcBundle = mctcBundle;
 
         spinner.ViewModel.MaxValue = mctcBundle.mctcVariables[0].Values.Count;
-        lcbcXeosVariable.SetItems(_viewModel.GetXeosVarItems());
 
         _viewModel.ClearInUseMarkersAndColors();
         PopulateMctcRunsTable();
         PopulatePhaseFilters();
+        lcbcXeosVariable.SetItems(_viewModel.GetXeosVarItems());
 
         return true;
     }
