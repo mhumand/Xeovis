@@ -2,10 +2,13 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Xeovis.Domain;
 using Xeovis.Persistence;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.Models.Events;
@@ -182,7 +185,7 @@ public partial class MainMenu : UserControl
     }
 
     // MCTC Reader
-    public async void MctcPlots_LoadBundle()
+    public async void Mctc_LoadBundle()
     {
         if (ParentWindow == null) return;
         var viewModel = new mctcLoadDataViewModel();
@@ -193,42 +196,45 @@ public partial class MainMenu : UserControl
 
         if (result == DialogResultType.OK)
         {
-            var progressDialog = new ProgressBarDialog();
-            progressDialog.ShowDialog(ParentWindow);
+            var vm = dialog.ViewModel;
 
-            var progress = progressDialog.ProgressReporter;
-            var token = progressDialog.Token;
-
-            try
+            var mctcBundle = await LoadMctcBundle(vm.FolderDirectory);
+            if (mctcBundle != null)
             {
-                var vm = dialog.ViewModel;
-                var mctcReader = new mctcDataReader(vm.FolderDirectory);
-                var mctcBundle = await Task.Run(() => mctcReader.ReadData(progress, token));
-                if (mctcBundle == null)
-                    throw new OperationCanceledException();
-
                 mctcBundle.Name = vm.MctcBundleName;
-                mctcBundle.FilesDirectory = vm.FolderDirectory;
-                mctcBundle.TimeLoaded = DateTime.Now;
                 mctcBundleLoaded?.Invoke(this, new mctcBundleLoadedEventArgs(mctcBundle));
-            }
-            catch (OperationCanceledException)
-            {
-
-            }
-            finally
-            {
-                progressDialog.Close();
             }
         }
     }
 
-    public void LoadMctcBundle(string folderDirectory)
+    public async Task<mctcBundle> LoadMctcBundle(string folderDirectory)
     {
-        // todo - M.H. 01/05/2025
+        if (ParentWindow == null) return null;
+        var progressDialog = new ProgressBarDialog();
+        progressDialog.ShowDialog(ParentWindow);
+
+        var progress = progressDialog.ProgressReporter;
+        var token = progressDialog.Token;
+
+        try
+        {
+            var mctcReader = new mctcDataReader(folderDirectory);
+            var mctcBundle = await Task.Run(() => mctcReader.ReadData(progress, token)) ?? throw new OperationCanceledException();
+            mctcBundle.TimeLoaded = DateTime.Now;
+            mctcBundle.FilesDirectory = folderDirectory;
+            return mctcBundle;
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
+        finally
+        {
+            progressDialog.Close();
+        }
     }
 
-    public void MctcPlots_NewPlot()
+    public void Mctc_NewPlot()
     {
         LoadNewPlotDialog(Guid.Empty);
     }

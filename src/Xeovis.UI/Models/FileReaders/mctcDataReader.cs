@@ -34,22 +34,26 @@ namespace Xeovis.UI.Models.FileReaders
             var progressData = new ProgressBarData(0, "Loading");
             progressData.PrimaryLabel = $"Loading Batch Lines";
             progress.Report(progressData);
-            ReadBatchLines();
+            if (!ReadBatchLines())
+                throw new OperationCanceledException();
 
             progressData.PrimaryValue = 25;
             progressData.PrimaryLabel = $"Loading Batch Bulks";
             progress.Report(progressData);
-            ReadBatchBulks();
+            if (!ReadBatchBulks())
+                throw new OperationCanceledException();
 
             progressData.PrimaryValue = 50;
             progressData.PrimaryLabel = $"Loading xeos Variables";
             progress.Report(progressData);
-            ReadxeosVariables();
+            if (!ReadxeosVariables())
+                throw new OperationCanceledException();
 
             progressData.PrimaryValue = 75;
             progressData.PrimaryLabel = $"Loading mctc Results";
             progress.Report(progressData);
-            ReadmctcResults();
+            if (!ReadmctcResults())
+                throw new OperationCanceledException();
 
             progressData.PrimaryValue = 100;
             progress.Report(progressData);
@@ -61,10 +65,10 @@ namespace Xeovis.UI.Models.FileReaders
             return mctcBundle;
         }
 
-        private void ReadBatchLines()
+        private bool ReadBatchLines()
         {
             var lines = ReadFileLines("batchlines");
-            if (lines == null || lines.Count == 0) return;
+            if (lines == null || lines.Count == 0) return false;
 
             _batches = new List<Batch>();
             for (int i = 0; i < lines.Count; i++)
@@ -101,12 +105,14 @@ namespace Xeovis.UI.Models.FileReaders
 
                 _batches.Add(batch);
             }
+
+            return true;
         }
 
-        private void ReadBatchBulks()
+        private bool ReadBatchBulks()
         {
             var lines = ReadFileLines("batchbulks");
-            if (lines == null || lines.Count == 0) return;
+            if (lines == null || lines.Count == 0) return false;
 
             var oxidesStr = CleanAndSplitLine(lines[0]);
             var oxides = new List<OxideType>();
@@ -123,12 +129,14 @@ namespace Xeovis.UI.Models.FileReaders
                 _batches[i - 1].BulkOxides = oxides;
                 _batches[i - 1].BulkComposition = composition;
             }
+
+            return true;
         }
 
-        private void ReadxeosVariables()
+        private bool ReadxeosVariables()
         {
             var lines = ReadFileLines("observations");
-            if (lines == null || lines.Count == 0) return;
+            if (lines == null || lines.Count == 0) return false;
 
             lines = CleanAndSplitLine(lines[0], includeDot: false);
             for (int i = 0; i < lines.Count; i++)
@@ -149,22 +157,24 @@ namespace Xeovis.UI.Models.FileReaders
 
                 batch.xeosVariables.Add(xeosVariable);
             }
+
+            return true;
         }
 
-        private void ReadmctcResults()
+        private bool ReadmctcResults()
         {
             var allLines = ReadFileLines("-dr");
-            if (allLines == null || allLines.Count == 0) return;
+            if (allLines == null || allLines.Count == 0) return false;
 
             var splitters = new char[] { '{', '}', '*', '(', ')', '\t', '"', ',', ';' };
             var allRange = Enumerable.Range(0, allLines.Count);
 
             _mctcVariables = GetMctcVariables(allLines);
-            if (_mctcVariables == null || _mctcVariables.Count == 0) return;
+            if (_mctcVariables == null || _mctcVariables.Count == 0) return false;
 
             var resultsStartIndex = allRange.Where(i => allLines[i].Contains("cw")).ToList();
             var mctcVarValueEndIndex = allRange.Where(i => allLines[i].Contains("nw")).ToList();
-            if (resultsStartIndex.Count == 0 || mctcVarValueEndIndex.Count == 0) return;
+            if (resultsStartIndex.Count == 0 || mctcVarValueEndIndex.Count == 0) return false;
             for (int i = 0; i < resultsStartIndex.Count; i++)
             {
                 var valsLine = string.Join("", allLines.GetRange(resultsStartIndex[i], mctcVarValueEndIndex[i] - resultsStartIndex[i]).ToArray());
@@ -237,6 +247,8 @@ namespace Xeovis.UI.Models.FileReaders
                         batch.xeosVariables.Remove(modelVar);
                 }
             }
+
+            return true;
         }
 
         private List<string> ReadFileLines(string filePartialName)

@@ -4,6 +4,8 @@ using MsBox.Avalonia.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
+using System.Xml;
 using Xeovis.Domain;
 using Xeovis.Presentation;
 using Xeovis.UI.Models;
@@ -135,14 +137,17 @@ namespace Xeovis.UI.Views
             if (isMctcBundle)
             {
                 var bundle = _viewModel.mctcBundles.FirstOrDefault(x => x.Id == node.PresenterId);
+                if (bundle == null)
+                    return;
 
                 var addPlotItem = new MenuItem() { Header = "Add New Plot" };
                 addPlotItem.Click += (s, e) => mainMenu.LoadNewPlotDialog(node.PresenterId);
                 menu.Items.Insert(0, addPlotItem);
 
                 var reloadItem = new MenuItem() { Header = "Reload" };
-                ToolTip.SetTip(reloadItem, "Reloads the bundle from its directory");
-                reloadItem.Click += (s, e) => mainMenu.LoadMctcBundle(bundle.FilesDirectory);
+                ToolTip.SetTip(reloadItem, $"Reloads the bundle from its directory:\n{bundle.FilesDirectory}");
+                reloadItem.Click += reloadItem_Click;
+                reloadItem.Tag = bundle;
                 menu.Items.Insert(1, reloadItem);
 
                 deleteItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteMctcBundle(node.PresenterId), $"{node.Label} and its plots");
@@ -169,8 +174,13 @@ namespace Xeovis.UI.Views
             {
                 var mctcPlotDto = _viewModel.mctcPlotDtos.FirstOrDefault(x => x.Id == node.PresenterId);
                 var bundle = _viewModel.mctcBundles.FirstOrDefault(x => x.Id == mctcPlotDto.mctcBundleId);
-
                 var tab = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase).PresenterId == node.PresenterId) as TabControlViewModelBase;
+
+                if (mctcPlotDto == null || bundle == null || tab == null)
+                {
+                    return;
+                }
+
                 var openItem = new MenuItem() { Header = "Open" };
                 openItem.Click += (s, e) =>
                 {
@@ -219,7 +229,6 @@ namespace Xeovis.UI.Views
 
             tvMctcBundles.ContextMenu = menu;
         }
-
         private void tvExperiments_ContextRequested(object? sender, ContextRequestedEventArgs e)
         {
             if (sender is not TreeView treeView) return;
@@ -256,6 +265,36 @@ namespace Xeovis.UI.Views
             }
 
             tvExperiments.ContextMenu = menu;
+        }
+
+        private async void reloadItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (sender is not MenuItem menuItem) return;
+            if (menuItem.Tag is not mctcBundle bundle) return;
+
+            var newBundle = await mainMenu.LoadMctcBundle(bundle.FilesDirectory);
+            if (newBundle != null)
+            {
+                newBundle.Id = bundle.Id;
+                newBundle.Name = bundle.Name;
+                var index = _viewModel.mctcBundles.FindIndex(x => x.Id == newBundle.Id);
+                _viewModel.mctcBundles[index] = newBundle;
+
+                foreach (var plotDto in _viewModel.mctcPlotDtos.Where(x => x.mctcBundleId == newBundle.Id))
+                {
+                    var tab = _viewModel.TabControls.FirstOrDefault(x => x.PresenterId == plotDto.Id);
+                    if (tab?.OwnerTabControl is ImctcPlotView mctcPlot)
+                        mctcPlot.PopulateUI(plotDto, newBundle);
+                }
+            }
+            else
+            {
+                var mb = MessageBoxManager.GetMessageBoxStandard("Error", $"Failed to reload {bundle.Name}!", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
+                await mb.ShowWindowDialogAsync(this);
+
+                // log
+                // put warning icon in tree node and plots tab header
+            }
         }
 
         public async void RequestRemovalConfirmationAndProceed(Action action, string tobeRemovedName)

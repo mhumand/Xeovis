@@ -38,10 +38,8 @@
 		</MenuItem>
 		
 		<MenuItem Header="_MCTC">
-			<MenuItem Header="_Reload" ToolTip.Tip="Reloads the last mctc bundle from its directory"/>
-			<MenuItem Header="_Load Bundle" Command="{Binding MctcPlots_LoadBundle}"/>
-			<Separator/>
-			<MenuItem Header="_New Plot" Command="{Binding MctcPlots_NewPlot}"/>
+			<MenuItem Header="_Load Bundle" Command="{Binding Mctc_LoadBundle}"/>
+			<MenuItem Header="_New Plot" Command="{Binding Mctc_NewPlot}"/>
 		</MenuItem>
 
 		<MenuItem Header="View">
