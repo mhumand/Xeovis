@@ -228,7 +228,9 @@ namespace Xeovis.UI.Views
             menu.Items.Add(settingsItem);
 
             tvMctcBundles.ContextMenu = menu;
+            tvMctcBundles.ContextMenu.Open();
         }
+
         private void tvExperiments_ContextRequested(object? sender, ContextRequestedEventArgs e)
         {
             if (sender is not TreeView treeView) return;
@@ -265,6 +267,7 @@ namespace Xeovis.UI.Views
             }
 
             tvExperiments.ContextMenu = menu;
+            tvExperiments.ContextMenu.Open();
         }
 
         private async void reloadItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
