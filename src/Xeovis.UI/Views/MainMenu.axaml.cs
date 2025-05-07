@@ -3,6 +3,7 @@ using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xeovis.Persistence;
@@ -23,16 +24,35 @@ public partial class MainMenu : UserControl
 
     public MainWindow? ParentWindow;
 
+    private string _lastFilePath;
+
     public MainMenu()
     {
         InitializeComponent();
         DataContext = this;
+        _lastFilePath = string.Empty;
     }
 
     // Project
-    public void Project_New()
+    public async void Project_New()
     {
+        if (ParentWindow == null) return;
+        if (File.Exists(_lastFilePath))
+        {
+            var mb = MessageBoxManager.GetMessageBoxStandard("Unsaved Contents", "You have unsaved contents.\nDo you want to save and continue?", ButtonEnum.YesNoCancel, Icon.Warning);
+            var result = await mb.ShowWindowDialogAsync(ParentWindow);
+            if (result == ButtonResult.Yes)
+            {
+                await Save(isSaveAs: false);
+            }
+            else if (result != ButtonResult.No)
+            {
+                return;
+            }
+        }
 
+        _lastFilePath = string.Empty;
+        ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(null));
     }
 
     public async void Project_Open()
@@ -56,26 +76,39 @@ public partial class MainMenu : UserControl
             return;
         }
 
+        _lastFilePath = path;
         ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(projectFile, path));
     }
 
     public async void Project_Save()
     {
+        await Save(isSaveAs: false);
+    }
+
+    private async Task Save(bool isSaveAs = false)
+    {
         var projectFile = GetProjectFile();
         if (projectFile == null) return;
 
-        var topLevel = TopLevel.GetTopLevel(this);
-        if (topLevel == null) return;
-        var options = new FilePickerSaveOptions()
+        string path;
+        if (isSaveAs || !File.Exists(_lastFilePath))
         {
-            Title = "Save",
-            ShowOverwritePrompt = true,
-            FileTypeChoices = [FileExtentionHelper.GetFilePickerFileType(FileExtensionType.XVS)]
-        };
+            var topLevel = TopLevel.GetTopLevel(this);
+            if (topLevel == null) return;
+            var options = new FilePickerSaveOptions()
+            {
+                Title = "Save",
+                ShowOverwritePrompt = true,
+                FileTypeChoices = [FileExtentionHelper.GetFilePickerFileType(FileExtensionType.XVS)]
+            };
 
-        var files = await topLevel.StorageProvider.SaveFilePickerAsync(options);
-        if (files == null) return;
-        var path = Uri.UnescapeDataString(files.Path.AbsolutePath);
+            var files = await topLevel.StorageProvider.SaveFilePickerAsync(options);
+            if (files == null) return;
+            path = Uri.UnescapeDataString(files.Path.AbsolutePath);
+        }
+        else
+            path = _lastFilePath;
+
         var result = ProjectFileManager.Save(projectFile, path);
         if (!result)
         {
@@ -93,9 +126,9 @@ public partial class MainMenu : UserControl
         return projectFile;
     }
 
-    public void Project_SaveAs()
+    public async void Project_SaveAs()
     {
-
+        await Save(isSaveAs: true);
     }
 
     public void Project_Quit()

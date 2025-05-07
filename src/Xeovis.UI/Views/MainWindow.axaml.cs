@@ -59,11 +59,10 @@ namespace Xeovis.UI.Views
         #region Events
         private void MainMenu_ProjectLoaded(object? sender, Models.Events.ProjectFileLoadedEventArgs e)
         {
-            if (e.Project == null) return;
-
             _viewModel.ClearAll();
             _dataManagerTab = null;
 
+            if (e.Project == null) return;
             OnExperimentsLoaded(e.Project.Experiments);
             e.Project.mctcBundles.ForEach(x => OnMctcBundleLoaded(x));
             e.Project.mctcPlotDtos.ForEach(x => CreateMctcPlot(x));
