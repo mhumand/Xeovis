@@ -24,6 +24,7 @@
 			<MenuItem Header="_New" Command="{Binding Project_New}"/>
 			<MenuItem Header="_Open" Command="{Binding Project_Open}"/>
 			<MenuItem Header="_Save" Command="{Binding Project_Save}"/>
+			<MenuItem Header="_Save As" Command="{Binding Project_SaveAs}"/>
 			<Separator/>
 			<MenuItem Header="_Preferences"/>
 			<MenuItem Header="_Quit" Command="{Binding Project_Quit}"/>

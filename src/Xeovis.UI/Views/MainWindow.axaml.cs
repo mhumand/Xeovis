@@ -37,11 +37,6 @@ namespace Xeovis.UI.Views
         {
             mainMenu.ParentWindow = this;
             tabControl.ItemsSource = _viewModel.TabControls;
-
-            var dataManagerViewModel = _viewModel.CreateDataManagerTabVM();
-            _dataManagerTab = new DataManagerTabControl() { ViewModel = dataManagerViewModel };
-            dataManagerViewModel.OwnerTabControl = _dataManagerTab;
-            dataManagerViewModel.IsVisible = false;
         }
 
         private void PrepareUI()
@@ -51,8 +46,10 @@ namespace Xeovis.UI.Views
 
             tvExperiments.ContextRequested += tvExperiments_ContextRequested;
             tvMctcBundles.ContextRequested += tvMctcBundles_ContextRequested;
+
             mainMenu.ExperimentsLoaded += MainMenu_ExperimentsLoaded;
             mainMenu.mctcBundleLoaded += MainMenu_mctcBundleLoaded;
+            mainMenu.ProjectLoaded += MainMenu_ProjectLoaded;
 
             _viewModel.ExperimentsDeleted += _viewModel_ExperimentsDeleted;
             _viewModel.mctcBundlesDeleted += _viewModel_mctcBundlesDeleted;
@@ -60,9 +57,24 @@ namespace Xeovis.UI.Views
         }
 
         #region Events
+        private void MainMenu_ProjectLoaded(object? sender, Models.Events.ProjectFileLoadedEventArgs e)
+        {
+            _viewModel.ClearAll();
+            _dataManagerTab = null;
+
+            if (e.Project == null) return;
+            OnExperimentsLoaded(e.Project.Experiments);
+            e.Project.mctcBundles.ForEach(x => OnMctcBundleLoaded(x));
+            e.Project.mctcPlotDtos.ForEach(x => CreateMctcPlot(x));
+        }
+
         private void MainMenu_mctcBundleLoaded(object? sender, Models.Events.mctcBundleLoadedEventArgs e)
         {
-            var bundle = e.mctcBundle;
+            OnMctcBundleLoaded(e.mctcBundle);
+        }
+
+        private void OnMctcBundleLoaded(mctcBundle bundle)
+        {
             _viewModel.mctcBundles.Add(bundle);
             var mctcNode = new TreeNode(bundle.Name) { PresenterId = bundle.Id };
             _viewModel.MctcBundleNodes.Add(mctcNode);
@@ -70,9 +82,14 @@ namespace Xeovis.UI.Views
 
         private void MainMenu_ExperimentsLoaded(object? sender, Models.Events.ExperimentsLoadedEventArgs e)
         {
+            OnExperimentsLoaded(e.Experiments);
+        }
+
+        private void OnExperimentsLoaded(List<Experiment> experiments)
+        {
             _viewModel.ExperimentNodes.Clear();
-            _viewModel.Experiments = e.Experiments;
-            foreach (var exp in e.Experiments)
+            _viewModel.Experiments = experiments;
+            foreach (var exp in experiments)
             {
                 var expNode = new TreeNode(exp.Name) { PresenterId = exp.Id };
                 foreach (var phase in exp.PhasesWithData)
@@ -84,11 +101,16 @@ namespace Xeovis.UI.Views
                 _viewModel.ExperimentNodes.Add(expNode);
             }
 
-            if (_dataManagerTab != null)
+            if (_dataManagerTab == null)
             {
-                _dataManagerTab.SetExperiments(e.Experiments);
-                _dataManagerTab.ViewModel.IsVisible = e.Experiments.Count > 0;
+                var dataManagerViewModel = _viewModel.CreateDataManagerTabVM();
+                _dataManagerTab = new DataManagerTabControl() { ViewModel = dataManagerViewModel };
+                dataManagerViewModel.OwnerTabControl = _dataManagerTab;
+                dataManagerViewModel.IsVisible = false;
             }
+
+            _dataManagerTab.SetExperiments(experiments);
+            _dataManagerTab.ViewModel.IsVisible = experiments.Count > 0;
         }
 
         private void tvMctcBundles_ContextRequested(object? sender, ContextRequestedEventArgs e)
@@ -145,11 +167,15 @@ namespace Xeovis.UI.Views
             }
             else
             {
+                var mctcPlotDto = _viewModel.mctcPlotDtos.FirstOrDefault(x => x.Id == node.PresenterId);
+                var bundle = _viewModel.mctcBundles.FirstOrDefault(x => x.Id == mctcPlotDto.mctcBundleId);
+
                 var tab = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase).PresenterId == node.PresenterId) as TabControlViewModelBase;
                 var openItem = new MenuItem() { Header = "Open" };
                 openItem.Click += (s, e) =>
                 {
                     tab.IsVisible = true;
+                    mctcPlotDto.IsVisible = true;
                     tabControl.SelectedItem = tab;
                 };
                 menu.Items.Insert(0, openItem);
@@ -160,11 +186,9 @@ namespace Xeovis.UI.Views
                 {
                     //visibleItem.IsChecked = !visibleItem.IsChecked;
                     tab.IsVisible = visibleItem.IsChecked;
+                    mctcPlotDto.IsVisible = visibleItem.IsChecked;
                 };
                 menu.Items.Add(visibleItem);
-
-                var mctcPlotDto = _viewModel.mctcPlotDtos.FirstOrDefault(x => x.Id == node.PresenterId);
-                var bundle = _viewModel.mctcBundles.FirstOrDefault(x => x.Id == mctcPlotDto.mctcBundleId);
 
                 deleteItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteMctcPlot(node.PresenterId), $"{node.Label} in {bundle.Name}");
                 deleteAllItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteAllMctcPlotsInBundle(node.PresenterId), $"all plots in {bundle.Name}");
@@ -207,7 +231,7 @@ namespace Xeovis.UI.Views
             openItem.Click += (s, e) =>
             {
                 _dataManagerTab?.OpenExperiment(node.PresenterId);
-                tabControl.SelectedItem = _dataManagerTab.ViewModel;
+                tabControl.SelectedItem = _dataManagerTab?.ViewModel;
             };
             menu.Items.Add(openItem);
 
@@ -348,7 +372,7 @@ namespace Xeovis.UI.Views
         private void _viewModel_ExperimentsDeleted(object? sender, Models.Events.ExperimentsDeletedEventArgs e)
         {
             if (_dataManagerTab == null) return;
-            _dataManagerTab?.DeleteExperiments(e.ExperimentIds);
+            _dataManagerTab.DeleteExperiments(e.ExperimentIds);
             _dataManagerTab.ViewModel.IsVisible = _viewModel.Experiments.Count > 0;
         }
 
@@ -367,7 +391,7 @@ namespace Xeovis.UI.Views
                 var tabVM = _viewModel.TabControls.FirstOrDefault(x => x.PresenterId == Id);
                 var bundle = _viewModel.mctcBundles.FirstOrDefault(x => x.Id == mctcPlotDto.mctcBundleId);
                 if (tabVM != null && bundle != null)
-                     (tabVM.OwnerTabControl as ImctcPlotView).PopulateUI(mctcPlotDto, bundle);
+                    (tabVM.OwnerTabControl as ImctcPlotView).PopulateUI(mctcPlotDto, bundle);
             }
         }
 

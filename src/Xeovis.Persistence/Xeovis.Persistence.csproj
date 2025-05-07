@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Xeovis.Domain\Xeovis.Domain.csproj" />
+    <ProjectReference Include="..\Xeovis.Presentation\Xeovis.Presentation.csproj" />
   </ItemGroup>
 
 </Project>

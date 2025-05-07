@@ -1,16 +1,16 @@
 ﻿using Xeovis.Base;
 using Xeovis.Domain;
-using Xeovis.Persistence;
+using Xeovis.Persistence.Old;
 
 namespace Xeovis.WinUI
 {
     public partial class FrmVariableDefinitions : Form
     {
         private string _fileName;
-        private ProjectSettings _projectSettings;
+        private ProjectSettings_Old _projectSettings;
         private List<XEOS> _xeosList;
 
-        public FrmVariableDefinitions(ProjectSettings projectSettings)
+        public FrmVariableDefinitions(ProjectSettings_Old projectSettings)
         {
             InitializeComponent();
             _projectSettings = projectSettings;
