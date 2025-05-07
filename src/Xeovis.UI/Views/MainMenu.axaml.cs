@@ -2,9 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,20 +37,8 @@ public partial class MainMenu : UserControl
     // Project
     public async void Project_New()
     {
-        if (ParentWindow == null) return;
-        if (File.Exists(_lastFilePath))
-        {
-            var mb = MessageBoxManager.GetMessageBoxStandard("Unsaved Contents", "You have unsaved contents.\nDo you want to save and continue?", ButtonEnum.YesNoCancel, Icon.Warning);
-            var result = await mb.ShowWindowDialogAsync(ParentWindow);
-            if (result == ButtonResult.Yes)
-            {
-                await Save(isSaveAs: false);
-            }
-            else if (result != ButtonResult.No)
-            {
-                return;
-            }
-        }
+        var goAhead = await CheckAndRaiseUnsavedChangesMessage();
+        if (!goAhead) return;
 
         _lastFilePath = string.Empty;
         ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(null));
@@ -60,6 +46,9 @@ public partial class MainMenu : UserControl
 
     public async void Project_Open()
     {
+        var goAhead = await CheckAndRaiseUnsavedChangesMessage();
+        if (!goAhead) return;
+
         var topLevel = TopLevel.GetTopLevel(this);
         if (topLevel == null) return;
         var options = new FilePickerOpenOptions()
@@ -81,6 +70,21 @@ public partial class MainMenu : UserControl
 
         _lastFilePath = path;
         ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(projectFile, path));
+    }
+
+    private async Task<bool> CheckAndRaiseUnsavedChangesMessage()
+    {
+        if (File.Exists(_lastFilePath) && ParentWindow != null)
+        {
+            var mb = MessageBoxManager.GetMessageBoxStandard("Unsaved Changes", "You have unsaved changes.\nDo you want to save before continuing?", ButtonEnum.YesNoCancel, Icon.Warning);
+            var result = await mb.ShowWindowDialogAsync(ParentWindow);
+            if (result == ButtonResult.Yes)
+                await Save(isSaveAs: false);
+            else if (result == ButtonResult.Cancel)
+                return false;
+        }
+
+        return true;
     }
 
     public async void Project_Save()
