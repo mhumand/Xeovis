@@ -13,7 +13,7 @@
 		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
 
 		<Style Selector="Border.Custom">
-			<Setter Property="BorderThickness" Value="1.5"/>
+			<Setter Property="BorderThickness" Value="1.3"/>
 			<Setter Property="BorderBrush" Value="#AF6A0B"/>
 			<Setter Property="Padding" Value="3" />
 			<Setter Property="Margin" Value="0" />
@@ -123,6 +123,7 @@
 							<!--Phase Filters-->
 							<Border Grid.Row="0"
 									Classes="Custom"
+									BorderBrush="Gray"
 									Margin="1">
 								<Grid RowDefinitions="25,*">
 									<TextBlock Grid.Row="0"
@@ -143,6 +144,7 @@
 							<!--Chart Legend-->
 							<Border Grid.Row="2"
 									Classes="Custom"
+									BorderBrush="Gray"
 									Margin="1">
 								<Grid RowDefinitions="25,*">
 									<TextBlock Grid.Row="0"
