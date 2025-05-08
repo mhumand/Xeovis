@@ -5,21 +5,6 @@ namespace Xeovis.UI.Views.Helpers
 {
     public static class FileExtentionHelper
     {
-        public static string[]? GetPatterns(FileExtensionType extensionType)
-        {
-            switch (extensionType)
-            {
-                case FileExtensionType.Excel:
-                    return ["*.xls", "*.xlsx"];
-                case FileExtensionType.JSON:
-                    break;
-                case FileExtensionType.Txt:
-                    break;
-            }
-
-            return null;
-        }
-
         public static FilePickerFileType GetFilePickerFileType(FileExtensionType extensionType)
         {
             switch (extensionType)
@@ -32,14 +17,21 @@ namespace Xeovis.UI.Views.Helpers
                         Patterns = ["*.xvs"]
                     };
                 case FileExtensionType.Excel:
-                    return new FilePickerFileType("Excel")
+                    return new FilePickerFileType("Excel File")
                     {
-                        Patterns = GetPatterns(extensionType)
+                        Patterns = ["*.xls", "*.xlsx"]
                     };
                 case FileExtensionType.JSON:
                     break;
                 case FileExtensionType.Txt:
-                    break;
+                    return new FilePickerFileType("Text File")
+                    {
+                        Patterns = ["*.txt"]
+                    };
+                case FileExtensionType.PNG:
+                    return FilePickerFileTypes.ImagePng;
+                case FileExtensionType.JPEG:
+                    return FilePickerFileTypes.ImageJpg;
             }
 
             return null;
