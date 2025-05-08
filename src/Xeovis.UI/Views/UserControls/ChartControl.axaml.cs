@@ -327,10 +327,11 @@ public partial class ChartControl : UserControl
         var options = new FilePickerSaveOptions();
         options.Title = "Save PNG File";
         options.FileTypeChoices = [FileExtentionHelper.GetFilePickerFileType(extensionType)];
-        var file = await TopLevel.GetTopLevel(this)?.StorageProvider.SaveFilePickerAsync(options);
+        var file = await TopLevel.GetTopLevel(this).StorageProvider.SaveFilePickerAsync(options);
 
-        using (var bitmap = new RenderTargetBitmap(pixelSize, dpi))
+        if (file != null)
         {
+            using var bitmap = new RenderTargetBitmap(pixelSize, dpi);
             bitmap.Render(control);
             bitmap.Save(file.Path.LocalPath);
         }
@@ -356,11 +357,11 @@ public partial class ChartControl : UserControl
         var options = new FilePickerSaveOptions();
         options.Title = "Save Text File";
         options.FileTypeChoices = [FileExtentionHelper.GetFilePickerFileType(Models.Enums.FileExtensionType.Txt)];
-        var file = await TopLevel.GetTopLevel(this)?.StorageProvider.SaveFilePickerAsync(options);
+        var file = await TopLevel.GetTopLevel(this).StorageProvider.SaveFilePickerAsync(options);
 
         if (file != null)
         {
-            await using var stream = await file.OpenWriteAsync();
+            using var stream = await file.OpenWriteAsync();
             using var streamWriter = new StreamWriter(stream);
             await streamWriter.WriteLineAsync(GetDataString());
         }
