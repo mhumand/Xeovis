@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using Xeovis.UI.ViewModels;
 using ScottPlot.Plottables;
-using Xeovis.UI.Models.Events;
 using System.Linq;
 using Avalonia.Media.Imaging;
 using Xeovis.Presentation;
@@ -25,6 +24,7 @@ public partial class ChartControl : UserControl
     private Dictionary<Guid, IPlottable> _plottedCurves = new Dictionary<Guid, IPlottable>();
     private Plot _plot => scottPlot.Plot;
     private Crosshair? _selectedPointCrosshair;
+    private bool _isPointSelectionActive;
 
     public event EventHandler<ChartPointSelectedEventArgs>? ChartPointSelected;
 
@@ -325,10 +325,14 @@ public partial class ChartControl : UserControl
         if ((bool)btnRectangleZoom.IsChecked)
         {
             scottPlot.UserInputProcessor.UserActionResponses.Add(new ScottPlot.Interactivity.UserActionResponses.MouseDragZoomRectangle(ScottPlot.Interactivity.StandardMouseButtons.Left));
+            if (_isPointSelectionActive)
+                scottPlot.PointerPressed -= ScottPlot_PointerPressed_PointSelection;
         }
         else
         {
             scottPlot.UserInputProcessor.RemoveAll<ScottPlot.Interactivity.UserActionResponses.MouseDragZoomRectangle>();
+            if (_isPointSelectionActive)
+                scottPlot.PointerPressed += ScottPlot_PointerPressed_PointSelection;
         }
     }
 
@@ -376,13 +380,14 @@ public partial class ChartControl : UserControl
     public void EnableCrosshairPointSelection()
     {
         DisableCrosshairPointSelection();
-
+        _isPointSelectionActive = true;
         scottPlot.PointerPressed += ScottPlot_PointerPressed_PointSelection;
     }
 
     public void DisableCrosshairPointSelection()
     {
         scottPlot.PointerPressed -= ScottPlot_PointerPressed_PointSelection;
+        _isPointSelectionActive = false;
         RemoveSelectedPointCrosshair();
     }
 
