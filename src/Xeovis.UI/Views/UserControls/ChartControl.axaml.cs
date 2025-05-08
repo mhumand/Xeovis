@@ -7,6 +7,14 @@ using ScottPlot.Plottables;
 using System.Linq;
 using Avalonia.Media.Imaging;
 using Xeovis.Presentation;
+using Avalonia;
+using System.IO;
+using Avalonia.Input;
+using System.Text;
+using Avalonia.Platform.Storage;
+using Xeovis.UI.Views.Helpers;
+using Xeovis.UI.Models.Enums;
+using Xeovis.Base;
 
 namespace Xeovis.UI;
 
@@ -38,11 +46,26 @@ public partial class ChartControl : UserControl
         scottPlot.UserInputProcessor.RightClickDragZoom(false);
         scottPlot.UserInputProcessor.RemoveAll<ScottPlot.Interactivity.UserActionResponses.MouseDragZoomRectangle>();
 
+        scottPlot.Menu = null;
+        scottPlot.KeyDown += scottPlot_KeyDown;
+        scottPlot.PointerPressed += scottPlot_PointerPressed;
+        
         btnRectangleZoom.IsCheckedChanged += btnRectangleZoom_IsCheckedChanged;
         btnResetZoom.Click += btnResetZoom_Click;
         btnZoomIn.Click += btnZoomIn_Click;
         btnZoomOut.Click += btnZoomOut_Click;
         btnLegend.IsCheckedChanged += btnLegend_IsCheckedChanged;
+    }
+
+    private void scottPlot_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        var point = e.GetCurrentPoint((Visual?)sender);
+        var plotX = point.Position.X - scottPlot.Plot.LastRender.DataRect.Left;
+        var plotY = point.Position.Y - scottPlot.Plot.LastRender.DataRect.Top;
+        if (point.Properties.IsRightButtonPressed)
+        {
+            SetContextMenu(point);
+        }
     }
 
     public bool PopulateChart(ChartModel chartModel, bool reBuild = true, bool resetZoom = true)
@@ -71,7 +94,6 @@ public partial class ChartControl : UserControl
         }
 
         SetProperties();
-        SetContextMenu();
 
         if (resetZoom)
             _plot.Axes.AutoScale();
@@ -120,18 +142,6 @@ public partial class ChartControl : UserControl
 
         _plottedCurves.Add(curve.Id, crosshair);
         return true;
-    }
-
-    private void SetContextMenu()
-    {
-        scottPlot.Menu?.Clear();
-
-        //scottPlot.Menu?.AddSeparator();
-
-        scottPlot.Menu?.Add("Reset Zoom", (plot) =>
-        {
-            plot.Axes.AutoScale();
-        });
     }
 
     private void SetProperties()
@@ -226,6 +236,136 @@ public partial class ChartControl : UserControl
     }
 
     #region Events
+
+    private void SetContextMenu(PointerPoint pointer)
+    {
+        var menu = new ContextMenu();
+
+        /// Zoom Items
+        var zoomItem = new MenuItem() { Header = "Zoom" };
+        var zoomInItem = new MenuItem() { Header = "Zoom In" };
+        zoomInItem.Click += (s, e) => ZoomIn();
+        zoomItem.Items.Add(zoomInItem);
+
+        var zoomOutItem = new MenuItem() { Header = "Zoom Out" };
+        zoomOutItem.Click += (s, e) => ZoomOut();
+        zoomItem.Items.Add(zoomOutItem);
+
+        zoomItem.Items.Add(new Separator());
+
+        var zoomResetItem = new MenuItem() { Header = "Reset Zoom" };
+        zoomResetItem.Click += (s, e) => ResetZoom();
+        zoomItem.Items.Add(zoomResetItem);
+
+        menu.Items.Add(zoomItem);
+
+        /// Export Data
+        var exportDataItem = new MenuItem() { Header = "Export Data" };
+        var copyDataToClipBoard = new MenuItem() { Header = "Copy to clipboard" };
+        copyDataToClipBoard.Click += (s, e) => TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(GetDataString());
+        exportDataItem.Items.Add(copyDataToClipBoard);
+
+        var exportAsTxt = new MenuItem() { Header = "Export as Text" };
+        exportAsTxt.Click += (s, e) => SaveDataAsTxt();
+        exportDataItem.Items.Add(exportAsTxt);
+
+        menu.Items.Add(exportDataItem);
+
+        /// Export Image
+        var exportImageItem = new MenuItem() { Header = "Export Image" };
+        var exportAsPNG = new MenuItem() { Header = "Export as PNG" };
+        exportAsPNG.Click += (s, e) => SaveChartImageAsPNG(FileExtensionType.PNG);
+        exportImageItem.Items.Add(exportAsPNG);
+
+        var exportAsJPEG = new MenuItem() { Header = "Export as JPEG" };
+        exportAsJPEG.Click += (s, e) => SaveChartImageAsPNG(FileExtensionType.JPEG);
+        exportImageItem.Items.Add(exportAsJPEG);
+
+        menu.Items.Add(exportImageItem);
+
+        /// Chart settings
+        menu.Items.Add(new Separator());
+
+        var showLegendItem = new MenuItem() { Header = "Show Legend", ToggleType = MenuItemToggleType.CheckBox, IsChecked = scottPlot.Plot.Legend.IsVisible };
+        showLegendItem.Click += (s, e) => ToggleLegendVisibility(showLegendItem.IsChecked);
+        menu.Items.Add(showLegendItem);
+
+        var showGridItem = new MenuItem() { Header = "Show Grid Lines", ToggleType = MenuItemToggleType.CheckBox, IsChecked = scottPlot.Plot.Grid.IsVisible };
+        showGridItem.Click += (s, e) => ToggleGridLinesVisibility(showGridItem.IsChecked);
+        menu.Items.Add(showGridItem);
+
+        /// other
+        menu.Items.Add(new Separator());
+
+        var copyCoordinates = new MenuItem() { Header = "Copy Coordinates" };
+        copyCoordinates.Click += (s, e) =>
+        {
+            var coords = scottPlot.Plot.GetCoordinates((float)pointer.Position.X, (float)pointer.Position.Y);
+            TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync($"{coords.X.Round(8)}\t{coords.Y.Round(8)}");
+        };
+
+        menu.Items.Add(copyCoordinates);
+
+        scottPlot.ContextMenu = menu;
+        scottPlot.ContextMenu.Open();
+    }
+
+    public async void SaveChartImageAsPNG(FileExtensionType extensionType)
+    {
+        // Ensure layout is up to date
+        //control.Measure(Avalonia.Size.Infinity);
+        //control.Arrange(new Rect(control.DesiredSize));
+        //control.UpdateLayout();
+
+        var control = scottPlot;
+        var dpi = new Vector(300, 300); // standard DPI
+        var scale = 300.0 / 96.0; // 96 is Avalonia's default DPI
+        var width = (int)(control.Bounds.Width * scale);
+        var height = (int)(control.Bounds.Height * scale);
+        var pixelSize = new Avalonia.PixelSize(width, height);
+
+        var options = new FilePickerSaveOptions();
+        options.Title = "Save PNG File";
+        options.FileTypeChoices = [FileExtentionHelper.GetFilePickerFileType(extensionType)];
+        var file = await TopLevel.GetTopLevel(this)?.StorageProvider.SaveFilePickerAsync(options);
+
+        using (var bitmap = new RenderTargetBitmap(pixelSize, dpi))
+        {
+            bitmap.Render(control);
+            bitmap.Save(file.Path.LocalPath);
+        }
+    }
+
+    private string GetDataString()
+    {
+        int maxCurveSpace = _chartModel.Curves.Max(x => x.Name.Length) + 5;
+        var sb = new StringBuilder();
+        sb.AppendLine($"{"Name".PadRight(maxCurveSpace)}{"X".PadRight(10)}Y");
+
+        foreach (var curve in _chartModel.Curves.Where(c => c.IsVisible && c.IsVisibleInLegend))
+        {
+            for (int i = 0; i < curve.DataCount; i++)
+                sb.AppendLine(($"{curve.Name.PadRight(maxCurveSpace)}{curve.Xvals[i].ToString().PadRight(10)}{curve.Yvals[i]}"));
+        }
+        
+        return sb.ToString();
+    }
+
+    private async void SaveDataAsTxt()
+    {
+        var options = new FilePickerSaveOptions();
+        options.Title = "Save Text File";
+        options.FileTypeChoices = [FileExtentionHelper.GetFilePickerFileType(Models.Enums.FileExtensionType.Txt)];
+        var file = await TopLevel.GetTopLevel(this)?.StorageProvider.SaveFilePickerAsync(options);
+
+        if (file != null)
+        {
+            await using var stream = await file.OpenWriteAsync();
+            using var streamWriter = new StreamWriter(stream);
+            await streamWriter.WriteLineAsync(GetDataString());
+        }
+    }
+
     private void ChartControl_SizeChanged(object? sender, SizeChangedEventArgs e)
     {
         if (_chartModel.HasEqualDimensions)
@@ -235,7 +375,7 @@ public partial class ChartControl : UserControl
         }
     }
 
-    private void ScottPlot_PointerPressed_PointSelection(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+    private void ScottPlot_PointerPressed_PointSelection(object? sender, PointerPressedEventArgs e)
     {
         var pointer = e.GetCurrentPoint((Avalonia.Visual?)sender);
         if (pointer.Properties.IsLeftButtonPressed)
@@ -303,11 +443,21 @@ public partial class ChartControl : UserControl
 
     private void btnZoomOut_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        ZoomOut();
+    }
+
+    private void ZoomOut()
+    {
         _plot.Axes.ZoomOut(1.2, 1.2);
         scottPlot.Refresh();
     }
 
     private void btnZoomIn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        ZoomIn();
+    }
+
+    private void ZoomIn()
     {
         _plot.Axes.ZoomIn(1.2, 1.2);
         scottPlot.Refresh();
@@ -315,8 +465,7 @@ public partial class ChartControl : UserControl
 
     private void btnResetZoom_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        _plot.Axes.AutoScale();
-        scottPlot.Refresh();
+        ResetZoom();
     }
 
     private void btnRectangleZoom_IsCheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -347,14 +496,46 @@ public partial class ChartControl : UserControl
         {
             _plot.ShowLegend();
             _chartModel.Legend.IsVisible = true;
+            btnLegend.IsChecked = true;
         }
         else
         {
             _plot.HideLegend();
             _chartModel.Legend.IsVisible = false;
+            btnLegend.IsChecked = false;
         }
 
         scottPlot.Refresh();
+    }
+
+    private void ToggleGridLinesVisibility(bool visible)
+    {
+        if (visible)
+        {
+            _plot.Grid.IsVisible = true;
+            _chartModel.IsGridVisible = true;
+        }
+        else
+        {
+            _plot.Grid.IsVisible = false;
+            _chartModel.IsGridVisible = false;
+        }
+
+        scottPlot.Refresh();
+    }
+
+
+    private void scottPlot_KeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Avalonia.Input.Key.Escape)
+        {
+            if (_isPointSelectionActive)
+            {
+                RemoveSelectedPointCrosshair();
+                ChartPointSelected?.Invoke(this, null);
+                scottPlot.Refresh();
+            }
+        }
     }
 
     #endregion
@@ -366,6 +547,12 @@ public partial class ChartControl : UserControl
             scottPlot.Reset();
         else
             _plot.Clear();
+    }
+
+    public void ResetZoom()
+    {
+        _plot.Axes.AutoScale();
+        scottPlot.Refresh();
     }
 
     public void SetAxisLimits(double minX, double minY, double maxX, double maxY)

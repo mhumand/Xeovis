@@ -201,7 +201,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
     private void chartControl_ChartPointSelected(object? sender, ChartPointSelectedEventArgs e)
     {
         int index = -1;
-        if (e.Index >= 0 && e.CurveId != Guid.Empty)
+        if (e != null && e.Index >= 0 && e.CurveId != Guid.Empty)
         {
             var columns = tableControl.ViewModel.TableModel.Columns;
             var curve = chartControl.ViewModel.ChartModel.Curves.FirstOrDefault(c => c.Id == e.CurveId);

@@ -6,6 +6,8 @@
         Excel,
         JSON,
         Txt,
-        XVS
+        XVS,
+        PNG,
+        JPEG,
     }
 }
