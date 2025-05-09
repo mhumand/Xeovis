@@ -165,7 +165,6 @@
 				<Grid>
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="1*" MinWidth="200"/>
-						<ColumnDefinition Width="10"/>
 						<ColumnDefinition Width="1*" MinWidth="200"/>
 					</Grid.ColumnDefinitions>
 
@@ -173,13 +172,9 @@
 									 Margin="3 0"
 									 Grid.Column="0"/>
 
-					<GridSplitter Grid.Column="1"
-								  ResizeDirection="Columns"/>
-
 					<uc:TableControl x:Name="tableControl"
 									 Margin="3 0 0 0"
-									 Grid.Column="2"/>
-
+									 Grid.Column="1"/>
 				</Grid>
 
 			</SplitView>
