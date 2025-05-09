@@ -47,11 +47,10 @@
 
 		<Style Selector="Button.Tabs">
 			<Setter Property="Background" Value="Transparent"/>
-			<Setter Property="Content" Value="✕"/>
 			<Setter Property="Padding" Value="0"/>
-			<Setter Property="Width" Value="20"/>
-			<Setter Property="Height" Value="20"/>
-			<Setter Property="FontWeight" Value="Bold"/>
+			<Setter Property="Opacity" Value="0.5"/>
+			<Setter Property="Width" Value="16"/>
+			<Setter Property="Height" Value="16"/>
 			<Setter Property="HorizontalContentAlignment" Value="Center"/>
 			<Setter Property="VerticalContentAlignment" Value="Center"/>
 			<Setter Property="HorizontalAlignment" Value="Right"/>
@@ -67,6 +66,10 @@
 			<Setter Property="Width" Value="14" />
 			<Setter Property="Height" Value="14" />
 			<Setter Property="VerticalAlignment" Value="Center" />
+		</Style>
+
+		<Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
+			<Setter Property="Background" Value="#AF6A0B"/>
 		</Style>
 	</Window.Styles>
 
@@ -150,7 +153,12 @@
 										Classes="Tabs"
 										Tag="{Binding Id}"
 										Click="btnCloseTab_Click"
-										IsVisible="{Binding CanBeRemoved}"/>
+										IsVisible="{Binding CanBeRemoved}">
+									<Button.Content>
+										<Image Width="10" Height="10"
+											   Source="/Assets/close.png"/>
+									</Button.Content>
+								</Button>
 							</StackPanel>
 						</DataTemplate>
 					</TabControl.ItemTemplate>
