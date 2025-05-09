@@ -525,7 +525,7 @@ namespace Xeovis.UI.Views
             else
             {
                 column.MinWidth = 150;
-                column.Width = new GridLength(200);
+                column.Width = new GridLength(220);
 
                 splitter.MinWidth = 5;
                 splitter.Width = new GridLength(5);

@@ -208,11 +208,6 @@ public partial class MainMenu : UserControl
 
     }
 
-    public void DataManager_Settings()
-    {
-
-    }
-
     // MCTC Reader
     public async void Mctc_LoadBundle()
     {
