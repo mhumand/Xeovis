@@ -80,7 +80,7 @@ namespace Xeovis.UI.ViewModels
 
             PhaseInExperimentItems.Clear();
             foreach (var phase in exp.PhasesWithData)
-                PhaseInExperimentItems.Add(new ListableItem(EnumExtensions.GetDescriptionFromValue(phase), description: phase.ToString()));
+                PhaseInExperimentItems.Add(new ListableItem(EnumExtensions.GetDescriptionFromValue(phase), description: phase.ToString(), tag: phase));
         }
 
         public TableModel CreatePhaseInExperimentTableModel(ListableItem experimentItem, ListableItem phaseItem)
