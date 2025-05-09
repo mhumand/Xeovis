@@ -100,4 +100,10 @@ public partial class DataManagerTabControl : UserControl
         lcbExperiment.ViewModel.SelectedItem = item;
         tabControl.SelectedItem = tabExperiments;
     }
+
+    public void OpenPhaseInExperiment(Guid experimentId, PhaseType phaseType)
+    {
+        OpenExperiment(experimentId);
+        lcbPhaseInExperiment.ViewModel.SelectedItem = _viewModel.PhaseInExperimentItems.FirstOrDefault(x => (PhaseType)x.Tag == phaseType);
+    }
 }

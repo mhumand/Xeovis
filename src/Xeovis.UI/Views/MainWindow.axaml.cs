@@ -96,7 +96,7 @@ namespace Xeovis.UI.Views
                 var expNode = new TreeNode(exp.Name) { PresenterId = exp.Id };
                 foreach (var phase in exp.PhasesWithData)
                 {
-                    var phaseNode = new TreeNode(phase.ToString()) { Tag = phase };
+                    var phaseNode = new TreeNode(phase.ToString()) { PresenterId = exp.Id, Tag = phase };
                     expNode.Children.Add(phaseNode);
                 }
 
@@ -239,18 +239,19 @@ namespace Xeovis.UI.Views
             var menu = new ContextMenu();
 
             var openItem = new MenuItem() { Header = "Open" };
-            openItem.Click += (s, e) =>
-            {
-                _dataManagerTab?.OpenExperiment(node.PresenterId);
-                tabControl.SelectedItem = _dataManagerTab?.ViewModel;
-            };
             menu.Items.Add(openItem);
 
-            menu.Items.Add(new Separator());
-
-            var isExperiment = _viewModel.Experiments.Any(x => x.Id == node.PresenterId);
+            var isExperiment = node.Tag is not PhaseType && _viewModel.Experiments.Any(x => x.Id == node.PresenterId);
             if (isExperiment)
             {
+                menu.Items.Add(new Separator());
+
+                openItem.Click += (s, e) =>
+                {
+                    _dataManagerTab?.OpenExperiment(node.PresenterId);
+                    tabControl.SelectedItem = _dataManagerTab?.ViewModel;
+                };
+
                 var deleteItem = new MenuItem() { Header = "Delete" };
                 deleteItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteExperiment(node.PresenterId), node.Label);
                 menu.Items.Add(deleteItem);
@@ -264,6 +265,14 @@ namespace Xeovis.UI.Views
                     menu.Items.Add(new Separator());
                     AddExpandCollapseItemsToMenu(menu, node, true);
                 }
+            }
+            else
+            {
+                openItem.Click += (s, e) =>
+                {
+                    _dataManagerTab?.OpenPhaseInExperiment(node.PresenterId, (PhaseType)node.Tag);
+                    tabControl.SelectedItem = _dataManagerTab?.ViewModel;
+                };
             }
 
             tvExperiments.ContextMenu = menu;
