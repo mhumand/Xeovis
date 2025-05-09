@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Xeovis.Presentation;
 using Xeovis.UI;
-using Xeovis.UI.Models;
 
 namespace Xeovis.TestUI;
 
@@ -30,7 +30,7 @@ public partial class FrmChartControl : Window
         curve2.Yvals = new List<double>() { 0.8, 1.5, 3.2, 5.1, 5.4, 6.5 };
 
         curve2.IsLineVisible = false;
-        curve2.MarkerType = UI.Models.Enums.MarkerType.OpenCircle;
+        curve2.MarkerType = MarkerType.OpenCircle;
         curve2.MarkerColor = Color.Blue;
 
         var chartModel = new ChartModel();
@@ -47,7 +47,7 @@ public partial class FrmChartControl : Window
         curve1.Name = "Curve 1";
         curve1.Xvals = new List<double>() { 0, 1 };
         curve1.Yvals = new List<double>() { 0, 1 };
-        curve1.CurveType = UI.Models.Enums.CurveType.Line;
+        curve1.CurveType = CurveType.Line;
         curve1.IsMarkerVisible = false;
         curve1.LineWidth = 1;
 
@@ -56,7 +56,7 @@ public partial class FrmChartControl : Window
         cross1.Xvals = new List<double>() { 0.47};
         cross1.Yvals = new List<double>() { 0.2};
         cross1.LineColor = Color.Orange;
-        cross1.CurveType = UI.Models.Enums.CurveType.Crosshair;
+        cross1.CurveType = CurveType.Crosshair;
         cross1.LineWidth = 1;
         cross1.IsMarkerVisible = false;
 
@@ -65,7 +65,7 @@ public partial class FrmChartControl : Window
         curve2.Xvals = new List<double>() { 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 0.9, 1.0 };
         curve2.Yvals = new List<double>() { 0.15, 0.18, 0.25, 0.39, 0.51, 0.75, 0.88, 0.9 };
         curve2.IsLineVisible = false;
-        curve2.MarkerType = UI.Models.Enums.MarkerType.OpenCircle;
+        curve2.MarkerType = MarkerType.OpenCircle;
         curve2.MarkerColor = Color.Blue;
 
         var chartModel = new ChartModel();
@@ -84,7 +84,7 @@ public partial class FrmChartControl : Window
         chartControl2.ChartPointSelected += ChartControl2_ChartPointSelected;
     }
 
-    private void ChartControl2_ChartPointSelected(object? sender, UI.Models.Events.ChartPointSelectedEventArgs e)
+    private void ChartControl2_ChartPointSelected(object? sender, ChartPointSelectedEventArgs e)
     {
         if (sender is not ChartControl chart) return;
 

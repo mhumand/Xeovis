@@ -12,50 +12,125 @@
 			<Setter Property="FontWeight" Value="SemiBold"/>
 		</Style>
 
+		<Style Selector="MenuItem TextBlock">
+			<Setter Property="FontSize" Value="12" />
+		</Style>
+
 		<Style Selector="Separator">
 			<Setter Property="Height" Value="0.8"/>
 			<Setter Property="Background" Value="DarkGray"/>
+		</Style>
+
+		<Style Selector="Image">
+			<Setter Property="Width" Value="16"/>
+			<Setter Property="Height" Value="16"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
 		</Style>
 	</UserControl.Styles>
 
 	<Menu VerticalAlignment="Top">
 
 		<MenuItem Header="_Project">
-			<MenuItem Header="_New" Command="{Binding Project_New}"/>
-			<MenuItem Header="_Open" Command="{Binding Project_Open}"/>
-			<MenuItem Header="_Save" Command="{Binding Project_Save}"/>
-			<MenuItem Header="_Save As" Command="{Binding Project_SaveAs}"/>
+			
+			<MenuItem x:Name="btnNew"
+					  Header="_New"
+					  Command="{Binding Project_New}">
+				<MenuItem.Icon>
+					<Image Source="/Assets/new.png"/>
+				</MenuItem.Icon>
+			</MenuItem>
+
+			<MenuItem x:Name="btnOpen"
+					  Header="_Open"
+					  Command="{Binding Project_Open}">
+				<MenuItem.Icon>
+					<Image Source="/Assets/open.png"/>
+				</MenuItem.Icon>
+			</MenuItem>
+
+			<MenuItem x:Name="btnSave"
+					  Header="_Save"
+					  Command="{Binding Project_Save}">
+				<MenuItem.Icon>
+					<Image Source="/Assets/save.png"/>
+				</MenuItem.Icon>
+			</MenuItem>
+
+			<MenuItem x:Name="btnSaveAs"
+					  Header="_Save As"
+					  Command="{Binding Project_SaveAs}">
+				<MenuItem.Icon>
+					<Image Source="/Assets/save.png"/>
+				</MenuItem.Icon>
+			</MenuItem>
+
 			<Separator/>
-			<MenuItem Header="_Preferences"/>
-			<MenuItem Header="_Quit" Command="{Binding Project_Quit}"/>
+
+			<MenuItem x:Name="btnPreferences"
+					  Header="_Preferences">
+				<MenuItem.Icon>
+					<Image Source="/Assets/preferences.png"/>
+				</MenuItem.Icon>
+			</MenuItem>
+
+			<MenuItem x:Name="btnQuit"
+					  Header="_Quit"
+					  Command="{Binding Project_Quit}">
+				<MenuItem.Icon>
+					<Image Source="/Assets/quit.png"/>
+				</MenuItem.Icon>
+			</MenuItem>
+			
 		</MenuItem>
 
 		<MenuItem Header="_Data Manager">
-			<MenuItem Header="_Load Data" Command="{Binding DataManager_LoadData}"/>
-			<MenuItem Header="_Export" Command="{Binding DataManager_Export}"/>
+			
+			<MenuItem x:Name="btnDMLoadData"
+					  Header="_Load Data"
+					  Command="{Binding DataManager_LoadData}"/>
+
+			<MenuItem x:Name="btnDMExport"
+					  Header="_Export"
+					  Command="{Binding DataManager_Export}"/>
+
 			<Separator/>
-			<MenuItem Header="_Settings" Command="{Binding DataManager_Settings}"/>
+
+			<MenuItem x:Name="btnDMSetting"
+					  Header="_Settings"
+					  Command="{Binding DataManager_Settings}"/>
+			
 		</MenuItem>
-		
+
 		<MenuItem Header="_MCTC">
-			<MenuItem Header="_Load Bundle" Command="{Binding Mctc_LoadBundle}"/>
-			<MenuItem Header="_New Plot" Command="{Binding Mctc_NewPlot}"/>
+			
+			<MenuItem x:Name="btnMctcLoadBundle"
+					  Header="_Load Bundle"
+					  Command="{Binding Mctc_LoadBundle}"/>
+
+			<MenuItem x:Name="btnMctcNewPlot"
+					  Header="_New Plot"
+					  Command="{Binding Mctc_NewPlot}"/>
+			
 		</MenuItem>
 
 		<MenuItem Header="View">
+			
 			<MenuItem x:Name="itemShowLeftPanel"
 					  ToggleType="CheckBox"
 					  IsChecked="True"
 					  Header="Show Left Panel"
 					  ToolTip.Tip="Show the experiments and mctc plots tree list panels on the left."
 					  Command="{Binding View_ShowLeftPanel}"/>
+			
 		</MenuItem>
 
 		<MenuItem Header="_Help">
+			
 			<MenuItem Header="_Help"/>
 			<Separator />
 			<MenuItem Header="_About" Command="{Binding About}" />
+			
 		</MenuItem>
 	</Menu>
-
+	
 </UserControl>

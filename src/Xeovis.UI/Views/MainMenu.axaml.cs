@@ -1,10 +1,12 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xeovis.Domain;
 using Xeovis.Persistence;
@@ -32,6 +34,29 @@ public partial class MainMenu : UserControl
         InitializeComponent();
         DataContext = this;
         _lastFilePath = string.Empty;
+        SetMenuShortcuts();
+    }
+
+    private void SetMenuShortcuts()
+    {
+        var ctrlModifier = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? KeyModifiers.Meta : KeyModifiers.Control;
+
+        btnNew.HotKey = new KeyGesture(Key.N, ctrlModifier);
+        btnOpen.HotKey = new KeyGesture(Key.O, ctrlModifier);
+        btnSave.HotKey = new KeyGesture(Key.S, ctrlModifier);
+        btnSaveAs.HotKey = new KeyGesture(Key.S, ctrlModifier | KeyModifiers.Shift);
+        btnQuit.HotKey = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new KeyGesture(Key.F4, KeyModifiers.Alt) : new KeyGesture(Key.Q, KeyModifiers.Meta);
+
+        SetInputGestureFromHotKey(btnOpen);
+        SetInputGestureFromHotKey(btnNew);
+        SetInputGestureFromHotKey(btnSave);
+        SetInputGestureFromHotKey(btnSaveAs);
+        SetInputGestureFromHotKey(btnQuit);
+    }
+
+    private void SetInputGestureFromHotKey(MenuItem menuItem)
+    {
+        menuItem.InputGesture = menuItem.HotKey;
     }
 
     // Project

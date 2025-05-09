@@ -1,10 +1,8 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using System;
 using System.Collections.Generic;
 using Xeovis.Base.Validations;
-using Xeovis.UI.Models;
+using Xeovis.Presentation;
 
 namespace Xeovis.TestUI;
 
