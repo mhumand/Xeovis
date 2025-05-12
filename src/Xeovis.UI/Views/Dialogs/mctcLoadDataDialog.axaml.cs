@@ -33,6 +33,9 @@ public partial class mctcLoadDataDialog : Window
     public mctcLoadDataDialog()
     {
         InitializeComponent();
+        if (this.Content is Control content)
+            content.DataContext = this.DataContext;
+        
         _validationList = new Dictionary<ListableItem, bool>();
     }
 

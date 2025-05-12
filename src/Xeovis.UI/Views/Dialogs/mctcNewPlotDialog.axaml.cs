@@ -38,6 +38,9 @@ public partial class mctcNewPlotDialog : Window
     public mctcNewPlotDialog()
     {
         InitializeComponent();
+        if (this.Content is Control content)
+            content.DataContext = this.DataContext;
+        
         llcSelected.ItemRemoved += llcSelected_ItemRemoved;
         lcbcMctcBundles.ListSelectionChanged += lcbcMctcBundles_ListSelectionChanged;
         llcPhase.ListSelectionChanged += llcPhase_ListSelectionChanged;
