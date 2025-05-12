@@ -8,6 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Data;
 using Xeovis.Domain;
 using Xeovis.Persistence;
 using Xeovis.UI.Models.Enums;
@@ -60,7 +62,7 @@ public partial class MainMenu : UserControl
     }
 
     // Project
-    public async void Project_New()
+    public async void File_New()
     {
         var goAhead = await CheckAndRaiseUnsavedChangesMessage();
         if (!goAhead) return;
@@ -69,7 +71,7 @@ public partial class MainMenu : UserControl
         ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(null));
     }
 
-    public async void Project_Open()
+    public async void File_Open()
     {
         var goAhead = await CheckAndRaiseUnsavedChangesMessage();
         if (!goAhead) return;
@@ -112,7 +114,7 @@ public partial class MainMenu : UserControl
         return true;
     }
 
-    public async void Project_Save()
+    public async void File_Save()
     {
         await Save(isSaveAs: false);
     }
@@ -158,12 +160,12 @@ public partial class MainMenu : UserControl
         return projectFile;
     }
 
-    public async void Project_SaveAs()
+    public async void File_SaveAs()
     {
         await Save(isSaveAs: true);
     }
 
-    public void Project_Quit()
+    public void File_Quit()
     {
         Environment.Exit(0);
     }

@@ -3,12 +3,15 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="Xeovis.UI/App.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/AboutDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/DataManagerLoadDataDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/RenameDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/mctcLoadDataDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/mctcNewPlotDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/mctcPlotSettingsDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
+        <entry key="Xeovis.UI/Views/MainMenu.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
+        <entry key="Xeovis.UI/Views/MainWindow.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
       </map>
     </option>
   </component>

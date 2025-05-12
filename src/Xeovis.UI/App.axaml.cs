@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
@@ -9,6 +10,7 @@ namespace Xeovis.UI
 {
     public partial class App : Application
     {
+        private MainWindow _mainWindow;
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
@@ -21,7 +23,8 @@ namespace Xeovis.UI
                 // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
                 // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
                 DisableAvaloniaDataAnnotationValidation();
-                desktop.MainWindow = new MainWindow();
+                _mainWindow = new MainWindow();
+                desktop.MainWindow = _mainWindow;
             }
 
             base.OnFrameworkInitializationCompleted();
@@ -38,6 +41,12 @@ namespace Xeovis.UI
             {
                 BindingPlugins.DataValidators.Remove(plugin);
             }
+        }
+        
+        private void about_OnClick(object? sender, EventArgs e)
+        {
+            var dialog = new AboutDialog();
+            dialog.ShowDialog(_mainWindow);
         }
     }
 }

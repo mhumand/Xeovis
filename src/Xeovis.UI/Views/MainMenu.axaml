@@ -32,11 +32,11 @@
 		  BorderBrush="LightGray"
 		  BorderThickness="0 0 0 1">
 
-		<MenuItem Header="_Project">
+		<MenuItem Header="_File">
 
 			<MenuItem x:Name="btnNew"
 					  Header="_New"
-					  Command="{Binding Project_New}">
+					  Command="{Binding File_New}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/MainMenu/new.png"/>
 				</MenuItem.Icon>
@@ -44,7 +44,7 @@
 
 			<MenuItem x:Name="btnOpen"
 					  Header="_Open"
-					  Command="{Binding Project_Open}">
+					  Command="{Binding File_Open}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/MainMenu/open.png"/>
 				</MenuItem.Icon>
@@ -52,7 +52,7 @@
 
 			<MenuItem x:Name="btnSave"
 					  Header="_Save"
-					  Command="{Binding Project_Save}">
+					  Command="{Binding File_Save}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/MainMenu/save.png"/>
 				</MenuItem.Icon>
@@ -60,7 +60,7 @@
 
 			<MenuItem x:Name="btnSaveAs"
 					  Header="_Save As"
-					  Command="{Binding Project_SaveAs}">
+					  Command="{Binding File_SaveAs}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/MainMenu/save.png"/>
 				</MenuItem.Icon>
@@ -77,7 +77,7 @@
 
 			<MenuItem x:Name="btnQuit"
 					  Header="_Quit"
-					  Command="{Binding Project_Quit}">
+					  Command="{Binding File_Quit}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/MainMenu/quit.png"/>
 				</MenuItem.Icon>
