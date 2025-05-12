@@ -18,6 +18,9 @@ public partial class RenameDialog : Window
     {
         InitializeComponent();
         DataContext = this;
+        if (this.Content is Control content)
+            content.DataContext = this.DataContext;
+        
         this.Loaded += RenameDialog_Loaded;
 
         var vm = new LabelInputControlViewModel();

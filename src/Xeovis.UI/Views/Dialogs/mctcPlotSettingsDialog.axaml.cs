@@ -29,6 +29,8 @@ public partial class mctcPlotSettingsDialog : Window
     public mctcPlotSettingsDialog()
     {
         InitializeComponent();
+        if (this.Content is Control content)
+            content.DataContext = this.DataContext;
     }
 
     private void PrepareUI()

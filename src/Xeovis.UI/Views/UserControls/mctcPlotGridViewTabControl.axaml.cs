@@ -35,6 +35,8 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
     public mctcPlotGridViewTabControl()
     {
         InitializeComponent();
+        if (this.Content is Control content)
+            content.DataContext = this.DataContext;
     }
 
     private void PrepareUI()

@@ -28,6 +28,8 @@ public partial class DataManagerLoadDataDialog : Window
     public DataManagerLoadDataDialog()
     {
         InitializeComponent();
+        if (this.Content is Control content)
+            content.DataContext = this.DataContext;
     }
 
     private void PrepareUI()

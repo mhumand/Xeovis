@@ -35,6 +35,8 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
     public mctcPlotSingleViewTabControl()
     {
         InitializeComponent();
+        if (this.Content is Control content)
+            content.DataContext = this.DataContext;
     }
 
     private void PrepareUI()
