@@ -4,10 +4,7 @@
     {
         public static bool IsAlmostEqual(this int a, int b, int threshold)
         {
-            if (Math.Abs(a - b) <= threshold)
-                return true;
-            else
-                return false;
+            return Math.Abs(a - b) <= threshold;
         }
 
         public static bool IsBetween(this int a, int lowerBound, int upperBound, bool inclusive = true)

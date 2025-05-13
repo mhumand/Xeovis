@@ -28,6 +28,7 @@
                 return false;
             }
 
+            _errorMessage = string.Empty;
             return true;
         }
 
@@ -37,7 +38,7 @@
             return Validate(number);
         }
 
-        public void SetMinMaxLimits(double min, double max)
+        public void SetMinMaxLimits(double? min = null, double? max = null)
         {
             _min = min;
             _max = max;
