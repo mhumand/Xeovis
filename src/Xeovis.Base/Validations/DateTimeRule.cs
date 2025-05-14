@@ -1,11 +1,11 @@
 ﻿namespace Xeovis.Base.Validations
 {
-    internal class DateTimeRule : IValidationRule<string>
+    public class DateTimeRule : IValidationRule<string>
     {
         private readonly DateTime? _min;
         private readonly DateTime? _max;
 
-        public string _errorMessage { get; set; }
+        private string _errorMessage { get; set; } = string.Empty;
         public string ErrorMessage => _errorMessage;
 
         public DateTimeRule(DateTime? minDateTime = null, DateTime? maxDateTime = null)
@@ -28,6 +28,7 @@
                 return false;
             }
 
+            _errorMessage = string.Empty;
             return true;
         }
 
