@@ -24,29 +24,29 @@
             var name = type.ToLower();
             if (name.Contains("pelite"))
                 return RockType.Metapelite;
-            else if (name.Contains("basite"))
+            if (name.Contains("basite"))
                 return RockType.Metabasite;
-            else if (name.Contains("greywacke"))
+            if (name.Contains("greywacke"))
                 return RockType.Metagreywacke;
-            else if (name.Contains("peridotite"))
+            if (name.Contains("peridotite"))
                 return RockType.Peridotite;
-            else if (name.Contains("serpentinite"))
+            if (name.Contains("serpentinite"))
                 return RockType.Serpentinite;
-            else if (name.Contains("tonalite"))
+            if (name.Contains("tonalite"))
                 return RockType.Tonalite;
-            else if (name.Contains("gneiss"))
+            if (name.Contains("gneiss"))
                 return RockType.Gneiss;
-            else if (name.Contains("amphibolite"))
+            if (name.Contains("amphibolite"))
                 return RockType.Amphibolite;
-            else if (name.Contains("metavolcanoclastic"))
+            if (name.Contains("metavolcanoclastic"))
                 return RockType.Metavolcanoclastic;
-            else if (name.Contains("eclogite"))
+            if (name.Contains("eclogite"))
                 return RockType.Eclogite;
-            else if (name.Contains("sediment"))
+            if (name.Contains("sediment"))
                 return RockType.Sediment;
-            else if (name.Contains("granulite"))
+            if (name.Contains("granulite"))
                 return RockType.Granulite;
-            
+
             return RockType.None;
         }
     }

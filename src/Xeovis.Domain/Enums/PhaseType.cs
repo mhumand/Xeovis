@@ -6,162 +6,61 @@ namespace Xeovis.Domain
     {
         NULL,
 
-        [Description("amphibole")]
-        amph,
-
-        [Description("actinolite")]
-        act,
-
-        [Description]
-        an,
-
-        [Description("biotite")]
-        bi,
-
-        [Description("coesite")]
-        coe,
-
-        [Description("chlorite")]
-        chl,
-
-        [Description("clinopyroxene")]
-        cpx,
-
-        [Description("omphacite")]
-        omp,
-
-        [Description("epidote")]
-        ep,
-
-        [Description("garnet")]
-        g,
-
-        [Description("hornblende")]
-        hb,
-
-        [Description("water")]
-        H2O,
-
-        [Description("ilmenite")]
-        ilm,
-
-        [Description("potassium feldspar")]
-        ksp,
-
-        [Description("magnetite")]
-        mt,
-
-        [Description("muscovite")]
-        mu,
-
-        [Description("olivine")]
-        ol,
-
-        [Description("orthopyroxene")]
-        opx,
-
-        [Description("plagioclase")]
-        pl,
-
-        [Description("spinel")]
-        spn,
-
-        [Description("quartz")]
-        q,
-
-        [Description("rutile")]
-        ru,
-
-        [Description("sphene")]
-        sph,
-
-        [Description("kyanite")]
-        ky,
-
-        [Description("sillimanite")]
-        sill,
-
-        [Description("andalusite")]
-        and,
-
-        [Description("liquid")]
-        L,
-
-        [Description("fluid")]
-        fl,
-
-        [Description("supercritical fluid")]
-        scfl,
-
-        [Description("phengite")]
-        phe,
-
-        [Description("zoisite")]
-        zo,
-
-        [Description("cordierite")]
-        cd,
-
-        [Description("magnesite")]
-        mag,
-
-        [Description("dolomite")]
-        dol,
-
-        [Description("calcite")]
-        cc,
-
-        [Description("zircon")]
-        zrc,
-
-        [Description("chloritoid")]
-        ctd,
-
-        [Description("graphite")]
-        gph,
-
-        [Description("antigorite")]
-        atg,
-
-        [Description("hematite")]
-        hem,
-
-        [Description("hercynite")]
-        herc,
-
-        [Description("pyrrhotite")]
-        pyrr,
-
-        [Description("gedrite")]
-        ged,
-
-        [Description("staurolite")]
-        st,
+        [Description("amphibole")] amph,
+        [Description("actinolite")] act,
+        [Description] an,
+        [Description("biotite")] bi,
+        [Description("coesite")] coe,
+        [Description("chlorite")] chl,
+        [Description("clinopyroxene")] cpx,
+        [Description("omphacite")] omp,
+        [Description("epidote")] ep,
+        [Description("garnet")] g,
+        [Description("hornblende")] hb,
+        [Description("water")] H2O,
+        [Description("ilmenite")] ilm,
+        [Description("potassium feldspar")] ksp,
+        [Description("magnetite")] mt,
+        [Description("muscovite")] mu,
+        [Description("olivine")] ol,
+        [Description("orthopyroxene")] opx,
+        [Description("plagioclase")] pl,
+        [Description("spinel")] spn,
+        [Description("quartz")] q,
+        [Description("rutile")] ru,
+        [Description("sphene")] sph,
+        [Description("kyanite")] ky,
+        [Description("sillimanite")] sill,
+        [Description("andalusite")] and,
+        [Description("liquid")] L,
+        [Description("fluid")] fl,
+        [Description("supercritical fluid")] scfl,
+        [Description("phengite")] phe,
+        [Description("zoisite")] zo,
+        [Description("cordierite")] cd,
+        [Description("magnesite")] mag,
+        [Description("dolomite")] dol,
+        [Description("calcite")] cc,
+        [Description("zircon")] zrc,
+        [Description("chloritoid")] ctd,
+        [Description("graphite")] gph,
+        [Description("antigorite")] atg,
+        [Description("hematite")] hem,
+        [Description("hercynite")] herc,
+        [Description("pyrrhotite")] pyrr,
+        [Description("gedrite")] ged,
+        [Description("staurolite")] st,
 
         // not in ds636 - dummy phases
-        [Description("allanite")]
-        allan,
+        [Description("allanite")] allan,
 
-        [Description("apatite")]
-        apat,
-
-        [Description("monazite")]
-        monaz,
-
-        [Description("quench")]
-        quench,
-
-        [Description("carbonatite")]
-        crbt,
-
-        [Description("sulphite")]
-        slpht,
-
-        [Description("opaque")]
-        opaque,
-
-        [Description("pigeonite")]
-        pig,
+        [Description("apatite")] apat,
+        [Description("monazite")] monaz,
+        [Description("quench")] quench,
+        [Description("carbonatite")] crbt,
+        [Description("sulphite")] slpht,
+        [Description("opaque")] opaque,
+        [Description("pigeonite")] pig,
     }
 
     public static class PhaseTypeExtensions
@@ -381,7 +280,9 @@ namespace Xeovis.Domain
                 case "op":
                 case "opaque":
                     return PhaseType.opaque;
-            };
+            }
+
+            ;
 
             return PhaseType.NULL;
         }

@@ -4,37 +4,20 @@
     {
         public static List<CationType> GetCationsFromModelVariable(PhaseType phase, ModelVariableType variable)
         {
-            if (phase == PhaseType.g)
-                return GetVariableCations_Garnet(variable);
-
-            if (phase == PhaseType.ol)
-                return GetVariableCations_Olivine(variable);
-
-            if (phase == PhaseType.ilm)
-                return GetVariableCations_Ilmenite(variable);
-
-            if (phase == PhaseType.cpx)
-                return GetVariableCations_Cpx(variable);
-
-            if (phase == PhaseType.opx)
-                return GetVariableCations_Opx(variable);
-
-            if (phase == PhaseType.spn)
-                return GetVariableCations_Spinel(variable);
-
-            if (phase == PhaseType.ep)
-                return GetVariableCations_Epidote(variable);
-
-            if (phase == PhaseType.pl)
-                return GetVariableCations_Plagioclase(variable);
-
-            if (phase == PhaseType.bi)
-                return GetVariableCations_Biotite(variable);
-
-            if (phase == PhaseType.phe)
-                return GetVariableCations_Phengite(variable);
-
-            return null;
+            return phase switch
+            {
+                PhaseType.g => GetVariableCations_Garnet(variable),
+                PhaseType.ol => GetVariableCations_Olivine(variable),
+                PhaseType.ilm => GetVariableCations_Ilmenite(variable),
+                PhaseType.cpx => GetVariableCations_Cpx(variable),
+                PhaseType.opx => GetVariableCations_Opx(variable),
+                PhaseType.spn => GetVariableCations_Spinel(variable),
+                PhaseType.ep => GetVariableCations_Epidote(variable),
+                PhaseType.pl => GetVariableCations_Plagioclase(variable),
+                PhaseType.bi => GetVariableCations_Biotite(variable),
+                PhaseType.phe => GetVariableCations_Phengite(variable),
+                _ => null
+            };
         }
 
         private static List<CationType> GetVariableCations_Garnet(ModelVariableType variable)
@@ -281,6 +264,5 @@
 
             return list;
         }
-
     }
 }
