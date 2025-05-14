@@ -8,20 +8,28 @@ public static class DirectoryHelper
 {
     public static void GoToDirectory(string path)
     {
-        var psi = new ProcessStartInfo
-        {
-            Arguments = $"\"{path}\"",
-            UseShellExecute = false
-        };
-        
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            psi.FileName = "explorer";
+        {
+            var psi = new ProcessStartInfo()
+            {
+                FileName = path,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+        }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            psi.FileName = "open";
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            psi.FileName = "xdg-open";
-
-        Process.Start(psi);
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = "open",
+                Arguments = $"\"{path}\"",
+                UseShellExecute = false
+            };
+            Process.Start(psi);
+        }
+        
+        // else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        // psi.FileName = "xdg-open";
     }
 
     public static bool DirectoryExists(string path)
