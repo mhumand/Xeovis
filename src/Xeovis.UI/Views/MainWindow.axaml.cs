@@ -4,14 +4,13 @@ using MsBox.Avalonia.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Xml;
 using Xeovis.Domain;
 using Xeovis.Presentation;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
 using Xeovis.UI.ViewModels.DialogsViewModels;
+using Xeovis.UI.Views.Helpers;
 
 namespace Xeovis.UI.Views
 {
@@ -161,14 +160,21 @@ namespace Xeovis.UI.Views
 
                 // rename
                 var otherNames = _viewModel.mctcBundles.Except(new List<mctcBundle> { bundle }).Select(x => x.Name).ToList();
-
                 void Rename(mctcBundle mctcBundle, string newName)
                 {
                     mctcBundle.Name = newName;
                     OnMctcBundleRenamed(mctcBundle);
                 }
-
                 renameItem.Click += (s, e) => RenameObjectWithDialog(bundle, otherNames, x => x.Name, Rename);
+                
+                // Directory
+                if (DirectoryHelper.DirectoryExists(bundle.FilesDirectory))
+                {
+                    menu.Items.Add(new Separator());
+                    var directoryItem = new MenuItem() { Header = "Go to Directory" };
+                    directoryItem.Click += (s, e) => DirectoryHelper.GoToDirectory(bundle.FilesDirectory);
+                    menu.Items.Add(directoryItem);
+                }
             }
             else
             {
@@ -205,13 +211,11 @@ namespace Xeovis.UI.Views
 
                 // rename
                 var otherNames = _viewModel.mctcPlotDtos.Except(new List<mctcPlotDto> { mctcPlotDto }).Select(x => x.Name).ToList();
-
                 void Rename(mctcPlotDto plotDto, string newName)
                 {
                     plotDto.Name = newName;
                     OnMctcPlotRenamed(plotDto);
                 }
-
                 renameItem.Click += (s, e) => RenameObjectWithDialog(mctcPlotDto, otherNames, x => x.Name, Rename);
             }
 
@@ -244,8 +248,9 @@ namespace Xeovis.UI.Views
             var isExperiment = node.Tag is not PhaseType && _viewModel.Experiments.Any(x => x.Id == node.PresenterId);
             if (isExperiment)
             {
+                var experiment = _viewModel.Experiments.FirstOrDefault(x => x.Id == node.PresenterId);
+               
                 menu.Items.Add(new Separator());
-
                 openItem.Click += (s, e) =>
                 {
                     _dataManagerTab?.OpenExperiment(node.PresenterId);
@@ -264,6 +269,15 @@ namespace Xeovis.UI.Views
                 {
                     menu.Items.Add(new Separator());
                     AddExpandCollapseItemsToMenu(menu, node, true);
+                }
+                
+                // Directory
+                if (DirectoryHelper.DirectoryExists(experiment.Path))
+                {
+                    menu.Items.Add(new Separator());
+                    var directoryItem = new MenuItem() { Header = "Go to Directory" };
+                    directoryItem.Click += (s, e) => DirectoryHelper.GoToDirectory(experiment.Path);
+                    menu.Items.Add(directoryItem);
                 }
             }
             else
