@@ -3,7 +3,7 @@
     public class Experiment
     {
         public string Name { get; set; }
-        public string ShortName { get; }
+        public string ShortName => GetShortName();
         public Guid Id { get; set; }
         public List<ExpRun> Runs { get; set; }
         public string Path { get; set; }
@@ -13,7 +13,6 @@
         public Experiment()
         {
             Name = "string.Empty";
-            ShortName = string.Empty;
             Path = string.Empty;
             Id = Guid.NewGuid();
             Runs = new List<ExpRun>();
@@ -24,12 +23,14 @@
         public Experiment(string name, string path) : this()
         {
             Name = name;
-            ShortName = GetShortName();
             Path = path;
         }
 
         private string GetShortName()
         {
+            if (string.IsNullOrWhiteSpace(Name))
+                return string.Empty;
+            
             string shortName = new string(Name.Where(c => char.IsUpper(c)).ToArray());
             shortName += Name.Substring(Name.Length - 2);
             return shortName;

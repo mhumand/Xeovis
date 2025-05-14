@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xeovis.Presentation", "Xeov
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xeovis.Base.Tests", "Xeovis.Base.Tests\Xeovis.Base.Tests.csproj", "{EB0D7FC7-5BAA-4187-A51E-143BFD50162D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xeovis.Domain.Tests", "Xeovis.Domain.Tests\Xeovis.Domain.Tests.csproj", "{A41F95EE-1E6E-4F7C-A92A-90FC76601506}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{EB0D7FC7-5BAA-4187-A51E-143BFD50162D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB0D7FC7-5BAA-4187-A51E-143BFD50162D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB0D7FC7-5BAA-4187-A51E-143BFD50162D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A41F95EE-1E6E-4F7C-A92A-90FC76601506}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A41F95EE-1E6E-4F7C-A92A-90FC76601506}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A41F95EE-1E6E-4F7C-A92A-90FC76601506}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A41F95EE-1E6E-4F7C-A92A-90FC76601506}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

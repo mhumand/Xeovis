@@ -22,7 +22,6 @@
         public int ReadingIndex { get; set; }
         public RockType Rocktype { get; set; }
 
-
         public ExpRun()
         {
             Id = Guid.NewGuid();
