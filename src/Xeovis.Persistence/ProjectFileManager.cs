@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Xeovis.Persistence.Proxies;
 
 namespace Xeovis.Persistence
 {
@@ -6,15 +9,16 @@ namespace Xeovis.Persistence
     {
         public static bool Save(ProjectFile projectFile, string fullName)
         {
-
             var jsonSettings = new JsonSerializerSettings();
             jsonSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             jsonSettings.NullValueHandling = NullValueHandling.Ignore;
             jsonSettings.Formatting = Formatting.Indented;
             jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
+            jsonSettings.Converters.Add(new StringEnumConverter());
 
             projectFile.CreatedAt = DateTime.Now;
-            var json = JsonConvert.SerializeObject(projectFile, jsonSettings);
+            var persistable = new ProjectFile01(projectFile);
+            var json = JsonConvert.SerializeObject(persistable, jsonSettings);
 
             try
             {
@@ -29,18 +33,28 @@ namespace Xeovis.Persistence
 
         public static ProjectFile Load(string fullName)
         {
-            var json = File.ReadAllText(fullName);
-
             try
             {
-                var projectFile = JsonConvert.DeserializeObject<ProjectFile>(json);
-                return projectFile;
+                var json = File.ReadAllText(fullName);
+                using var doc = JsonDocument.Parse(json);
+                int version = doc.RootElement.GetProperty("Version").GetInt32();
+
+                return version switch
+                {
+                    1 => FromV01(json),
+                    _ => throw new NotSupportedException("Unknown version")
+                };
             }
             catch (Exception)
             {
-
                 return null;
             }
+        }
+
+        private static ProjectFile FromV01(string json)
+        {
+            var persistable = JsonConvert.DeserializeObject<ProjectFile01>(json);
+            return persistable.ConvertToRealObject();
         }
     }
 }
