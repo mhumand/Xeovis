@@ -1,0 +1,24 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <TreeView />
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="TreeView">
+        <Setter Property="Margin" Value="0 2"/>
+    </Style>
+
+    <Style Selector="TreeViewItem">
+        <Setter Property="MinHeight" Value="25"/>
+    </Style>
+		
+    <Style Selector="TreeViewItem /template/ Border#PART_LayoutRoot:pointerover">
+        <Setter Property="Background" Value="{DynamicResource TreeViewItemBackground}"/>
+    </Style>
+		
+    <Style Selector="TreeViewItem:selected /template/ Border#PART_LayoutRoot:pointerover">
+        <Setter Property="Background" Value="{DynamicResource TreeViewItemBackgroundSelected}"/>
+    </Style>
+</Styles>

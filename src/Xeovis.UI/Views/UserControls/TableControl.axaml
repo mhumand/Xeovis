@@ -3,31 +3,63 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
-			 MinHeight="100"
-			 MinWidth="200"
-			 xmlns:vm="using:Xeovis.UI.ViewModels"
-			 x:DataType="vm:TableControlViewModel"
+             MinHeight="100"
+             MinWidth="200"
+             xmlns:vm="using:Xeovis.UI.ViewModels"
+             x:DataType="vm:TableControlViewModel"
              x:Class="Xeovis.UI.TableControl">
 
-	<UserControl.Styles>
-		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
+    <UserControl.Styles>
+        <StyleInclude Source="/Views/Styles/UserControls.axaml" />
 
-		<Style Selector="DataGridColumnHeader">
-			<Setter Property="Padding" Value="5 0"/>
-			<Setter Property="VerticalContentAlignment" Value="Center"/>
-			<Setter Property="Margin" Value="0"/>
-			<Setter Property="Foreground" Value="Black"/>
-			<Setter Property="FontWeight" Value="SemiBold"/>
-			<Setter Property="FontSize" Value="14"/>
-		</Style>
+        <Style Selector="DataGridColumnHeader">
+            <Setter Property="Padding" Value="5 0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        
+        <Style Selector="DataGridRow:pointerover:selected /template/ Rectangle#BackgroundRectangle">
+            <Setter Property="Fill" Value="{DynamicResource DataGridRowSelectedUnfocusedBackgroundBrush}" />
+            <Setter Property="Opacity" Value="{DynamicResource  DataGridRowSelectedUnfocusedBackgroundOpacity}" />
+        </Style>
 
-		<Style Selector="DataGridCell:invalid TextBox">
-			<Setter Property="ToolTip.Tip" Value="dsvd" />
-		</Style>
-	</UserControl.Styles>
+        <Style Selector="DataGridRow">
+            <Setter Property="Height" Value="28" />
+        </Style>
+        
+        <Style Selector="DataGridCell">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        
+        <Style Selector="DataGridCell TextBox">
+            <Setter Property="Height" Value="28" />
+            <Setter Property="MinHeight" Value="28" />
+            <Setter Property="Padding" Value="10 0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        
+        <Style Selector="DataGrid:focus DataGridCell:current /template/ Grid#FocusVisual"> 
+            <Setter Property="IsVisible" Value="False" /> 
+        </Style> 
+        
+        <!-- <Style Selector="DataGridCell:invalid TextBox"> -->
+        <!-- 	<Setter Property="ToolTip.Tip" Value="dsvd" /> -->
+        <!-- </Style> -->
+        
+        <Style Selector="ComboBox">
+            <Setter Property="MinHeight" Value="28" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Padding" Value="10 0" />
+        </Style>
+        
+    </UserControl.Styles>
 
-	<Border BorderBrush="LightGray" BorderThickness="1">
-		<DataGrid x:Name="dataGrid"/>
-	</Border>
+    <Border BorderBrush="LightGray" BorderThickness="1">
+        <DataGrid x:Name="dataGrid" />
+    </Border>
 
 </UserControl>

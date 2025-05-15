@@ -17,21 +17,17 @@
 	<Window.Styles>
 		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
 		<StyleInclude Source="/Views/Styles/TabItems.axaml"/>
+		<StyleInclude Source="/Views/Styles/TreeViews.axaml"/>
 
 		<Style Selector="TextBlock.Primary">
 			<Setter Property="FontWeight" Value="SemiBold"/>
 			<Setter Property="VerticalAlignment" Value="Center"/>
 		</Style>
 
-		<Style Selector="TreeView">
-			<Setter Property="Margin" Value="0 2"/>
-		</Style>
-
 		<Style Selector="TreeViewItem"  x:DataType="vmModels:TreeNode">
-			<Setter Property="MinHeight" Value="25"/>
 			<Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
 		</Style>
-
+		
 		<Style Selector="GridSplitter">
 			<Setter Property="Background" Value="LightGray"/>
 			<Setter Property="BorderThickness" Value="3"/>
