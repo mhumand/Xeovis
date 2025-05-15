@@ -106,6 +106,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         {
             tableControl.ClearTable();
             chartControl.ClearPlot();
+            stackLegend.Children.Clear();
             return;
         }
 
