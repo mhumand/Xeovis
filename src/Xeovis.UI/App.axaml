@@ -51,5 +51,6 @@
         <StyleInclude Source="/Views/Styles/UserControls.axaml" />
         <StyleInclude Source="/Views/Styles/ProgressBars.axaml" />
         <StyleInclude Source="/Views/Styles/TabItems.axaml" />
+        <StyleInclude Source="/Views/Styles/TreeViews.axaml" />
     </Application.Styles>
 </Application>

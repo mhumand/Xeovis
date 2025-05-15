@@ -17,6 +17,7 @@ namespace Xeovis.UI;
 public partial class TableControl : UserControl
 {
     private TableControlViewModel _viewModel = new TableControlViewModel();
+
     public TableControlViewModel ViewModel
     {
         get { return _viewModel; }
@@ -90,6 +91,7 @@ public partial class TableControl : UserControl
             }
             else if (column.HasOptions)
             {
+                // Combobox column
                 dataGrid.Columns.Add(new DataGridTemplateColumn
                 {
                     Header = header,
@@ -181,8 +183,11 @@ public partial class TableControl : UserControl
         dataGrid.CanUserResizeColumns = _tableModel.CanResizeColumns;
         dataGrid.CanUserSortColumns = _tableModel.CanSortColumns;
         dataGrid.CanUserReorderColumns = _tableModel.CanReorderColumns;
-        dataGrid.SelectionMode = _tableModel.IsMultiSelect ? DataGridSelectionMode.Extended : DataGridSelectionMode.Single;
-        dataGrid.ClipboardCopyMode = _tableModel.CopyToClipboardWithHeaders ? DataGridClipboardCopyMode.IncludeHeader : DataGridClipboardCopyMode.ExcludeHeader;
+        dataGrid.SelectionMode =
+            _tableModel.IsMultiSelect ? DataGridSelectionMode.Extended : DataGridSelectionMode.Single;
+        dataGrid.ClipboardCopyMode = _tableModel.CopyToClipboardWithHeaders
+            ? DataGridClipboardCopyMode.IncludeHeader
+            : DataGridClipboardCopyMode.ExcludeHeader;
     }
 
     private void DataGrid_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
@@ -259,7 +264,8 @@ public partial class TableControl : UserControl
     private void DataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         var rowIndex = dataGrid.SelectedIndex;
-        SelectionChanged?.Invoke(this, new TableSelectionChangedEventArgs(10, 0, e.AddedItems.Count > 0 ? e.AddedItems[0] : null));
+        SelectionChanged?.Invoke(this,
+            new TableSelectionChangedEventArgs(10, 0, e.AddedItems.Count > 0 ? e.AddedItems[0] : null));
     }
 
     public void SelectRow(int rowIndex)
