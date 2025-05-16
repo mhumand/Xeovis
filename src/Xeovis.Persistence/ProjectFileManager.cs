@@ -7,18 +7,20 @@ namespace Xeovis.Persistence
 {
     public static class ProjectFileManager
     {
+        private static JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Formatting.Indented,
+            DefaultValueHandling = DefaultValueHandling.Ignore,
+            Converters = new List<JsonConverter>() { new StringEnumConverter(), },
+        };
+
         public static bool Save(ProjectFile projectFile, string fullName)
         {
-            var jsonSettings = new JsonSerializerSettings();
-            jsonSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            jsonSettings.NullValueHandling = NullValueHandling.Ignore;
-            jsonSettings.Formatting = Formatting.Indented;
-            jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
-            jsonSettings.Converters.Add(new StringEnumConverter());
-
             projectFile.CreatedAt = DateTime.Now;
             var persistable = new ProjectFile01(projectFile);
-            var json = JsonConvert.SerializeObject(persistable, jsonSettings);
+            var json = JsonConvert.SerializeObject(persistable, _jsonSettings);
 
             try
             {
@@ -53,7 +55,7 @@ namespace Xeovis.Persistence
 
         private static ProjectFile FromV01(string json)
         {
-            var persistable = JsonConvert.DeserializeObject<ProjectFile01>(json);
+            var persistable = JsonConvert.DeserializeObject<ProjectFile01>(json, _jsonSettings);
             return persistable.ConvertToRealObject();
         }
     }

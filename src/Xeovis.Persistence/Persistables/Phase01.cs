@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Xeovis.Domain;
 
 namespace Xeovis.Persistence.Proxies;
