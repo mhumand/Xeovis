@@ -92,6 +92,9 @@ public partial class MainMenu : UserControl
         if (projectFile == null)
         {
             // log
+            var ms = MessageBoxManager.GetMessageBoxStandard("Error", "Failed to open the project file!", ButtonEnum.Ok,
+                Icon.Error);
+            ms.ShowWindowDialogAsync(ParentWindow);
             return;
         }
 

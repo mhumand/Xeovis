@@ -5,8 +5,9 @@
         public string Name { get; set; }
         public Guid Id { get; set; }
         public List<Phase> Phases { get; set; }
-        public List<double> BulkComposition { get; set; }
-        public List<OxideType> BulkOxides { get; set; }
+        public Dictionary<OxideType, double> BulkComposition { get; set; }
+        public List<double> BulkCompValues => BulkComposition.Values.ToList();
+        public List<OxideType> BulkCompOxides => BulkComposition.Keys.ToList();
         public double Pressure { get; set; } //Kbar
         public double ErrorP { get; set; } // Kbar
         public double Temperature { get; set; } // °C
@@ -31,8 +32,7 @@
             Container = string.Empty;
             Method = string.Empty;
             Phases = new List<Phase>();
-            BulkComposition = new List<double>();
-            BulkOxides = new List<OxideType>();
+            BulkComposition = new Dictionary<OxideType, double>();
             ReadingIndex = -999;
         }
 

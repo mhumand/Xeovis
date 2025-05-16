@@ -15,10 +15,13 @@
         public double ExpRunPressure { get; set; }
         public double ExpRunTemperature { get; set; }
         public Guid ExpRunId { get; set; }
+        public Dictionary<OxideType, double> BulkComposition { get; set; }
 
-        public List<double> BulkComposition { get; set; }
-        public List<OxideType> BulkOxides { get; set; }
-        public Dictionary<int, bool> IsFailed { get; set; } // int being the index of the mctc run => shows in which run group the batch has failed
+        /// <summary>
+        /// int is the index of mctc run => shows in which run group the batch has failed
+        /// </summary>
+        public Dictionary<int, bool> IsFailed { get; set; }
+
         public List<xeosVariable> xeosVariables { get; set; }
 
         public Batch()
@@ -27,8 +30,7 @@
             ExperimentName = string.Empty;
             ExpRunName = string.Empty;
             Phases = new List<PhaseType>();
-            BulkComposition = new List<double>();
-            BulkOxides = new List<OxideType>();
+            BulkComposition = new Dictionary<OxideType, double>();
             xeosVariables = new List<xeosVariable>();
             IsFailed = new Dictionary<int, bool>();
         }

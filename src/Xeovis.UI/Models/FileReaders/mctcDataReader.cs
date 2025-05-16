@@ -122,12 +122,12 @@ namespace Xeovis.UI.Models.FileReaders
             for (int i = 1; i < lines.Count; i++)
             {
                 var compStr = CleanAndSplitLine(lines[i], includeDot: false);
-                var composition = new List<double>();
+                _batches[i - 1].BulkComposition.Clear();
                 for (int j = 1; j <= oxides.Count; j++)
-                    composition.Add(DoubleExtensions.GetDoubleValueFromText(compStr[j]));
-
-                _batches[i - 1].BulkOxides = oxides;
-                _batches[i - 1].BulkComposition = composition;
+                {
+                    var value = DoubleExtensions.GetDoubleValueFromText(compStr[j]);
+                    _batches[i - 1].BulkComposition.Add(oxides[j - 1], value);
+                }
             }
 
             return true;
@@ -177,12 +177,14 @@ namespace Xeovis.UI.Models.FileReaders
             if (resultsStartIndex.Count == 0 || mctcVarValueEndIndex.Count == 0) return false;
             for (int i = 0; i < resultsStartIndex.Count; i++)
             {
-                var valsLine = string.Join("", allLines.GetRange(resultsStartIndex[i], mctcVarValueEndIndex[i] - resultsStartIndex[i]).ToArray());
+                var valsLine = string.Join("",
+                    allLines.GetRange(resultsStartIndex[i], mctcVarValueEndIndex[i] - resultsStartIndex[i]).ToArray());
                 var valsLines = valsLine.Split(splitters).ToList();
                 valsLines.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
                 for (int j = 1; j < valsLines.Count; j++)
-                    _mctcVariables.FirstOrDefault(v => v.Index == j - 1).Values.Add(DoubleExtensions.GetDoubleValueFromText(valsLines[j].Trim()));
+                    _mctcVariables.FirstOrDefault(v => v.Index == j - 1).Values
+                        .Add(DoubleExtensions.GetDoubleValueFromText(valsLines[j].Trim()));
             }
 
             for (int i = 0; i < _batches.Count; i++)
@@ -236,9 +238,11 @@ namespace Xeovis.UI.Models.FileReaders
                         var varName = modVarNameLines[j];
                         j++;
                         var varPhase = PhaseTypeExtensions.GetPhaseTypeByName(modVarNameLines[j]);
-                        var modelVariable = batch.xeosVariables.FirstOrDefault(v => v.VariableType.ToString() == varName && v.PhaseType == varPhase);
+                        var modelVariable = batch.xeosVariables.FirstOrDefault(v =>
+                            v.VariableType.ToString() == varName && v.PhaseType == varPhase);
                         if (modelVariable == null) continue;
-                        modelVariable.CalcVals.Add(k, DoubleExtensions.GetDoubleValueFromText(modVarValueLines[2 + (j + 1) / 2]));
+                        modelVariable.CalcVals.Add(k,
+                            DoubleExtensions.GetDoubleValueFromText(modVarValueLines[2 + (j + 1) / 2]));
                         modelVarsInResults.Add(modelVariable);
                     }
 
@@ -300,12 +304,12 @@ namespace Xeovis.UI.Models.FileReaders
                 valuesString.RemoveAll(l => string.IsNullOrWhiteSpace(l));
                 var startingVal = DoubleExtensions.GetDoubleValueFromText(valuesString[0].Trim());
                 var rangeVal = DoubleExtensions.GetDoubleValueFromText(valuesString[1].Trim());
-                var mctcVariable = new mctcVariable() { Index = i, Name = name, StartingValue = startingVal, Range = rangeVal };
+                var mctcVariable = new mctcVariable()
+                    { Index = i, Name = name, StartingValue = startingVal, Range = rangeVal };
                 mctcVariables.Add(mctcVariable);
             }
 
             return mctcVariables;
         }
-
     }
 }
