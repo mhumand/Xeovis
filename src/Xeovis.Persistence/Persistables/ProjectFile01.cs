@@ -12,9 +12,8 @@ public class ProjectFile01
 
     public ProjectFile01()
     {
-        
     }
-    
+
     public ProjectFile01(ProjectFile realObject)
     {
         Version = 1;

@@ -47,6 +47,14 @@ public class ExpRun01
         Index = realObject.Index;
         ReadingIndex = realObject.ReadingIndex;
         Rocktype = realObject.Rocktype;
+
+        foreach (var prop in GetType().GetProperties())
+        {
+            if (prop.PropertyType != typeof(string)) continue;
+            var value = prop.GetValue(this) as string;
+            if (string.IsNullOrWhiteSpace(value))
+                prop.SetValue(this, null);
+        }
     }
 
     public ExpRun ConvertToRealObject()
