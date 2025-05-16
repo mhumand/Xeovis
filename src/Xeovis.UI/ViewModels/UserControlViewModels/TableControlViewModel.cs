@@ -7,11 +7,11 @@ namespace Xeovis.UI.ViewModels
 {
     public partial class TableControlViewModel : ViewModelBase
     {
-        [ObservableProperty]
-        private string name;
+        [ObservableProperty] private string name;
         public List<Dictionary<string, object>> Rows { get; set; }
         public TableModel TableModel { get; set; }
         public Guid Id { get; set; }
+
         public TableControlViewModel()
         {
             Id = Guid.NewGuid();
@@ -39,7 +39,10 @@ namespace Xeovis.UI.ViewModels
                             col.Values.Add(string.Empty);
                     }
 
-                    row.Add(col.Id.ToString(), col.Values[i]);
+                    if (col.ValueType == typeof(double))
+                        row.Add(col.Id.ToString(), double.IsNaN((double)col.Values[i]) ? string.Empty : col.Values[i]);
+                    else
+                        row.Add(col.Id.ToString(), col.Values[i]);
                 }
 
                 Rows.Add(row);

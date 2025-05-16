@@ -7,8 +7,7 @@ public class ExpRun01
     public string Name { get; set; }
     public Guid Id { get; set; }
     public List<Phase01> Phases { get; set; }
-    public List<double> BulkComposition { get; set; }
-    public List<OxideType> BulkOxides { get; set; }
+    public Dictionary<OxideType, double> BulkComposition { get; set; }
     public double Pressure { get; set; } //Kbar
     public double ErrorP { get; set; } // Kbar
     public double Temperature { get; set; } // °C
@@ -26,16 +25,14 @@ public class ExpRun01
 
     public ExpRun01()
     {
-        
     }
-    
+
     public ExpRun01(ExpRun realObject)
     {
         Name = realObject.Name;
         Id = realObject.Id;
         Phases = realObject.Phases.Select(x => new Phase01(x)).ToList();
-        BulkComposition = new List<double>(realObject.BulkComposition);
-        BulkOxides = new List<OxideType>(realObject.BulkOxides);
+        BulkComposition = new Dictionary<OxideType, double>(realObject.BulkComposition);
         Pressure = realObject.Pressure;
         ErrorP = realObject.ErrorP;
         Temperature = realObject.Temperature;
@@ -59,8 +56,7 @@ public class ExpRun01
             Name = Name,
             Id = Id,
             Phases = Phases.Select(x => x.ConvertToRealObject()).ToList(),
-            BulkComposition = [..BulkComposition],
-            BulkOxides = [..BulkOxides],
+            BulkComposition = new Dictionary<OxideType, double>(BulkComposition),
             Pressure = Pressure,
             ErrorP = ErrorP,
             Temperature = Temperature,

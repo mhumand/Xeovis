@@ -85,14 +85,20 @@ namespace Xeovis.UI.Models.FileReaders
                     var table = result.Tables[0];
                     var headerRow = table.Rows[0].ItemArray.ToList();
                     int indexIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Index")));
-                    int nameIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Experiment")));
-                    int pressureIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("P (GPa)")));
-                    int temperatureIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("T (C)")));
-                    int durationIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Duration")));
+                    int nameIndex =
+                        headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Experiment")));
+                    int pressureIndex =
+                        headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("P (GPa)")));
+                    int temperatureIndex =
+                        headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("T (C)")));
+                    int durationIndex =
+                        headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Duration")));
                     int phasesIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Phases")));
-                    int rocktypeIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Rocktype")));
+                    int rocktypeIndex =
+                        headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Rocktype")));
 
-                    if (nameIndex < 0 || pressureIndex < 0 || temperatureIndex < 0 || durationIndex < 0 || pressureIndex < 0) return;
+                    if (nameIndex < 0 || pressureIndex < 0 || temperatureIndex < 0 || durationIndex < 0 ||
+                        pressureIndex < 0) return;
 
                     experiment.Runs.Clear();
                     for (int i = 1; i < table.Rows.Count; i++)
@@ -101,14 +107,15 @@ namespace Xeovis.UI.Models.FileReaders
                         var run = new ExpRun();
 
                         if (indexIndex >= 0 && !string.IsNullOrWhiteSpace(cells[indexIndex].ToString()))
-                            run.ReadingIndex = (int)DoubleExtensions.GetDoubleValueFromText(cells[indexIndex].ToString());
+                            run.ReadingIndex =
+                                (int)DoubleExtensions.GetDoubleValueFromText(cells[indexIndex].ToString());
 
                         run.Name = cells[nameIndex].ToString();
                         if (string.IsNullOrEmpty(run.Name)) continue;
 
                         run.Pressure = DoubleExtensions.GetDoubleValueFromText(cells[pressureIndex].ToString());
                         if (double.IsNaN(run.Pressure)) continue;
-                        run.Pressure *= 10.0; //GPa to KBar
+                        run.Pressure = (run.Pressure * 10.0).Round(12); //GPa to KBar
 
                         run.Temperature = DoubleExtensions.GetDoubleValueFromText(cells[temperatureIndex].ToString());
                         if (double.IsNaN(run.Temperature)) continue;
@@ -127,17 +134,17 @@ namespace Xeovis.UI.Models.FileReaders
                         }
 
                         var oxides = Enum.GetValues(typeof(OxideType));
-                        run.BulkOxides.Clear();
                         run.BulkComposition.Clear();
                         var indx = 0;
                         foreach (OxideType oxide in oxides)
                         {
                             if (oxide == OxideType.O) continue;
-                            var index = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains(oxide.ToString()) && !c.ToString().Contains("err")));
+                            var index = headerRow.IndexOf(headerRow.FirstOrDefault(c =>
+                                c.ToString().Contains(oxide.ToString()) && !c.ToString().Contains("err")));
                             if (index < 0) continue;
-                            run.BulkOxides.Add(oxide);
-                            double value = DoubleExtensions.GetDoubleValueFromText(cells[index].ToString());
-                            run.BulkComposition.Add(double.IsNaN(value) ? 0 : value);
+                            var value = DoubleExtensions.GetDoubleValueFromText(cells[index].ToString());
+                            if (!double.IsNaN(value) && value > 0)
+                                run.BulkComposition.Add(oxide, value);
                         }
 
                         run.Index = i;
@@ -151,14 +158,16 @@ namespace Xeovis.UI.Models.FileReaders
         private bool FindIndexOfHeaderByName(List<DataRow> rows, string headerName, out int index)
         {
             var headerRow = rows[0].ItemArray.ToList();
-            int runIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains(headerName, StringComparison.CurrentCultureIgnoreCase)));
+            int runIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c =>
+                c.ToString().Contains(headerName, StringComparison.CurrentCultureIgnoreCase)));
             if (runIndex < 0)
             {
                 index = runIndex;
                 return false;
             }
 
-            bool isEmptyColumn = rows.Select(r => r.ItemArray.ToList()[runIndex]).Skip(1).All(x => string.IsNullOrWhiteSpace(x.ToString()));
+            bool isEmptyColumn = rows.Select(r => r.ItemArray.ToList()[runIndex]).Skip(1)
+                .All(x => string.IsNullOrWhiteSpace(x.ToString()));
             index = runIndex;
 
             return runIndex >= 0 && !isEmptyColumn;
@@ -170,7 +179,7 @@ namespace Xeovis.UI.Models.FileReaders
             var headerRow = rowList[0].ItemArray.ToList();
 
             int runIndex = -1;
-            var test1 = FindIndexOfHeaderByName(rowList, "index",out runIndex);
+            var test1 = FindIndexOfHeaderByName(rowList, "index", out runIndex);
 
             bool test2 = true;
             if (!test1)
@@ -181,13 +190,18 @@ namespace Xeovis.UI.Models.FileReaders
                 var indexes = new List<int>();
                 foreach (ExpRun run in experiment.Runs)
                 {
-                    var innerIndex = rowList.Select(r => r.ItemArray.ToList().FindIndex(x => x.ToString().Equals(run.Name, StringComparison.CurrentCultureIgnoreCase))).FirstOrDefault(x => x > 0, -1);
+                    var innerIndex = rowList
+                        .Select(r => r.ItemArray.ToList().FindIndex(x =>
+                            x.ToString().Equals(run.Name, StringComparison.CurrentCultureIgnoreCase)))
+                        .FirstOrDefault(x => x > 0, -1);
                     if (innerIndex >= 0)
                         indexes.Add(innerIndex);
                 }
 
                 // choosing the most occured index
-                runIndex = indexes.Count > 0 ? (int)indexes.GroupBy(n => n).OrderByDescending(g => g.Count()).First().Key: -1;
+                runIndex = indexes.Count > 0
+                    ? (int)indexes.GroupBy(n => n).OrderByDescending(g => g.Count()).First().Key
+                    : -1;
             }
 
             return runIndex;
@@ -195,7 +209,8 @@ namespace Xeovis.UI.Models.FileReaders
 
         private void ReadPhasesFile(Experiment experiment)
         {
-            var phaseFiles = experiment.FilesPath.Except(experiment.FilesPath.Where(f => Path.GetFileNameWithoutExtension(f).ToLower().Contains("experiment")));
+            var phaseFiles = experiment.FilesPath.Except(experiment.FilesPath.Where(f =>
+                Path.GetFileNameWithoutExtension(f).ToLower().Contains("experiment")));
             if (phaseFiles == null || phaseFiles.Count() == 0) return;
             experiment.PhasesWithData.Clear();
             foreach (var file in phaseFiles)
@@ -215,7 +230,9 @@ namespace Xeovis.UI.Models.FileReaders
                         var headerRow = table.Rows[0].ItemArray.ToList();
 
                         int runIndex = FindRunHeaderIndex(table, experiment);
-                        int commentIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().ToLower().Contains("comment")));
+                        int commentIndex =
+                            headerRow.IndexOf(headerRow.FirstOrDefault(c =>
+                                c.ToString().ToLower().Contains("comment")));
 
                         if (runIndex < 0) continue;
 
@@ -224,8 +241,10 @@ namespace Xeovis.UI.Models.FileReaders
                             var cells = table.Rows[i].ItemArray;
                             var runName = cells[runIndex].ToString();
                             if (string.IsNullOrEmpty(runName)) continue;
-                            int.TryParse(runName, out int intName); // some runs are read by their index in experiment.xls file
-                            var run = experiment.Runs.FirstOrDefault(r => r.Name == runName || r.ReadingIndex == intName);
+                            int.TryParse(runName,
+                                out int intName); // some runs are read by their index in experiment.xls file
+                            var run =
+                                experiment.Runs.FirstOrDefault(r => r.Name == runName || r.ReadingIndex == intName);
                             if (run == null) continue;
                             var runPhase = run.Phases.FirstOrDefault(ph => ph.Type == phaseType);
                             if (runPhase == null) continue;
@@ -235,20 +254,20 @@ namespace Xeovis.UI.Models.FileReaders
 
                             //todo: oxides index can be save only once
                             var oxides = Enum.GetValues(typeof(OxideType));
-                            runPhase.Oxides.Clear();
                             runPhase.Composition.Clear();
                             var indx = 0;
                             foreach (OxideType oxide in oxides)
                             {
                                 if (oxide == OxideType.O) continue;
-                                var oxideIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains(oxide.ToString()) && !c.ToString().Contains("err")));
+                                var oxideIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c =>
+                                    c.ToString().Contains(oxide.ToString()) && !c.ToString().Contains("err")));
                                 if (oxideIndex < 0) continue;
-                                runPhase.Oxides.Add(oxide);
-                                double value = DoubleExtensions.GetDoubleValueFromText(cells[oxideIndex].ToString());
-                                runPhase.Composition.Add(double.IsNaN(value) ? 0 : value);
+                                var value = DoubleExtensions.GetDoubleValueFromText(cells[oxideIndex].ToString());
+                                if (!double.IsNaN(value) && value > 0)
+                                    runPhase.Composition.Add(oxide, value);
                             }
 
-                            if (runPhase.Composition.All(x => x == 0))
+                            if (runPhase.CompositionValues.All(x => x == 0))
                                 run.Phases.Remove(runPhase);
                         }
                     }

@@ -55,7 +55,8 @@ namespace Xeovis.WinUI
                 {
                     var info = new DirectoryInfo(folder);
                     if (!info.Name.Any(char.IsDigit)) continue;
-                    var files = info.GetFiles("*.xls", ckbxSubDirectory.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                    var files = info.GetFiles("*.xls",
+                        ckbxSubDirectory.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
                     if (!files.Any()) continue;
 
                     Experiment experiment = new Experiment(info.Name, info.FullName);
@@ -83,6 +84,7 @@ namespace Xeovis.WinUI
                 if (exp.Runs.Any())
                     cmbxExperiments.Items.Add(exp);
             }
+
             Cursor = Cursors.Default;
 
             if (cmbxExperiments.Items.Count > 0)
@@ -129,14 +131,20 @@ namespace Xeovis.WinUI
                     var table = result.Tables[0];
                     var headerRow = table.Rows[0].ItemArray.ToList();
                     int indexIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Index")));
-                    int nameIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Experiment")));
-                    int pressureIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("P (GPa)")));
-                    int temperatureIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("T (C)")));
-                    int durationIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Duration")));
+                    int nameIndex =
+                        headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Experiment")));
+                    int pressureIndex =
+                        headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("P (GPa)")));
+                    int temperatureIndex =
+                        headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("T (C)")));
+                    int durationIndex =
+                        headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Duration")));
                     int phasesIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Phases")));
-                    int rocktypeIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Rocktype")));
+                    int rocktypeIndex =
+                        headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains("Rocktype")));
 
-                    if (nameIndex < 0 || pressureIndex < 0 || temperatureIndex < 0 || durationIndex < 0 || pressureIndex < 0) return;
+                    if (nameIndex < 0 || pressureIndex < 0 || temperatureIndex < 0 || durationIndex < 0 ||
+                        pressureIndex < 0) return;
 
                     experiment.Runs.Clear();
                     for (int i = 1; i < table.Rows.Count; i++)
@@ -145,7 +153,8 @@ namespace Xeovis.WinUI
                         ExpRun run = new ExpRun();
 
                         if (indexIndex >= 0)
-                            run.ReadingIndex = (int)DoubleExtensions.GetDoubleValueFromText(cells[indexIndex].ToString());
+                            run.ReadingIndex =
+                                (int)DoubleExtensions.GetDoubleValueFromText(cells[indexIndex].ToString());
 
                         run.Name = cells[nameIndex].ToString();
                         if (string.IsNullOrEmpty(run.Name)) continue;
@@ -171,17 +180,17 @@ namespace Xeovis.WinUI
                         }
 
                         var oxides = Enum.GetValues(typeof(OxideType));
-                        run.BulkOxides.Clear();
                         run.BulkComposition.Clear();
                         var indx = 0;
                         foreach (OxideType oxide in oxides)
                         {
                             if (oxide == OxideType.O) continue;
-                            var index = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains(oxide.ToString()) && !c.ToString().Contains("err")));
+                            var index = headerRow.IndexOf(headerRow.FirstOrDefault(c =>
+                                c.ToString().Contains(oxide.ToString()) && !c.ToString().Contains("err")));
                             if (index < 0) continue;
-                            run.BulkOxides.Add(oxide);
-                            double value = DoubleExtensions.GetDoubleValueFromText(cells[index].ToString());
-                            run.BulkComposition.Add(double.IsNaN(value) ? 0 : value);
+                            var value = DoubleExtensions.GetDoubleValueFromText(cells[index].ToString());
+                            if (!double.IsNaN(value) && value > 0)
+                                run.BulkComposition.Add(oxide, value);
                         }
 
                         run.Index = i;
@@ -199,13 +208,13 @@ namespace Xeovis.WinUI
             cklbxExperiments.SelectedIndex = indx;
 
             var columns = new List<string>() { "#", "Name", "P [Kbar]", "T [°C]", "t [hr]", "Rocktype", "Phases" };
-            foreach (var oxide in exp.Runs[0].BulkOxides)
-                columns.Add(oxide.ToString());
+            var allOxides = exp.Runs.SelectMany(r => r.BulkCompOxides).Distinct();
+            columns.AddRange(allOxides.Select(x => x.ToString()));
 
-            var values = new List<List<object>>();
+            var rows = new List<List<object>>();
             foreach (var run in exp.Runs)
             {
-                var vals = new List<object>
+                var row = new List<object>
                 {
                     run.Index.ToString("000"),
                     run.Name,
@@ -216,13 +225,16 @@ namespace Xeovis.WinUI
                     run.GetPhaseAssemblageString()
                 };
 
-                foreach (var comp in run.BulkComposition)
-                    vals.Add(comp.Round(4));
+                foreach (var oxide in allOxides)
+                {
+                    var value = run.BulkComposition.TryGetValue(oxide, out double val) ? val.Round(4) : 0;
+                    row.Add(value);
+                }
 
-                values.Add(vals);
+                rows.Add(row);
             }
 
-            tcExperiment.FillTable(columns, values);
+            tcExperiment.FillTable(columns, rows);
 
             cmbxPhases.Items.Clear();
             foreach (var phase in exp.PhasesWithData)
@@ -242,7 +254,8 @@ namespace Xeovis.WinUI
         {
             var exp = experiment;
             var info = new DirectoryInfo(exp.Path);
-            var phaseFiles = exp.FilesPath.Except(exp.FilesPath.Where(f => Path.GetFileNameWithoutExtension(f).ToLower().Contains("experiment")));
+            var phaseFiles = exp.FilesPath.Except(exp.FilesPath.Where(f =>
+                Path.GetFileNameWithoutExtension(f).ToLower().Contains("experiment")));
             if (phaseFiles == null || phaseFiles.Count() == 0) return;
             exp.PhasesWithData.Clear();
             foreach (var file in phaseFiles)
@@ -260,8 +273,11 @@ namespace Xeovis.WinUI
                         var result = reader.AsDataSet();
                         var table = result.Tables[0];
                         var headerRow = table.Rows[0].ItemArray.ToList();
-                        int experimentIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().ToLower().Contains("index")));
-                        int commentIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().ToLower().Contains("comment")));
+                        int experimentIndex =
+                            headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().ToLower().Contains("index")));
+                        int commentIndex =
+                            headerRow.IndexOf(headerRow.FirstOrDefault(c =>
+                                c.ToString().ToLower().Contains("comment")));
 
                         if (experimentIndex < 0) continue;
 
@@ -270,8 +286,10 @@ namespace Xeovis.WinUI
                             var cells = table.Rows[i].ItemArray;
                             var experimentName = cells[experimentIndex].ToString();
                             if (string.IsNullOrEmpty(experimentName)) continue;
-                            int.TryParse(experimentName, out int intName); // some runs are read by their index in experiment.xls file
-                            var run = exp.Runs.FirstOrDefault(r => r.Name == experimentName || r.ReadingIndex == intName);
+                            int.TryParse(experimentName,
+                                out int intName); // some runs are read by their index in experiment.xls file
+                            var run =
+                                exp.Runs.FirstOrDefault(r => r.Name == experimentName || r.ReadingIndex == intName);
                             if (run == null) continue;
                             var runPhase = run.Phases.FirstOrDefault(ph => ph.Type == phaseType);
                             if (runPhase == null) continue;
@@ -281,17 +299,17 @@ namespace Xeovis.WinUI
 
                             //todo: oxides index can be save only once
                             var oxides = Enum.GetValues(typeof(OxideType));
-                            runPhase.Oxides.Clear();
                             runPhase.Composition.Clear();
                             var indx = 0;
                             foreach (OxideType oxide in oxides)
                             {
                                 if (oxide == OxideType.O) continue;
-                                var oxideIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c => c.ToString().Contains(oxide.ToString()) && !c.ToString().Contains("err")));
+                                var oxideIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c =>
+                                    c.ToString().Contains(oxide.ToString()) && !c.ToString().Contains("err")));
                                 if (oxideIndex < 0) continue;
-                                runPhase.Oxides.Add(oxide);
-                                double value = DoubleExtensions.GetDoubleValueFromText(cells[oxideIndex].ToString());
-                                runPhase.Composition.Add(double.IsNaN(value) ? 0 : value);
+                                var value = DoubleExtensions.GetDoubleValueFromText(cells[oxideIndex].ToString());
+                                if (!double.IsNaN(value) && value > 0)
+                                    runPhase.Composition.Add(oxide, value);
                             }
                         }
                     }
@@ -305,34 +323,35 @@ namespace Xeovis.WinUI
             var exp = cmbxExperiments.SelectedItem as Experiment;
             var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(cmbxPhases.SelectedItem.ToString());
 
-            var allInstances = new List<Phase>();
+            var allPhasesInExp = new List<Phase>();
             foreach (var run in exp.Runs.Where(r => r.Phases.Any(ph => ph.Type == phaseType)))
-                allInstances.Add(run.Phases.FirstOrDefault(ph => ph.Type == phaseType));
+                allPhasesInExp.Add(run.Phases.FirstOrDefault(ph => ph.Type == phaseType));
 
-            if (!allInstances.Any()) return;
-            int maxOxideCount = allInstances.Max(i => i.Oxides.Count());
-            var oxides = allInstances.FirstOrDefault(i => i.Oxides.Count() == maxOxideCount).Oxides;
+            if (allPhasesInExp.Count == 0) return;
+            var allOxides = allPhasesInExp.SelectMany(x => x.CompositionOxides).Distinct();
 
             var columns = new List<string>() { "Comment", "Run" };
-            foreach (var oxide in oxides)
-                columns.Add(oxide.ToString());
+            columns.AddRange(allOxides.Select(x => x.ToString()).ToList());
 
-            var values = new List<List<object>>();
-            foreach (var phaseInstance in allInstances.Where(i => i.Composition.Any()))
+            var rows = new List<List<object>>();
+            foreach (var phase in allPhasesInExp.Where(i => i.CompositionValues.Any()))
             {
                 var row = new List<object>
                 {
-                    phaseInstance.Comment,
-                    exp.Runs.FirstOrDefault(x => x.Id ==  phaseInstance.ExpRunId)
+                    phase.Comment,
+                    exp.Runs.FirstOrDefault(x => x.Id == phase.ExpRunId)
                 };
 
-                foreach (var comp in phaseInstance.Composition)
-                    row.Add(comp.Round(8));
+                foreach (var oxide in allOxides)
+                {
+                    var value = phase.Composition.TryGetValue(oxide, out double val) ? val.Round(4) : 0;
+                    row.Add(value);
+                }
 
-                values.Add(row);
+                rows.Add(row);
             }
 
-            tcPhases.FillTable(columns, values);
+            tcPhases.FillTable(columns, rows);
         }
 
         private void ckbxSubDirectory_CheckedChanged(object sender, EventArgs e)
@@ -352,7 +371,6 @@ namespace Xeovis.WinUI
                 if (exp == null) return;
                 Process.Start(exp.Path);
             }
-
         }
 
         private void cmbxManualSelection_SelectedIndexChanged(object sender, EventArgs e)
@@ -418,7 +436,6 @@ namespace Xeovis.WinUI
 
             cmbxRunFilterType.SelectedIndex = 0;
             flpFilters.Controls.Clear();
-
         }
 
         private void MakeContextMenu()
@@ -428,7 +445,6 @@ namespace Xeovis.WinUI
             ToolStripMenuItem selectNone = new ToolStripMenuItem("Select None", null, SelectNone_Click);
             _contextMenu.Items.Add(selectAll);
             _contextMenu.Items.Add(selectNone);
-
         }
 
         private void SelectNone_Click(object sender, EventArgs e)
@@ -641,7 +657,8 @@ namespace Xeovis.WinUI
             tcADPhaseCompSummary.ClearTable();
 
             var Columns = new List<string>() { "#", "Study", "Run", "T (°C)", "P (kbar)", "All Phases" };
-            var oxides = Enum.GetValues(typeof(OxideType)).Cast<OxideType>().Except(new List<OxideType> { OxideType.None });
+            var oxides = Enum.GetValues(typeof(OxideType)).Cast<OxideType>()
+                .Except(new List<OxideType> { OxideType.None });
             foreach (var oxide in oxides)
                 Columns.Add(oxide.ToString());
 
@@ -649,7 +666,7 @@ namespace Xeovis.WinUI
             int counter = 1;
             int expCounter = 0;
             var experiments = cmbxExperiments.Items.Cast<Experiment>().ToList();
-            foreach (Experiment exp in cmbxExperiments.Items)
+            foreach (var exp in experiments)
             {
                 var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(cmbxDMAdvancedPhaseList.SelectedItem.ToString());
 
@@ -659,13 +676,15 @@ namespace Xeovis.WinUI
 
                 if (!allInstances.Any()) continue;
                 bool hasData = false;
-                foreach (var phaseInstance in allInstances.Where(x => x.Composition.Any()))
+                foreach (var phaseInstance in allInstances.Where(x => x.CompositionValues.Any()))
                 {
-                    var expRun = experiments.SelectMany(x => x.Runs).FirstOrDefault(x => x.Id == phaseInstance.ExpRunId);
+                    var expRun = experiments.SelectMany(x => x.Runs)
+                        .FirstOrDefault(x => x.Id == phaseInstance.ExpRunId);
                     var row = new List<object>
                     {
                         counter++.ToString("000"),
-                        experiments.FirstOrDefault(x => x.Runs.Select(r => r.Id).Contains(phaseInstance.ExpRunId)).ShortName,
+                        experiments.FirstOrDefault(x => x.Runs.Select(r => r.Id).Contains(phaseInstance.ExpRunId))
+                            .ShortName,
                         expRun.Name,
                         expRun.Temperature,
                         expRun.Pressure,
@@ -674,11 +693,8 @@ namespace Xeovis.WinUI
 
                     foreach (var oxide in oxides)
                     {
-                        var index = phaseInstance.Oxides.IndexOf(oxide);
-                        if (index >= 0)
-                            row.Add(phaseInstance.Composition[index].Round(4));
-                        else
-                            row.Add(0.0);
+                        var value = phaseInstance.Composition.TryGetValue(oxide, out double val) ? val.Round(4) : 0;
+                        row.Add(value);
                     }
 
                     Rows.Add(row);
@@ -742,7 +758,8 @@ namespace Xeovis.WinUI
         {
             tcStudiesOverview.ClearTable();
 
-            var columns = new List<string>() { "#", "Study", "T range [C]", "P range [kbar]", "Rocktype", "Phases with composition", "Pure Phases" };
+            var columns = new List<string>()
+                { "#", "Study", "T range [C]", "P range [kbar]", "Rocktype", "Phases with composition", "Pure Phases" };
             var rows = new List<List<object>>();
             int counter = 1;
             foreach (Experiment exp in cklbxExperiments.CheckedItems)
@@ -752,7 +769,8 @@ namespace Xeovis.WinUI
                 var maxT = exp.Runs.Max(r => r.Temperature);
                 var minP = exp.Runs.Min(r => r.Pressure);
                 var maxP = exp.Runs.Max(r => r.Pressure);
-                var rockTypes = exp.GetAllRockTypes().Except(new List<RockType>() { RockType.None }).ToList().ConvertAll(x => x.ToString());
+                var rockTypes = exp.GetAllRockTypes().Except(new List<RockType>() { RockType.None }).ToList()
+                    .ConvertAll(x => x.ToString());
                 var phasesWithComp = exp.PhasesWithData.ConvertAll(x => x.ToString());
                 var allPhases = exp.GetAllPhaseTypes();
                 var purePhases = allPhases.Except(allPhases.Where(p => p.GetPhaseState() != PhaseState.Pure));
@@ -760,7 +778,7 @@ namespace Xeovis.WinUI
                 var row = new List<object>
                 {
                     counter.ToString("000"),
-                    ckbxShortNameForStudies.Checked? exp.ShortName : exp.Name,
+                    ckbxShortNameForStudies.Checked ? exp.ShortName : exp.Name,
                     minT == maxT ? $"{minT}" : $"{minT} - {maxT}",
                     minP == maxP ? $"{minP}" : $"{minP} - {maxP}",
                     string.Join(", ", rockTypes),

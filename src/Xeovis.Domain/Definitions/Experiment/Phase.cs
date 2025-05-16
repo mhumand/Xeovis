@@ -6,10 +6,10 @@
         public Guid Id { get; set; }
         public PhaseType Type { get; set; }
         public PhaseState State { get; set; }
-        public List<string> OtherNames { get; set; }
         public List<EndMember> EndMembers { get; set; }
-        public List<OxideType> Oxides { get; set; }
-        public List<double> Composition { get; set; }
+        public Dictionary<OxideType, double> Composition { get; set; }
+        public List<OxideType> CompositionOxides => Composition.Keys.ToList();
+        public List<double> CompositionValues => Composition.Values.ToList();
         public Guid ExpRunId { get; set; }
         public string Comment { get; set; }
 
@@ -18,10 +18,8 @@
             Id = Guid.NewGuid();
             Name = string.Empty;
             Comment = string.Empty;
-            Composition = new List<double>();
-            Oxides = new List<OxideType>();
+            Composition = new Dictionary<OxideType, double>();
             EndMembers = new List<EndMember>();
-            OtherNames = new List<string>();
         }
 
         public Phase(string name) : this()

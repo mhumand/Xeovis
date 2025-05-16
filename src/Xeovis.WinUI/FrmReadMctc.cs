@@ -286,12 +286,12 @@ namespace Xeovis.WinUI
             for (int i = 1; i < lines.Count; i++)
             {
                 var compStr = CleanAndSplitLine(lines[i], includeDot: false);
-                var composition = new List<double>();
+                _batches[i - 1].BulkComposition.Clear();
                 for (int j = 1; j <= oxides.Count; j++)
-                    composition.Add(DoubleExtensions.GetDoubleValueFromText(compStr[j]));
-
-                _batches[i - 1].BulkOxides = oxides;
-                _batches[i - 1].BulkComposition = composition;
+                {
+                    var value = DoubleExtensions.GetDoubleValueFromText(compStr[j]);
+                    _batches[i - 1].BulkComposition.Add(oxides[j - 1], value);
+                }
             }
         }
 

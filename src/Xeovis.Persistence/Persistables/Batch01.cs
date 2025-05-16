@@ -14,16 +14,14 @@ public class Batch01
     public double ExpRunPressure { get; set; }
     public double ExpRunTemperature { get; set; }
     public Guid ExpRunId { get; set; }
-    public List<double> BulkComposition { get; set; }
-    public List<OxideType> BulkOxides { get; set; }
+    public Dictionary<OxideType, double> BulkComposition { get; set; }
     public Dictionary<int, bool> IsFailed { get; set; }
     public List<xeosVariable01> xeosVariables { get; set; }
 
     public Batch01()
     {
-        
     }
-    
+
     public Batch01(Batch realObject)
     {
         Phases = new List<PhaseType>(realObject.Phases);
@@ -36,8 +34,7 @@ public class Batch01
         ExpRunPressure = realObject.ExpRunPressure;
         ExpRunTemperature = realObject.ExpRunTemperature;
         ExpRunId = realObject.ExpRunId;
-        BulkComposition = new List<double>(realObject.BulkComposition);
-        BulkOxides = new List<OxideType>(realObject.BulkOxides);
+        BulkComposition = new Dictionary<OxideType, double>(realObject.BulkComposition);
         IsFailed = new Dictionary<int, bool>(realObject.IsFailed);
         xeosVariables = realObject.xeosVariables.Select(x => new xeosVariable01(x)).ToList();
     }
@@ -56,8 +53,7 @@ public class Batch01
             ExpRunPressure = ExpRunPressure,
             ExpRunTemperature = ExpRunTemperature,
             ExpRunId = ExpRunId,
-            BulkComposition = [..BulkComposition],
-            BulkOxides = [..BulkOxides],
+            BulkComposition = new Dictionary<OxideType, double>(BulkComposition),
             IsFailed = new Dictionary<int, bool>(IsFailed),
             xeosVariables = xeosVariables.Select(x => x.ConvertToRealObject()).ToList()
         };
