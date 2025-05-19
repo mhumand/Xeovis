@@ -618,7 +618,7 @@ public partial class ChartControl : UserControl
             MarkerType.FilledTriangleUp => GraphicsGenerator.GetTriangleUp(size, curve.MarkerColor),
             MarkerType.FilledTriangleDown => GraphicsGenerator.GetTriangleDown(size, curve.MarkerColor),
             MarkerType.FilledDiamond => GraphicsGenerator.GetDiamond(size, curve.MarkerColor),
-            _ => null
+            _ => throw new NotImplementedException()
         };
     }
 

@@ -195,7 +195,10 @@ namespace Xeovis.UI.ViewModels
                         curve.MarkerType = inUseMarkers[curve.Name];
                     }
                     else
+                    {
                         ChartUtilities.SetColorAndMarker(curve, counter);
+                        counter++;
+                    }
                 }
                 else
                 {
@@ -205,10 +208,9 @@ namespace Xeovis.UI.ViewModels
 
                 curve.MarkerSize = 8;
                 chartModel.Curves.Add(curve);
-                counter++;
             }
 
-            /// x = y line
+            // 1:1 line
             var xyCurve = new CurveModel();
             xyCurve.Name = "1:1 Line";
             double minVal = chartModel.Curves.Count == 0 ? 0 : Math.Min(chartModel.Curves.Where(c => c.Xvals.Count > 0).Min(c => c.Xvals.Min()), chartModel.Curves.Where(c => c.Yvals.Count > 0).Min(c => c.Yvals.Min()));

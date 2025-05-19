@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.IO.Compression;
+using System.Text.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Xeovis.Persistence.Proxies;
@@ -24,7 +25,8 @@ namespace Xeovis.Persistence
 
             try
             {
-                File.WriteAllText(fullName, json);
+                // File.WriteAllText(fullName, json);
+                ZipTextContent(json, fullName, Path.GetFileNameWithoutExtension(fullName) + ".json");
                 return true;
             }
             catch (Exception)
@@ -37,7 +39,8 @@ namespace Xeovis.Persistence
         {
             try
             {
-                var json = File.ReadAllText(fullName);
+                // var json = File.ReadAllText(fullName);
+                var json = ReadTextFromZip(fullName, Path.GetFileNameWithoutExtension(fullName) + ".json");
                 using var doc = JsonDocument.Parse(json);
                 int version = doc.RootElement.GetProperty("Version").GetInt32();
 
@@ -50,6 +53,37 @@ namespace Xeovis.Persistence
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+        public static void ZipTextContent(string textContent, string zipPath, string entryNameInZip)
+        {
+            using (FileStream zipToOpen = new FileStream(zipPath, FileMode.Create))
+            {
+                using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Create))
+                {
+                    var entry = archive.CreateEntry(entryNameInZip);
+                    using (var entryStream = entry.Open())
+                    using (var writer = new StreamWriter(entryStream))
+                    {
+                        writer.Write(textContent);
+                    }
+                }
+            }
+        }
+
+        public static string ReadTextFromZip(string zipPath, string entryName)
+        {
+            using (ZipArchive archive = ZipFile.OpenRead(zipPath))
+            {
+                var entry = archive.GetEntry(entryName);
+                if (entry == null)
+                    throw new FileNotFoundException("Entry not found in zip.");
+
+                using (var reader = new StreamReader(entry.Open()))
+                {
+                    return reader.ReadToEnd();
+                }
             }
         }
 
