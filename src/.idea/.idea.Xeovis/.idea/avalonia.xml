@@ -13,7 +13,9 @@
         <entry key="Xeovis.UI/Views/MainMenu.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/MainWindow.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Styles/TreeViews.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
+        <entry key="Xeovis.UI/Views/UserControls/CheckBoxControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/TableControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
+        <entry key="Xeovis.UI/Views/UserControls/mctcPlotGridViewTabControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/mctcPlotSingleViewTabControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
       </map>
     </option>
