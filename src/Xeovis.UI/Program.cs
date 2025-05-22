@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using Serilog;
 using Serilog.Enrichers.CallerInfo;
+using Xeovis.UI.Views.Helpers;
 
 namespace Xeovis.UI
 {
@@ -14,7 +15,7 @@ namespace Xeovis.UI
         [STAThread]
         public static void Main(string[] args)
         {
-            SetupLogging();
+            var logPath = SetupLogging();
             try
             {
                 Log.Information("Application started.");
@@ -23,16 +24,14 @@ namespace Xeovis.UI
             }
             catch (Exception ex)
             {
-                var mb = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Crash :(",
-                    "Something went wrong! Please refer to the log file for further details."
-                    +"\n\nThis dialog will be automatically closed after 10 seconds.", 
-                    MsBox.Avalonia.Enums.ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
-                mb.ShowWindowAsync().Wait(1000 * 10);
                 Log.Fatal("Unhandled exception. Terminating the app...\n{ex}\n\n{contact}", ex.Message,
                     "Please send this log file to Mohammad Humand:\nhumandm@student.unimelb.edu.au");
+                
+                DirectoryHelper.GoToDirectory(Directory.GetParent(logPath).FullName);
+                DirectoryHelper.GoToDirectory(logPath);
             }
         }
-        private static void SetupLogging()
+        private static string SetupLogging()
         {
             var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var logsFolder = Path.Combine(appDataFolder, "Xeovis", "Logs");
@@ -60,6 +59,8 @@ namespace Xeovis.UI
                     rollOnFileSizeLimit: true             // rollover when file exceeds the limit
                 )
                 .CreateLogger();
+
+            return logFilePath;
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.
