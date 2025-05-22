@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xeovis.Base;
+using Xeovis.Base.Comparers;
 using Xeovis.Domain;
 using Xeovis.Presentation;
 using Xeovis.UI.Models;
@@ -118,6 +119,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
     private void PopulateLegend()
     {
         stackLegend.Children.Clear();
+        var checkboxes = new List<CheckBoxControl>();
         foreach (var curve in chartControl.ViewModel.ChartModel.Curves)
         {
             var markerImage = chartControl.GetMarkerGraphic(curve.Id);
@@ -128,8 +130,13 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
             checkboxControl.PointerPressed += checkboxControl_PointerPressed;
             checkboxControl.ContextMenu = GetLegendCheckboxContextMenu();
             checkboxControl.Margin = new Avalonia.Thickness(5, 0);
-            stackLegend.Children.Add(checkboxControl);
+            checkboxes.Add(checkboxControl);
         }
+
+        if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Batch)
+            stackLegend.Children.AddRange(checkboxes);
+        else
+            stackLegend.Children.AddRange(checkboxes.OrderBy(x => x.ViewModel.Label, new NumericStringComparer()));
     }
 
     private ContextMenu GetLegendCheckboxContextMenu()

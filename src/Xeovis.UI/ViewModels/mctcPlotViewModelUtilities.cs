@@ -204,6 +204,7 @@ namespace Xeovis.UI.ViewModels
                 {
                     curve.MarkerColor = ChartUtilities.GetColorInGradient(ColorTranslator.FromHtml("#1F77B4"), ColorTranslator.FromHtml("#D62728"), counter, xeosVarGroups.Count);
                     curve.MarkerType = MarkerType.FilledCircle;
+                    counter++;
                 }
 
                 curve.MarkerSize = 8;
