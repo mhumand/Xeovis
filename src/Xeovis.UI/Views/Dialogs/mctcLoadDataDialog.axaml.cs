@@ -7,6 +7,7 @@ using Xeovis.UI.ViewModels;
 using Xeovis.UI.ViewModels.DialogsViewModels;
 using System.IO;
 using System.Linq;
+using Serilog;
 using Xeovis.UI.Models.Enums;
 using Xeovis.Base.Validations;
 using Xeovis.Base.Utilities;
@@ -33,6 +34,7 @@ public partial class mctcLoadDataDialog : Window
     public mctcLoadDataDialog()
     {
         InitializeComponent();
+        Log.Information("Dialog opened.");
         if (this.Content is Control content)
             content.DataContext = this.DataContext;
         
@@ -89,12 +91,12 @@ public partial class mctcLoadDataDialog : Window
                 "\nNo data will be loaded!" +
                 "\nAre you sure you want to continue?", ButtonEnum.YesNoCancel, MsBox.Avalonia.Enums.Icon.Warning);
             var result = await msgBox.ShowWindowDialogAsync(this);
-            if (result != ButtonResult.Yes)
-                return;
+            if (result != ButtonResult.Yes) return;
+            Log.Information("User continued with incomplete directory.");
         }
 
         _viewModel.MctcBundleName = licName.ViewModel.Value;
-
+        Log.Information("Bundle directory loaded.");
         this.Close(DialogResultType.OK);
     }
 }

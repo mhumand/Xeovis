@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Serilog;
 using Xeovis.Domain;
 using Xeovis.Presentation;
 using Xeovis.UI.Models;
@@ -71,6 +72,7 @@ namespace Xeovis.UI.ViewModels
                 Experiments.Remove(exp);
                 ExperimentNodes.Remove(node);
                 ExperimentsDeleted?.Invoke(this, new ExperimentsDeletedEventArgs(Id));
+                Log.Information("Experiment deleted: {name}", exp.Name);
             }
         }
 
@@ -80,6 +82,7 @@ namespace Xeovis.UI.ViewModels
             Experiments.Clear();
             ExperimentNodes.Clear();
             ExperimentsDeleted?.Invoke(this, new ExperimentsDeletedEventArgs(idList));
+            Log.Information("All experiments deleted.");
         }
 
         public void DeleteMctcBundle(Guid Id)
@@ -91,6 +94,7 @@ namespace Xeovis.UI.ViewModels
                 mctcBundles.Remove(bundle);
                 MctcBundleNodes.Remove(node);
                 mctcBundlesDeleted?.Invoke(this, new mctcBundlesDeletedEventArgs(Id));
+                Log.Information("mctc bundle deleted: {name}", bundle.Name);
             }
         }
 
@@ -100,6 +104,7 @@ namespace Xeovis.UI.ViewModels
             mctcBundles.Clear();
             MctcBundleNodes.Clear();
             mctcBundlesDeleted?.Invoke(this, new mctcBundlesDeletedEventArgs(idList));
+            Log.Information("All mctc bundles deleted.");
         }
 
         public void DeleteMctcPlot(Guid Id)
@@ -111,17 +116,19 @@ namespace Xeovis.UI.ViewModels
             var plotNode = bundleNode.Children.FirstOrDefault(x => x.PresenterId == Id);
             bundleNode.Children.Remove(plotNode);
             mctcPlotsDeleted?.Invoke(this, new mctcPlotsDeletedEventArgs(Id));
+            Log.Information("mctc plot deleted: {name}", plotDto.Name);
         }
 
-        public void DeleteAllMctcPlotsInBundle(Guid Id)
+        public void DeleteAllMctcPlotsInBundle(Guid plotID)
         {
-            var plotDto = mctcPlotDtos.FirstOrDefault(x => x.Id == Id);
+            var plotDto = mctcPlotDtos.FirstOrDefault(x => x.Id == plotID);
             if (plotDto == null) return;
             var bundleNode = mctcBundleNodes.FirstOrDefault(x => x.PresenterId == plotDto.mctcBundleId);
             if (bundleNode == null) return;
             var idList = bundleNode.Children.Select(x => x.PresenterId).ToList();
             bundleNode.Children.Clear();
             mctcPlotsDeleted?.Invoke(this, new mctcPlotsDeletedEventArgs(idList));
+            Log.Information("All mctc plots deleted in bundle: {name}}", plotDto.Name);
         }
     }
 }

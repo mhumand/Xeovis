@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Serilog;
 using Xeovis.Persistence.Proxies;
 
 namespace Xeovis.Persistence
@@ -29,8 +30,9 @@ namespace Xeovis.Persistence
                 ZipTextContent(json, fullName, Path.GetFileNameWithoutExtension(fullName) + ".json");
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Error("Failed to save project file: {ex}", ex.Message);
                 return false;
             }
         }
@@ -47,11 +49,16 @@ namespace Xeovis.Persistence
                 return version switch
                 {
                     1 => FromV01(json),
-                    _ => throw new NotSupportedException("Unknown version")
+                    _ => throw new NotSupportedException()
                 };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                if (ex is NotSupportedException)
+                    Log.Error("Failed to load unknown project file version.");
+                else
+                    Log.Error("Failed to load project file: {ex}", ex.Message);
+
                 return null;
             }
         }

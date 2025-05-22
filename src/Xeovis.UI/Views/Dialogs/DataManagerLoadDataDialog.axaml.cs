@@ -3,6 +3,7 @@ using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using System.IO;
 using System.Linq;
+using Serilog;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
@@ -28,6 +29,7 @@ public partial class DataManagerLoadDataDialog : Window
     public DataManagerLoadDataDialog()
     {
         InitializeComponent();
+        Log.Information("Dialog opened.");
         if (this.Content is Control content)
             content.DataContext = this.DataContext;
     }
@@ -146,14 +148,15 @@ public partial class DataManagerLoadDataDialog : Window
         {
             var msgBox = MessageBoxManager.GetMessageBoxStandard("Warning", "No folder was selected to read data.\nAre you sure you want to continue?\nThis might lead to losing previously loaded data!", ButtonEnum.YesNoCancel, MsBox.Avalonia.Enums.Icon.Warning);
             var result = await msgBox.ShowWindowDialogAsync(this);
-            if (result != ButtonResult.Yes)
-                return;
+            if (result != ButtonResult.Yes) return;
+            Log.Information("User continued without any directory selected.");
         }
 
         _viewModel.SelectedFolders = selectedFolders;
         _viewModel.IsSubfolderChecked = ckbxSubfolder.IsChecked;
         _viewModel.SubfolderDirectory = txtSubfolder.Text;
 
+        Log.Information("Experiment directories loaded.");
         this.Close(DialogResultType.OK);
     }
 }

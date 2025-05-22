@@ -8,8 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Data;
+using Serilog;
 using Xeovis.Domain;
 using Xeovis.Persistence;
 using Xeovis.UI.Models.Enums;
@@ -47,7 +46,9 @@ public partial class MainMenu : UserControl
         btnOpen.HotKey = new KeyGesture(Key.O, ctrlModifier);
         btnSave.HotKey = new KeyGesture(Key.S, ctrlModifier);
         btnSaveAs.HotKey = new KeyGesture(Key.S, ctrlModifier | KeyModifiers.Shift);
-        btnQuit.HotKey = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new KeyGesture(Key.F4, KeyModifiers.Alt) : new KeyGesture(Key.Q, KeyModifiers.Meta);
+        btnQuit.HotKey = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? new KeyGesture(Key.F4, KeyModifiers.Alt)
+            : new KeyGesture(Key.Q, KeyModifiers.Meta);
 
         SetInputGestureFromHotKey(btnOpen);
         SetInputGestureFromHotKey(btnNew);
@@ -69,6 +70,7 @@ public partial class MainMenu : UserControl
 
         _lastFilePath = string.Empty;
         ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(null));
+        Log.Information("New project created.");
     }
 
     public async void File_Open()
@@ -77,7 +79,12 @@ public partial class MainMenu : UserControl
         if (!goAhead) return;
 
         var topLevel = TopLevel.GetTopLevel(this);
-        if (topLevel == null) return;
+        if (topLevel == null)
+        {
+            Log.Error("Couldn't find TopLevel.");
+            return;
+        }
+
         var options = new FilePickerOpenOptions()
         {
             Title = "Save",
@@ -87,30 +94,35 @@ public partial class MainMenu : UserControl
 
         var files = await topLevel.StorageProvider.OpenFilePickerAsync(options);
         if (files == null || files.Count == 0) return;
+
         var path = Uri.UnescapeDataString(files[0].Path.AbsolutePath);
         var projectFile = ProjectFileManager.Load(path);
         if (projectFile == null)
         {
-            // log
-            var ms = MessageBoxManager.GetMessageBoxStandard("Error", "Failed to open the project file!", ButtonEnum.Ok,
-                Icon.Error);
+            var ms = MessageBoxManager.GetMessageBoxStandard("Error",
+                "Failed to open the project file!", ButtonEnum.Ok, Icon.Error);
             ms.ShowWindowDialogAsync(ParentWindow);
             return;
         }
 
         _lastFilePath = path;
         ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(projectFile, path));
+        Log.Information("Project file opened.");
     }
 
     private async Task<bool> CheckAndRaiseUnsavedChangesMessage()
     {
         if (File.Exists(_lastFilePath) && ParentWindow != null)
         {
-            var mb = MessageBoxManager.GetMessageBoxStandard("Unsaved Changes", "You have unsaved changes.\nDo you want to save before continuing?", ButtonEnum.YesNoCancel, Icon.Warning);
+            var mb = MessageBoxManager.GetMessageBoxStandard("Unsaved Changes",
+                "You have unsaved changes.\nDo you want to save before continuing?", ButtonEnum.YesNoCancel,
+                Icon.Warning);
             var result = await mb.ShowWindowDialogAsync(ParentWindow);
             if (result == ButtonResult.Yes)
                 await Save(isSaveAs: false);
-            else if (result == ButtonResult.Cancel)
+            else if (result == ButtonResult.No)
+                Log.Information("Project file not saved.");
+            else
                 return false;
         }
 
@@ -147,10 +159,7 @@ public partial class MainMenu : UserControl
             path = _lastFilePath;
 
         var result = ProjectFileManager.Save(projectFile, path);
-        if (!result)
-        {
-            //log
-        }
+        if (result) Log.Information("Project file saved.");
     }
 
     private ProjectFile GetProjectFile()
@@ -196,10 +205,11 @@ public partial class MainMenu : UserControl
                 var expReader = new ExperimentReader(vm.SelectedFolders, vm.SubfolderDirectory, vm.IsSubfolderChecked);
                 var experiments = await Task.Run(() => expReader.GetExperiments(progress, token));
                 ExperimentsLoaded?.Invoke(this, new ExperimentsLoadedEventArgs(experiments, dialog.ViewModel));
+                Log.Information("{ExperimentsCount} experiments loaded.", experiments.Count);
             }
             catch (OperationCanceledException)
             {
-
+                Log.Information("User cancelled loading experiments.");
             }
             finally
             {
@@ -210,7 +220,6 @@ public partial class MainMenu : UserControl
 
     public void DataManager_Export()
     {
-
     }
 
     // MCTC Reader
@@ -232,6 +241,7 @@ public partial class MainMenu : UserControl
             {
                 mctcBundle.Name = vm.MctcBundleName;
                 mctcBundleLoaded?.Invoke(this, new mctcBundleLoadedEventArgs(mctcBundle));
+                Log.Information("mctc bundle loaded: {name}", mctcBundle.Name);
             }
         }
     }
@@ -248,13 +258,27 @@ public partial class MainMenu : UserControl
         try
         {
             var mctcReader = new mctcDataReader(folderDirectory);
-            var mctcBundle = await Task.Run(() => mctcReader.ReadData(progress, token)) ?? throw new OperationCanceledException();
+            var mctcBundle = await Task.Run(() => mctcReader.ReadData(progress, token)) ??
+                             throw new NullReferenceException();
             mctcBundle.TimeLoaded = DateTime.Now;
             mctcBundle.FilesDirectory = folderDirectory;
             return mctcBundle;
         }
-        catch (OperationCanceledException)
+        catch (Exception ex)
         {
+            switch (ex)
+            {
+                case OperationCanceledException:
+                    Log.Information("User cancelled loading mctc bundle.");
+                    break;
+                case FileNotFoundException:
+                    Log.Error("Couldn't read files from {ExMessage}", ex.Message);
+                    break;
+                case NullReferenceException:
+                    Log.Error("Couldn't load mctc bundle.");
+                    break;
+            }
+
             return null;
         }
         finally
@@ -274,14 +298,16 @@ public partial class MainMenu : UserControl
         var hasMctcBundle = ParentWindow.ViewModel.mctcBundles.Count > 0;
         if (!hasMctcBundle)
         {
-            var msgBox = MessageBoxManager.GetMessageBoxStandard("Error", "No mctc bundle was found! Please load a bundle first.", ButtonEnum.Ok, Icon.Error);
+            var msgBox = MessageBoxManager.GetMessageBoxStandard("Error",
+                "No mctc bundle was found! Please load a bundle first.", ButtonEnum.Ok, Icon.Error);
             msgBox.ShowWindowDialogAsync(ParentWindow);
             return;
         }
 
         var viewModel = new mctcNewPlotViewModel();
         viewModel.mctcBundles = ParentWindow.ViewModel.mctcBundles;
-        viewModel.ExistingPlotNames = ParentWindow.ViewModel.MctcBundleNodes.SelectMany(b => b.Children.Select(x => x.Label)).ToList();
+        viewModel.ExistingPlotNames = ParentWindow.ViewModel.MctcBundleNodes
+            .SelectMany(b => b.Children.Select(x => x.Label)).ToList();
         viewModel.SelectedBundleId = selectedBundleId;
 
         var dialog = new mctcNewPlotDialog() { ViewModel = viewModel };
@@ -298,12 +324,12 @@ public partial class MainMenu : UserControl
     public void View_ShowLeftPanel()
     {
         ParentWindow?.ToggleLeftPanelVisibility(itemShowLeftPanel.IsChecked);
+        Log.Information(itemShowLeftPanel.IsChecked.ToString());
     }
 
     // Help
     public void Help()
     {
-
     }
 
     public void About()

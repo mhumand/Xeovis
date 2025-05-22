@@ -12,6 +12,7 @@ using System.IO;
 using Avalonia.Input;
 using System.Text;
 using Avalonia.Platform.Storage;
+using Serilog;
 using Xeovis.UI.Views.Helpers;
 using Xeovis.UI.Models.Enums;
 using Xeovis.Base;
@@ -88,15 +89,12 @@ public partial class ChartControl : UserControl
             };
 
             if (!successful)
-            {
-
-            }
+                Log.Error("Couldn't plot {type} curve: {name}", curve.CurveType, curve.Name);
         }
 
         SetProperties();
 
-        if (resetZoom)
-            _plot.Axes.AutoScale();
+        if (resetZoom) _plot.Axes.AutoScale();
 
         scottPlot.Refresh();
         return true;
@@ -610,16 +608,19 @@ public partial class ChartControl : UserControl
     {
         var curve = _chartModel.GetCurveById(curveID);
         if (curve == null) return null;
-        int size = 12;
-        return curve.MarkerType switch
+        const int size = 12;
+        var graphic = curve.MarkerType switch
         {
             MarkerType.FilledCircle => GraphicsGenerator.GetCircle(size, curve.MarkerColor),
             MarkerType.FilledSquare => GraphicsGenerator.GetSquare(size, curve.MarkerColor),
             MarkerType.FilledTriangleUp => GraphicsGenerator.GetTriangleUp(size, curve.MarkerColor),
             MarkerType.FilledTriangleDown => GraphicsGenerator.GetTriangleDown(size, curve.MarkerColor),
             MarkerType.FilledDiamond => GraphicsGenerator.GetDiamond(size, curve.MarkerColor),
-            _ => throw new NotImplementedException()
+            _ => null
         };
+        
+        if (graphic == null) Log.Warning("Not supported curve marker type: {type}", curve.MarkerType);
+        return graphic;
     }
 
     public void SetScrollZooming(bool enabled)

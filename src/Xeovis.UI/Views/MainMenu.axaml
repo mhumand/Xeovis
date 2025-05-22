@@ -69,6 +69,7 @@
 			<Separator/>
 
 			<MenuItem x:Name="btnPreferences"
+			          IsEnabled="False"
 					  Header="_Preferences">
 				<MenuItem.Icon>
 					<Image Source="/Assets/MainMenu/preferences.png"/>
@@ -97,7 +98,8 @@
 
 			<MenuItem x:Name="btnDMExport"
 					  Header="_Export"
-				  Command="{Binding DataManager_Export}">
+					  IsEnabled="False"
+					  Command="{Binding DataManager_Export}">
 				<MenuItem.Icon>
 					<Image Source="/Assets/MainMenu/export.png"/>
 				</MenuItem.Icon>
@@ -142,7 +144,8 @@
 
 		<MenuItem Header="_Help">
 
-			<MenuItem Header="_Help">
+			<MenuItem Header="_Help"
+			          IsEnabled="False">
 				<MenuItem.Icon>
 					<Image Source="/Assets/MainMenu/help.png"/>
 				</MenuItem.Icon>

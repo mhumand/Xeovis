@@ -4,6 +4,7 @@ using MsBox.Avalonia.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 using Xeovis.Domain;
 using Xeovis.Presentation;
 using Xeovis.UI.Models;
@@ -224,6 +225,8 @@ namespace Xeovis.UI.Views
             var settingsItem = new MenuItem() { Header = "Settings" };
             if (isMctcBundle)
             {
+                // todo
+                settingsItem.IsEnabled = false;
                 //settingsItem.Click += (s, e)
             }
             else
@@ -312,14 +315,14 @@ namespace Xeovis.UI.Views
                     if (tab?.OwnerTabControl is ImctcPlotView mctcPlot)
                         mctcPlot.PopulateUI(plotDto, newBundle);
                 }
+                
+                Log.Information("mctc bundle reloaded: {name}", bundle.Name);
             }
             else
             {
+                Log.Error("Failed to reload mctc bundle: {name}", bundle.Name);
                 var mb = MessageBoxManager.GetMessageBoxStandard("Error", $"Failed to reload {bundle.Name}!", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
                 await mb.ShowWindowDialogAsync(this);
-
-                // log
-                // put warning icon in tree node and plots tab header
             }
         }
 
@@ -393,8 +396,10 @@ namespace Xeovis.UI.Views
         private void OnMctcBundleRenamed(mctcBundle bundle)
         {
             var node = _viewModel.MctcBundleNodes.FirstOrDefault(x => x.PresenterId == bundle.Id);
-            if (node != null)
-                node.Label = bundle.Name;
+            if (node == null) return;
+            var oldName = node.Label;
+            node.Label = bundle.Name;
+            Log.Information("mctc bundle renamed: {old} -> {new}", oldName, bundle.Name);
         }
 
         public void OnMctcPlotRenamed(mctcPlotDto plot)
@@ -405,8 +410,10 @@ namespace Xeovis.UI.Views
             var tab = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase).PresenterId == plot.Id) as TabControlViewModelBase;
             if (plotNode != null && tab != null)
             {
+                var oldName = plotNode.Label;
                 plotNode.Label = plot.Name;
                 tab.Header = plot.Name;
+                Log.Information("mctc plot renamed: {old} -> {new}",  oldName, plot.Name);
             }
         }
 
@@ -476,14 +483,17 @@ namespace Xeovis.UI.Views
 
             if (bundleNode == null) return;
 
-            void action()
+            void DeleteMctcPlot()
             {
                 _viewModel.TabControls.Remove(tabViewModel);
                 var plotNode = bundleNode.Children.FirstOrDefault(x => x.PresenterId == tabViewModel.PresenterId);
                 bundleNode.Children.Remove(plotNode);
+                
+                var plot = _viewModel.mctcPlotDtos.FirstOrDefault(x => x.Id == plotNode.PresenterId);
+                Log.Information("mctc plot deleted: {name}", plot.Name);
             }
 
-            RequestRemovalConfirmationAndProceed(action, $"{tabViewModel.Header} in {bundleNode.Label}");
+            RequestRemovalConfirmationAndProceed(DeleteMctcPlot, $"{tabViewModel.Header} in {bundleNode.Label}");
         }
 
         private TabControlViewModelBase GetTabById(Guid id)
@@ -530,7 +540,11 @@ namespace Xeovis.UI.Views
                     mctcBundleNode.IsExpanded = true;
                     tvMctcBundles.SelectedItem = plotNode;
                 }
+
+                Log.Information("mctc plot added: {name}",mctcPlotDto.Name);
             }
+            else
+                Log.Error("Failed to add mctc plot: {name}",  mctcPlotDto.Name);
         }
 
         public void ToggleLeftPanelVisibility(bool visible)

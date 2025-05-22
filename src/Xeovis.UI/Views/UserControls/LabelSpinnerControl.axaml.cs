@@ -19,7 +19,6 @@ public partial class LabelSpinnerControl : UserControl
         }
     }
 
-
     public event EventHandler<SpinnerValueChangedEventArgs>? ValueChanged;
 
     public LabelSpinnerControl()
