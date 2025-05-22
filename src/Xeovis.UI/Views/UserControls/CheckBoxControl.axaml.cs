@@ -32,11 +32,8 @@ public partial class CheckBoxControl : UserControl
 
     private void CheckBoxControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (_viewModel != null)
-        {
-            toolTip.ToolTipText = _viewModel.ToolTip;
-            toolTip.IsVisible = _viewModel.HasToolTip;
-        }
+        toolTip.ToolTipText = _viewModel.ToolTip;
+        toolTip.IsVisible = _viewModel.HasToolTip;
     }
 
     private void checkBox_CheckChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
