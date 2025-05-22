@@ -38,10 +38,10 @@ namespace Xeovis.UI
             if (!Directory.Exists(logsFolder))
                 Directory.CreateDirectory(logsFolder);
 
-            var logFilePath = Path.Combine(logsFolder, $"Xeovis_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log");
+            var logFilePath = Path.Combine(logsFolder, $"Xeovis_{DateTime.Now:yyyyMMdd_HHmmss}.log");
 
             var outputTemplate =
-                "{Timestamp:yyyy-MM-dd HH:mm:ss zzz} [{ThreadName,10}] {Level:u3} - ({SourceFile}:{LineNumber}).{Method} -> {Message:lj}{NewLine}{Exception}";
+                "{Timestamp:yyyy-MM-dd HH:mm:ss} [{ThreadName}] {Level:u3} - ({SourceFile}:{LineNumber}).{Method} -> {Message:lj}{NewLine}{Exception}";
             // var path = "log/xeovis.txt";
             Log.Logger = new LoggerConfiguration()
                 .Enrich.WithCallerInfo(
@@ -50,7 +50,6 @@ namespace Xeovis.UI
                     filePathDepth: 1
                 )
                 .Enrich.WithProperty("ThreadName", "main") // default thread name if absent
-                .MinimumLevel.Debug()
                 .MinimumLevel.Debug()
                 .WriteTo.File(
                     logFilePath,

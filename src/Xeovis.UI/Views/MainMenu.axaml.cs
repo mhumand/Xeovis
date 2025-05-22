@@ -94,8 +94,8 @@ public partial class MainMenu : UserControl
 
         var files = await topLevel.StorageProvider.OpenFilePickerAsync(options);
         if (files == null || files.Count == 0) return;
+        Log.Information("Opening project file...");
         var path = Uri.UnescapeDataString(files[0].Path.AbsolutePath);
-        Log.Information("Opening project file:\n{path}", path);
         var projectFile = ProjectFileManager.Load(path);
         if (projectFile == null)
         {
