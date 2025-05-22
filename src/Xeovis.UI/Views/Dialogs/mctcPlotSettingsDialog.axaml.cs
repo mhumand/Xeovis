@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using System;
 using System.Linq;
+using Serilog;
 using Xeovis.Base.Validations;
 using Xeovis.Presentation;
 using Xeovis.UI.Models.Enums;
@@ -29,6 +30,7 @@ public partial class mctcPlotSettingsDialog : Window
     public mctcPlotSettingsDialog()
     {
         InitializeComponent();
+        Log.Information("Dialog opened.");
         if (this.Content is Control content)
             content.DataContext = this.DataContext;
     }
@@ -121,6 +123,7 @@ public partial class mctcPlotSettingsDialog : Window
         plotDto.ChartSettings.AxesMinLimit = licAxesMinLimit.ViewModel.GetDoubleValue();
         plotDto.ChartSettings.AxesMaxLimit = licAxesMaxLimit.ViewModel.GetDoubleValue();
 
+        Log.Information("mctc plot settings saved: {name}", plotDto.Name);
         this.Close(DialogResultType.OK);
     }
 }

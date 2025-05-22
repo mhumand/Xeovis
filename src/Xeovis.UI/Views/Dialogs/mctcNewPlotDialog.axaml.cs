@@ -3,6 +3,7 @@ using MsBox.Avalonia.Enums;
 using MsBox.Avalonia;
 using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 using Xeovis.Domain;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
@@ -38,6 +39,7 @@ public partial class mctcNewPlotDialog : Window
     public mctcNewPlotDialog()
     {
         InitializeComponent();
+        Log.Information("Dialog opened.");
         if (this.Content is Control content)
             content.DataContext = this.DataContext;
         
@@ -156,10 +158,8 @@ public partial class mctcNewPlotDialog : Window
         foreach (var item in llcXeosVariables.ViewModel.Items)
         {
             if (item.Tag is not xeosVariable xeosVar) return;
-            if (_viewModel.SelectedXeosVariables.Any(v => v.PhaseType == xeosVar.PhaseType && v.VariableType == xeosVar.VariableType))
-                item.IsChecked = true;
-            else
-                item.IsChecked = false;
+            item.IsChecked = _viewModel.SelectedXeosVariables.Any(v =>
+                v.PhaseType == xeosVar.PhaseType && v.VariableType == xeosVar.VariableType);
         }
     }
 
@@ -169,10 +169,8 @@ public partial class mctcNewPlotDialog : Window
         {
             var msgBox = MessageBoxManager.GetMessageBoxStandard("Warning", "No x-eos variable was selected.\nAre you sure you want to continue?", ButtonEnum.YesNoCancel, MsBox.Avalonia.Enums.Icon.Warning);
             var result = await msgBox.ShowWindowDialogAsync(this);
-            if (result != ButtonResult.Yes)
-                return;
-            else
-                this.Close(DialogResultType.Yes);
+            if (result != ButtonResult.Yes) return;
+            this.Close(DialogResultType.Yes);
         }
 
         _mctcPlotDto.SampleXeosVariables = _viewModel.SelectedXeosVariables;
@@ -182,6 +180,7 @@ public partial class mctcNewPlotDialog : Window
         _mctcPlotDto.PointsGroupingType = _settingsPlotDto.PointsGroupingType;
         _mctcPlotDto.ChartSettings = _settingsPlotDto.ChartSettings.Copy();
 
+        Log.Information("Plot generated: {name}", _mctcPlotDto.Name);
         this.Close(DialogResultType.OK);
     }
 

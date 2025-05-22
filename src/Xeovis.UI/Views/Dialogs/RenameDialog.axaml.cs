@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using MsBox.Avalonia;
 using System.Collections.Generic;
+using Serilog;
 using Xeovis.Base.Validations;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
@@ -17,6 +18,7 @@ public partial class RenameDialog : Window
     public RenameDialog()
     {
         InitializeComponent();
+        Log.Information("Dialog opened.");
         DataContext = this;
         if (this.Content is Control content)
             content.DataContext = this.DataContext;
@@ -50,7 +52,7 @@ public partial class RenameDialog : Window
         this.Close(DialogResultType.Cancel);
     }
 
-    private async void btnOK_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void btnOK_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         var name = textBox.ViewModel.Value;
         if (_inUseNames.Contains(name))
@@ -62,6 +64,7 @@ public partial class RenameDialog : Window
         }
 
         _newName = name;
+        Log.Information("Rename completed.");
         this.Close(DialogResultType.OK);
     }
 }

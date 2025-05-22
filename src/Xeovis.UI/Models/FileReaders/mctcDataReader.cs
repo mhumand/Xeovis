@@ -35,25 +35,25 @@ namespace Xeovis.UI.Models.FileReaders
             progressData.PrimaryLabel = $"Loading Batch Lines";
             progress.Report(progressData);
             if (!ReadBatchLines())
-                throw new OperationCanceledException();
+                throw new FileLoadException(nameof(ReadBatchLines));
 
             progressData.PrimaryValue = 25;
             progressData.PrimaryLabel = $"Loading Batch Bulks";
             progress.Report(progressData);
             if (!ReadBatchBulks())
-                throw new OperationCanceledException();
+                throw new FileLoadException(nameof(ReadBatchBulks));
 
             progressData.PrimaryValue = 50;
             progressData.PrimaryLabel = $"Loading xeos Variables";
             progress.Report(progressData);
             if (!ReadxeosVariables())
-                throw new OperationCanceledException();
+                throw new FileLoadException(nameof(ReadxeosVariables));
 
             progressData.PrimaryValue = 75;
             progressData.PrimaryLabel = $"Loading mctc Results";
             progress.Report(progressData);
             if (!ReadmctcResults())
-                throw new OperationCanceledException();
+                throw new FileLoadException(nameof(ReadmctcResults));
 
             progressData.PrimaryValue = 100;
             progress.Report(progressData);

@@ -15,7 +15,9 @@ namespace Xeovis.UI
         public static void Main(string[] args)
         {
             SetupLogging();
+            Log.Information("Application started.");
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            Log.Information("Application closed.");
         }
 
         private static void SetupLogging()
@@ -28,7 +30,7 @@ namespace Xeovis.UI
             var logFilePath = Path.Combine(logsFolder, $"Xeovis_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log");
 
             var outputTemplate =
-                "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{ThreadName,10}] {Level:u3} - ({SourceFile}:{LineNumber}).{Method} -> {Message:lj}{NewLine}{Exception}";
+                "{Timestamp:yyyy-MM-dd HH:mm:ss zzz} [{ThreadName,10}] {Level:u3} - ({SourceFile}:{LineNumber}).{Method} -> {Message:lj}{NewLine}{Exception}";
             // var path = "log/xeovis.txt";
             Log.Logger = new LoggerConfiguration()
                 .Enrich.WithCallerInfo(
