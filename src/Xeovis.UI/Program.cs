@@ -15,11 +15,23 @@ namespace Xeovis.UI
         public static void Main(string[] args)
         {
             SetupLogging();
-            Log.Information("Application started.");
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-            Log.Information("Application closed.");
+            try
+            {
+                Log.Information("Application started.");
+                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+                Log.Information("Application closed.");
+            }
+            catch (Exception ex)
+            {
+                var mb = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Crash :(",
+                    "Something went wrong! Please refer to the log file for further details."
+                    +"\n\nThis dialog will be automatically closed after 10 seconds.", 
+                    MsBox.Avalonia.Enums.ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
+                mb.ShowWindowAsync().Wait(1000 * 10);
+                Log.Fatal("Unhandled exception. Terminating the app...\n{ex}\n\n{contact}", ex.Message,
+                    "Please send this log file to Mohammad Humand:\nhumandm@student.unimelb.edu.au");
+            }
         }
-
         private static void SetupLogging()
         {
             var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
