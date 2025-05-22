@@ -94,8 +94,8 @@ public partial class MainMenu : UserControl
 
         var files = await topLevel.StorageProvider.OpenFilePickerAsync(options);
         if (files == null || files.Count == 0) return;
-
         var path = Uri.UnescapeDataString(files[0].Path.AbsolutePath);
+        Log.Information("Opening project file:\n{path}", path);
         var projectFile = ProjectFileManager.Load(path);
         if (projectFile == null)
         {
@@ -107,7 +107,7 @@ public partial class MainMenu : UserControl
 
         _lastFilePath = path;
         ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(projectFile, path));
-        Log.Information("Project file opened.");
+        Log.Information("Project file opened successfully.");
     }
 
     private async Task<bool> CheckAndRaiseUnsavedChangesMessage()
@@ -205,7 +205,6 @@ public partial class MainMenu : UserControl
                 var expReader = new ExperimentReader(vm.SelectedFolders, vm.SubfolderDirectory, vm.IsSubfolderChecked);
                 var experiments = await Task.Run(() => expReader.GetExperiments(progress, token));
                 ExperimentsLoaded?.Invoke(this, new ExperimentsLoadedEventArgs(experiments, dialog.ViewModel));
-                Log.Information("{ExperimentsCount} experiments loaded.", experiments.Count);
             }
             catch (OperationCanceledException)
             {
@@ -241,7 +240,6 @@ public partial class MainMenu : UserControl
             {
                 mctcBundle.Name = vm.MctcBundleName;
                 mctcBundleLoaded?.Invoke(this, new mctcBundleLoadedEventArgs(mctcBundle));
-                Log.Information("mctc bundle loaded: {name}", mctcBundle.Name);
             }
         }
     }

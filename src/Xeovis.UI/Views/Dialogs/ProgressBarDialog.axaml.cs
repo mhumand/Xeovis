@@ -41,7 +41,6 @@ public partial class ProgressBarDialog : Window
 
     private void btnCancel_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        Log.Information("Progress cancelled.");
         _cancellationToken?.Cancel();
     }
 }

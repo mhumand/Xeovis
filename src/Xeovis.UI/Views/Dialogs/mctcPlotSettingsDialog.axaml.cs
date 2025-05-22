@@ -123,7 +123,7 @@ public partial class mctcPlotSettingsDialog : Window
         plotDto.ChartSettings.AxesMinLimit = licAxesMinLimit.ViewModel.GetDoubleValue();
         plotDto.ChartSettings.AxesMaxLimit = licAxesMaxLimit.ViewModel.GetDoubleValue();
 
-        Log.Information("mctc plot settings saved: {name}", plotDto.Name);
+        Log.Information("Plot settings saved: {name}", plotDto.Name);
         this.Close(DialogResultType.OK);
     }
 }

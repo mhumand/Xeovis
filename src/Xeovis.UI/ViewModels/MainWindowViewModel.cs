@@ -94,7 +94,7 @@ namespace Xeovis.UI.ViewModels
                 mctcBundles.Remove(bundle);
                 MctcBundleNodes.Remove(node);
                 mctcBundlesDeleted?.Invoke(this, new mctcBundlesDeletedEventArgs(Id));
-                Log.Information("mctc bundle deleted: {name}", bundle.Name);
+                Log.Information("Bundle deleted: {name}", bundle.Name);
             }
         }
 
@@ -104,7 +104,7 @@ namespace Xeovis.UI.ViewModels
             mctcBundles.Clear();
             MctcBundleNodes.Clear();
             mctcBundlesDeleted?.Invoke(this, new mctcBundlesDeletedEventArgs(idList));
-            Log.Information("All mctc bundles deleted.");
+            Log.Information("All bundles deleted.");
         }
 
         public void DeleteMctcPlot(Guid Id)
@@ -116,7 +116,7 @@ namespace Xeovis.UI.ViewModels
             var plotNode = bundleNode.Children.FirstOrDefault(x => x.PresenterId == Id);
             bundleNode.Children.Remove(plotNode);
             mctcPlotsDeleted?.Invoke(this, new mctcPlotsDeletedEventArgs(Id));
-            Log.Information("mctc plot deleted: {name}", plotDto.Name);
+            Log.Information("Plot deleted: {name}", plotDto.Name);
         }
 
         public void DeleteAllMctcPlotsInBundle(Guid plotID)
@@ -128,7 +128,7 @@ namespace Xeovis.UI.ViewModels
             var idList = bundleNode.Children.Select(x => x.PresenterId).ToList();
             bundleNode.Children.Clear();
             mctcPlotsDeleted?.Invoke(this, new mctcPlotsDeletedEventArgs(idList));
-            Log.Information("All mctc plots deleted in bundle: {name}}", plotDto.Name);
+            Log.Information("All plots deleted in bundle: {name}}", plotDto.Name);
         }
     }
 }
