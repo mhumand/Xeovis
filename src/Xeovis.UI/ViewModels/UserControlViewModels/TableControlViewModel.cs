@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
+using Xeovis.Base;
 using Xeovis.Presentation;
 
 namespace Xeovis.UI.ViewModels
@@ -40,7 +41,11 @@ namespace Xeovis.UI.ViewModels
                     }
 
                     if (col.ValueType == typeof(double))
-                        row.Add(col.Id.ToString(), double.IsNaN((double)col.Values[i]) ? string.Empty : col.Values[i]);
+                    {
+                        var value = double.IsNaN(DoubleExtensions.GetDoubleValueFromText(col.Values[i].ToString())) ? 
+                            string.Empty : col.Values[i];
+                        row.Add(col.Id.ToString(), value);
+                    }
                     else
                         row.Add(col.Id.ToString(), col.Values[i]);
                 }

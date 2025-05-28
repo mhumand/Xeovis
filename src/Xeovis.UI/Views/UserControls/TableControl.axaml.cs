@@ -8,8 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xeovis.Base;
+using Xeovis.Base.Comparers;
 using Xeovis.Presentation;
-using Xeovis.UI.Models.Events;
 using Xeovis.UI.ViewModels;
 
 namespace Xeovis.UI;
@@ -73,11 +73,12 @@ public partial class TableControl : UserControl
             bool canReorder = column.CanReorder;
             bool canResize = column.CanResize;
 
+            DataGridColumn gridColumn;
             var sampleValue = _rows[0][key];
             if (sampleValue is bool)
             {
                 // Checkbox column
-                dataGrid.Columns.Add(new DataGridCheckBoxColumn
+                gridColumn = new DataGridCheckBoxColumn
                 {
                     Header = header,
                     Binding = new Binding($"[{key}]"),
@@ -87,12 +88,12 @@ public partial class TableControl : UserControl
                     CanUserReorder = canReorder,
                     CanUserResize = canResize,
                     Tag = column,
-                });
+                };
             }
             else if (column.HasOptions)
             {
                 // Combobox column
-                dataGrid.Columns.Add(new DataGridTemplateColumn
+                gridColumn = new DataGridTemplateColumn
                 {
                     Header = header,
                     IsReadOnly = isReadOnly,
@@ -139,12 +140,12 @@ public partial class TableControl : UserControl
                     //    optionsComboBox.SelectionChanged += optionsComboBox_SelectionChanged;
                     //    return optionsComboBox;
                     //})
-                });
+                };
             }
             else
             {
                 // Default to text column (for strings, numbers, etc.)
-                dataGrid.Columns.Add(new DataGridTextColumn
+                gridColumn = new DataGridTextColumn
                 {
                     Header = header,
                     Binding = new Binding($"[{key}]"),
@@ -153,8 +154,13 @@ public partial class TableControl : UserControl
                     CanUserReorder = canReorder,
                     CanUserResize = canResize,
                     Tag = column,
-                });
+                };
+
+                if (column.ValueType == typeof(double) || column.ValueType == typeof(int))
+                    gridColumn.CustomSortComparer = new NumericDictionaryComparer(column.Id.ToString());
             }
+
+            dataGrid.Columns.Add(gridColumn);
         }
 
         SetDataGridProperties();
