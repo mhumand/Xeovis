@@ -54,7 +54,7 @@ namespace Xeovis.UI.ViewModels
 
             var columns = new List<ColumnModel>
             {
-                new ColumnModel("#", exp.Runs.Select(r => r.Index.ToString("000")).ToList()),
+                new ColumnModel("#", exp.Runs.Select(r => r.Index).ToList()),
                 new ColumnModel("Name", exp.Runs.Select(r => r.Name).ToList()),
                 new ColumnModel("P [Kbar]", exp.Runs.Select(r => r.Pressure).ToList()),
                 new ColumnModel("T [°C]", exp.Runs.Select(r => r.Temperature).ToList()),
@@ -154,7 +154,7 @@ namespace Xeovis.UI.ViewModels
             var columns = new List<ColumnModel>
             {
                 new ColumnModel("#",
-                    Enumerable.Range(1, _allPhaseInstances.Count()).Select(x => x.ToString("000")).ToList()),
+                    Enumerable.Range(1, _allPhaseInstances.Count()).ToList()),
                 new ColumnModel("Study", _allPhaseInstances.Select(i => GetExperiment(i).ShortName).ToList()),
                 new ColumnModel("Name", _allPhaseInstances.Select(i => GetExpRun(i).Name).ToList()),
                 new ColumnModel("P [Kbar]", _allPhaseInstances.Select(i => GetExpRun(i).Pressure).ToList()),

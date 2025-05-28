@@ -279,7 +279,7 @@ namespace Xeovis.UI.ViewModels
             var xeosVars = mctcBundle.xeosVariables.Where(x => xeosVarGroups.Any(g => g.Contains(x)) && x.CalcVals.ContainsKey(mctcRunIndex)).ToList();
             var columns = new List<ColumnModel>()
             {
-                new ColumnModel("#", Enumerable.Range(1, xeosVars.Count).Select(x => x.ToString("000")).ToList()),
+                new ColumnModel("#", Enumerable.Range(1, xeosVars.Count).ToList()),
                 new ColumnModel("Obs", xeosVars.Select(x => x.ObsVal).ToList()),
                 new ColumnModel("Calc", xeosVars.Select(x => x.CalcVals[mctcRunIndex]).ToList()),
                 new ColumnModel("Assemblage", xeosVars.Select(x => batches.FirstOrDefault(b => b.Id == x.BatchId).GetPhaseAssemblageString()).ToList()),

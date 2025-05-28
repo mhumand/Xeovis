@@ -4,11 +4,6 @@ namespace Xeovis.Base.Comparers
 {
     public class NumericStringComparer : IComparer<string>
     {
-        public static bool IsNumeric(string value)
-        {
-            return double.TryParse(value, out _);
-        }
-
         public int Compare(string s1, string s2)
         {
             const int S1GreaterThanS2 = 1;
@@ -29,6 +24,11 @@ namespace Xeovis.Base.Comparers
             if (IsNumeric1) return S2GreaterThanS1;
             if (IsNumeric2) return S1GreaterThanS2;
             return string.Compare(s1, s2, true, CultureInfo.InvariantCulture);
+        }
+
+        public static bool IsNumeric(string value)
+        {
+            return double.TryParse(value, out _);
         }
     }
 }
