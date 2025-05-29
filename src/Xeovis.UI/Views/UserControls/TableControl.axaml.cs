@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
+using Avalonia.Input;
 using Avalonia.Media;
 using System;
 using System.Collections.Generic;
@@ -160,6 +161,7 @@ public partial class TableControl : UserControl
                     gridColumn.CustomSortComparer = new NumericDictionaryComparer(column.Id.ToString());
             }
 
+            gridColumn.HeaderPointerPressed += GridColumn_HeaderPointerPressed;
             dataGrid.Columns.Add(gridColumn);
         }
 
@@ -272,6 +274,31 @@ public partial class TableControl : UserControl
         var rowIndex = dataGrid.SelectedIndex;
         SelectionChanged?.Invoke(this,
             new TableSelectionChangedEventArgs(10, 0, e.AddedItems.Count > 0 ? e.AddedItems[0] : null));
+    }
+
+    private void GridColumn_HeaderPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is not DataGridColumn gridColumn) return;
+        var point = e.GetCurrentPoint(dataGrid);
+        if (!point.Properties.IsRightButtonPressed) return;
+
+        var menu = new ContextMenu();
+        var sortItem = new MenuItem() { Header = "Sort" };
+        sortItem.Click += (s, e) => gridColumn.Sort();
+        menu.Items.Add(sortItem);
+        
+        var clearSortItem = new MenuItem() { Header = "Clear Sorting" };
+        clearSortItem.Click += (s, e) => gridColumn.ClearSort();
+        menu.Items.Add(clearSortItem);
+
+        dataGrid.ContextMenu = menu;
+        menu.Closing += ColumnHeaderMenu_Closing;
+        menu.Open(dataGrid);
+    }
+
+    private void ColumnHeaderMenu_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        dataGrid.ContextMenu = null;
     }
 
     public void SelectRow(int rowIndex)
