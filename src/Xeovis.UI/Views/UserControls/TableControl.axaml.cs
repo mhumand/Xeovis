@@ -4,6 +4,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,6 @@ namespace Xeovis.UI;
 public partial class TableControl : UserControl
 {
     private TableControlViewModel _viewModel = new TableControlViewModel();
-
     public TableControlViewModel ViewModel
     {
         get { return _viewModel; }
@@ -116,6 +116,7 @@ public partial class TableControl : UserControl
                         optionsComboBox.IsEnabled = !isReadOnly && !_tableModel.IsReadOnly;
                         optionsComboBox.BorderBrush = Brushes.Transparent;
                         optionsComboBox.Background = Brushes.Transparent;
+                        optionsComboBox.AddHandler(ComboBox.PointerPressedEvent, optionsComboBox_PointerPressed, RoutingStrategies.Tunnel);
                         return optionsComboBox;
                     }),
 
@@ -160,13 +161,21 @@ public partial class TableControl : UserControl
                 if (column.ValueType == typeof(double) || column.ValueType == typeof(int))
                     gridColumn.CustomSortComparer = new NumericDictionaryComparer(column.Id.ToString());
             }
-
+            
             gridColumn.HeaderPointerPressed += GridColumn_HeaderPointerPressed;
             dataGrid.Columns.Add(gridColumn);
         }
 
         SetDataGridProperties();
         return true;
+    }
+
+    private void optionsComboBox_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is not ComboBox cmbox) return;
+        var point = e.GetCurrentPoint(cmbox);
+        if (!point.Properties.IsLeftButtonPressed)
+            e.Handled = true;
     }
 
     private void optionsComboBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -280,6 +289,7 @@ public partial class TableControl : UserControl
     {
         if (sender is not DataGridColumn gridColumn) return;
         var point = e.GetCurrentPoint(dataGrid);
+        dataGrid.SelectedIndex = -1;
         if (!point.Properties.IsRightButtonPressed) return;
 
         var menu = new ContextMenu();
