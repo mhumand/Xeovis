@@ -1,4 +1,5 @@
-﻿using Xeovis.Base.Validations;
+﻿using Xeovis.Base;
+using Xeovis.Base.Validations;
 
 namespace Xeovis.Presentation
 {
@@ -48,7 +49,7 @@ namespace Xeovis.Presentation
         public ColumnModel(string header, List<double> values) : this()
         {
             Header = header;
-            Values = new List<object>(values.Cast<object>());
+            Values = new List<object>(values.Select(x => x.Round(12)).Cast<object>());
         }
 
         public ColumnModel(string header, List<int> values) : this()

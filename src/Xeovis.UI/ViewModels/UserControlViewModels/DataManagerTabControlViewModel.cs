@@ -67,10 +67,11 @@ namespace Xeovis.UI.ViewModels
             foreach (var oxide in allOxides)
             {
                 var values = exp.Runs.Select(r =>
-                    r.BulkComposition.TryGetValue(oxide, out double value) ? value.Round(4) : 0).ToList();
+                    r.BulkComposition.TryGetValue(oxide, out double value) ? value.Round(6) : 0).ToList();
                 var columnModel = new ColumnModel(oxide.ToString(), values);
                 columns.Add(columnModel);
             }
+            columns.Add(new ColumnModel("Total", exp.Runs.Select(r => r.BulkCompValues.Sum().Round(6)).ToList()));
 
             return new TableModel(exp.Name, columns) { IsReadOnly = true, FrozenColumnCount = 2 };
         }
@@ -111,10 +112,11 @@ namespace Xeovis.UI.ViewModels
             foreach (var oxide in allOxides)
             {
                 var values = allPhasesInExp.Select(i =>
-                    i.Composition.TryGetValue(oxide, out double value) ? value.Round(4) : 0).ToList();
+                    i.Composition.TryGetValue(oxide, out double value) ? value.Round(6) : 0).ToList();
                 var columnModel = new ColumnModel(oxide.ToString(), values);
                 columns.Add(columnModel);
             }
+            columns.Add(new ColumnModel("Total", allPhasesInExp.Select(i => i.CompositionValues.Sum().Round(6)).ToList()));
 
             columns.Add(new ColumnModel("Comment", allPhasesInExp.Select(i => i.Comment).ToList()));
 
@@ -167,10 +169,11 @@ namespace Xeovis.UI.ViewModels
             foreach (var oxide in allOxides)
             {
                 var values = _allPhaseInstances.Select(i =>
-                    i.Composition.TryGetValue(oxide, out double value) ? value.Round(4) : 0).ToList();
+                    i.Composition.TryGetValue(oxide, out double value) ? value.Round(6) : 0).ToList();
                 var columnModel = new ColumnModel(oxide.ToString(), values);
                 columns.Add(columnModel);
             }
+            columns.Add(new ColumnModel("Total", _allPhaseInstances.Select(i => i.CompositionValues.Sum().Round(6)).ToList()));
 
             return new TableModel(phaseItem.Label, columns) { IsReadOnly = true };
         }
@@ -188,10 +191,13 @@ namespace Xeovis.UI.ViewModels
             foreach (var oxide in allOxides)
             {
                 var allVals = _allPhaseInstances.Select(i =>
-                    i.Composition.TryGetValue(oxide, out double value) ? value.Round(8) : 0).ToList();
+                    i.Composition.TryGetValue(oxide, out double value) ? value : 0).ToList();
                 var colVals = new List<double> { allVals.Min(), allVals.Average(), allVals.Max() };
-                columns.Add(new ColumnModel(oxide.ToString(), colVals.Select(x => x.Round(4)).ToList()));
+                columns.Add(new ColumnModel(oxide.ToString(), colVals.Select(x => x.Round(6)).ToList()));
             }
+            var totals = _allPhaseInstances.Select(i => i.CompositionValues.Sum()).ToList();
+            var lastColVals = new List<double> { totals.Min(), totals.Average(), totals.Max() };
+            columns.Add(new ColumnModel("Total", lastColVals.Select(x => x.Round(6)).ToList()));
 
             return new TableModel("Summary", columns) { IsReadOnly = true, FrozenColumnCount = 1 };
         }
