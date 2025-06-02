@@ -29,13 +29,16 @@ public partial class DataManagerTabControl : UserControl
 
     private void PrepareUI()
     {
-        lcbExperiment.ViewModel = new LabelComboBoxControlViewModel() { Label = "Experiment" };
+        lcbExperiment.ViewModel = new LabelComboBoxControlViewModel() { Label = "Select experiment", IsStackedHorizontally = true };
         lcbExperiment.ListSelectionChanged += lcbExperiment_ListSelectionChanged;
 
-        lcbPhaseInExperiment.ViewModel = new LabelComboBoxControlViewModel() { Label = "Phase" };
+        lcbPhaseInExperiment.ViewModel = new LabelComboBoxControlViewModel() { Label = "Select phase", IsStackedHorizontally = true };
         lcbPhaseInExperiment.ListSelectionChanged += lcbPhaseInExperiment_ListSelectionChanged;
 
-        lcbPhases.ViewModel = new LabelComboBoxControlViewModel() { Label = "Phase" };
+        lcbExpRunInExperiment.ViewModel = new LabelComboBoxControlViewModel() { Label = "Select run", IsStackedHorizontally = true };
+        lcbExpRunInExperiment.ListSelectionChanged += lcbExpRunInExperiment_ListSelectionChanged;
+
+        lcbPhases.ViewModel = new LabelComboBoxControlViewModel() { Label = "Select phase", IsStackedHorizontally = true };
         lcbPhases.ListSelectionChanged += lcbPhases_ListSelectionChanged;
     }
 
@@ -43,10 +46,13 @@ public partial class DataManagerTabControl : UserControl
     {
         tableExperiment.ClearTable();
         tablePhaseInExperiment.ClearTable();
+        tableExpRunInExperiment.ClearTable();
         tablePhases.ClearTable();
         tablePhasesSummary.ClearTable();
+
         lcbExperiment.ClearItems();
         lcbPhaseInExperiment.ClearItems();
+        lcbExpRunInExperiment.ClearItems();
         lcbPhases.ClearItems();
 
         _viewModel.CreateExperimentItems(experiments);
@@ -73,17 +79,28 @@ public partial class DataManagerTabControl : UserControl
         tablePhaseInExperiment.PopulateTable(table);
     }
 
+    private void lcbExpRunInExperiment_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    {
+        tableExpRunInExperiment.ClearTable();
+        if (e.SelectedItem is not ListableItem expRunInExperimentItem) return;
+        var table = _viewModel.CreateExpRunInExperimentTableModel(lcbExperiment.ViewModel.SelectedItem, expRunInExperimentItem);
+        tableExpRunInExperiment.PopulateTable(table);
+    }
+
     private void lcbExperiment_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
     {
         tableExperiment.ClearTable();
         lcbPhaseInExperiment.ClearItems();
-        //tablePhases.ClearTable();
+        lcbExpRunInExperiment.ClearItems();
         if (e.SelectedItem is not ListableItem experimentItem) return;
         var table = _viewModel.CreateExperimentTableModel(experimentItem);
         tableExperiment.PopulateTable(table);
 
         _viewModel.CreatePhaseInExperimentItems(experimentItem);
         lcbPhaseInExperiment.SetItems(_viewModel.PhaseInExperimentItems.OrderBy(i => i.Label).ToList());
+
+        _viewModel.CreateExpRunInExperimentItems(experimentItem);
+        lcbExpRunInExperiment.SetItems(_viewModel.ExpRunInExperimentItems.ToList());
     }
 
     public void DeleteExperiments(List<Guid> Ids)
@@ -92,7 +109,6 @@ public partial class DataManagerTabControl : UserControl
         lcbExperiment.SetItems(_viewModel.ExperimentItems.ToList());
         lcbPhases.SetItems(_viewModel.GetPhaseTypeItemList());
     }
-
 
     public void OpenExperiment(Guid Id)
     {
@@ -105,5 +121,10 @@ public partial class DataManagerTabControl : UserControl
     {
         OpenExperiment(experimentId);
         lcbPhaseInExperiment.ViewModel.SelectedItem = _viewModel.PhaseInExperimentItems.FirstOrDefault(x => (PhaseType)x.Tag == phaseType);
+    }
+
+    public void OpenExpRunInExperiment(Guid experimentId, Guid expRunId)
+    {
+
     }
 }

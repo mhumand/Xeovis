@@ -33,10 +33,10 @@
 				</Grid.RowDefinitions>
 
 				<Grid Grid.Row="0"
-					  RowDefinitions="60,*">
+					  RowDefinitions="40,*">
 					<uc:LabelComboBoxControl x:Name="lcbExperiment"
 													   Grid.Row="0"
-													   Width="250"
+													   Width="450"
 													   HorizontalAlignment="Left"/>
 					<uc:TableControl x:Name="tableExperiment"
 											   Grid.Row="1" />
@@ -47,15 +47,28 @@
 							  BorderThickness="3.5"
 							  Margin="0 2"/>
 
-				<Grid Grid.Row="2"
-					  RowDefinitions="60,*">
-					<uc:LabelComboBoxControl x:Name="lcbPhaseInExperiment"
-													   Grid.Row="0"
-													   Width="250"
-													   HorizontalAlignment="Left"/>
-					<uc:TableControl x:Name="tablePhaseInExperiment"
-											   Grid.Row="1"/>
-				</Grid>
+				<TabControl x:Name="tabControlExperimentDetails" Grid.Row="2" Padding="0">
+					<TabItem x:Name="tabPhaseInExperiment" Header="Phases">
+						<Grid RowDefinitions="40,*">
+							<uc:LabelComboBoxControl x:Name="lcbPhaseInExperiment"
+															   Grid.Row="0"
+															   Width="350"
+															   HorizontalAlignment="Left"/>
+							<uc:TableControl x:Name="tablePhaseInExperiment" Grid.Row="1"/>
+						</Grid>
+					</TabItem>
+					
+					<TabItem x:Name="tabExpRunInExperiment" Header="Experimental Runs" Margin="10 0">
+						<Grid RowDefinitions="40,*">
+							<uc:LabelComboBoxControl x:Name="lcbExpRunInExperiment"
+															   Grid.Row="0"
+															   Width="400"
+															   HorizontalAlignment="Left"/>
+							<uc:TableControl x:Name="tableExpRunInExperiment" Grid.Row="1"/>
+						</Grid>
+					</TabItem>
+				</TabControl>
+
 			</Grid>
 		</TabItem>
 
@@ -67,10 +80,10 @@
 					<RowDefinition Height="5"/>
 					<RowDefinition Height="150" MinHeight="150"/>
 				</Grid.RowDefinitions>
-				<Grid Grid.Row="0" RowDefinitions="60,*">
+				<Grid Grid.Row="0" RowDefinitions="40,*">
 					<uc:LabelComboBoxControl x:Name="lcbPhases"
 													   Grid.Row="0"
-													   Width="250"
+													   Width="350"
 													   HorizontalAlignment="Left"/>
 					<uc:TableControl x:Name="tablePhases"
 											   Grid.Row="1" />
