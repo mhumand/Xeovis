@@ -38,7 +38,10 @@ public partial class LabelComboBoxControl : UserControl
 
         if (_viewModel.IsStackedHorizontally)
         {
-
+            comboBox.MinWidth = this.Width - tbLabel.Bounds.Width - 15;//todo: temp
+            this.MinHeight = 40;
+            tbLabel.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
+            comboBox.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
         }
     }
 

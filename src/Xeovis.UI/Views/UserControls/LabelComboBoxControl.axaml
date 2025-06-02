@@ -4,18 +4,27 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="56"
 			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+			 xmlns:locals="clr-namespace:Xeovis.UI.Views.Helpers.Converters;assembly=Xeovis.UI"
 			 MinHeight="56"
 			 MinWidth="200"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
              x:Class="Xeovis.UI.LabelComboBoxControl"
 			 x:DataType="vm:LabelComboBoxControlViewModel">
 
+	<UserControl.Resources>
+		<locals:BoolToOrientationConverter x:Key="OrientationConverter" />
+	</UserControl.Resources>
+
 	<UserControl.Styles>
 		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
 	</UserControl.Styles>
 	
-	<StackPanel Spacing="5">
-		<StackPanel Orientation="Horizontal" Spacing="5">
+	<StackPanel Spacing="5"
+				HorizontalAlignment="Stretch"
+				Orientation="{Binding IsStackedHorizontally, Converter={StaticResource OrientationConverter}}">
+		<StackPanel IsVisible="{Binding IsLabelVisible}"
+					Orientation="Horizontal"
+					Spacing="5">
 			<TextBlock x:Name="tbLabel"
 					   Text="{Binding Label}"/>
 			<userControls:ToolTipControl x:Name="toolTip"/>

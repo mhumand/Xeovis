@@ -16,6 +16,8 @@ namespace Xeovis.UI.ViewModels
 
         [ObservableProperty] private ObservableCollection<ListableItem> phaseInExperimentItems;
 
+        [ObservableProperty] private ObservableCollection<ListableItem> expRunInExperimentItems;
+
         private List<Experiment> _experiments;
         private List<Phase> _allPhaseInstances;
 
@@ -23,6 +25,7 @@ namespace Xeovis.UI.ViewModels
         {
             ExperimentItems = new ObservableCollection<ListableItem>();
             PhaseInExperimentItems = new ObservableCollection<ListableItem>();
+            ExpRunInExperimentItems = new ObservableCollection<ListableItem>();
 
             CanBeRemoved = false;
             _experiments = new List<Experiment>();
@@ -43,7 +46,7 @@ namespace Xeovis.UI.ViewModels
             foreach (var experiment in _experiments)
             {
                 ExperimentItems.Add(new ListableItem(experiment.Name, description: experiment.ShortName)
-                    { PresenterId = experiment.Id });
+                { PresenterId = experiment.Id });
             }
         }
 
@@ -98,8 +101,8 @@ namespace Xeovis.UI.ViewModels
                 .Select(run => run.Phases.FirstOrDefault(ph => ph.Type == phaseType)).ToList();
 
             // phase present in ExpRun product assemblage, but no composition provided.
-            allPhasesInExp.RemoveAll(i => i.Composition.Count == 0); 
-            
+            allPhasesInExp.RemoveAll(i => i.Composition.Count == 0);
+
             if (allPhasesInExp.Count == 0) return null;
             var allOxides = allPhasesInExp.SelectMany(x => x.CompositionOxides).Distinct();
 
@@ -117,10 +120,46 @@ namespace Xeovis.UI.ViewModels
                 columns.Add(columnModel);
             }
             columns.Add(new ColumnModel("Total", allPhasesInExp.Select(i => i.CompositionValues.Sum().Round(6)).ToList()));
-
-            columns.Add(new ColumnModel("Comment", allPhasesInExp.Select(i => i.Comment).ToList()));
+            columns.Add(new ColumnModel(header: "Comment", allPhasesInExp.Select(i => i.Comment).ToList()));
 
             return new TableModel(phaseItem.Label, columns) { IsReadOnly = true, FrozenColumnCount = 1 };
+        }
+
+        public void CreateExpRunInExperimentItems(ListableItem experimentItem)
+        {
+            var exp = _experiments.FirstOrDefault(e => e.Id == experimentItem.PresenterId);
+            if (exp == null) return;
+
+            ExpRunInExperimentItems.Clear();
+            foreach (var run in exp.Runs.Where(r => r.Phases.Any(p => p.CompositionValues.Count > 0)))
+                ExpRunInExperimentItems.Add(new ListableItem($"{run.Index} - {run.Name}", description: $"{run.Pressure} kbar, {run.Temperature} °C")
+                { PresenterId = run.Id });
+        }
+
+        public TableModel CreateExpRunInExperimentTableModel(ListableItem experimentItem, ListableItem expRunItem)
+        {
+            var exp = _experiments.FirstOrDefault(e => e.Id == experimentItem.PresenterId);
+            if (exp == null || exp.Runs.Count == 0) return null;
+            var expRun = exp.Runs.FirstOrDefault(r => r.Id == expRunItem.PresenterId);
+            if (expRun == null) return null;
+
+            var phases = expRun.Phases.Where(x => x.CompositionValues.Count > 0);
+            var columns = new List<ColumnModel>
+            {
+                new ColumnModel("Phase", phases.Select(p => EnumExtensions.GetDescriptionFromValue(p.Type)).ToList())
+            };
+
+            var allOxides = phases.SelectMany(p => p.CompositionOxides).Distinct();
+            foreach (var oxide in allOxides)
+            {
+                var values = phases.Select(i => i.Composition.TryGetValue(oxide, out double value) ? value.Round(6) : 0).ToList();
+                var columnModel = new ColumnModel(oxide.ToString(), values);
+                columns.Add(columnModel);
+            }
+            columns.Add(new ColumnModel("Total", phases.Select(i => i.CompositionValues.Sum().Round(6)).ToList()));
+            columns.Add(new ColumnModel(header: "Comment", phases.Select(i => i.Comment).ToList()));
+
+            return new TableModel(expRunItem.Label, columns) { IsReadOnly = true, FrozenColumnCount = 1 };
         }
 
         public List<ListableItem> GetPhaseTypeItemList()
@@ -150,7 +189,7 @@ namespace Xeovis.UI.ViewModels
                 .ToList();
 
             // phase present in ExpRun product assemblage, but no composition provided.
-            _allPhaseInstances.RemoveAll(i => i.Composition.Count == 0); 
+            _allPhaseInstances.RemoveAll(i => i.Composition.Count == 0);
             if (_allPhaseInstances.Count == 0) return null;
 
             var columns = new List<ColumnModel>

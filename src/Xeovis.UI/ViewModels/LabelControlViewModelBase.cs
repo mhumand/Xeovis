@@ -13,6 +13,9 @@ namespace Xeovis.UI.ViewModels
         [ObservableProperty]
         private bool isReadOnly;
 
+        [ObservableProperty]
+        private bool isLabelVisible = true;
+
         public bool HasToolTip => !string.IsNullOrWhiteSpace(ToolTip);
     }
 }
