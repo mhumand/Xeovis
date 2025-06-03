@@ -196,12 +196,12 @@ namespace Xeovis.UI.ViewModels
             {
                 new ColumnModel("#",
                     Enumerable.Range(1, _allPhaseInstances.Count()).ToList()),
-                new ColumnModel("Study", _allPhaseInstances.Select(i => GetExperiment(i).ShortName).ToList()),
-                new ColumnModel("Name", _allPhaseInstances.Select(i => GetExpRun(i).Name).ToList()),
-                new ColumnModel("P [Kbar]", _allPhaseInstances.Select(i => GetExpRun(i).Pressure).ToList()),
-                new ColumnModel("T [°C]", _allPhaseInstances.Select(i => GetExpRun(i).Temperature).ToList()),
+                new ColumnModel("Study", _allPhaseInstances.Select(i => GetExperimentByPhase(i).ShortName).ToList()),
+                new ColumnModel("Name", _allPhaseInstances.Select(i => GetExpRunByPhase(i).Name).ToList()),
+                new ColumnModel("P [Kbar]", _allPhaseInstances.Select(i => GetExpRunByPhase(i).Pressure).ToList()),
+                new ColumnModel("T [°C]", _allPhaseInstances.Select(i => GetExpRunByPhase(i).Temperature).ToList()),
                 new ColumnModel("Phases",
-                    _allPhaseInstances.Select(i => GetExpRun(i).GetPhaseAssemblageString()).ToList())
+                    _allPhaseInstances.Select(i => GetExpRunByPhase(i).GetPhaseAssemblageString()).ToList())
             };
 
             var allOxides = _allPhaseInstances.SelectMany(i => i.CompositionOxides).Distinct();
@@ -241,14 +241,14 @@ namespace Xeovis.UI.ViewModels
             return new TableModel("Summary", columns) { IsReadOnly = true, FrozenColumnCount = 1 };
         }
 
-        private ExpRun GetExpRun(Phase phase)
+        private ExpRun GetExpRunByPhase(Phase phase)
         {
             return _experiments.SelectMany(e => e.Runs).FirstOrDefault(r => r.Id == phase.ExpRunId);
         }
 
-        private Experiment GetExperiment(Phase phase)
+        private Experiment GetExperimentByPhase(Phase phase)
         {
-            var expRun = GetExpRun(phase);
+            var expRun = GetExpRunByPhase(phase);
             if (expRun == null) return null;
             return _experiments.FirstOrDefault(e => e.Runs.Contains(expRun));
         }
@@ -261,6 +261,11 @@ namespace Xeovis.UI.ViewModels
                 if (item == null) continue;
                 ExperimentItems.Remove(item);
             }
+        }
+
+        public ExpRun GetExpRunById(Guid id)
+        {
+            return _experiments.SelectMany(x => x.Runs).FirstOrDefault(r => r.Id == id);
         }
     }
 }

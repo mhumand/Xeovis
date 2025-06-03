@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xeovis.Base;
 using Xeovis.Domain;
 using Xeovis.UI.Models;
 using Xeovis.UI.ViewModels;
@@ -115,15 +116,42 @@ public partial class DataManagerTabControl : UserControl
         var item = _viewModel.ExperimentItems.FirstOrDefault(x => x.PresenterId == Id);
         lcbExperiment.ViewModel.SelectedItem = item;
         tabControl.SelectedItem = tabExperiments;
+
+        tableExperiment.SelectRow(-1);
+        tableExpRunInExperiment.SelectRow(-1);
+        tablePhaseInExperiment.SelectRow(-1);
     }
 
-    public void OpenPhaseInExperiment(Guid experimentId, PhaseType phaseType)
+    public void OpenPhaseInExperiment(Guid experimentId, PhaseType phaseType, Guid? expRunId = null)
     {
         OpenExperiment(experimentId);
+        tabControlExperimentDetails.SelectedItem = tabPhaseInExperiment;
         lcbPhaseInExperiment.ViewModel.SelectedItem = _viewModel.PhaseInExperimentItems.FirstOrDefault(x => (PhaseType)x.Tag == phaseType);
+
+        if (expRunId != null)
+        {
+            var expRun = _viewModel.GetExpRunById((Guid)expRunId);
+            if (expRun != null)
+            {
+                tableExperiment.SelectRow(expRun.Index - 1);
+                tablePhaseInExperiment.SelectRowContainingCellString(expRun.ToString(), 0);
+
+                lcbExpRunInExperiment.ViewModel.SelectedItem = _viewModel.ExpRunInExperimentItems.FirstOrDefault(x => x.PresenterId == expRunId);
+                tableExpRunInExperiment.SelectRowContainingCellString(EnumExtensions.GetDescriptionFromValue(phaseType), 0);
+            }
+        }
     }
 
     public void OpenExpRunInExperiment(Guid experimentId, Guid expRunId)
+    {
+        OpenExperiment(experimentId);
+        tabControlExperimentDetails.SelectedItem = tabExpRunInExperiment;
+        var expRun = _viewModel.GetExpRunById(expRunId);
+        tableExperiment.SelectRow(expRun.Index - 1);
+        lcbExpRunInExperiment.ViewModel.SelectedItem = _viewModel.ExpRunInExperimentItems.FirstOrDefault(x => x.PresenterId == expRunId);
+    }
+
+    public void AddPhaseToCompare(Guid experimentId, Guid expRunId, PhaseType phaseType)
     {
 
     }

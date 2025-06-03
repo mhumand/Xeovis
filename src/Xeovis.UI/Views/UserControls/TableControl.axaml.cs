@@ -6,6 +6,7 @@ using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -161,7 +162,7 @@ public partial class TableControl : UserControl
                 if (column.ValueType == typeof(double) || column.ValueType == typeof(int))
                     gridColumn.CustomSortComparer = new NumericDictionaryComparer(column.Id.ToString());
             }
-            
+
             gridColumn.HeaderPointerPressed += GridColumn_HeaderPointerPressed;
             dataGrid.Columns.Add(gridColumn);
         }
@@ -296,7 +297,7 @@ public partial class TableControl : UserControl
         var sortItem = new MenuItem() { Header = "Sort" };
         sortItem.Click += (s, e) => gridColumn.Sort();
         menu.Items.Add(sortItem);
-        
+
         var clearSortItem = new MenuItem() { Header = "Clear Sorting" };
         clearSortItem.Click += (s, e) => gridColumn.ClearSort();
         menu.Items.Add(clearSortItem);
@@ -313,9 +314,20 @@ public partial class TableControl : UserControl
 
     public void SelectRow(int rowIndex)
     {
-        dataGrid.SelectionChanged -= DataGrid_SelectionChanged;
-        dataGrid.SelectedIndex = rowIndex;
-        dataGrid.ScrollIntoView(dataGrid.SelectedItem, dataGrid.Columns[0]);
-        dataGrid.SelectionChanged += DataGrid_SelectionChanged;
+        Dispatcher.UIThread.Post(() =>
+        {
+            dataGrid.SelectionChanged -= DataGrid_SelectionChanged;
+            dataGrid.SelectedIndex = rowIndex;
+            if (rowIndex >= 0)
+                dataGrid.ScrollIntoView(dataGrid.SelectedItem, dataGrid.Columns[0]);
+            dataGrid.SelectionChanged += DataGrid_SelectionChanged;
+        });
+    }
+
+    public void SelectRowContainingCellString(string cellString, int columnIndex)
+    {
+        var rows = _rows.Select(x => x.Values).ToList();
+        var rowIndex = rows.FindIndex(x => x.ToList()[columnIndex].ToString().Contains(cellString));
+        SelectRow(rowIndex);
     }
 }

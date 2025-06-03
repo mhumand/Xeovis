@@ -256,11 +256,7 @@ namespace Xeovis.UI.Views
                 var experiment = _viewModel.Experiments.FirstOrDefault(x => x.Id == node.PresenterId);
 
                 menu.Items.Add(new Separator());
-                openItem.Click += (s, e) =>
-                {
-                    _dataManagerTab?.OpenExperiment(node.PresenterId);
-                    tabControl.SelectedItem = _dataManagerTab?.ViewModel;
-                };
+                openItem.Click += (s, e) => OpenExperiment(node.PresenterId);
 
                 var deleteItem = new MenuItem() { Header = "Delete" };
                 deleteItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteExperiment(node.PresenterId), node.Label);
@@ -287,11 +283,7 @@ namespace Xeovis.UI.Views
             }
             else
             {
-                openItem.Click += (s, e) =>
-                {
-                    _dataManagerTab?.OpenPhaseInExperiment(node.PresenterId, (PhaseType)node.Tag);
-                    tabControl.SelectedItem = _dataManagerTab?.ViewModel;
-                };
+                openItem.Click += (s, e) => OpenPhaseInExperiment(node.PresenterId, (PhaseType)node.Tag);
             }
 
             tvExperiments.ContextMenu = menu;
@@ -573,6 +565,30 @@ namespace Xeovis.UI.Views
 
             borderTreeLists.IsVisible = visible;
             splitterVertical.IsVisible = visible;
+        }
+
+        public void OpenExperiment(Guid experimenId)
+        {
+            _dataManagerTab?.OpenExperiment(experimenId);
+            tabControl.SelectedItem = _dataManagerTab?.ViewModel;
+        }
+
+        public void OpenPhaseInExperiment(Guid experimentId, PhaseType phaseType, Guid? expRunId = null)
+        {
+            _dataManagerTab?.OpenPhaseInExperiment(experimentId, phaseType, expRunId);
+            tabControl.SelectedItem = _dataManagerTab?.ViewModel;
+        }
+
+        public void OpenExpRunInExperiment(Guid experimentId, Guid expRunId)
+        {
+            _dataManagerTab?.OpenExpRunInExperiment(experimentId, expRunId);
+            tabControl.SelectedItem = _dataManagerTab?.ViewModel;
+        }
+
+        public void AddPhaseToCompare(Guid experimentId, Guid expRunId, PhaseType phaseType)
+        {
+            _dataManagerTab?.AddPhaseToCompare(experimentId, expRunId, phaseType);
+            tabControl.SelectedItem = _dataManagerTab?.ViewModel;
         }
         #endregion
     }

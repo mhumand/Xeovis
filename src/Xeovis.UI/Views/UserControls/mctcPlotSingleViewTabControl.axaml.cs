@@ -1,9 +1,11 @@
 using Avalonia.Controls;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xeovis.Base;
 using Xeovis.Base.Comparers;
+using Xeovis.Base.Utilities;
 using Xeovis.Domain;
 using Xeovis.Presentation;
 using Xeovis.UI.Models;
@@ -61,6 +63,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         spinner.ValueChanged += spinner_ValueChanged;
 
         tableFilter.CellValueChanged += tableFilter_CellValueChanged;
+        tableControl.ContextRequested += tableControl_ContextRequested;
     }
 
     public bool PopulateUI(mctcPlotDto mctcPlotDto, mctcBundle mctcBundle)
@@ -307,5 +310,76 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
             PopulateUI(_viewModel.mctcPlotDto, _viewModel.mctcBundle);
             ParentWindow.OnMctcPlotRenamed(_viewModel.mctcPlotDto);
         }
+    }
+
+    private void tableControl_ContextRequested(object? sender, ContextRequestedEventArgs e)
+    {
+        if (ParentWindow == null) return;
+        var experiments = ParentWindow.ViewModel.Experiments;
+        if (experiments == null || experiments.Count == 0) return;
+
+        // reading data
+        var row = tableControl.dataGrid.SelectedItem;
+        var values = ((Dictionary<string, object>)row).Values.ToList();
+        var phaseNames = values[3].ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var runData = values[4].ToString().Split(['-', ' '], StringSplitOptions.RemoveEmptyEntries);
+
+        var runP = DoubleExtensions.GetDoubleValueFromText(values[5].ToString());
+        var runT = DoubleExtensions.GetDoubleValueFromText(values[6].ToString());
+
+        var expName = runData[1];
+        var expRunName = runData[2];
+        var batchIndex = runData[0];
+
+        // checking data
+        var experiment = experiments.FirstOrDefault(x => x.ShortName == expName);
+        if (experiment == null) return;
+        var runNameSimilarity = new Dictionary<ExpRun, int>();
+        experiment.Runs.ForEach(x => runNameSimilarity.Add(x, StringUtilities.GetLevenshteinDistance(x.Name, expRunName)));
+        runNameSimilarity = runNameSimilarity.OrderBy(x => x.Value).ToDictionary();
+        var expRun = runNameSimilarity.Keys.FirstOrDefault();
+        if (runNameSimilarity[expRun] > 5)
+        {
+            Log.Information("ExpRun was found but name is too dissimilar [{n1},{n2}]. Searching based on T and P ...", expRun.Name, expRunName);
+            expRun = experiment.Runs.FirstOrDefault(x => x.Temperature == runT && x.Pressure == runP);
+        }
+
+        // constructing menu
+        var menu = new ContextMenu();
+
+        var gotoExpItem = new MenuItem() { Header = $"Go to Experiment" };
+        gotoExpItem.Click += (s, e) => ParentWindow.OpenExperiment(experiment.Id);
+        ToolTip.SetTip(gotoExpItem, experiment.Name);
+        menu.Items.Add(gotoExpItem);
+
+        if (expRun != null)
+        {
+            var gotoExpRunItem = new MenuItem() { Header = $"Go to Run" };
+            gotoExpRunItem.Click += (s, e) => ParentWindow.OpenExpRunInExperiment(experiment.Id, expRun.Id);
+            ToolTip.SetTip(gotoExpRunItem, expRun.Name);
+            menu.Items.Add(gotoExpRunItem);
+        }
+
+        if (expRun != null)
+        {
+            var gotoPhaseItem = new MenuItem() { Header = "Go to Phase" };
+            foreach (var phaseName in phaseNames)
+            {
+                var phaseInExpRun = expRun.Phases.FirstOrDefault(x => x.Type.ToString() == phaseName);
+                if (phaseInExpRun == null || phaseInExpRun.Composition.Count == 0) continue;
+                var phaseItem = new MenuItem() { Header = phaseName };
+                phaseItem.Click += (s, e) => ParentWindow.OpenPhaseInExperiment(experiment.Id, phaseInExpRun.Type, expRun.Id);
+                gotoPhaseItem.Items.Add(phaseItem);
+            }
+
+            if (gotoPhaseItem.Items.Count > 0)
+                menu.Items.Add(gotoPhaseItem);
+        }
+
+        menu.Items.Add(new Separator());
+
+        var addToCampareItem = new MenuItem() { Header = "Add to Compare" };
+        menu.Items.Add(addToCampareItem);
+        menu.Open(tableControl);
     }
 }
