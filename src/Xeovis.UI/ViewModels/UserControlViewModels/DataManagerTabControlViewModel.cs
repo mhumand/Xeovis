@@ -21,6 +21,8 @@ namespace Xeovis.UI.ViewModels
         private List<Experiment> _experiments;
         private List<Phase> _allPhaseInstances;
 
+        public List<Phase> ComparedPhases;
+
         public DataManagerTabControlViewModel()
         {
             ExperimentItems = new ObservableCollection<ListableItem>();
@@ -30,6 +32,7 @@ namespace Xeovis.UI.ViewModels
             CanBeRemoved = false;
             _experiments = new List<Experiment>();
             _allPhaseInstances = new List<Phase>();
+            ComparedPhases = new List<Phase>();
         }
 
         public DataManagerTabControlViewModel(List<Experiment> experiments) : this()
@@ -266,6 +269,39 @@ namespace Xeovis.UI.ViewModels
         public ExpRun GetExpRunById(Guid id)
         {
             return _experiments.SelectMany(x => x.Runs).FirstOrDefault(r => r.Id == id);
+        }
+
+        public Phase GetPhaseById(Guid id)
+        {
+            return _experiments.SelectMany(x => x.Runs.SelectMany(x => x.Phases)).FirstOrDefault(x => x.Id == id);
+        }
+
+        public TableModel GetCompareTableModel()
+        {
+            if (ComparedPhases == null || ComparedPhases.Count == 0) return null;
+
+            var columns = new List<ColumnModel>
+            {
+                new ColumnModel("Phase", ComparedPhases.Select(x => EnumExtensions.GetDescriptionFromValue(x.Type)).ToList()),
+                new ColumnModel("Experiment", ComparedPhases.Select(x => GetExperimentByPhase(x).ShortName).ToList()),
+                new ColumnModel("Run", ComparedPhases.Select(x => GetExpRunByPhase(x).Name).ToList()),
+                new ColumnModel("P [kbar]", ComparedPhases.Select(x => GetExpRunByPhase(x).Pressure).ToList()),
+                new ColumnModel("T [°C]", ComparedPhases.Select(x => GetExpRunByPhase(x).Temperature).ToList()),
+            };
+
+            var allOxides = ComparedPhases.SelectMany(x => x.CompositionOxides).Distinct().ToList();
+
+            foreach (var oxide in allOxides)
+            {
+                var values = ComparedPhases.Select(i => i.Composition.TryGetValue(oxide, out double value) ? value.Round(6) : 0).ToList();
+                var columnModel = new ColumnModel(oxide.ToString(), values);
+                columns.Add(columnModel);
+            }
+            columns.Add(new ColumnModel("Total", ComparedPhases.Select(i => i.CompositionValues.Sum().Round(6)).ToList()));
+            columns.Add(new ColumnModel(header: "Comment", ComparedPhases.Select(i => i.Comment).ToList()));
+
+            columns.Add(new ColumnModel(header: "Id", ComparedPhases.Select(i => i.Id.ToString()).ToList()) { IsVisible = false });
+            return new TableModel("Compare", columns) { IsReadOnly = true };
         }
     }
 }
