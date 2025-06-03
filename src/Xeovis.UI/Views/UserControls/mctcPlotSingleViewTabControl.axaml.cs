@@ -320,12 +320,12 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
 
         // reading data
         var row = tableControl.dataGrid.SelectedItem;
-        var values = ((Dictionary<string, object>)row).Values.ToList();
-        var phaseNames = values[3].ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        var runData = values[4].ToString().Split(['-', ' '], StringSplitOptions.RemoveEmptyEntries);
+        var values = ((Dictionary<string, object>)row).Values.Cast<string>().ToList();
+        var phaseNames = values[3].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var runData = values[4].Split(['-', ' '], StringSplitOptions.RemoveEmptyEntries);
 
-        var runP = DoubleExtensions.GetDoubleValueFromText(values[5].ToString());
-        var runT = DoubleExtensions.GetDoubleValueFromText(values[6].ToString());
+        var runP = DoubleExtensions.GetDoubleValueFromText(values[5]);
+        var runT = DoubleExtensions.GetDoubleValueFromText(values[6]);
 
         var expName = runData[1];
         var expRunName = runData[2];
@@ -363,23 +363,29 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         if (expRun != null)
         {
             var gotoPhaseItem = new MenuItem() { Header = "Go to Phase" };
+            var addToCampareItem = new MenuItem() { Header = "Add to Compare" };
+
             foreach (var phaseName in phaseNames)
             {
                 var phaseInExpRun = expRun.Phases.FirstOrDefault(x => x.Type.ToString() == phaseName);
                 if (phaseInExpRun == null || phaseInExpRun.Composition.Count == 0) continue;
-                var phaseItem = new MenuItem() { Header = phaseName };
-                phaseItem.Click += (s, e) => ParentWindow.OpenPhaseInExperiment(experiment.Id, phaseInExpRun.Type, expRun.Id);
-                gotoPhaseItem.Items.Add(phaseItem);
+                var phaseDataItem = new MenuItem() { Header = phaseName };
+                phaseDataItem.Click += (s, e) => ParentWindow.OpenPhaseInExperiment(experiment.Id, phaseInExpRun.Type, expRun.Id);
+                gotoPhaseItem.Items.Add(phaseDataItem);
+
+                var phaseCompareItem = new MenuItem() { Header = phaseName };
+                phaseCompareItem.Click += (s, e) => ParentWindow.AddPhaseToCompare(phaseInExpRun.Id);
+                addToCampareItem.Items.Add(phaseCompareItem);
             }
 
             if (gotoPhaseItem.Items.Count > 0)
+            {
                 menu.Items.Add(gotoPhaseItem);
+                menu.Items.Add(new Separator());
+                menu.Items.Add(addToCampareItem);
+            }
         }
 
-        menu.Items.Add(new Separator());
-
-        var addToCampareItem = new MenuItem() { Header = "Add to Compare" };
-        menu.Items.Add(addToCampareItem);
         menu.Open(tableControl);
     }
 }

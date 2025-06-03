@@ -585,10 +585,9 @@ namespace Xeovis.UI.Views
             tabControl.SelectedItem = _dataManagerTab?.ViewModel;
         }
 
-        public void AddPhaseToCompare(Guid experimentId, Guid expRunId, PhaseType phaseType)
+        public void AddPhaseToCompare(Guid phaseId)
         {
-            _dataManagerTab?.AddPhaseToCompare(experimentId, expRunId, phaseType);
-            tabControl.SelectedItem = _dataManagerTab?.ViewModel;
+            _dataManagerTab?.AddPhaseToCompare(phaseId);
         }
         #endregion
     }

@@ -41,6 +41,8 @@ public partial class DataManagerTabControl : UserControl
 
         lcbPhases.ViewModel = new LabelComboBoxControlViewModel() { Label = "Select phase", IsStackedHorizontally = true };
         lcbPhases.ListSelectionChanged += lcbPhases_ListSelectionChanged;
+
+        tableCompare.ContextRequested += tableCompare_ContextRequested;
     }
 
     public void SetExperiments(List<Experiment> experiments)
@@ -104,6 +106,36 @@ public partial class DataManagerTabControl : UserControl
         lcbExpRunInExperiment.SetItems(_viewModel.ExpRunInExperimentItems.ToList());
     }
 
+    private void tableCompare_ContextRequested(object? sender, ContextRequestedEventArgs e)
+    {
+        var row = tableCompare.dataGrid.SelectedItem;
+        var values = ((Dictionary<string, object>)row).Values.Cast<string>().ToList();
+        var phaseID = Guid.Parse(values.Last());
+        var phase = _viewModel.GetPhaseById(phaseID);
+        if (phase == null) return;
+
+        var menu = new ContextMenu();
+
+        var removeItem = new MenuItem() { Header = "Remove" };
+        removeItem.Click += (s, e) =>
+        {
+            _viewModel.ComparedPhases.Remove(phase);
+            UpdateCompareTable();
+        };
+        menu.Items.Add(removeItem);
+
+        var removeAllItem = new MenuItem() { Header = "Remove All" };
+        removeAllItem.Click += (s, e) =>
+        {
+            _viewModel.ComparedPhases.Clear();
+            UpdateCompareTable();
+        };
+        menu.Items.Add(removeAllItem);
+
+        menu.Open(tableCompare);
+
+    }
+
     public void DeleteExperiments(List<Guid> Ids)
     {
         _viewModel.DeleteExperiments(Ids);
@@ -151,8 +183,20 @@ public partial class DataManagerTabControl : UserControl
         lcbExpRunInExperiment.ViewModel.SelectedItem = _viewModel.ExpRunInExperimentItems.FirstOrDefault(x => x.PresenterId == expRunId);
     }
 
-    public void AddPhaseToCompare(Guid experimentId, Guid expRunId, PhaseType phaseType)
+    public void AddPhaseToCompare(Guid phaseId)
     {
+        var phase = _viewModel.GetPhaseById(phaseId);
+        if (phase == null) return;
 
+        if (!_viewModel.ComparedPhases.Contains(phase))
+            _viewModel.ComparedPhases.Add(phase);
+
+        UpdateCompareTable();
+    }
+
+    private void UpdateCompareTable()
+    {
+        var tableModel = _viewModel.GetCompareTableModel();
+        tableCompare.PopulateTable(tableModel);
     }
 }
