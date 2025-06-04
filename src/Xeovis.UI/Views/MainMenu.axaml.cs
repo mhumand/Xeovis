@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Serilog;
+using Xeovis.Base.Utilities;
 using Xeovis.Domain;
 using Xeovis.Persistence;
 using Xeovis.UI.Models.Enums;
@@ -206,9 +207,19 @@ public partial class MainMenu : UserControl
                 var experiments = await Task.Run(() => expReader.GetExperiments(progress, token));
                 ExperimentsLoaded?.Invoke(this, new ExperimentsLoadedEventArgs(experiments, dialog.ViewModel));
             }
-            catch (OperationCanceledException)
+            catch (Exception ex)
             {
-                Log.Information("User cancelled loading experiments.");
+                if (ex is OperationCanceledException)
+                    Log.Information("User cancelled loading experiments.");
+                else if (ex is IOException)
+                {
+                    Log.Information(ex.Message);
+                    var mb = MessageBoxManager.GetMessageBoxStandard("Failed to Access", 
+                        StringUtilities.WrapTextToLines(ex.Message, 100), ButtonEnum.Ok, Icon.Error);
+                    mb.ShowWindowDialogAsync(ParentWindow);
+                }
+                else
+                    Log.Error(ex.Message);
             }
             finally
             {
@@ -274,6 +285,9 @@ public partial class MainMenu : UserControl
                     break;
                 case NullReferenceException:
                     Log.Error("Couldn't load mctc bundle.");
+                    break;
+                default:
+                    Log.Error(ex.Message);
                     break;
             }
 

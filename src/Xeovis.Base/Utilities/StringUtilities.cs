@@ -1,4 +1,6 @@
-﻿namespace Xeovis.Base.Utilities
+﻿using System.Text;
+
+namespace Xeovis.Base.Utilities
 {
     public static class StringUtilities
     {
@@ -24,6 +26,27 @@
             }
 
             return dp[a.Length, b.Length];
+        }
+
+        public static string WrapTextToLines(string text, int maxLineWidth)
+        {
+            string[] words = text.Split(' ');
+            StringBuilder newSentence = new StringBuilder();
+            
+            string line = "";
+            foreach (string word in words)
+            {
+                if ((line + word).Length > maxLineWidth)
+                {
+                    newSentence.AppendLine(line);
+                    line = "";
+                }
+            
+                line += string.Format("{0} ", word);
+            }
+            
+            if (line.Length > 0) newSentence.AppendLine(line);
+            return newSentence.ToString();
         }
     }
 }
