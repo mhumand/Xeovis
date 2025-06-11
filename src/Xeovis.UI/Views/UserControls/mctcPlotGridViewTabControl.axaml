@@ -93,6 +93,17 @@
 						<StackPanel Grid.Row="0"
 									Orientation="Horizontal"
 									HorizontalAlignment="Right">
+
+							<Button x:Name="btnExport"
+									Click="btnExport_Click"
+									Background="Transparent"
+									IsVisible="{Binding IsPaneOpen, ElementName=splitView}"
+									ToolTip.Tip="Export All Data"
+									Classes="InLine">
+								<Button.Content>
+									<Image Width="16" Height="16" Source="/Assets/MainMenu/export.png"/>
+								</Button.Content>
+							</Button>
 							
 							<Button x:Name="btnSettings"
 									Click="btnSettings_Click"

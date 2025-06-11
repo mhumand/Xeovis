@@ -1,0 +1,78 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="500"
+		xmlns:uc="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+		Width="400"
+		Height="500"
+		CanResize="False"
+        x:Class="Xeovis.UI.mctcPlotGridExportDialog"
+        Title="MCTC - Export">
+
+	<Window.Styles>
+		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
+		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+	</Window.Styles>
+
+	<Grid Margin="20" RowDefinitions="*,30">
+		<StackPanel Spacing="10" Grid.Row="0">
+			<Border BorderBrush="LightGray"
+					CornerRadius="5"
+					BorderThickness="1"
+					Padding="10 10">
+				<StackPanel Spacing="10">
+					<uc:CheckBoxControl x:Name="ckbxExportPlots"/>
+					
+					<uc:LabelInputControl x:Name="txtImageFileName" Margin="30 0" />
+
+					<uc:LabelComboBoxControl x:Name="cmbxImageFileFormat"
+											 HorizontalAlignment="Left"
+											 Margin="30 0"
+											 Width="100"/>
+				</StackPanel>
+			</Border>
+
+			<Separator />
+
+			<Border BorderBrush="LightGray"
+					CornerRadius="5"
+					BorderThickness="1"
+					Padding="10 10">
+				<StackPanel Spacing="10">
+					<uc:CheckBoxControl x:Name="ckbxExportData"/>
+
+					<uc:LabelInputControl x:Name="txtDataFileName" Margin="30 0" />
+
+					<uc:LabelComboBoxControl x:Name="cmbxDataFileFormat"
+						 HorizontalAlignment="Left"
+						 Margin="30 0"
+						 Width="100"/>
+				</StackPanel>
+			</Border>
+
+
+		</StackPanel>
+
+		<Grid Grid.Row="1" ColumnDefinitions="*,*">
+			<uc:CheckBoxControl x:Name="ckbxExportSeparateFiles" Grid.Column="0" Margin="10 0"/>
+
+			<StackPanel Grid.Column="1"
+						Orientation="Horizontal"
+						Spacing="10"
+						HorizontalAlignment="Right">
+				
+				<Button x:Name="btnCancel"
+						Classes="Primary"
+						Content="Cancel"
+						Click="btnCancel_Click"/>
+
+				<Button x:Name="btnExport"
+						Classes="Primary"
+						Content="Export"
+						Click="btnExport_Click"/>
+
+			</StackPanel>
+		</Grid>
+	</Grid>
+</Window>
