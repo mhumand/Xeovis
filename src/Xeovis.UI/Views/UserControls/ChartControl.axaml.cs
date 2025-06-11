@@ -315,13 +315,6 @@ public partial class ChartControl : UserControl
         //control.Arrange(new Rect(control.DesiredSize));
         //control.UpdateLayout();
 
-        var control = scottPlot;
-        var dpi = new Vector(300, 300); // standard DPI
-        var scale = 300.0 / 96.0; // 96 is Avalonia's default DPI
-        var width = (int)(control.Bounds.Width * scale);
-        var height = (int)(control.Bounds.Height * scale);
-        var pixelSize = new Avalonia.PixelSize(width, height);
-
         var options = new FilePickerSaveOptions();
         options.Title = "Save PNG File";
         options.FileTypeChoices = [FileExtentionHelper.GetFilePickerFileType(extensionType)];
@@ -329,19 +322,43 @@ public partial class ChartControl : UserControl
 
         if (file != null)
         {
-            using var bitmap = new RenderTargetBitmap(pixelSize, dpi);
-            bitmap.Render(control);
-            bitmap.Save(file.Path.LocalPath);
+            var bitmapRender = GetChartBitmapRender();
+            bitmapRender.Save(file.Path.LocalPath);
         }
     }
 
-    private string GetDataString()
+    private RenderTargetBitmap GetChartBitmapRender()
+    {
+        var control = scottPlot;
+        var dpi = new Vector(300, 300); // standard DPI
+        var scale = 300.0 / 96.0; // 96 is Avalonia's default DPI
+        var width = (int)(control.Bounds.Width * scale);
+        var height = (int)(control.Bounds.Height * scale);
+        var pixelSize = new Avalonia.PixelSize(width, height);
+        var bitmapRender = new RenderTargetBitmap(pixelSize, dpi);
+        bitmapRender.Render(control);
+        return bitmapRender;
+    }
+
+    public Avalonia.Controls.Image GetChartImage()
+    {
+        var bitmapRender = GetChartBitmapRender();
+        var image = new Avalonia.Controls.Image();
+        image.Source = bitmapRender;
+        return image;
+    }
+
+    public string GetDataString()
     {
         int maxCurveSpace = _chartModel.Curves.Max(x => x.Name.Length) + 5;
         var sb = new StringBuilder();
+        var title = $" {_viewModel.Title} ";
+        sb.AppendLine($"{title.PadLeft(maxCurveSpace, '-').PadRight(maxCurveSpace * 2, '-')}");
         sb.AppendLine($"{"Name".PadRight(maxCurveSpace)}{"X".PadRight(10)}Y");
 
-        foreach (var curve in _chartModel.Curves.Where(c => c.IsVisible && c.IsVisibleInLegend))
+        var visibleCurves = _chartModel.Curves.Where(c => c.IsVisible && c.IsVisibleInLegend).ToList();
+        if (visibleCurves.Count == 0) return string.Empty;
+        foreach (var curve in visibleCurves)
         {
             for (int i = 0; i < curve.DataCount; i++)
                 sb.AppendLine(($"{curve.Name.PadRight(maxCurveSpace)}{curve.Xvals[i].ToString().PadRight(10)}{curve.Yvals[i]}"));
@@ -522,7 +539,6 @@ public partial class ChartControl : UserControl
 
         scottPlot.Refresh();
     }
-
 
     private void scottPlot_KeyDown(object? sender, KeyEventArgs e)
     {

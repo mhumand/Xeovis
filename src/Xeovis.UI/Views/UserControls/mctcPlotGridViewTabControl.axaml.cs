@@ -1,7 +1,14 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform.Storage;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Xeovis.Base;
 using Xeovis.Base.Comparers;
 using Xeovis.Domain;
@@ -259,5 +266,110 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
             PopulateUI(_viewModel.mctcPlotDto, _viewModel.mctcBundle);
             ParentWindow.OnMctcPlotRenamed(_viewModel.mctcPlotDto);
         }
+    }
+
+    private async void btnExport_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (ParentWindow == null) return;
+
+        var dialog = new mctcPlotGridExportDialog(_viewModel.mctcPlotDto);
+        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
+
+        if (result != DialogResultType.OK) return;
+
+        if (dialog.ExportData || dialog.ExportImages)
+        {
+            var directory = await GetExportDirectory();
+            if (!Directory.Exists(directory)) return;
+            if (dialog.ExportImages) ExportImages(dialog, directory);
+            if (dialog.ExportData) ExportData(dialog, directory);
+        }
+    }
+
+    private async Task<string> GetExportDirectory()
+    {
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel == null) return string.Empty;
+        var options = new FolderPickerOpenOptions()
+        {
+            Title = "Choose Folder",
+            AllowMultiple = false,
+        };
+
+        var folders = await topLevel.StorageProvider.OpenFolderPickerAsync(options);
+        if (folders.Count > 0)
+            return Uri.UnescapeDataString(folders[0].Path.AbsolutePath);
+        else
+            return string.Empty;
+    }
+
+    private void ExportImages(mctcPlotGridExportDialog dialog, string directory)
+    {
+        var imageFileExtension = dialog.ImageFileType.GetStringExtention();
+        var imageFileName = directory + dialog.ImageFilesName + imageFileExtension;
+        var images = new List<Image>();
+        foreach (ChartControl chartControl in uniformGrid.Children)
+        {
+            var image = chartControl.GetChartImage();
+            image.Tag = chartControl;
+            images.Add(image);
+        }
+
+        var sampleImage = images[0].Source as RenderTargetBitmap;
+        if (sampleImage == null) return;
+        var singleWidth = sampleImage.PixelSize.Width;
+        var singleHeight = sampleImage.PixelSize.Height;
+        int totalWidth = singleWidth * uniformGrid.Columns;
+        int totalHeight = singleHeight * uniformGrid.Rows;
+        var combined = new RenderTargetBitmap(new PixelSize(totalWidth, totalHeight), sampleImage.Dpi);
+        var scale = 300.0 / 96.0;
+        using (var ctx = combined.CreateDrawingContext())
+        {
+            ctx.FillRectangle(Brushes.White, new Rect(0, 0, totalWidth, totalHeight)); // background
+
+            int counter = 0;
+            for (int i = 0; i < uniformGrid.Rows; i++)
+            {
+                for (int j = 0; j < uniformGrid.Columns; j++)
+                {
+                    if (i * uniformGrid.Rows + j >= images.Count) break;
+
+                    var image = images[i * uniformGrid.Rows + j];
+                    var imageSource = image.Source as RenderTargetBitmap;
+                    var width = imageSource.PixelSize.Width;
+                    var height = imageSource.PixelSize.Height;
+                    var imageRec = new Rect(0, 0, width, height);
+                    ctx.DrawImage(imageSource, imageRec, new Rect(width * j / scale, height * i / scale, width / scale, height / scale));
+
+                    if (dialog.IndiviualExport)
+                    {
+                        var chartControl = image.Tag as ChartControl;
+                        imageSource.Save(directory + dialog.ImageFilesName + $" - {chartControl.ViewModel.Title}" + imageFileExtension);
+                    }
+
+                    counter++;
+                }
+            }
+
+            combined.Save(imageFileName);
+        }
+    }
+
+    private void ExportData(mctcPlotGridExportDialog dialog, string directory)
+    {
+        var dataFileExtension = dialog.DataFileType.GetStringExtention();
+        var dataSB = new StringBuilder();
+        foreach (ChartControl chartControl in uniformGrid.Children)
+        {
+            var dataString = chartControl.GetDataString();
+            if (string.IsNullOrWhiteSpace(dataString)) continue;
+            dataSB.AppendLine(dataString);
+
+            if (dialog.IndiviualExport)
+                File.WriteAllText(directory + dialog.DataFilesName + $" - {chartControl.ViewModel.Title}" + dataFileExtension, dataString);
+        }
+
+        if (dataSB.Length > 0)
+            File.WriteAllText(directory + dialog.DataFilesName + dataFileExtension, dataSB.ToString());
     }
 }
