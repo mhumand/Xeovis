@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Xeovis.Base;
 using Xeovis.Base.Comparers;
@@ -53,10 +54,40 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         tableControl.ViewModel = vmTable;
         tableControl.SelectionChanged += tableControl_SelectionChanged;
 
-        var vmXeosVariable = new LabelComboBoxControlViewModel();
-        vmXeosVariable.Label = "x-eos Variable";
-        lcbcXeosVariable.ViewModel = vmXeosVariable;
-        lcbcXeosVariable.ListSelectionChanged += lcbcXeosVariable_ListSelectionChanged;
+        var vmYAxisType = new LabelComboBoxControlViewModel();
+        vmYAxisType.Label = "Type";
+        vmYAxisType.IsStackedHorizontally = true;
+        lcbcYAxisType.ViewModel = vmYAxisType;
+        lcbcYAxisType.ListSelectionChanged += lcbcYAxisType_ListSelectionChanged;
+        lcbcYAxisType.SetItems((new List<ListableItem>()
+        {
+            new ListableItem(mctcPlotAxisType.Calculated),
+            new ListableItem(mctcPlotAxisType.Residual),
+        }));
+        
+        var vmYAxisVariable = new LabelComboBoxControlViewModel();
+        vmYAxisVariable.Label = "Variable";
+        vmYAxisVariable.IsStackedHorizontally = true;
+        lcbcYAxisVariable.ViewModel = vmYAxisVariable;
+        lcbcYAxisVariable.ListSelectionChanged += lcbcYAxisVariable_ListSelectionChanged;
+        
+        var vmXAxisType = new LabelComboBoxControlViewModel();
+        vmXAxisType.Label = "Type";
+        vmXAxisType.IsStackedHorizontally = true;
+        vmXAxisType.IsReadOnly = true;
+        lcbcXAxisType.ViewModel = vmXAxisType;
+        lcbcXAxisType.ListSelectionChanged += lcbcXAxisType_ListSelectionChanged;
+        lcbcXAxisType.SetItems(new List<ListableItem>()
+        {
+            new ListableItem(mctcPlotAxisType.Observed)
+        });
+        
+        var vmXAxisVariable = new LabelComboBoxControlViewModel();
+        vmXAxisVariable.Label = "Variable";
+        vmXAxisVariable.IsStackedHorizontally = true;
+        lcbcXAxisVariable.ViewModel = vmXAxisVariable;
+        lcbcXAxisVariable.ListSelectionChanged += lcbcXAxisVariable_ListSelectionChanged;
+        
 
         var vmSpinner = new LabelSpinnerControlViewModel("mctc Run No.", 1, 1, 1);
         spinner.ViewModel = vmSpinner;
@@ -78,7 +109,8 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         _viewModel.ClearInUseMarkersAndColors();
         PopulateMctcRunsTable();
         PopulatePhaseFilters();
-        lcbcXeosVariable.SetItems(_viewModel.GetXeosVarItems());
+        lcbcYAxisVariable.SetItems(_viewModel.GetXeosVarItems());
+        lcbcXAxisVariable.SetItems(_viewModel.GetXeosVarItems());
 
         return true;
     }
@@ -95,17 +127,35 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         tableFilter.PopulateTable(tableModel);
     }
 
-    private void lcbcXeosVariable_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    private void lcbcYAxisType_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    {
+        UpdateChartAndTable();
+    }
+    
+    private void lcbcYAxisVariable_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
     {
         UpdateChartAndTable();
     }
 
+    private void lcbcXAxisType_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    {
+        UpdateChartAndTable();
+    }
+    
+    private void lcbcXAxisVariable_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    {
+        UpdateChartAndTable();
+    }
+    
     private void UpdateChartAndTable()
     {
-        if (lcbcXeosVariable.ViewModel.SelectedItem is not ListableItem item) return;
-        if (item.Tag is not xeosVariable sampleVar) return;
+        if (lcbcYAxisVariable.ViewModel.SelectedItem is not ListableItem yVarItem) return;
+        if (lcbcXAxisVariable.ViewModel.SelectedItem is not ListableItem xVarItem) return;
+        
+        if (yVarItem.Tag is not xeosVariable YAxisVariable) return;
+        if (xVarItem.Tag is not xeosVariable XAxisVariable) return;
 
-        var successful = _viewModel.GroupAndFilterXeosVariables(sampleVar);
+        var successful = _viewModel.GroupAndFilterXeosVariables(YAxisVariable);
         if (!successful)
         {
             tableControl.ClearTable();

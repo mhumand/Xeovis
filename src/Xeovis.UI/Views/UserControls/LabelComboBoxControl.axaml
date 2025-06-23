@@ -34,6 +34,7 @@
 				  SelectedItem="{Binding SelectedItem}"
 				  ItemsSource="{Binding Items}"
 				  HorizontalAlignment="Stretch"
+				  IsEnabled="{Binding !IsReadOnly}"
 				  SelectionChanged="comboBox_SelectionChanged"
 				  MaxDropDownHeight="300">
 			<ComboBox.ItemTemplate>
