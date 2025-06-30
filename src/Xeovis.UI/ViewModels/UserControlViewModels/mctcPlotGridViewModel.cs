@@ -25,10 +25,10 @@ namespace Xeovis.UI.ViewModels
             _inUseMarkers = new Dictionary<string, MarkerType>();
         }
 
-        public ChartModel CreateChartModel(xeosVariable sampleVariable)
+        public ChartModel CreateChartModel(mctcPlotAxesSettings axesSettings)
         {
-            var groupedVars = mctcPlotViewModelUtilities.GetGroupedFilteredXeosVariables(mctcBundle, sampleVariable, PhaseFilters, mctcPlotDto);
-            var chartModel = mctcPlotViewModelUtilities.CreateChartModel(mctcPlotDto, groupedVars, sampleVariable, mctcRunIndex, _inUseMarkers, _inUseColors);
+            var groupedVars = mctcPlotViewModelUtilities.GetGroupedFilteredXeosVariables(mctcBundle, axesSettings, PhaseFilters, mctcPlotDto);
+            var chartModel = mctcPlotViewModelUtilities.CreateChartModel(mctcBundle, mctcPlotDto, groupedVars, axesSettings, mctcRunIndex, _inUseMarkers, _inUseColors);
 
             foreach (var curve in chartModel.Curves)
             {

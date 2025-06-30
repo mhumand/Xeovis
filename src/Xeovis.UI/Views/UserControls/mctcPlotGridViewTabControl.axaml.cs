@@ -62,6 +62,39 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
         slider.Maximum = 5000;
         slider.Value = uniformGrid.Bounds.Width;
         tableFilter.CellValueChanged += tableFilter_CellValueChanged;
+
+        var vmYAxisType = new LabelComboBoxControlViewModel();
+        vmYAxisType.Label = "Type";
+        vmYAxisType.IsStackedHorizontally = true;
+        lcbcYAxisType.ViewModel = vmYAxisType;
+        //lcbcYAxisType.ListSelectionChanged += lcbcYAxisType_ListSelectionChanged;
+        lcbcYAxisType.SetItems((new List<ListableItem>()
+        {
+            new ListableItem(mctcPlotAxisType.Calculated),
+            new ListableItem(mctcPlotAxisType.Residual),
+        }));
+
+        var vmYAxisVariable = new LabelComboBoxControlViewModel();
+        vmYAxisVariable.Label = "Variable";
+        vmYAxisVariable.IsStackedHorizontally = true;
+        vmYAxisVariable.IsReadOnly = true;
+        lcbcYAxisVariable.ViewModel = vmYAxisVariable;
+
+        var vmXAxisType = new LabelComboBoxControlViewModel();
+        vmXAxisType.Label = "Type";
+        vmXAxisType.IsStackedHorizontally = true;
+        vmXAxisType.IsReadOnly = true;
+        lcbcXAxisType.ViewModel = vmXAxisType;
+        lcbcXAxisType.SetItems(new List<ListableItem>()
+        {
+            new ListableItem(mctcPlotAxisType.Observed)
+        });
+
+        var vmXAxisVariable = new LabelComboBoxControlViewModel();
+        vmXAxisVariable.Label = "Variable";
+        vmXAxisVariable.IsStackedHorizontally = true;
+        vmXAxisVariable.IsReadOnly = true;
+        lcbcXAxisVariable.ViewModel = vmXAxisVariable;
     }
 
     public bool PopulateUI(mctcPlotDto mctcPlotDto, mctcBundle mctcBundle)
@@ -110,10 +143,11 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
             chartControl.ViewModel = viewModel;
             chartControl.SetScrollZooming(false);
 
-            var chartModel = _viewModel.CreateChartModel(sampleVar);
+            var axesSettings = new mctcPlotAxesSettings(sampleVar, sampleVar, mctcPlotAxisType.Calculated, mctcPlotAxisType.Observed);
+            var chartModel = _viewModel.CreateChartModel(axesSettings);
             var successful = chartControl.PopulateChart(chartModel);
-            if (successful)
-                chartControls.Add(chartControl);
+            if (!successful) continue;
+            chartControls.Add(chartControl);
         }
 
         uniformGrid.Children.Clear();

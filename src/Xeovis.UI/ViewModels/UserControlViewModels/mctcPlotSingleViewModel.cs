@@ -16,7 +16,7 @@ namespace Xeovis.UI.ViewModels
         public Dictionary<PhaseType, FilterType> PhaseFilters { get; set; }
 
         private List<IGrouping<object, xeosVariable>> _groupedXeosVariables { get; set; }
-        private xeosVariable _sampleVariables { get; set; }
+        private mctcPlotAxesSettings _axesSettings { get; set; }
         private Dictionary<string, MarkerType> _inUseMarkers { get; set; }
         private Dictionary<string, Color> _inUseColors { get; set; }
 
@@ -27,7 +27,7 @@ namespace Xeovis.UI.ViewModels
             mctcRunIndex = 0;
             PhaseFilters = new Dictionary<PhaseType, FilterType>();
             _groupedXeosVariables = new List<IGrouping<object, xeosVariable>>();
-            _sampleVariables = new xeosVariable();
+            _axesSettings = new mctcPlotAxesSettings();
             _inUseColors = new Dictionary<string, Color>();
             _inUseMarkers = new Dictionary<string, MarkerType>();
         }
@@ -41,16 +41,16 @@ namespace Xeovis.UI.ViewModels
             return list;
         }
 
-        public bool GroupAndFilterXeosVariables(xeosVariable sampleVar)
+        public bool GroupAndFilterXeosVariables(mctcPlotAxesSettings axesSettings)
         {
-            _sampleVariables = sampleVar;
-            _groupedXeosVariables = mctcPlotViewModelUtilities.GetGroupedFilteredXeosVariables(mctcBundle, sampleVar, PhaseFilters, mctcPlotDto);
+            _axesSettings = axesSettings; 
+            _groupedXeosVariables = mctcPlotViewModelUtilities.GetGroupedFilteredXeosVariables(mctcBundle, _axesSettings, PhaseFilters, mctcPlotDto);
             return _groupedXeosVariables.Count > 0;
         }
 
         public ChartModel CreateChartModel()
         {
-            var chartModel = mctcPlotViewModelUtilities.CreateChartModel(mctcPlotDto, _groupedXeosVariables, _sampleVariables, mctcRunIndex, _inUseMarkers, _inUseColors);
+            var chartModel = mctcPlotViewModelUtilities.CreateChartModel(mctcBundle, mctcPlotDto, _groupedXeosVariables, _axesSettings, mctcRunIndex, _inUseMarkers, _inUseColors);
 
             foreach (var curve in chartModel.Curves)
             {
@@ -66,7 +66,7 @@ namespace Xeovis.UI.ViewModels
 
         public TableModel CreateTableModel()
         {
-            return mctcPlotViewModelUtilities.CreateTableModel(mctcBundle, _groupedXeosVariables, _sampleVariables, mctcRunIndex);
+            return mctcPlotViewModelUtilities.CreateTableModel(mctcBundle, _groupedXeosVariables, _axesSettings, mctcRunIndex);
         }
 
         public TableModel CreateMctcRunsTableModel()

@@ -36,6 +36,8 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
 
     public MainWindow? ParentWindow { get; set; }
 
+    private bool _linkVariable;
+
     public mctcPlotSingleViewTabControl()
     {
         InitializeComponent();
@@ -74,12 +76,13 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         var vmXAxisType = new LabelComboBoxControlViewModel();
         vmXAxisType.Label = "Type";
         vmXAxisType.IsStackedHorizontally = true;
-        vmXAxisType.IsReadOnly = true;
         lcbcXAxisType.ViewModel = vmXAxisType;
         lcbcXAxisType.ListSelectionChanged += lcbcXAxisType_ListSelectionChanged;
         lcbcXAxisType.SetItems(new List<ListableItem>()
         {
-            new ListableItem(mctcPlotAxisType.Observed)
+            new ListableItem(mctcPlotAxisType.Observed),
+            new ListableItem(mctcPlotAxisType.Temperature),
+            new ListableItem(mctcPlotAxisType.Pressure),
         });
         
         var vmXAxisVariable = new LabelComboBoxControlViewModel();
@@ -87,7 +90,6 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         vmXAxisVariable.IsStackedHorizontally = true;
         lcbcXAxisVariable.ViewModel = vmXAxisVariable;
         lcbcXAxisVariable.ListSelectionChanged += lcbcXAxisVariable_ListSelectionChanged;
-        
 
         var vmSpinner = new LabelSpinnerControlViewModel("mctc Run No.", 1, 1, 1);
         spinner.ViewModel = vmSpinner;
@@ -95,6 +97,8 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
 
         tableFilter.CellValueChanged += tableFilter_CellValueChanged;
         tableControl.ContextRequested += tableControl_ContextRequested;
+        toggleLink.IsCheckedChanged += toggleLink_IsCheckedChanged;
+        _linkVariable = (bool)toggleLink.IsChecked;
     }
 
     public bool PopulateUI(mctcPlotDto mctcPlotDto, mctcBundle mctcBundle)
@@ -134,16 +138,27 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
     
     private void lcbcYAxisVariable_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
     {
+        lcbcYAxisVariable.ListSelectionChanged -= lcbcYAxisVariable_ListSelectionChanged;
+        LinkVariableComboboxes(lcbcYAxisVariable, lcbcXAxisVariable);
+        lcbcYAxisVariable.ListSelectionChanged += lcbcYAxisVariable_ListSelectionChanged;
+
         UpdateChartAndTable();
     }
 
     private void lcbcXAxisType_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
     {
+        if (e.SelectedItem is not ListableItem item) return;
+        if (item.Tag is not mctcPlotAxisType axesType) return;
+        lcbcXAxisVariable.ViewModel.IsReadOnly = axesType != mctcPlotAxisType.Observed;
         UpdateChartAndTable();
     }
     
     private void lcbcXAxisVariable_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
     {
+        lcbcXAxisVariable.ListSelectionChanged -= lcbcXAxisVariable_ListSelectionChanged;
+        LinkVariableComboboxes(lcbcXAxisVariable, lcbcYAxisVariable);
+        lcbcXAxisVariable.ListSelectionChanged += lcbcXAxisVariable_ListSelectionChanged;
+
         UpdateChartAndTable();
     }
     
@@ -151,11 +166,16 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
     {
         if (lcbcYAxisVariable.ViewModel.SelectedItem is not ListableItem yVarItem) return;
         if (lcbcXAxisVariable.ViewModel.SelectedItem is not ListableItem xVarItem) return;
-        
         if (yVarItem.Tag is not xeosVariable YAxisVariable) return;
         if (xVarItem.Tag is not xeosVariable XAxisVariable) return;
 
-        var successful = _viewModel.GroupAndFilterXeosVariables(YAxisVariable);
+        if (lcbcYAxisType.ViewModel.SelectedItem is not ListableItem yAxisType) return;
+        if (lcbcXAxisType.ViewModel.SelectedItem is not ListableItem xAxisType) return;
+        if (yAxisType.Tag is not mctcPlotAxisType YAxisType) return;
+        if (xAxisType.Tag is not mctcPlotAxisType XAxisType) return;
+
+        var axesSettings = new mctcPlotAxesSettings(YAxisVariable, XAxisVariable, YAxisType, XAxisType);
+        var successful = _viewModel.GroupAndFilterXeosVariables(axesSettings);
         if (!successful)
         {
             tableControl.ClearTable();
@@ -439,5 +459,21 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         }
 
         menu.Open(tableControl);
+    }
+
+    private void toggleLink_IsCheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        _linkVariable = (bool)toggleLink.IsChecked;
+        LinkVariableComboboxes(lcbcYAxisVariable, lcbcXAxisVariable);
+    }
+
+    private void LinkVariableComboboxes(LabelComboBoxControl source, LabelComboBoxControl destination)
+    {
+        if (!_linkVariable) return;
+        if (source.ViewModel.SelectedItem is not ListableItem item) return;
+        if (item.Tag is not xeosVariable sampleVar) return;
+        var itemInDestination = destination.ViewModel.Items.FirstOrDefault(x => x.Tag is xeosVariable var && var.IsEqualTo(sampleVar));
+        if (itemInDestination == null) return;
+        destination.ViewModel.SelectedItem = itemInDestination;
     }
 }

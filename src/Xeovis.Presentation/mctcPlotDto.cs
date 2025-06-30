@@ -18,9 +18,6 @@ namespace Xeovis.Presentation
         public mctcPlotPointsGroupingType PointsGroupingType { get; set; }
         public bool ExcludeIrrelevantBatches { get; set; }
 
-        public mctcPlotAxisType YAxisType { get; set; }
-        public mctcPlotAxisType XAxisType { get; set; }
-        
         public mctcChartSettings ChartSettings { get; set; }
 
         public mctcPlotDto()
@@ -35,8 +32,6 @@ namespace Xeovis.Presentation
             PointsGroupingType = mctcPlotPointsGroupingType.Batch;
             ExcludeIrrelevantBatches = true;
             ChartSettings = new mctcChartSettings();
-            YAxisType = mctcPlotAxisType.Calculated;
-            XAxisType = mctcPlotAxisType.Observed;
         }
 
         public mctcPlotDto(List<xeosVariable> SampleXeosVariables, Guid mctcBundleId) : this()

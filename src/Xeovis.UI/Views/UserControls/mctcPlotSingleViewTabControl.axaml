@@ -13,7 +13,7 @@
 		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
 
 		<Style Selector="Border.Custom">
-			<Setter Property="BorderThickness" Value="1.3"/>
+			<Setter Property="BorderThickness" Value="1.5"/>
 			<Setter Property="BorderBrush" Value="#AF6A0B"/>
 			<Setter Property="Padding" Value="3" />
 			<Setter Property="Margin" Value="0" />
@@ -34,8 +34,13 @@
 			<Setter Property="HorizontalContentAlignment" Value="Center" />
 			<Setter Property="BorderBrush" Value="DarkGray" />
 			<Setter Property="BorderThickness" Value="0 0 0 1" />
-			<Setter Property="Margin" Value="0 0 0 2" />
+			<Setter Property="Margin" Value="0 0 0 5" />
 			<Setter Property="FontWeight" Value="ExtraBold"></Setter>
+		</Style>
+
+		<Style Selector="ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#400067A5"/>
+			<Setter Property="Opacity" Value="1"/>
 		</Style>
 	</UserControl.Styles>
 
@@ -45,13 +50,12 @@
 		<Grid DockPanel.Dock="Top"
 			  Margin="0 0 0 5"
 			  VerticalAlignment="Top"
-			  Height="100"
-			  ColumnDefinitions="370, *">
+			  Height="110"
+			  ColumnDefinitions="400, *">
 			
 			<Border Grid.Column="0"
-			        Classes="Custom"
-			        Margin="0 0 5 0">
-				<Grid ColumnDefinitions="*,10,*"
+			        Classes="Custom">
+				<Grid ColumnDefinitions="*,25,*"
 				      Margin="5 0">
 					
 					<StackPanel Grid.Column="0"
@@ -61,15 +65,30 @@
 						<Label Content="Y-Axis" Classes="Title"/>
 						<uc:LabelComboBoxControl x:Name="lcbcYAxisType"
 						                         MinWidth="50"
-						                         Width="160"
+						                         Width="170"
 						                         HorizontalAlignment="Stretch"/>
 				
 						<uc:LabelComboBoxControl x:Name="lcbcYAxisVariable"
 						                         MinWidth="50"
-						                         Width="160"
+						                         Width="170"
 						                         HorizontalAlignment="Stretch"/>
 					</StackPanel>
-			
+
+					<ToggleButton Grid.Column="1"
+								  x:Name="toggleLink"
+								  Margin="0 0 0 5"
+								  Height="20"
+								  Width="20"
+								  IsChecked="true"
+								  Background="Transparent"
+								  ToolTip.Tip="Link Axes Variables"
+								  HorizontalAlignment="Center"
+								  VerticalAlignment="Bottom">
+						<ToggleButton.Content>
+							<Image Width="16" Height="16" Source="/Assets/link.png"/>
+						</ToggleButton.Content>
+					</ToggleButton>
+					
 					<StackPanel Grid.Column="2"
 					            Spacing="2"
 					            Background="WhiteSmoke"
@@ -77,12 +96,12 @@
 						<Label Content="X-Axis" Classes="Title"/>
 						<uc:LabelComboBoxControl x:Name="lcbcXAxisType"
 						                         MinWidth="50"
-						                         Width="160"
+						                         Width="170"
 						                         HorizontalAlignment="Stretch"/>
 				
 						<uc:LabelComboBoxControl x:Name="lcbcXAxisVariable"
 						                         MinWidth="50"
-						                         Width="160"
+						                         Width="170"
 						                         HorizontalAlignment="Stretch"/>
 					</StackPanel>
 				</Grid>

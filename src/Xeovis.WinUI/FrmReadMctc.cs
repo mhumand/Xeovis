@@ -1081,7 +1081,7 @@ namespace Xeovis.WinUI
             foreach (xeosVariable item in cmbxModelVariable.Items)
             {
                 if (item == null) return;
-                if (item.PhaseType == modelVar.PhaseType && item.VariableType == modelVar.VariableType)
+                if (item.IsEqualTo(modelVar))
                 {
                     cmbxModelVariable.SelectedItem = item;
                     break;

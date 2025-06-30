@@ -4,5 +4,7 @@ public enum mctcPlotAxisType
 {
     Calculated,
     Observed,
-    Residual
+    Residual,
+    Temperature,
+    Pressure
 }

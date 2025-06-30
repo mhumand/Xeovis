@@ -158,8 +158,7 @@ public partial class mctcNewPlotDialog : Window
         foreach (var item in llcXeosVariables.ViewModel.Items)
         {
             if (item.Tag is not xeosVariable xeosVar) return;
-            item.IsChecked = _viewModel.SelectedXeosVariables.Any(v =>
-                v.PhaseType == xeosVar.PhaseType && v.VariableType == xeosVar.VariableType);
+            item.IsChecked = _viewModel.SelectedXeosVariables.Any(v => v.IsEqualTo(xeosVar));
         }
     }
 

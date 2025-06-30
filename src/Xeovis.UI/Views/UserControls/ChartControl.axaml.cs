@@ -574,7 +574,7 @@ public partial class ChartControl : UserControl
     {
         _plot.Axes.SetLimitsX(minX, maxX);
         _plot.Axes.SetLimitsY(minY, maxY);
-        scottPlot.Plot.Axes.TightMargins();
+        //_plot.Axes.TightMargins();
 
         scottPlot.Refresh();
     }
