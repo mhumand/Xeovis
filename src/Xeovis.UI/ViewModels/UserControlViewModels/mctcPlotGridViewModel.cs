@@ -2,6 +2,7 @@
 using System.Drawing;
 using Xeovis.Domain;
 using Xeovis.Presentation;
+using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 
 namespace Xeovis.UI.ViewModels
@@ -56,6 +57,16 @@ namespace Xeovis.UI.ViewModels
         {
             _inUseColors.Clear();
             _inUseMarkers.Clear();
+        }
+
+        public List<ListableItem> GetXeosVarItems()
+        {
+            var list = new List<ListableItem>();
+            foreach (var sampleVar in mctcPlotDto.SampleXeosVariables)
+                list.Add(new ListableItem(sampleVar));
+
+            list.Insert(0, new ListableItem("Self"));
+            return list;
         }
     }
 }

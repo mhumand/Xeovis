@@ -209,9 +209,6 @@ namespace Xeovis.UI.ViewModels
 
             foreach (var modelVarGroup in xeosVarGroups)
             {
-                var curve = new CurveModel();
-                curve.Name = modelVarGroup.Key.ToString();
-
                 // modelVarGroup contains yVar
                 var yVarsValid = modelVarGroup.Where(mv => mv.CalcVals.ContainsKey(mctcRunIndex));
 
@@ -220,23 +217,39 @@ namespace Xeovis.UI.ViewModels
 
                 foreach (var yVar in yVarsValid)
                 {
+                    double x = double.NaN;
+                    double y = double.NaN;
+
                     var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == yVar.BatchId);
                     if (batch == null) continue;
                     var xAxisVariable = batch.xeosVariables.FirstOrDefault(x => x.IsEqualTo(xVariable));
                     if (axesSettings.XAxisType == mctcPlotAxisType.Observed && xAxisVariable != null)
-                        xValues.Add(xAxisVariable.ObsVal);
+                        x = xAxisVariable.ObsVal;
                     else if (axesSettings.XAxisType == mctcPlotAxisType.Temperature)
-                        xValues.Add(batch.ExpRunTemperature);
+                        x = batch.ExpRunTemperature;
                     else if (axesSettings.XAxisType == mctcPlotAxisType.Pressure)
-                        xValues.Add(batch.ExpRunPressure);
+                        x = batch.ExpRunPressure;
+                    else
+                        continue;
 
                     if (axesSettings.YAxisType == mctcPlotAxisType.Calculated)
-                        yValues.Add(yVar.CalcVals[mctcRunIndex]);
+                        y = yVar.CalcVals[mctcRunIndex];
                     else if (axesSettings.YAxisType == mctcPlotAxisType.Residual)
-                        yValues.Add(yVar.CalcVals[mctcRunIndex] - yVar.ObsVal);
+                        y = (yVar.CalcVals[mctcRunIndex] - yVar.ObsVal).Round(10);
+                    else
+                        continue;
+
+                    if (!double.IsNaN(x) && !double.IsNaN(y))
+                    {
+                        xValues.Add(x);
+                        yValues.Add(y);
+                    }
                 }
 
                 if (xValues.Count == 0 || yValues.Count == 0) continue;
+
+                var curve = new CurveModel();
+                curve.Name = modelVarGroup.Key.ToString();
                 curve.Xvals = xValues;
                 curve.Yvals = yValues;
                 curve.IsLineVisible = false;
@@ -356,24 +369,63 @@ namespace Xeovis.UI.ViewModels
 
         public static TableModel CreateTableModel(mctcBundle mctcBundle, List<IGrouping<object, xeosVariable>> xeosVarGroups, mctcPlotAxesSettings axesSettings, int mctcRunIndex)
         {
-            var yVar = axesSettings.YAxisVariable;
-            var xVar = axesSettings.XAxisVariable;
+            var yVariable = axesSettings.YAxisVariable;
+            var xVariable = axesSettings.XAxisVariable;
 
-            var batches = mctcBundle.Batches;
             var xeosVars = mctcBundle.xeosVariables.Where(x => xeosVarGroups.Any(g => g.Contains(x)) && x.CalcVals.ContainsKey(mctcRunIndex)).ToList();
+
+            var xValues = new List<double>();
+            var yValues = new List<double>();
+            var assemblages = new List<string>();
+            var batches = new List<string>();
+            var temperatures = new List<double>();
+            var pressures = new List<double>();
+            foreach (var yVar in xeosVars)
+            {
+                double x = double.NaN;
+                double y = double.NaN;
+
+                var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == yVar.BatchId);
+                if (batch == null) continue;
+                var xAxisVariable = batch.xeosVariables.FirstOrDefault(x => x.IsEqualTo(xVariable));
+                if (axesSettings.XAxisType == mctcPlotAxisType.Observed && xAxisVariable != null)
+                    x = xAxisVariable.ObsVal;
+                else if (axesSettings.XAxisType == mctcPlotAxisType.Temperature)
+                    x = batch.ExpRunTemperature;
+                else if (axesSettings.XAxisType == mctcPlotAxisType.Pressure)
+                    x = batch.ExpRunPressure;
+                else
+                    continue;
+
+                if (axesSettings.YAxisType == mctcPlotAxisType.Calculated)
+                    y = yVar.CalcVals[mctcRunIndex];
+                else if (axesSettings.YAxisType == mctcPlotAxisType.Residual)
+                    y = (yVar.CalcVals[mctcRunIndex] - yVar.ObsVal).Round(10);
+                else
+                    continue;
+
+                if (double.IsNaN(x) || double.IsNaN(y)) continue;
+                xValues.Add(x);
+                yValues.Add(y);
+
+                assemblages.Add(batch.GetPhaseAssemblageString());
+                batches.Add(batch.ToString());
+                temperatures.Add(batch.ExpRunTemperature);
+                pressures.Add(batch.ExpRunPressure);
+            }
+
             var columns = new List<ColumnModel>()
             {
-                new ColumnModel("#", Enumerable.Range(1, xeosVars.Count).ToList()),
-                new ColumnModel("X", xeosVars.Select(x => x.ObsVal).ToList()),
-                new ColumnModel("Y", xeosVars.Select(x => x.CalcVals[mctcRunIndex]).ToList()),
-                new ColumnModel("Assemblage", xeosVars.Select(x => batches.FirstOrDefault(b => b.Id == x.BatchId).GetPhaseAssemblageString()).ToList()),
-                new ColumnModel("Batch", xeosVars.Select(x => batches.FirstOrDefault(b => b.Id == x.BatchId).ToString()).ToList()),
-                new ColumnModel("P [kbar]", xeosVars.Select(x => batches.FirstOrDefault(b => b.Id == x.BatchId).ExpRunPressure).ToList()),
-                new ColumnModel("T [°C]", xeosVars.Select(x => batches.FirstOrDefault(b => b.Id == x.BatchId).ExpRunTemperature).ToList()),
-
+                new ColumnModel("#", Enumerable.Range(1, xValues.Count).ToList()),
+                new ColumnModel("X", xValues),
+                new ColumnModel("Y", yValues),
+                new ColumnModel("Assemblage", assemblages),
+                new ColumnModel("Batch", batches),
+                new ColumnModel("P [kbar]", pressures),
+                new ColumnModel("T [°C]", temperatures),
             };
 
-            var tableModel = new TableModel(yVar.ToString(), columns);
+            var tableModel = new TableModel(yVariable.ToString(), columns);
             tableModel.IsReadOnly = true;
             tableModel.IsRowSelect = true;
             tableModel.IsMultiSelect = false;
