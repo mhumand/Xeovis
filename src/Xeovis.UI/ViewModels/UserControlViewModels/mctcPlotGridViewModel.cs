@@ -2,6 +2,7 @@
 using System.Drawing;
 using Xeovis.Domain;
 using Xeovis.Presentation;
+using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 
 namespace Xeovis.UI.ViewModels
@@ -25,10 +26,10 @@ namespace Xeovis.UI.ViewModels
             _inUseMarkers = new Dictionary<string, MarkerType>();
         }
 
-        public ChartModel CreateChartModel(xeosVariable sampleVariable)
+        public ChartModel CreateChartModel(mctcPlotAxesSettings axesSettings)
         {
-            var groupedVars = mctcPlotViewModelUtilities.GetGroupedFilteredXeosVariables(mctcBundle, sampleVariable, PhaseFilters, mctcPlotDto);
-            var chartModel = mctcPlotViewModelUtilities.CreateChartModel(mctcPlotDto, groupedVars, sampleVariable, mctcRunIndex, _inUseMarkers, _inUseColors);
+            var groupedVars = mctcPlotViewModelUtilities.GetGroupedFilteredXeosVariables(mctcBundle, axesSettings, PhaseFilters, mctcPlotDto);
+            var chartModel = mctcPlotViewModelUtilities.CreateChartModel(mctcBundle, mctcPlotDto, groupedVars, axesSettings, mctcRunIndex, _inUseMarkers, _inUseColors);
 
             foreach (var curve in chartModel.Curves)
             {
@@ -56,6 +57,16 @@ namespace Xeovis.UI.ViewModels
         {
             _inUseColors.Clear();
             _inUseMarkers.Clear();
+        }
+
+        public List<ListableItem> GetXeosVarItems()
+        {
+            var list = new List<ListableItem>();
+            foreach (var sampleVar in mctcPlotDto.SampleXeosVariables)
+                list.Add(new ListableItem(sampleVar));
+
+            list.Insert(0, new ListableItem("Self"));
+            return list;
         }
     }
 }

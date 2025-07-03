@@ -52,13 +52,8 @@ namespace Xeovis.Presentation
 
         public int GetPointIndex(double x, double y)
         {
-            var indX = Xvals.IndexOf(x);
-            var indY = Yvals.IndexOf(y);
-
-            if (indX == indY)
-                return indX;
-            else
-                return -1;
+            var range = Enumerable.Range(0, DataCount);
+            return range.FirstOrDefault(i => Xvals[i] == x && Yvals[i] == y, -1);
         }
 
         public override string ToString()

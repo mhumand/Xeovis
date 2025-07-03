@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Xeovis.Base;
 using Xeovis.Base.Comparers;
@@ -35,6 +36,8 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
 
     public MainWindow? ParentWindow { get; set; }
 
+    private bool _linkVariable;
+
     public mctcPlotSingleViewTabControl()
     {
         InitializeComponent();
@@ -53,10 +56,40 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         tableControl.ViewModel = vmTable;
         tableControl.SelectionChanged += tableControl_SelectionChanged;
 
-        var vmXeosVariable = new LabelComboBoxControlViewModel();
-        vmXeosVariable.Label = "x-eos Variable";
-        lcbcXeosVariable.ViewModel = vmXeosVariable;
-        lcbcXeosVariable.ListSelectionChanged += lcbcXeosVariable_ListSelectionChanged;
+        var vmYAxisType = new LabelComboBoxControlViewModel();
+        vmYAxisType.Label = "Type";
+        vmYAxisType.IsStackedHorizontally = true;
+        lcbcYAxisType.ViewModel = vmYAxisType;
+        lcbcYAxisType.ListSelectionChanged += lcbcYAxisType_ListSelectionChanged;
+        lcbcYAxisType.SetItems((new List<ListableItem>()
+        {
+            new ListableItem(mctcPlotAxisType.Calculated),
+            new ListableItem(mctcPlotAxisType.Residual),
+        }));
+        
+        var vmYAxisVariable = new LabelComboBoxControlViewModel();
+        vmYAxisVariable.Label = "Variable";
+        vmYAxisVariable.IsStackedHorizontally = true;
+        lcbcYAxisVariable.ViewModel = vmYAxisVariable;
+        lcbcYAxisVariable.ListSelectionChanged += lcbcYAxisVariable_ListSelectionChanged;
+        
+        var vmXAxisType = new LabelComboBoxControlViewModel();
+        vmXAxisType.Label = "Type";
+        vmXAxisType.IsStackedHorizontally = true;
+        lcbcXAxisType.ViewModel = vmXAxisType;
+        lcbcXAxisType.ListSelectionChanged += lcbcXAxisType_ListSelectionChanged;
+        lcbcXAxisType.SetItems(new List<ListableItem>()
+        {
+            new ListableItem(mctcPlotAxisType.Observed),
+            new ListableItem(mctcPlotAxisType.Temperature),
+            new ListableItem(mctcPlotAxisType.Pressure),
+        });
+        
+        var vmXAxisVariable = new LabelComboBoxControlViewModel();
+        vmXAxisVariable.Label = "Variable";
+        vmXAxisVariable.IsStackedHorizontally = true;
+        lcbcXAxisVariable.ViewModel = vmXAxisVariable;
+        lcbcXAxisVariable.ListSelectionChanged += lcbcXAxisVariable_ListSelectionChanged;
 
         var vmSpinner = new LabelSpinnerControlViewModel("mctc Run No.", 1, 1, 1);
         spinner.ViewModel = vmSpinner;
@@ -64,6 +97,8 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
 
         tableFilter.CellValueChanged += tableFilter_CellValueChanged;
         tableControl.ContextRequested += tableControl_ContextRequested;
+        toggleLink.IsCheckedChanged += toggleLink_IsCheckedChanged;
+        _linkVariable = (bool)toggleLink.IsChecked;
     }
 
     public bool PopulateUI(mctcPlotDto mctcPlotDto, mctcBundle mctcBundle)
@@ -78,7 +113,8 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         _viewModel.ClearInUseMarkersAndColors();
         PopulateMctcRunsTable();
         PopulatePhaseFilters();
-        lcbcXeosVariable.SetItems(_viewModel.GetXeosVarItems());
+        lcbcYAxisVariable.SetItems(_viewModel.GetXeosVarItems());
+        lcbcXAxisVariable.SetItems(_viewModel.GetXeosVarItems());
 
         return true;
     }
@@ -95,17 +131,51 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         tableFilter.PopulateTable(tableModel);
     }
 
-    private void lcbcXeosVariable_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    private void lcbcYAxisType_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
     {
         UpdateChartAndTable();
     }
+    
+    private void lcbcYAxisVariable_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    {
+        lcbcYAxisVariable.ListSelectionChanged -= lcbcYAxisVariable_ListSelectionChanged;
+        LinkVariableComboboxes(lcbcYAxisVariable, lcbcXAxisVariable);
+        lcbcYAxisVariable.ListSelectionChanged += lcbcYAxisVariable_ListSelectionChanged;
 
+        UpdateChartAndTable();
+    }
+
+    private void lcbcXAxisType_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    {
+        if (e.SelectedItem is not ListableItem item) return;
+        if (item.Tag is not mctcPlotAxisType axesType) return;
+        lcbcXAxisVariable.ViewModel.IsReadOnly = axesType != mctcPlotAxisType.Observed;
+        UpdateChartAndTable();
+    }
+    
+    private void lcbcXAxisVariable_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    {
+        lcbcXAxisVariable.ListSelectionChanged -= lcbcXAxisVariable_ListSelectionChanged;
+        LinkVariableComboboxes(lcbcXAxisVariable, lcbcYAxisVariable);
+        lcbcXAxisVariable.ListSelectionChanged += lcbcXAxisVariable_ListSelectionChanged;
+
+        UpdateChartAndTable();
+    }
+    
     private void UpdateChartAndTable()
     {
-        if (lcbcXeosVariable.ViewModel.SelectedItem is not ListableItem item) return;
-        if (item.Tag is not xeosVariable sampleVar) return;
+        if (lcbcYAxisVariable.ViewModel.SelectedItem is not ListableItem yVarItem) return;
+        if (lcbcXAxisVariable.ViewModel.SelectedItem is not ListableItem xVarItem) return;
+        if (yVarItem.Tag is not xeosVariable YAxisVariable) return;
+        if (xVarItem.Tag is not xeosVariable XAxisVariable) return;
 
-        var successful = _viewModel.GroupAndFilterXeosVariables(sampleVar);
+        if (lcbcYAxisType.ViewModel.SelectedItem is not ListableItem yAxisType) return;
+        if (lcbcXAxisType.ViewModel.SelectedItem is not ListableItem xAxisType) return;
+        if (yAxisType.Tag is not mctcPlotAxisType YAxisType) return;
+        if (xAxisType.Tag is not mctcPlotAxisType XAxisType) return;
+
+        var axesSettings = new mctcPlotAxesSettings(YAxisVariable, XAxisVariable, YAxisType, XAxisType);
+        var successful = _viewModel.GroupAndFilterXeosVariables(axesSettings);
         if (!successful)
         {
             tableControl.ClearTable();
@@ -220,17 +290,18 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
             var curve = chartControl.ViewModel.ChartModel.Curves.FirstOrDefault(c => c.Id == e.CurveId);
             if (curve != null)
             {
+                var range = Enumerable.Range(0, columns.Min(c => c.DataCount)).ToList();
                 if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Batch)
                 {
-                    index = Enumerable.Range(0, columns.Min(c => c.DataCount)).ToList().FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y && columns[3].Values[i].ToString() == curve.Name, -1);
+                    index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y && columns[3].Values[i].ToString() == curve.Name, -1);
                 }
                 else if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Temperature)
                 {
-                    index = Enumerable.Range(0, columns.Min(c => c.DataCount)).ToList().FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y && columns[6].Values[i].ToString() == curve.Name, -1);
+                    index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y && columns[6].Values[i].ToString() == curve.Name, -1);
                 }
                 else if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Pressure)
                 {
-                    index = Enumerable.Range(0, columns.Min(c => c.DataCount)).ToList().FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y && columns[5].Values[i].ToString() == curve.Name, -1);
+                    index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y && columns[5].Values[i].ToString() == curve.Name, -1);
                 }
             }
         }
@@ -389,5 +460,21 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         }
 
         menu.Open(tableControl);
+    }
+
+    private void toggleLink_IsCheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        _linkVariable = (bool)toggleLink.IsChecked;
+        LinkVariableComboboxes(lcbcYAxisVariable, lcbcXAxisVariable);
+    }
+
+    private void LinkVariableComboboxes(LabelComboBoxControl source, LabelComboBoxControl destination)
+    {
+        if (!_linkVariable) return;
+        if (source.ViewModel.SelectedItem is not ListableItem item) return;
+        if (item.Tag is not xeosVariable sampleVar) return;
+        var itemInDestination = destination.ViewModel.Items.FirstOrDefault(x => x.Tag is xeosVariable var && var.IsEqualTo(sampleVar));
+        if (itemInDestination == null) return;
+        destination.ViewModel.SelectedItem = itemInDestination;
     }
 }

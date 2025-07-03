@@ -19,6 +19,11 @@
             Id = Guid.NewGuid();
         }
 
+        public bool IsEqualTo(xeosVariable otherVariable)
+        {
+            return PhaseType == otherVariable.PhaseType && VariableType == otherVariable.VariableType;
+        }
+
         public override string ToString()
         {
             return Name;

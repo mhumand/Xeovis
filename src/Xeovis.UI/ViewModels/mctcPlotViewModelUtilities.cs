@@ -11,10 +11,13 @@ namespace Xeovis.UI.ViewModels
 {
     public static class mctcPlotViewModelUtilities
     {
-        public static List<IGrouping<object, xeosVariable>> GetGroupedFilteredXeosVariables(mctcBundle mctcBundle, xeosVariable sampleVar, Dictionary<PhaseType, FilterType> PhaseFilters, mctcPlotDto mctcPlotDto)
+        public static List<IGrouping<object, xeosVariable>> GetGroupedFilteredXeosVariables(mctcBundle mctcBundle, mctcPlotAxesSettings axesSettings, Dictionary<PhaseType, FilterType> PhaseFilters, mctcPlotDto mctcPlotDto)
         {
+            var yVar = axesSettings.YAxisVariable;
+            var xVar = axesSettings.XAxisVariable;
+
             // Filtering
-            var xeosVariables = mctcBundle.xeosVariables.Where(x => x.VariableType == sampleVar.VariableType && x.PhaseType == sampleVar.PhaseType).ToList();
+            var xeosVariables = mctcBundle.xeosVariables.Where(x => x.IsEqualTo(yVar)).ToList();
 
             var hasIncludesAny = PhaseFilters.Any(x => x.Value == FilterType.IncludesAny);
             var hasIncludesAll = PhaseFilters.Any(x => x.Value == FilterType.IncludesAll);
@@ -96,19 +99,22 @@ namespace Xeovis.UI.ViewModels
                     foreach (var xeosVarGroup in allGroups)
                     {
                         var sampleVarInGroup = xeosVarGroup.FirstOrDefault();
-                        var phases = mctcBundle.Batches.FirstOrDefault(b => b.Id == sampleVarInGroup.BatchId).Phases.Except(new List<PhaseType>() { sampleVarInGroup.PhaseType });
-                        var varType = sampleVarInGroup.VariableType;
+                        var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == sampleVarInGroup.BatchId);
+                        if (batch == null) continue;
+                        var phases = batch.Phases.Except([sampleVarInGroup.PhaseType]).ToList();
 
                         var phaseAllCations = new List<CationType>();
-                        foreach (var phase in phases)
-                            phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(phase));
+                        phases.ForEach(x => phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(x)));
 
                         var phaseCations = phaseAllCations.Distinct().ToList();
                         var xeosVarCations = DefaultModelDefinitions.GetCationsFromModelVariable(sampleVarInGroup.PhaseType, sampleVarInGroup.VariableType);
+                        if (!sampleVarInGroup.IsEqualTo(xVar) && axesSettings.XAxisType == mctcPlotAxisType.Observed)
+                        {
+                            xeosVarCations = xeosVarCations.Union(DefaultModelDefinitions.GetCationsFromModelVariable(xVar.PhaseType, xVar.VariableType)).Distinct().ToList();
+                        }
 
                         if (phaseCations.Count != 0 && xeosVarCations.Count != 0)
-                            if (!phaseCations.Any(c => xeosVarCations.Contains(c)))
-                                continue;
+                            if (!phaseCations.Any(c => xeosVarCations.Contains(c))) continue;
 
                         selectedGroups.Add(xeosVarGroup);
                     }
@@ -120,15 +126,19 @@ namespace Xeovis.UI.ViewModels
                         var excludedVariables = new List<xeosVariable>();
                         foreach (var modelVar in xeosVarGroup)
                         {
-                            var phases = mctcBundle.Batches.FirstOrDefault(b => b.Id == modelVar.BatchId).Phases.Except(new List<PhaseType>() { modelVar.PhaseType });
-                            var varType = modelVar.VariableType;
+                            var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == modelVar.BatchId);
+                            if (batch == null) continue;
+                            var phases = batch.Phases.Except([modelVar.PhaseType]).ToList();
 
                             var phaseAllCations = new List<CationType>();
-                            foreach (var phase in phases)
-                                phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(phase));
+                            phases.ForEach(x => phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(x)));
 
                             var phaseCations = phaseAllCations.Distinct().ToList();
                             var xeosVarCations = DefaultModelDefinitions.GetCationsFromModelVariable(modelVar.PhaseType, modelVar.VariableType);
+                            if (!modelVar.IsEqualTo(xVar) && axesSettings.XAxisType == mctcPlotAxisType.Observed)
+                            {
+                                xeosVarCations = xeosVarCations.Union(DefaultModelDefinitions.GetCationsFromModelVariable(xVar.PhaseType, xVar.VariableType)).Distinct().ToList();
+                            }
 
                             if (phaseCations.Count != 0 && xeosVarCations.Count != 0)
                                 if (!phaseCations.Any(c => xeosVarCations.Contains(c)))
@@ -148,7 +158,6 @@ namespace Xeovis.UI.ViewModels
                             if (grp != null && grp.Count() != 0)
                                 selectedGroups.Add(grp);
                         }
-
                     }
                 }
             }
@@ -161,13 +170,34 @@ namespace Xeovis.UI.ViewModels
             return selectedGroups;
         }
 
-        public static ChartModel CreateChartModel(mctcPlotDto mctcPlotDto, List<IGrouping<object, xeosVariable>> xeosVarGroups, xeosVariable sampleVar, int mctcRunIndex, Dictionary<string, MarkerType> inUseMarkers, Dictionary<string, Color> inUseColors)
+        public static ChartModel CreateChartModel(mctcBundle mctcBundle, mctcPlotDto mctcPlotDto, List<IGrouping<object, xeosVariable>> xeosVarGroups, mctcPlotAxesSettings axesSettings, int mctcRunIndex, Dictionary<string, MarkerType> inUseMarkers, Dictionary<string, Color> inUseColors)
         {
+            var yVariable = axesSettings.YAxisVariable;
+            var xVariable = axesSettings.XAxisVariable;
+
             var chartModel = new ChartModel();
             chartModel.HasEqualDimensions = true;
-            chartModel.Title = sampleVar.ToString();
-            chartModel.XAxis.Label = $"Observed {sampleVar}";
-            chartModel.YAxis.Label = $"Calculated {sampleVar}";
+            chartModel.Title = yVariable.ToString();
+            chartModel.XAxis.Label = axesSettings.XAxisType switch
+            {
+                mctcPlotAxisType.Calculated => $"Calculated {xVariable}",
+                mctcPlotAxisType.Observed => $"Observed {xVariable}",
+                mctcPlotAxisType.Residual => $"Residual {xVariable}",
+                mctcPlotAxisType.Temperature => "Temperature [°C]",
+                mctcPlotAxisType.Pressure => "Pressure [kbar]",
+                _ => throw new Exception("Axis Type Not Supported")
+            };
+
+            chartModel.YAxis.Label = axesSettings.YAxisType switch
+            {
+                mctcPlotAxisType.Calculated => $"Calculated {yVariable}",
+                mctcPlotAxisType.Observed => $"Observed {yVariable}",
+                mctcPlotAxisType.Residual => $"Residual {yVariable}",
+                mctcPlotAxisType.Temperature => "Temperature [°C]",
+                mctcPlotAxisType.Pressure => "Pressure [kbar]",
+                _ => throw new Exception("Axis Type Not Supported")
+            };
+
             chartModel.Legend.IsVisible = false;
             chartModel.YAxis.IsLabelVisible = mctcPlotDto.ChartSettings.ShowAxesTitle;
             chartModel.XAxis.IsLabelVisible = mctcPlotDto.ChartSettings.ShowAxesTitle;
@@ -176,16 +206,53 @@ namespace Xeovis.UI.ViewModels
             int counter = inUseMarkers == null || inUseColors == null ? 0 : Math.Max(inUseColors.Count, inUseMarkers.Count);
             if (mctcPlotDto.PointsGroupingType != mctcPlotPointsGroupingType.Batch)
                 counter = 0;//todo: temp
+
             foreach (var modelVarGroup in xeosVarGroups)
             {
+                // modelVarGroup contains yVar
+                var yVarsValid = modelVarGroup.Where(mv => mv.CalcVals.ContainsKey(mctcRunIndex));
+
+                var xValues = new List<double>();
+                var yValues = new List<double>();
+
+                foreach (var yVar in yVarsValid)
+                {
+                    double x = double.NaN;
+                    double y = double.NaN;
+
+                    var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == yVar.BatchId);
+                    if (batch == null) continue;
+                    var xAxisVariable = batch.xeosVariables.FirstOrDefault(x => x.IsEqualTo(xVariable));
+                    if (axesSettings.XAxisType == mctcPlotAxisType.Observed && xAxisVariable != null)
+                        x = xAxisVariable.ObsVal;
+                    else if (axesSettings.XAxisType == mctcPlotAxisType.Temperature)
+                        x = batch.ExpRunTemperature;
+                    else if (axesSettings.XAxisType == mctcPlotAxisType.Pressure)
+                        x = batch.ExpRunPressure;
+                    else
+                        continue;
+
+                    if (axesSettings.YAxisType == mctcPlotAxisType.Calculated)
+                        y = yVar.CalcVals[mctcRunIndex];
+                    else if (axesSettings.YAxisType == mctcPlotAxisType.Residual)
+                        y = (yVar.CalcVals[mctcRunIndex] - yVar.ObsVal).Round(10);
+                    else
+                        continue;
+
+                    if (!double.IsNaN(x) && !double.IsNaN(y))
+                    {
+                        xValues.Add(x);
+                        yValues.Add(y);
+                    }
+                }
+
+                if (xValues.Count == 0 || yValues.Count == 0) continue;
+
                 var curve = new CurveModel();
                 curve.Name = modelVarGroup.Key.ToString();
-
-                curve.Xvals = modelVarGroup.Where(mv => mv.CalcVals.ContainsKey(mctcRunIndex)).Select(mv => mv.ObsVal).ToList();
-                curve.Yvals = modelVarGroup.Where(mv => mv.CalcVals.ContainsKey(mctcRunIndex)).Select(mv => mv.CalcVals[mctcRunIndex]).ToList();
+                curve.Xvals = xValues;
+                curve.Yvals = yValues;
                 curve.IsLineVisible = false;
-
-                if (curve.Xvals.Count == 0 || curve.Yvals.Count == 0) continue;
 
                 if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Batch)
                 {
@@ -202,7 +269,9 @@ namespace Xeovis.UI.ViewModels
                 }
                 else
                 {
-                    curve.MarkerColor = ChartUtilities.GetColorInGradient(ColorTranslator.FromHtml("#1F77B4"), ColorTranslator.FromHtml("#D62728"), counter, xeosVarGroups.Count);
+                    var lowColor = ColorTranslator.FromHtml("#1F77B4");
+                    var highColor = ColorTranslator.FromHtml("#D62728");
+                    curve.MarkerColor = ChartUtilities.GetColorInGradient(lowColor, highColor, counter, xeosVarGroups.Count);
                     curve.MarkerType = MarkerType.FilledCircle;
                     counter++;
                 }
@@ -211,27 +280,52 @@ namespace Xeovis.UI.ViewModels
                 chartModel.Curves.Add(curve);
             }
 
-            // 1:1 line
-            var xyCurve = new CurveModel();
-            xyCurve.Name = "1:1 Line";
-            double minVal = chartModel.Curves.Count == 0 ? 0 : Math.Min(chartModel.Curves.Where(c => c.Xvals.Count > 0).Min(c => c.Xvals.Min()), chartModel.Curves.Where(c => c.Yvals.Count > 0).Min(c => c.Yvals.Min()));
-            double maxVal = chartModel.Curves.Count == 0 ? 1 : Math.Max(chartModel.Curves.Where(c => c.Xvals.Count > 0).Max(c => c.Xvals.Max()), chartModel.Curves.Where(c => c.Yvals.Count > 0).Max(c => c.Yvals.Max()));
-            double difference = maxVal - minVal;
-            minVal -= difference * 0.05;
-            maxVal += difference * 0.05;
-            xyCurve.Xvals = new List<double>() { minVal, maxVal };
-            xyCurve.Yvals = new List<double>() { minVal, maxVal };
-            xyCurve.IsMarkerVisible = false;
-            xyCurve.LineWidth = 1;
-            xyCurve.LineColor = Color.DarkRed;
-            xyCurve.CurveType = CurveType.Line;
-            xyCurve.IsVisibleInLegend = false;
-            chartModel.Curves.Insert(0, xyCurve);
+            if (chartModel.Curves.Count > 0)
+            {
+                var minXVal = chartModel.Curves.Where(c => c.Xvals.Count > 0).Min(c => c.Xvals.Min());
+                var maxXVal = chartModel.Curves.Where(c => c.Xvals.Count > 0).Max(c => c.Xvals.Max());
+                var minYVal = chartModel.Curves.Where(c => c.Yvals.Count > 0).Min(c => c.Yvals.Min());
+                var maxYVal = chartModel.Curves.Where(c => c.Yvals.Count > 0).Max(c => c.Yvals.Max());
 
-            chartModel.XAxis.MinLimit = minVal;
-            chartModel.XAxis.MaxLimit = maxVal;
-            chartModel.YAxis.MinLimit = minVal;
-            chartModel.YAxis.MaxLimit = maxVal;
+                double differenceX = maxXVal - minXVal;
+                double differenceY = maxYVal - minYVal;
+                minXVal -= differenceX * 0.05;
+                maxXVal += differenceX * 0.05;
+                minYVal -= differenceY * 0.05;
+                maxYVal += differenceY * 0.05;
+
+                if (axesSettings.XAxisType == mctcPlotAxisType.Observed
+                    || axesSettings.YAxisType == mctcPlotAxisType.Residual)
+                {
+                    var xyCurve = new CurveModel();
+                    if (axesSettings.YAxisType == mctcPlotAxisType.Calculated)
+                    {
+                        var minVal = Math.Min(minXVal, minYVal);
+                        var maxVal = Math.Max(maxXVal, maxYVal);
+                        xyCurve.Name = "1:1 Line";
+                        xyCurve.Xvals = [minVal, maxVal];
+                        xyCurve.Yvals = [minVal, maxVal];
+                    }
+                    else if (axesSettings.YAxisType == mctcPlotAxisType.Residual)
+                    {
+                        xyCurve.Name = "Y = 0 Line";
+                        xyCurve.Xvals = [minXVal, maxXVal];
+                        xyCurve.Yvals = [0, 0];
+                    }
+
+                    xyCurve.IsMarkerVisible = false;
+                    xyCurve.LineWidth = 1;
+                    xyCurve.LineColor = Color.DarkRed;
+                    xyCurve.CurveType = CurveType.Line;
+                    xyCurve.IsVisibleInLegend = false;
+                    chartModel.Curves.Insert(0, xyCurve);
+                }
+
+                chartModel.XAxis.MinLimit = minXVal;
+                chartModel.XAxis.MaxLimit = maxXVal;
+                chartModel.YAxis.MinLimit = minYVal;
+                chartModel.YAxis.MaxLimit = maxYVal;
+            }
 
             return chartModel;
         }
@@ -273,23 +367,65 @@ namespace Xeovis.UI.ViewModels
             return tableModel;
         }
 
-        public static TableModel CreateTableModel(mctcBundle mctcBundle, List<IGrouping<object, xeosVariable>> xeosVarGroups, xeosVariable sampleVar, int mctcRunIndex)
+        public static TableModel CreateTableModel(mctcBundle mctcBundle, List<IGrouping<object, xeosVariable>> xeosVarGroups, mctcPlotAxesSettings axesSettings, int mctcRunIndex)
         {
-            var batches = mctcBundle.Batches;
+            var yVariable = axesSettings.YAxisVariable;
+            var xVariable = axesSettings.XAxisVariable;
+
             var xeosVars = mctcBundle.xeosVariables.Where(x => xeosVarGroups.Any(g => g.Contains(x)) && x.CalcVals.ContainsKey(mctcRunIndex)).ToList();
+
+            var xValues = new List<double>();
+            var yValues = new List<double>();
+            var assemblages = new List<string>();
+            var batches = new List<string>();
+            var temperatures = new List<double>();
+            var pressures = new List<double>();
+            foreach (var yVar in xeosVars)
+            {
+                double x = double.NaN;
+                double y = double.NaN;
+
+                var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == yVar.BatchId);
+                if (batch == null) continue;
+                var xAxisVariable = batch.xeosVariables.FirstOrDefault(x => x.IsEqualTo(xVariable));
+                if (axesSettings.XAxisType == mctcPlotAxisType.Observed && xAxisVariable != null)
+                    x = xAxisVariable.ObsVal;
+                else if (axesSettings.XAxisType == mctcPlotAxisType.Temperature)
+                    x = batch.ExpRunTemperature;
+                else if (axesSettings.XAxisType == mctcPlotAxisType.Pressure)
+                    x = batch.ExpRunPressure;
+                else
+                    continue;
+
+                if (axesSettings.YAxisType == mctcPlotAxisType.Calculated)
+                    y = yVar.CalcVals[mctcRunIndex];
+                else if (axesSettings.YAxisType == mctcPlotAxisType.Residual)
+                    y = (yVar.CalcVals[mctcRunIndex] - yVar.ObsVal).Round(10);
+                else
+                    continue;
+
+                if (double.IsNaN(x) || double.IsNaN(y)) continue;
+                xValues.Add(x);
+                yValues.Add(y);
+
+                assemblages.Add(batch.GetPhaseAssemblageString());
+                batches.Add(batch.ToString());
+                temperatures.Add(batch.ExpRunTemperature);
+                pressures.Add(batch.ExpRunPressure);
+            }
+
             var columns = new List<ColumnModel>()
             {
-                new ColumnModel("#", Enumerable.Range(1, xeosVars.Count).ToList()),
-                new ColumnModel("Obs", xeosVars.Select(x => x.ObsVal).ToList()),
-                new ColumnModel("Calc", xeosVars.Select(x => x.CalcVals[mctcRunIndex]).ToList()),
-                new ColumnModel("Assemblage", xeosVars.Select(x => batches.FirstOrDefault(b => b.Id == x.BatchId).GetPhaseAssemblageString()).ToList()),
-                new ColumnModel("Batch", xeosVars.Select(x => batches.FirstOrDefault(b => b.Id == x.BatchId).ToString()).ToList()),
-                new ColumnModel("P [kbar]", xeosVars.Select(x => batches.FirstOrDefault(b => b.Id == x.BatchId).ExpRunPressure).ToList()),
-                new ColumnModel("T [°C]", xeosVars.Select(x => batches.FirstOrDefault(b => b.Id == x.BatchId).ExpRunTemperature).ToList()),
-
+                new ColumnModel("#", Enumerable.Range(1, xValues.Count).ToList()),
+                new ColumnModel("X", xValues),
+                new ColumnModel("Y", yValues),
+                new ColumnModel("Assemblage", assemblages),
+                new ColumnModel("Batch", batches),
+                new ColumnModel("P [kbar]", pressures),
+                new ColumnModel("T [°C]", temperatures),
             };
 
-            var tableModel = new TableModel(sampleVar.ToString(), columns);
+            var tableModel = new TableModel(yVariable.ToString(), columns);
             tableModel.IsReadOnly = true;
             tableModel.IsRowSelect = true;
             tableModel.IsMultiSelect = false;

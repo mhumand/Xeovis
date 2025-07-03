@@ -62,6 +62,41 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
         slider.Maximum = 5000;
         slider.Value = uniformGrid.Bounds.Width;
         tableFilter.CellValueChanged += tableFilter_CellValueChanged;
+
+        var vmYAxisType = new LabelComboBoxControlViewModel();
+        vmYAxisType.Label = "Type";
+        vmYAxisType.IsStackedHorizontally = true;
+        lcbcYAxisType.ViewModel = vmYAxisType;
+        lcbcYAxisType.ListSelectionChanged += lcbcYAxisType_ListSelectionChanged;
+        lcbcYAxisType.SetItems((new List<ListableItem>()
+        {
+            new ListableItem(mctcPlotAxisType.Calculated),
+            new ListableItem(mctcPlotAxisType.Residual),
+        }));
+
+        var vmYAxisVariable = new LabelComboBoxControlViewModel();
+        vmYAxisVariable.Label = "Variable";
+        vmYAxisVariable.IsStackedHorizontally = true;
+        vmYAxisVariable.IsReadOnly = true;
+        lcbcYAxisVariable.ViewModel = vmYAxisVariable;
+
+        var vmXAxisType = new LabelComboBoxControlViewModel();
+        vmXAxisType.Label = "Type";
+        vmXAxisType.IsStackedHorizontally = true;
+        lcbcXAxisType.ViewModel = vmXAxisType;
+        lcbcXAxisType.ListSelectionChanged += lcbcXAxisType_ListSelectionChanged;
+        lcbcXAxisType.SetItems(new List<ListableItem>()
+        {
+            new ListableItem(mctcPlotAxisType.Observed),
+            new ListableItem(mctcPlotAxisType.Temperature),
+            new ListableItem(mctcPlotAxisType.Pressure),
+        });
+
+        var vmXAxisVariable = new LabelComboBoxControlViewModel();
+        vmXAxisVariable.Label = "Variable";
+        vmXAxisVariable.IsStackedHorizontally = true;
+        lcbcXAxisVariable.ViewModel = vmXAxisVariable;
+        lcbcXAxisVariable.ListSelectionChanged += lcbcXAxisVariable_ListSelectionChanged;
     }
 
     public bool PopulateUI(mctcPlotDto mctcPlotDto, mctcBundle mctcBundle)
@@ -78,6 +113,7 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
         _viewModel.ClearInUseMarkersAndColors();
         PopulateMctcRunsTable();
         PopulatePhaseFilters();
+        lcbcXAxisVariable.SetItems(_viewModel.GetXeosVarItems());
         PopulateGridCharts();
 
         return true;
@@ -102,6 +138,16 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
 
     private void PopulateGridCharts()
     {
+        if (lcbcYAxisType.ViewModel.SelectedItem is not ListableItem yAxisType) return;
+        if (lcbcXAxisType.ViewModel.SelectedItem is not ListableItem xAxisType) return;
+        if (yAxisType.Tag is not mctcPlotAxisType YAxisType) return;
+        if (xAxisType.Tag is not mctcPlotAxisType XAxisType) return;
+
+        if (lcbcXAxisVariable.ViewModel.SelectedItem is not ListableItem xVarItem) return;
+
+        var XAxisVariable = (xeosVariable)xVarItem.Tag;
+        bool selfComparison = XAxisVariable == null;
+
         var chartControls = new List<ChartControl>();
         foreach (var sampleVar in _viewModel.mctcPlotDto.SampleXeosVariables)
         {
@@ -110,17 +156,18 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
             chartControl.ViewModel = viewModel;
             chartControl.SetScrollZooming(false);
 
-            var chartModel = _viewModel.CreateChartModel(sampleVar);
+            var xVar = selfComparison ? sampleVar : XAxisVariable;
+            var axesSettings = new mctcPlotAxesSettings(sampleVar, xVar, YAxisType, XAxisType);
+            var chartModel = _viewModel.CreateChartModel(axesSettings);
             var successful = chartControl.PopulateChart(chartModel);
-            if (successful)
-                chartControls.Add(chartControl);
+            if (!successful) continue;
+            chartControls.Add(chartControl);
         }
 
         uniformGrid.Children.Clear();
         uniformGrid.Columns = (int)spinnerColumnNo.ViewModel.Value;
         uniformGrid.Rows = chartControls.Count / uniformGrid.Columns + 1;
-        foreach (var chartControl in chartControls)
-            uniformGrid.Children.Add(chartControl);
+        chartControls.ForEach(x => uniformGrid.Children.Add(x));
 
         PopulateLegend();
     }
@@ -371,5 +418,23 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
 
         if (dataSB.Length > 0)
             File.WriteAllText(directory + dialog.DataFilesName + dataFileExtension, dataSB.ToString());
+    }
+
+    private void lcbcYAxisType_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    {
+        PopulateGridCharts();
+    }
+
+    private void lcbcXAxisType_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    {
+        if (e.SelectedItem is not ListableItem item) return;
+        if (item.Tag is not mctcPlotAxisType axesType) return;
+        lcbcXAxisVariable.ViewModel.IsReadOnly = axesType != mctcPlotAxisType.Observed;
+        PopulateGridCharts();
+    }
+
+    private void lcbcXAxisVariable_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
+    {
+        PopulateGridCharts();
     }
 }
