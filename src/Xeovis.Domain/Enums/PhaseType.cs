@@ -181,7 +181,7 @@ namespace Xeovis.Domain
                     return PhaseType.spn;
                 case "sph":
                 case "sphene":
-                case "titanie":
+                case "titantie":
                     return PhaseType.sph;
                 case "ky":
                 case "kyanite":

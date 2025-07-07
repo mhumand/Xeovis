@@ -12,6 +12,8 @@ using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
 using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.UI.Views.Helpers;
+using Xeovis.Domain.Definitions.Experiment;
+using Xeovis.Domain.Definitions;
 
 namespace Xeovis.UI.Views
 {
@@ -65,6 +67,9 @@ namespace Xeovis.UI.Views
             _dataManagerTab = null;
 
             if (e.Project == null) return;
+            _viewModel.ProjectSettings = e.Project.ProjectSettings;
+            PhaseNameList.SetPhaseNames(e.Project.ProjectSettings.AllowedPhaseNames, false);
+
             OnExperimentsLoaded(e.Project.Experiments);
             e.Project.mctcBundles.ForEach(x => OnMctcBundleLoaded(x));
             e.Project.mctcPlotDtos.ForEach(x => CreateMctcPlot(x));
@@ -250,7 +255,7 @@ namespace Xeovis.UI.Views
             var openItem = new MenuItem() { Header = "Open" };
             menu.Items.Add(openItem);
 
-            var isExperiment = node.Tag is not PhaseType && _viewModel.Experiments.Any(x => x.Id == node.PresenterId);
+            var isExperiment = node.Tag is not PhaseNameSet && _viewModel.Experiments.Any(x => x.Id == node.PresenterId);
             if (isExperiment)
             {
                 var experiment = _viewModel.Experiments.FirstOrDefault(x => x.Id == node.PresenterId);
@@ -283,7 +288,7 @@ namespace Xeovis.UI.Views
             }
             else
             {
-                openItem.Click += (s, e) => OpenPhaseInExperiment(node.PresenterId, (PhaseType)node.Tag);
+                openItem.Click += (s, e) => OpenPhaseInExperiment(node.PresenterId, (PhaseNameSet)node.Tag);
             }
 
             tvExperiments.ContextMenu = menu;
@@ -573,9 +578,9 @@ namespace Xeovis.UI.Views
             tabControl.SelectedItem = _dataManagerTab?.ViewModel;
         }
 
-        public void OpenPhaseInExperiment(Guid experimentId, PhaseType phaseType, Guid? expRunId = null)
+        public void OpenPhaseInExperiment(Guid experimentId, PhaseNameSet phaseNameSet, Guid? expRunId = null)
         {
-            _dataManagerTab?.OpenPhaseInExperiment(experimentId, phaseType, expRunId);
+            _dataManagerTab?.OpenPhaseInExperiment(experimentId, phaseNameSet, expRunId);
             tabControl.SelectedItem = _dataManagerTab?.ViewModel;
         }
 

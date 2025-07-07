@@ -4,9 +4,8 @@ namespace Xeovis.Persistence.Proxies;
 
 public class Phase01
 {
-    public string Name { get; set; }
+    public Guid NameId { get; set; }
     public Guid Id { get; set; }
-    public PhaseType Type { get; set; }
     public PhaseState State { get; set; }
     public List<EndMember> EndMembers { get; set; }
     public Dictionary<OxideType, double> Composition { get; set; }
@@ -19,9 +18,8 @@ public class Phase01
 
     public Phase01(Phase realObject)
     {
-        Name = realObject.Name;
+        NameId = realObject.NameId;
         Id = realObject.Id;
-        Type = realObject.Type;
         State = realObject.State;
         EndMembers = new List<EndMember>(realObject.EndMembers);
         Composition = new Dictionary<OxideType, double>(realObject.Composition);
@@ -33,9 +31,8 @@ public class Phase01
     {
         return new Phase()
         {
-            Name = Name,
+            NameId = NameId,
             Id = Id,
-            Type = Type,
             State = State,
             EndMembers = [..EndMembers],
             Composition = new Dictionary<OxideType, double>(Composition),

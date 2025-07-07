@@ -12,6 +12,7 @@ namespace Xeovis.Persistence
         public List<Experiment> Experiments { get; set; }
         public List<mctcBundle> mctcBundles { get; set; }
         public List<mctcPlotDto> mctcPlotDtos { get; set; }
+        public ProjectSettings ProjectSettings { get; set; }
 
         public ProjectFile()
         {
@@ -21,6 +22,7 @@ namespace Xeovis.Persistence
             Experiments = new List<Experiment>();
             mctcBundles = new List<mctcBundle>();
             mctcPlotDtos = new List<mctcPlotDto>();
+            ProjectSettings = new ProjectSettings();
         }
     }
 }

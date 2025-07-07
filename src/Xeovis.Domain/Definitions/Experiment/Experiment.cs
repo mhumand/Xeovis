@@ -1,4 +1,7 @@
-﻿namespace Xeovis.Domain
+﻿using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Experiment;
+
+namespace Xeovis.Domain
 {
     public class Experiment
     {
@@ -8,7 +11,8 @@
         public List<ExpRun> Runs { get; set; }
         public string Path { get; set; }
         public List<string> FilesPath { get; set; }
-        public List<PhaseType> PhasesWithData { get; set; }
+        public List<Guid> PhaseIdsWithData { get; set; }
+        public List<PhaseNameSet> PhasesWithData => PhaseIdsWithData.Select(x => PhaseNameList.GetNameSetById(x)).ToList();
 
         public Experiment()
         {
@@ -17,7 +21,7 @@
             Id = Guid.NewGuid();
             Runs = new List<ExpRun>();
             FilesPath = new List<string>();
-            PhasesWithData = new List<PhaseType>();
+            PhaseIdsWithData = new List<Guid>();
         }
 
         public Experiment(string name, string path) : this()
@@ -36,10 +40,10 @@
             return shortName;
         }
 
-        public List<PhaseType> GetAllPhaseTypes()
+        public List<string> GetAllPhaseNames()
         {
-            var phaseTypes = Runs.SelectMany(r => r.Phases.Select(p => p.Type));
-            var distinctPhases = phaseTypes.Distinct().ToList();
+            var phaseNames = Runs.SelectMany(r => r.Phases.Select(p => p.NameSet.KeyName));
+            var distinctPhases = phaseNames.Distinct().ToList();
             distinctPhases.Sort();
             return distinctPhases;
         }
@@ -55,6 +59,14 @@
         public override string ToString()
         {
             return Name;
+        }
+
+        public void ClearData(bool keepMainPath = true)
+        {
+            if (!keepMainPath) Path = string.Empty;
+            Runs.Clear();
+            FilesPath.Clear();
+            PhasesWithData.Clear();
         }
     }
 }

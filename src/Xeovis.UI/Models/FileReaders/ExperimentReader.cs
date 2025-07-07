@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xeovis.Base;
 using Xeovis.Domain;
+using Xeovis.Domain.Definitions;
 
 namespace Xeovis.UI.Models.FileReaders
 {
@@ -25,12 +26,14 @@ namespace Xeovis.UI.Models.FileReaders
             _useSubdirectory = useSubdirectory;
         }
 
-        public async Task<List<Experiment>> GetExperiments(IProgress<ProgressBarData> progress, CancellationToken token)
+        public async Task<ExperimentReaderResults> GetExperiments(IProgress<ProgressBarData> progress, CancellationToken token)
         {
             var experiments = new List<Experiment>();
 
             var progressData = new ProgressBarData(0, "Loading");
             int index = 1;
+            var unknownPhaseNames = new Dictionary<Guid, List<string>>();
+            var unknownPhaseFiles = new Dictionary<Guid, List<string>>();
             foreach (var folder in _folders)
             {
                 token.ThrowIfCancellationRequested();
@@ -42,19 +45,29 @@ namespace Xeovis.UI.Models.FileReaders
                 progress.Report(progressData);
 
                 var experiment = new Experiment(folder.Label, info.FullName);
-                ReadExperimentFile(experiment);
-                ReadPhasesFile(experiment);
+                ReadExperimentFile(experiment, out List<string> unknownPhaseNamesInExperiment);
+                ReadPhasesFile(experiment, out List<string> unknownPhaseFilesInExperiment);
                 experiments.Add(experiment);
 
                 index++;
+
+                if (unknownPhaseNamesInExperiment != null && unknownPhaseNamesInExperiment.Count > 0)
+                    unknownPhaseNames.Add(experiment.Id, unknownPhaseNamesInExperiment);
+
+                if (unknownPhaseFilesInExperiment != null && unknownPhaseFilesInExperiment.Count > 0)
+                    unknownPhaseFiles.Add(experiment.Id, unknownPhaseFilesInExperiment);
             }
 
-            return experiments;
+            return new ExperimentReaderResults(experiments, unknownPhaseNames, unknownPhaseFiles);
         }
 
-        private void ReadExperimentFile(Experiment experiment)
+        private void ReadExperimentFile(Experiment experiment, out List<string> unknownPhaseNames)
         {
-            if (experiment == null || string.IsNullOrWhiteSpace(experiment.Path)) return;
+            if (experiment == null || string.IsNullOrWhiteSpace(experiment.Path))
+            {
+                unknownPhaseNames = null;
+                return;
+            }
 
             var dirInfo = new DirectoryInfo(experiment.Path);
             List<FileInfo> subFiles = dirInfo.GetFiles().Where(f => f.Extension.StartsWith(".xls")).ToList();
@@ -71,12 +84,22 @@ namespace Xeovis.UI.Models.FileReaders
                 }
             }
 
-            if (subFiles == null || subFiles.Count == 0) return;
+            if (subFiles == null || subFiles.Count == 0)
+            {
+                unknownPhaseNames = null;
+                return;
+            }
+
             subFiles.Remove(subFiles.FirstOrDefault(f => Path.GetFileNameWithoutExtension(f.FullName) == dirInfo.Name));
             experiment.FilesPath = subFiles.Select(x => x.FullName).ToList();
             var expFile = subFiles.FirstOrDefault(f => f.Name.ToLower().Contains("experiment.xls"));
-            if (expFile == null) return;
+            if (expFile == null)
+            {
+                unknownPhaseNames = null;
+                return;
+            }
 
+            unknownPhaseNames = new List<string>();
             using (var stream = File.Open(expFile.FullName, FileMode.Open, FileAccess.Read))
             {
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
@@ -128,7 +151,14 @@ namespace Xeovis.UI.Models.FileReaders
                         var phases = cells[phasesIndex].ToString().Split(new char[] { '+', ',' });
                         foreach (var ph in phases)
                         {
-                            var phase = new Phase(ph.Trim());
+                            var nameSet = PhaseNameList.GetNameSetByString(ph.Trim());
+                            if (nameSet == null)
+                            {
+                                unknownPhaseNames.Add(ph.Trim());
+                                continue;
+                            }
+
+                            var phase = new Phase(nameSet.Id);
                             phase.ExpRunId = run.Id;
                             run.Phases.Add(phase);
                         }
@@ -207,19 +237,30 @@ namespace Xeovis.UI.Models.FileReaders
             return runIndex;
         }
 
-        private void ReadPhasesFile(Experiment experiment)
+        private void ReadPhasesFile(Experiment experiment, out List<string> unknownPhaseFiles)
         {
             var phaseFiles = experiment.FilesPath.Except(experiment.FilesPath.Where(f =>
                 Path.GetFileNameWithoutExtension(f).ToLower().Contains("experiment")));
-            if (phaseFiles == null || phaseFiles.Count() == 0) return;
+            if (phaseFiles == null || phaseFiles.Count() == 0)
+            {
+                unknownPhaseFiles = null;
+                return;
+            }
+
             experiment.PhasesWithData.Clear();
+            unknownPhaseFiles = new List<string>();
             foreach (var file in phaseFiles)
             {
                 string phaseName = Path.GetFileNameWithoutExtension(file);
-                var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(phaseName.ToLower());
+                var phaseNameSet = PhaseNameList.GetNameSetByString(phaseName);
+                if (phaseNameSet == null)
+                {
+                    unknownPhaseFiles.Add(phaseName);
+                    continue;
+                }
 
-                if (!experiment.PhasesWithData.Contains(phaseType))
-                    experiment.PhasesWithData.Add(phaseType);
+                if (!experiment.PhaseIdsWithData.Contains(phaseNameSet.Id))
+                    experiment.PhaseIdsWithData.Add(phaseNameSet.Id);
 
                 using (var stream = File.Open(file, FileMode.Open, FileAccess.Read))
                 {
@@ -243,10 +284,9 @@ namespace Xeovis.UI.Models.FileReaders
                             if (string.IsNullOrEmpty(runName)) continue;
                             int.TryParse(runName,
                                 out int intName); // some runs are read by their index in experiment.xls file
-                            var run =
-                                experiment.Runs.FirstOrDefault(r => r.Name == runName || r.ReadingIndex == intName);
+                            var run = experiment.Runs.FirstOrDefault(r => r.Name == runName || r.ReadingIndex == intName);
                             if (run == null) continue;
-                            var runPhase = run.Phases.FirstOrDefault(ph => ph.Type == phaseType);
+                            var runPhase = run.Phases.FirstOrDefault(ph => ph.NameSet == phaseNameSet);
                             if (runPhase == null) continue;
 
                             if (commentIndex >= 0)
@@ -273,6 +313,13 @@ namespace Xeovis.UI.Models.FileReaders
                     }
                 }
             }
+        }
+
+        public void RereadExperiment(Experiment experiment, out List<string> unknownPhaseNames, out List<string> unknownPhaseFiles)
+        {
+            experiment.ClearData();
+            ReadExperimentFile(experiment, out unknownPhaseNames);
+            ReadPhasesFile(experiment, out unknownPhaseFiles);
         }
     }
 }

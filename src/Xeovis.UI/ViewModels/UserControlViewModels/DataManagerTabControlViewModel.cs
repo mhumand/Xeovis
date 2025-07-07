@@ -5,6 +5,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Xeovis.Base;
 using Xeovis.Domain;
+using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Experiment;
+using Xeovis.Persistence;
 using Xeovis.Presentation;
 using Xeovis.UI.Models;
 
@@ -89,8 +92,8 @@ namespace Xeovis.UI.ViewModels
 
             PhaseInExperimentItems.Clear();
             foreach (var phase in exp.PhasesWithData)
-                PhaseInExperimentItems.Add(new ListableItem(EnumExtensions.GetDescriptionFromValue(phase),
-                    description: phase.ToString(), tag: phase));
+                PhaseInExperimentItems.Add(new ListableItem(phase.ToString(),
+                    description: phase.KeyName, tag: phase));
         }
 
         public TableModel CreatePhaseInExperimentTableModel(ListableItem experimentItem, ListableItem phaseItem)
@@ -98,10 +101,10 @@ namespace Xeovis.UI.ViewModels
             var exp = _experiments.FirstOrDefault(e => e.Id == experimentItem.PresenterId);
             if (exp == null || exp.Runs.Count == 0) return null;
 
-            var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(phaseItem.Label);
+            var phaseNameSet = PhaseNameList.GetNameSetByString(phaseItem.Label);
 
-            var allPhasesInExp = exp.Runs.Where(r => r.Phases.Any(ph => ph.Type == phaseType))
-                .Select(run => run.Phases.FirstOrDefault(ph => ph.Type == phaseType)).ToList();
+            var allPhasesInExp = exp.Runs.Where(r => r.Phases.Any(ph => ph.NameSet == phaseNameSet))
+                .Select(run => run.Phases.FirstOrDefault(ph => ph.NameSet == phaseNameSet)).ToList();
 
             // phase present in ExpRun product assemblage, but no composition provided.
             allPhasesInExp.RemoveAll(i => i.Composition.Count == 0);
@@ -149,7 +152,7 @@ namespace Xeovis.UI.ViewModels
             var phases = expRun.Phases.Where(x => x.CompositionValues.Count > 0);
             var columns = new List<ColumnModel>
             {
-                new ColumnModel("Phase", phases.Select(p => EnumExtensions.GetDescriptionFromValue(p.Type)).ToList())
+                new ColumnModel("Phase", phases.Select(p => p.NameSet.ToString()).ToList())
             };
 
             var allOxides = phases.SelectMany(p => p.CompositionOxides).Distinct();
@@ -170,8 +173,8 @@ namespace Xeovis.UI.ViewModels
             var phases = _experiments.SelectMany(e => e.PhasesWithData).Distinct().ToList();
             var list = new List<ListableItem>();
             foreach (var phase in phases)
-                list.Add(new ListableItem(EnumExtensions.GetDescriptionFromValue(phase), tag: phase,
-                    description: phase.ToString()));
+                list.Add(new ListableItem(phase.ToString(), tag: phase,
+                    description: phase.KeyName));
 
             return list.OrderBy(l => l.Label).ToList();
         }
@@ -179,16 +182,16 @@ namespace Xeovis.UI.ViewModels
         public TableModel CreatePhasesTableModel(ListableItem phaseItem)
         {
             _allPhaseInstances.Clear();
-            var phaseType = (PhaseType)phaseItem.Tag;
+            var phaseNameSet = (PhaseNameSet)phaseItem.Tag;
 
-            var allExpsWithThePhase = _experiments.Where(e => e.PhasesWithData.Contains(phaseType));
+            var allExpsWithThePhase = _experiments.Where(e => e.PhasesWithData.Contains(phaseNameSet));
             if (allExpsWithThePhase.Count() == 0) return null;
 
             var allRunsWithThePhase = allExpsWithThePhase.SelectMany(e =>
-                e.Runs.Where(r => r.Phases.Any(ph => ph.Type == phaseType))).ToList();
+                e.Runs.Where(r => r.Phases.Any(ph => ph.NameSet == phaseNameSet))).ToList();
             if (allRunsWithThePhase.Count() == 0) return null;
 
-            _allPhaseInstances = allRunsWithThePhase.Select(r => r.Phases.FirstOrDefault(p => p.Type == phaseType))
+            _allPhaseInstances = allRunsWithThePhase.Select(r => r.Phases.FirstOrDefault(p => p.NameSet == phaseNameSet))
                 .ToList();
 
             // phase present in ExpRun product assemblage, but no composition provided.
@@ -282,7 +285,7 @@ namespace Xeovis.UI.ViewModels
 
             var columns = new List<ColumnModel>
             {
-                new ColumnModel("Phase", ComparedPhases.Select(x => EnumExtensions.GetDescriptionFromValue(x.Type)).ToList()),
+                new ColumnModel("Phase", ComparedPhases.Select(x => x.NameSet.ToString()).ToList()),
                 new ColumnModel("Experiment", ComparedPhases.Select(x => GetExperimentByPhase(x).ShortName).ToList()),
                 new ColumnModel("Run", ComparedPhases.Select(x => GetExpRunByPhase(x).Name).ToList()),
                 new ColumnModel("P [kbar]", ComparedPhases.Select(x => GetExpRunByPhase(x).Pressure).ToList()),

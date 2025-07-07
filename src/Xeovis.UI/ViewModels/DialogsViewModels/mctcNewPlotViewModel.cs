@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xeovis.Base;
 using Xeovis.Domain;
+using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Experiment;
 using Xeovis.Presentation;
 using Xeovis.UI.Models;
 
@@ -17,6 +18,7 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
         public List<string> ExistingPlotNames { get; set; }
         public mctcPlotDto mctcPlotDto { get; set; }
 
+
         public mctcNewPlotViewModel()
         {
             mctcBundles = new List<mctcBundle>();
@@ -29,22 +31,23 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
         public Dictionary<ListableItem, List<ListableItem>> MakePhaseVaribleItemsDictionary(mctcBundle bundle)
         {
             if (bundle == null) return null;
-            var phases = bundle.xeosVariables.Select(x => x.PhaseType).ToList().Distinct();
+            var phases = bundle.xeosVariables.Select(x => x.PhaseKeyName).ToList().Distinct();
             AllPhaseVariableItems.Clear();
             foreach (var phase in phases)
             {
-                var phaseItem = new ListableItem(EnumExtensions.GetDescriptionFromValue(phase), tag: phase, description: phase.ToString());
-                var variableItems = GetXeosVariableList(phase, bundle);
+                var phaseNameSet = PhaseNameList.GetNameSetByString(phase);
+                var phaseItem = new ListableItem(phaseNameSet.ToString(), tag: phaseNameSet, description: phaseNameSet.KeyName);
+                var variableItems = GetXeosVariableList(phaseNameSet, bundle);
                 AllPhaseVariableItems.Add(phaseItem, variableItems);
             }
 
             return AllPhaseVariableItems;
         }
 
-        private List<ListableItem> GetXeosVariableList(PhaseType phaseType, mctcBundle bundle)
+        private List<ListableItem> GetXeosVariableList(PhaseNameSet phaseNameSet, mctcBundle bundle)
         {
             if (bundle == null) return null;
-            var allVariables = bundle.Batches.SelectMany(b => b.xeosVariables.Where(v => v.PhaseType == phaseType)).ToList();
+            var allVariables = bundle.Batches.SelectMany(b => b.xeosVariables.Where(v => phaseNameSet.HasName(v.PhaseKeyName))).ToList();
             var groupedVars = allVariables.GroupBy(v => v.ToString());
             var list = new List<ListableItem>();
             foreach (var group in groupedVars)

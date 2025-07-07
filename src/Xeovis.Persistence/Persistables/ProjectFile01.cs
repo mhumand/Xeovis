@@ -9,6 +9,7 @@ public class ProjectFile01
     public List<Experiment01> Experiments { get; set; }
     public List<mctcBundle01> mctcBundles { get; set; }
     public List<mctcPlotDto01> mctcPlotDtos { get; set; }
+    public ProjectSettings01 ProjectSettings { get; set; }
 
     public ProjectFile01()
     {
@@ -23,6 +24,7 @@ public class ProjectFile01
         Experiments = realObject.Experiments.Select(x => new Experiment01(x)).ToList();
         mctcBundles = realObject.mctcBundles.Select(x => new mctcBundle01(x)).ToList();
         mctcPlotDtos = realObject.mctcPlotDtos.Select(x => new mctcPlotDto01(x)).ToList();
+        ProjectSettings = new ProjectSettings01(realObject.ProjectSettings);
     }
 
     public ProjectFile ConvertToRealObject()
@@ -34,7 +36,8 @@ public class ProjectFile01
             CreatedAt = CreatedAt,
             Experiments = Experiments.Select(x => x.ConvertToRealObject()).ToList(),
             mctcBundles = mctcBundles.Select(x => x.ConvertToRealObject()).ToList(),
-            mctcPlotDtos = mctcPlotDtos.Select(x => x.ConvertToRealObject()).ToList()
+            mctcPlotDtos = mctcPlotDtos.Select(x => x.ConvertToRealObject()).ToList(),
+            ProjectSettings = ProjectSettings.ConvertToRealObject()
         };
     }
 }

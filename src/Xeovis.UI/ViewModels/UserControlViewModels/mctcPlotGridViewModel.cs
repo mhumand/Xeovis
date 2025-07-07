@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using Xeovis.Domain;
+using Xeovis.Domain.Definitions.Experiment;
 using Xeovis.Presentation;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
@@ -12,7 +13,7 @@ namespace Xeovis.UI.ViewModels
         public mctcPlotDto mctcPlotDto { get; set; }
         public mctcBundle mctcBundle { get; set; }
         public int mctcRunIndex { get; set; }
-        public Dictionary<PhaseType, FilterType> PhaseFilters { get; set; }
+        public Dictionary<PhaseNameSet, FilterType> PhaseFilters { get; set; }
 
         private Dictionary<string, MarkerType> _inUseMarkers { get; set; }
         private Dictionary<string, Color> _inUseColors { get; set; }
@@ -21,7 +22,7 @@ namespace Xeovis.UI.ViewModels
         {
             mctcPlotDto = new mctcPlotDto();
             mctcBundle = new mctcBundle();
-            PhaseFilters = new Dictionary<PhaseType, FilterType>();
+            PhaseFilters = new Dictionary<PhaseNameSet, FilterType>();
             _inUseColors = new Dictionary<string, Color>();
             _inUseMarkers = new Dictionary<string, MarkerType>();
         }

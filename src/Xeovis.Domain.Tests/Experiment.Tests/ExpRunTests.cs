@@ -1,3 +1,5 @@
+using Xeovis.Domain.Definitions;
+
 namespace Xeovis.Domain.Tests.Experiment.Tests;
 
 public class ExpRunTests
@@ -13,24 +15,12 @@ public class ExpRunTests
             Rocktype = RockType.Metabasite,
             Phases = new List<Phase>()
             {
-                new Phase()
-                {
-                    Name = "opx",
-                    Type = PhaseType.opx,
-                },
-                new Phase()
-                {
-                    Name = "cpx",
-                    Type = PhaseType.cpx,
-                },
-                new Phase()
-                {
-                    Name = "g",
-                    Type = PhaseType.g,
-                }
+                new Phase(PhaseNameList.GetNameSetIdByString("opx")),
+                new Phase(PhaseNameList.GetNameSetIdByString("cpx")),
+                new Phase(PhaseNameList.GetNameSetIdByString("g")),
             }
         };
         
-        Assert.That(expRun.GetPhaseAssemblageString(), Is.EqualTo("opx+cpx+g"));
+        Assert.That(expRun.GetPhaseAssemblageString(), Is.EqualTo("opx+cpx+gt"));
     }
 }

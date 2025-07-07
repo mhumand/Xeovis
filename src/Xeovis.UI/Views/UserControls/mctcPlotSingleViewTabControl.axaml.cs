@@ -440,10 +440,10 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
 
             foreach (var phaseName in phaseNames)
             {
-                var phaseInExpRun = expRun.Phases.FirstOrDefault(x => x.Type.ToString() == phaseName);
+                var phaseInExpRun = expRun.Phases.FirstOrDefault(x => x.NameSet.HasName(phaseName));
                 if (phaseInExpRun == null || phaseInExpRun.Composition.Count == 0) continue;
                 var phaseDataItem = new MenuItem() { Header = phaseName };
-                phaseDataItem.Click += (s, e) => ParentWindow.OpenPhaseInExperiment(experiment.Id, phaseInExpRun.Type, expRun.Id);
+                phaseDataItem.Click += (s, e) => ParentWindow.OpenPhaseInExperiment(experiment.Id, phaseInExpRun.NameSet, expRun.Id);
                 gotoPhaseItem.Items.Add(phaseDataItem);
 
                 var phaseCompareItem = new MenuItem() { Header = phaseName };

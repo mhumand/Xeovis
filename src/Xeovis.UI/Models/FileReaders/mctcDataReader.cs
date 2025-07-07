@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xeovis.Base;
 using Xeovis.Domain;
+using Xeovis.Domain.Definitions;
 
 namespace Xeovis.UI.Models.FileReaders
 {
@@ -98,7 +99,7 @@ namespace Xeovis.UI.Models.FileReaders
                 }
 
                 for (int j = 1; j < varianceIndex; j++)
-                    batch.Phases.Add(PhaseTypeExtensions.GetPhaseTypeByName(Line2[j]));
+                    batch.PhaseNameIds.Add(PhaseNameList.GetNameSetIdByString(Line2[j]));
 
                 batch.ExpRunPressure = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 3]);
                 batch.ExpRunTemperature = DoubleExtensions.GetDoubleValueFromText(Line2[varianceIndex + 4]);
@@ -111,6 +112,7 @@ namespace Xeovis.UI.Models.FileReaders
 
         private bool ReadBatchBulks()
         {
+            //todo: make it optional
             var lines = ReadFileLines("batchbulks");
             if (lines == null || lines.Count == 0) return false;
 
@@ -145,7 +147,8 @@ namespace Xeovis.UI.Models.FileReaders
                 varData.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
                 var xeosVariable = new xeosVariable();
-                xeosVariable.PhaseType = PhaseTypeExtensions.GetPhaseTypeByName(varData[1]);
+                var phaseNameSet = PhaseNameList.GetNameSetByString(varData[1]);
+                xeosVariable.PhaseNameId = phaseNameSet.Id;
                 xeosVariable.VariableType = EnumExtensions.GetValueFromDescription<ModelVariableType>(varData[0]);
 
                 int.TryParse(varData[2].TrimStart(new char[] { 'b' }), out int batchIndex);
@@ -237,9 +240,9 @@ namespace Xeovis.UI.Models.FileReaders
                     {
                         var varName = modVarNameLines[j];
                         j++;
-                        var varPhase = PhaseTypeExtensions.GetPhaseTypeByName(modVarNameLines[j]);
+                        var varPhase = PhaseNameList.GetNameSetByString(modVarNameLines[j]);
                         var modelVariable = batch.xeosVariables.FirstOrDefault(v =>
-                            v.VariableType.ToString() == varName && v.PhaseType == varPhase);
+                            v.VariableType.ToString() == varName && v.PhaseKeyName == varPhase.KeyName);
                         if (modelVariable == null) continue;
                         modelVariable.CalcVals.Add(k,
                             DoubleExtensions.GetDoubleValueFromText(modVarValueLines[2 + (j + 1) / 2]));

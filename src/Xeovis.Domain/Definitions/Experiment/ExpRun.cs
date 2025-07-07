@@ -43,7 +43,7 @@
                 excludingPhases = new List<Phase>();
 
             foreach (var phase in Phases.Except(excludingPhases))
-                phaseString += phase + "+";
+                phaseString += phase.NameSet.KeyName + "+";
 
             return phaseString.TrimEnd('+');
         }

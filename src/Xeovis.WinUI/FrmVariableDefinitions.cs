@@ -58,7 +58,7 @@ namespace Xeovis.WinUI
 
                 var xeos = new XEOS();
                 xeos.Name = headerLine[0];
-                xeos.PhaseType = PhaseTypeExtensions.GetPhaseTypeByName(xeos.Name);
+                //xeos.PhaseNameSet = PhaseTypeExtensions.GetPhaseTypeByName(xeos.Name);
 
                 /// endmembers
                 foreach (var emLine in endmemberLines)
@@ -125,7 +125,7 @@ namespace Xeovis.WinUI
 
                     var variable = new xeosVariable();
                     variable.VariableType = EnumExtensions.GetValueFromDescription<ModelVariableType>(varParts[0]);
-                    variable.PhaseType = xeos.PhaseType;
+                    variable.PhaseNameId = xeos.PhaseNameId;
                     variable.DefaultValue = DoubleExtensions.GetDoubleValueFromText(varParts[2]);
                     xeos.Variables.Add(variable);
                 }
@@ -176,8 +176,8 @@ namespace Xeovis.WinUI
                 cklbxOxides.SetItemCheckState(i, CheckState.Unchecked);
 
             if (!(cmbxPhase.SelectedItem is XEOS xeos)) return;
-            lblPhaseFullName.Text = EnumExtensions.GetDescriptionFromValue(xeos.PhaseType);
-            var composition = DefaultPhaseCompositions.GetOxidesFromPhaseComposition(xeos.PhaseType);
+            lblPhaseFullName.Text = xeos.PhaseNameSet.FullName;
+            var composition = DefaultPhaseCompositions.GetOxidesFromPhaseComposition(xeos.PhaseNameSet.KeyName);
             if (composition == null) return;
             for (int i = 0; i < cklbxOxides.Items.Count; i++)
                 if (composition.Contains((OxideType)cklbxOxides.Items[i]))
@@ -245,7 +245,7 @@ namespace Xeovis.WinUI
                 cklbxCations.SetItemCheckState(i, CheckState.Unchecked);
 
             if (!(cmbxModelVariable.SelectedItem is xeosVariable modelVariable)) return;
-            var cations = DefaultModelDefinitions.GetCationsFromModelVariable(modelVariable.PhaseType, modelVariable.VariableType);
+            var cations = DefaultModelDefinitions.GetCationsFromModelVariable(modelVariable.PhaseKeyName, modelVariable.VariableType);
             if (cations == null) return;
             for (int i = 0; i < cklbxCations.Items.Count; i++)
                 if (cations.Contains((CationType)cklbxCations.Items[i]))

@@ -28,6 +28,7 @@ public partial class MainMenu : UserControl
     public event EventHandler<ProjectFileLoadedEventArgs>? ProjectLoaded;
 
     public MainWindow? ParentWindow;
+    private ProjectSettings _projectSettings => ParentWindow.ViewModel.ProjectSettings;
 
     private string _lastFilePath;
 
@@ -204,7 +205,11 @@ public partial class MainMenu : UserControl
             {
                 var vm = dialog.ViewModel;
                 var expReader = new ExperimentReader(vm.SelectedFolders, vm.SubfolderDirectory, vm.IsSubfolderChecked);
-                var experiments = await Task.Run(() => expReader.GetExperiments(progress, token));
+                var expReaderResults = await Task.Run(() => expReader.GetExperiments(progress, token));
+                
+                // get confirmation
+                
+                var experiments = expReaderResults.Experiments;
                 ExperimentsLoaded?.Invoke(this, new ExperimentsLoadedEventArgs(experiments, dialog.ViewModel));
             }
             catch (Exception ex)
