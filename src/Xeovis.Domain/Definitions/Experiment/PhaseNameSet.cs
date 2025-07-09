@@ -38,5 +38,15 @@
         {
             return string.IsNullOrWhiteSpace(FullName) ? KeyName : FullName;
         }
+
+        public PhaseNameSet Copy(bool withId)
+        {
+            var copy = new PhaseNameSet();
+            copy.Id = withId ? Id : Guid.NewGuid();
+            copy.FullName = FullName;
+            copy.KeyName = KeyName;
+            copy.OtherNames = OtherNames;
+            return copy;
+        }
     }
 }

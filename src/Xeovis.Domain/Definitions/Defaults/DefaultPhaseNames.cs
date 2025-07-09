@@ -84,7 +84,7 @@ namespace Xeovis.Domain.Definitions
 
                 new("graphite", "gph", ["graph"]),
 
-                new("antigorite", "atg", ["atg"]),
+                new("antigorite", "atg", ["ant"]),
 
                 new("hematite", "hem"),
 

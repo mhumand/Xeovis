@@ -19,7 +19,7 @@ public partial class DataManagerTabControl : UserControl
         get { return _viewModel; }
         set
         {
-            _viewModel = value;
+            _viewModel = value ?? new();
         }
     }
 

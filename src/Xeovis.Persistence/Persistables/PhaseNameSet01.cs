@@ -32,5 +32,10 @@ namespace Xeovis.Persistence
                 Id = Id
             };
         }
+
+        public override string ToString()
+        {
+            return string.IsNullOrWhiteSpace(FullName) ? KeyName : FullName;
+        }
     }
 }

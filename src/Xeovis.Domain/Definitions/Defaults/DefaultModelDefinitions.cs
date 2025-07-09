@@ -1,4 +1,5 @@
 ﻿using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Experiment;
 
 namespace Xeovis.Domain
 {
@@ -6,34 +7,36 @@ namespace Xeovis.Domain
     {
         public static List<CationType> GetCationsFromModelVariable(string phase, ModelVariableType variable)
         {
-            if (PhaseNameList.GetNameSetByString("g").HasName(phase))
+            var nullSet = new PhaseNameSet();
+
+            if (PhaseNameList.GetNameSetByString("garnet", nullSet).HasName(phase))
                 return GetVariableCations_Garnet(variable);
 
-            if (PhaseNameList.GetNameSetByString("ol").HasName(phase))
+            if (PhaseNameList.GetNameSetByString("olivine", nullSet).HasName(phase))
                 return GetVariableCations_Olivine(variable);
 
-            if (PhaseNameList.GetNameSetByString("ilm").HasName(phase))
+            if (PhaseNameList.GetNameSetByString("ilmenite", nullSet).HasName(phase))
                 return GetVariableCations_Ilmenite(variable);
 
-            if (PhaseNameList.GetNameSetByString("cpx").HasName(phase))
+            if (PhaseNameList.GetNameSetByString("clinopyroxene", nullSet).HasName(phase))
                 return GetVariableCations_Cpx(variable);
 
-            if (PhaseNameList.GetNameSetByString("opx").HasName(phase))
+            if (PhaseNameList.GetNameSetByString("orthopyroxene", nullSet).HasName(phase))
                 return GetVariableCations_Opx(variable);
 
-            if (PhaseNameList.GetNameSetByString("spn").HasName(phase))
+            if (PhaseNameList.GetNameSetByString("spinel", nullSet).HasName(phase))
                 return GetVariableCations_Spinel(variable);
 
-            if (PhaseNameList.GetNameSetByString("ep").HasName(phase))
+            if (PhaseNameList.GetNameSetByString("epidote", nullSet).HasName(phase))
                 return GetVariableCations_Epidote(variable);
 
-            if (PhaseNameList.GetNameSetByString("pl").HasName(phase))
+            if (PhaseNameList.GetNameSetByString("plagioclase", nullSet).HasName(phase))
                 return GetVariableCations_Plagioclase(variable);
 
-            if (PhaseNameList.GetNameSetByString("bi").HasName(phase))
+            if (PhaseNameList.GetNameSetByString("biotite", nullSet).HasName(phase))
                 return GetVariableCations_Biotite(variable);
 
-            if (PhaseNameList.GetNameSetByString("phe").HasName(phase))
+            if (PhaseNameList.GetNameSetByString("phengite", nullSet).HasName(phase))
                 return GetVariableCations_Phengite(variable);
 
             return new List<CationType>();

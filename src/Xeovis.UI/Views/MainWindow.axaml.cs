@@ -66,10 +66,17 @@ namespace Xeovis.UI.Views
             _viewModel.ClearAll();
             _dataManagerTab = null;
 
-            if (e.Project == null) return;
+            if (e.Project == null)
+            {
+                PhaseNameList.Refresh();
+                this.Title = "Xeovis";
+                return;
+            };
+
             _viewModel.ProjectSettings = e.Project.ProjectSettings;
             PhaseNameList.SetPhaseNames(e.Project.ProjectSettings.AllowedPhaseNames, false);
 
+            this.Title = string.IsNullOrWhiteSpace(e.Project.ProjectName) ? "Xeovis" : $"Xeovis - {e.Project.ProjectName}";
             OnExperimentsLoaded(e.Project.Experiments);
             e.Project.mctcBundles.ForEach(x => OnMctcBundleLoaded(x));
             e.Project.mctcPlotDtos.ForEach(x => CreateMctcPlot(x));

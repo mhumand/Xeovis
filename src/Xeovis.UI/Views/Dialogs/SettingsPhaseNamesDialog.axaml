@@ -1,0 +1,78 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+		MinHeight="400"
+		MinWidth="600"
+		Height="600"
+		Width="1000"
+		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+		xmlns:vm="using:Xeovis.UI.ViewModels.DialogsViewModels"
+		xmlns:vmc="using:Xeovis.UI.ViewModels"
+		x:DataType="vm:SettingsPhaseNamesViewModel"
+        x:Class="Xeovis.UI.SettingsPhaseNamesDialog"
+        Title="Settings - Phase Names">
+
+	<Window.Styles>
+		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
+		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+		<StyleInclude Source="/Views/Styles/Textboxes.axaml"/>
+
+	</Window.Styles>
+
+	<Grid Margin="20 10" RowDefinitions="40, *, 40">
+		<StackPanel Grid.Row="0"
+					Orientation="Horizontal"
+					Spacing="10">
+			<Button x:Name="btnRemoveSelected"
+					Classes="Primary"
+					Width="140"
+					Click="btnRemoveSelected_Click"
+					Content="Remove Selected"/>
+
+			<Rectangle Width="2" Height="30" Fill="DarkGray"/>
+			
+			<Button x:Name="btnAddNewRow"
+					Classes="Primary"
+					Width="140"
+					Click="btnAddNewRow_Click"
+					Content="Add New Row"/>
+			
+		</StackPanel>
+		
+		<userControls:TableControl x:Name="tableControl"
+								   Grid.Row="1"/>
+
+		<StackPanel Orientation="Horizontal"
+			Grid.Row="2"
+			Spacing="10"
+			VerticalAlignment="Bottom"
+			HorizontalAlignment="Right">
+
+			<Button x:Name="btnProjectDefaults"
+					Classes="Primary"
+					Width="120"
+					Click="btnProjectDefaults_Click"
+					Content="Project Defaults"/>
+			<Button x:Name="btnXeovisDefaults"
+					Classes="Primary"
+					Width="120"
+					Click="btnXeovisDefaults_Click"
+					Content="Xeovis Defaults"/>
+			
+			<Button x:Name="btnCancel"
+					Classes="Primary"
+					Content="Cancel"
+					Click="btnCancel_Click"/>
+
+			<Button x:Name="btnSave"
+					Classes="Primary"
+					Content="Save"
+					Click="btnSave_Click"/>
+
+		</StackPanel>
+	</Grid>
+	
+	
+</Window>

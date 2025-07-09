@@ -127,6 +127,16 @@
 
 		</MenuItem>
 
+		<MenuItem Header="Settings">
+			<MenuItem x:Name="btnSettingsPhaseNames"
+					  Header="_Phase Names"
+					  Command="{Binding Settings_PhaseNames}">
+				<MenuItem.Icon>
+					<Image Source=""/>
+				</MenuItem.Icon>
+			</MenuItem>
+		</MenuItem>
+			
 		<MenuItem Header="View">
 
 			<MenuItem x:Name="itemShowLeftPanel"
