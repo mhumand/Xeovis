@@ -87,8 +87,8 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
             var otherNamesCol = tableModel.Columns[3];
             for (int i = 0; i < idCol.DataCount; i++)
             {
-                if (!Guid.TryParse(idCol.Values[i].ToString(), out Guid id)) continue;
-                if (id == Guid.Empty) continue;
+                var res = Guid.TryParse(idCol.Values[i].ToString(), out Guid id);
+                if (id == Guid.Empty || !res) id = Guid.NewGuid();
                 var fullName = fullNameCol.Values[i].ToString();
                 if (string.IsNullOrWhiteSpace(fullName)) continue;
                 var keyName = keyNameCol.Values[i].ToString();

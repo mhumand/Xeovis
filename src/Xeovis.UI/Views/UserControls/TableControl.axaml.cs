@@ -368,12 +368,7 @@ public partial class TableControl : UserControl
 
     public void AddRowToBottom()
     {
-        var columns = _tableModel.Columns;
-        foreach (var column in columns)
-        {
-            column.Values.Add(string.Empty);
-        }
-
+        _tableModel.Columns.ForEach(x => x.Values.Add(string.Empty));
         PopulateTable(_tableModel);
         SelectRow(_tableModel.GetMaxRowCount() - 1);
     }
@@ -381,11 +376,8 @@ public partial class TableControl : UserControl
     public void DeleteSelectedRow()
     {
         var rowIndex = GetTrueRowIndex((Dictionary<string, object>)dataGrid.SelectedItem);
-        foreach (var column in _tableModel.Columns)
-        {
-            column.Values.RemoveAt(rowIndex);
-        }
-
+        if (rowIndex < 0) return;
+        _tableModel.Columns.ForEach(x => x.Values.RemoveAt(rowIndex));
         PopulateTable(_tableModel);
         SelectRow(Math.Max(rowIndex - 1, 0));
     }

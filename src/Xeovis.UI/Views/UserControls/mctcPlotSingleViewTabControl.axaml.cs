@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Xeovis.Base;
 using Xeovis.Base.Comparers;
@@ -117,6 +116,11 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         lcbcXAxisVariable.SetItems(_viewModel.GetXeosVarItems());
 
         return true;
+    }
+
+    public void Refresh()
+    {
+        PopulateUI(_viewModel.mctcPlotDto, _viewModel.mctcBundle);
     }
 
     private void PopulateMctcRunsTable()
@@ -440,7 +444,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
 
             foreach (var phaseName in phaseNames)
             {
-                var phaseInExpRun = expRun.Phases.FirstOrDefault(x => x.NameSet.HasName(phaseName));
+                var phaseInExpRun = expRun.Phases.FirstOrDefault(x => x.NameSet != null && x.NameSet.HasName(phaseName));
                 if (phaseInExpRun == null || phaseInExpRun.Composition.Count == 0) continue;
                 var phaseDataItem = new MenuItem() { Header = phaseName };
                 phaseDataItem.Click += (s, e) => ParentWindow.OpenPhaseInExperiment(experiment.Id, phaseInExpRun.NameSet, expRun.Id);

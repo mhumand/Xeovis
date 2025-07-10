@@ -12,7 +12,7 @@ namespace Xeovis.Domain
         public string Path { get; set; }
         public List<string> FilesPath { get; set; }
         public List<Guid> PhaseIdsWithData { get; set; }
-        public List<PhaseNameSet> PhasesWithData => PhaseIdsWithData.Select(x => PhaseNameList.GetNameSetById(x)).ToList();
+        public List<PhaseNameSet> PhasesWithData => PhaseIdsWithData?.Select(x => PhaseNameList.GetNameSetById(x)).ToList();
 
         public Experiment()
         {

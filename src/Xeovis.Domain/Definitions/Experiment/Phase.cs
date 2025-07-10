@@ -11,8 +11,8 @@ namespace Xeovis.Domain
         public PhaseState State { get; set; }
         public List<EndMember> EndMembers { get; set; }
         public Dictionary<OxideType, double> Composition { get; set; }
-        public List<OxideType> CompositionOxides => Composition.Keys.ToList();
-        public List<double> CompositionValues => Composition.Values.ToList();
+        public List<OxideType> CompositionOxides => Composition?.Keys.ToList();
+        public List<double> CompositionValues => Composition?.Values.ToList();
         public Guid ExpRunId { get; set; }
         public string Comment { get; set; }
 

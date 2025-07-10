@@ -46,7 +46,7 @@ namespace Xeovis.UI.ViewModels
         {
             _axesSettings = axesSettings; 
             _groupedXeosVariables = mctcPlotViewModelUtilities.GetGroupedFilteredXeosVariables(mctcBundle, _axesSettings, PhaseFilters, mctcPlotDto);
-            return _groupedXeosVariables.Count > 0;
+            return _groupedXeosVariables != null && _groupedXeosVariables.Count > 0;
         }
 
         public ChartModel CreateChartModel()

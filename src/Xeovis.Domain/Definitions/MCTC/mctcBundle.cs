@@ -8,7 +8,7 @@
         public string FilesDirectory { get; set; }
         public List<Batch> Batches { get; set; }
         public List<mctcVariable> mctcVariables { get; set; }
-        public List<xeosVariable> xeosVariables => Batches.SelectMany(b => b.xeosVariables).ToList();
+        public List<xeosVariable> xeosVariables => Batches?.SelectMany(b => b.xeosVariables).ToList();
 
         public mctcBundle()
         {

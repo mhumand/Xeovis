@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xeovis.Base;
 using Xeovis.Domain;
 using Xeovis.Domain.Definitions.Experiment;
 using Xeovis.UI.Models;
@@ -53,6 +52,7 @@ public partial class DataManagerTabControl : UserControl
         tableExpRunInExperiment.ClearTable();
         tablePhases.ClearTable();
         tablePhasesSummary.ClearTable();
+        tableCompare.ClearTable();
 
         lcbExperiment.ClearItems();
         lcbPhaseInExperiment.ClearItems();
@@ -62,6 +62,12 @@ public partial class DataManagerTabControl : UserControl
         _viewModel.CreateExperimentItems(experiments);
         lcbExperiment.SetItems(_viewModel.ExperimentItems.ToList());
         lcbPhases.SetItems(_viewModel.GetPhaseTypeItemList());
+    }
+
+    public void Refresh()
+    {
+        SetExperiments(_viewModel.Experiments);
+        _viewModel.ComparedPhases.ForEach(x => AddPhaseToCompare(x.Id));
     }
 
     private void lcbPhases_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)

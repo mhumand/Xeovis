@@ -36,6 +36,7 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
             foreach (var phase in phases)
             {
                 var phaseNameSet = PhaseNameList.GetNameSetByString(phase);
+                if (phaseNameSet == null) continue;
                 var phaseItem = new ListableItem(phaseNameSet.ToString(), tag: phaseNameSet, description: phaseNameSet.KeyName);
                 var variableItems = GetXeosVariableList(phaseNameSet, bundle);
                 AllPhaseVariableItems.Add(phaseItem, variableItems);
@@ -46,7 +47,7 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
 
         private List<ListableItem> GetXeosVariableList(PhaseNameSet phaseNameSet, mctcBundle bundle)
         {
-            if (bundle == null) return null;
+            if (bundle == null || phaseNameSet == null) return null;
             var allVariables = bundle.Batches.SelectMany(b => b.xeosVariables.Where(v => phaseNameSet.HasName(v.PhaseKeyName))).ToList();
             var groupedVars = allVariables.GroupBy(v => v.ToString());
             var list = new List<ListableItem>();

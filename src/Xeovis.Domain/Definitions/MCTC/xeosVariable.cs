@@ -13,7 +13,7 @@ namespace Xeovis.Domain
         public Guid mctcBundleId { get; set; }
         public Guid PhaseNameId { get; set; }
         public PhaseNameSet PhaseNameSet => PhaseNameList.GetNameSetById(PhaseNameId);
-        public string PhaseKeyName => PhaseNameSet.KeyName;
+        public string PhaseKeyName => PhaseNameSet?.KeyName;
         public ModelVariableType VariableType { get; set; }
         public double DefaultValue { get; set; }
         public bool IsOrderVariable => VariableType.IsOrderVariable();

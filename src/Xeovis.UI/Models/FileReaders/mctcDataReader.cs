@@ -147,8 +147,7 @@ namespace Xeovis.UI.Models.FileReaders
                 varData.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
                 var xeosVariable = new xeosVariable();
-                var phaseNameSet = PhaseNameList.GetNameSetByString(varData[1]);
-                xeosVariable.PhaseNameId = phaseNameSet.Id;
+                xeosVariable.PhaseNameId = PhaseNameList.GetNameSetIdByString(varData[1]);
                 xeosVariable.VariableType = EnumExtensions.GetValueFromDescription<ModelVariableType>(varData[0]);
 
                 int.TryParse(varData[2].TrimStart(new char[] { 'b' }), out int batchIndex);
@@ -241,6 +240,7 @@ namespace Xeovis.UI.Models.FileReaders
                         var varName = modVarNameLines[j];
                         j++;
                         var varPhase = PhaseNameList.GetNameSetByString(modVarNameLines[j]);
+                        if (varPhase == null) continue;
                         var modelVariable = batch.xeosVariables.FirstOrDefault(v =>
                             v.VariableType.ToString() == varName && v.PhaseKeyName == varPhase.KeyName);
                         if (modelVariable == null) continue;

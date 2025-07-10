@@ -7,7 +7,7 @@ namespace Xeovis.Domain
     {
         public string Name => $"{Index} - {ExperimentName} - {ExpRunName}";
         public List<Guid> PhaseNameIds { get; set; }
-        public List<PhaseNameSet> PhaseNameSets => PhaseNameIds.Select(x => PhaseNameList.GetNameSetById(x)).ToList();
+        public List<PhaseNameSet> PhaseNameSets => PhaseNameIds?.Select(x => PhaseNameList.GetNameSetById(x)).ToList();
         public int Index { get; set; }
         public Guid Id { get; set; }
         public Guid mctcBundleId { get; set; }
@@ -48,7 +48,10 @@ namespace Xeovis.Domain
         {
             var str = string.Empty;
             foreach (var phaseName in PhaseNameSets)
-                str += phaseName.KeyName + spacer;
+            {
+                var name = phaseName == null ? "?" : phaseName.KeyName;
+                str += name + spacer;
+            }
 
             return str.TrimEnd(spacer.ToCharArray());
         }

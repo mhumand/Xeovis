@@ -10,12 +10,6 @@ namespace Xeovis.Persistence
         public ProjectSettings()
         {
             AllowedPhaseNames = PhaseNameList.XeovisDefaults;
-            PhaseNameList.PhaseNameListChanged += PhaseNameList_PhaseNameListChanged;
-        }
-
-        private void PhaseNameList_PhaseNameListChanged(object? sender, Domain.Definitions.Globals.PhaseNameListChangedEventArgs e)
-        {
-            AllowedPhaseNames = e.NameSets;
         }
     }
 }

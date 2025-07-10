@@ -153,12 +153,9 @@ namespace Xeovis.UI.Models.FileReaders
                         {
                             var nameSet = PhaseNameList.GetNameSetByString(ph.Trim());
                             if (nameSet == null)
-                            {
                                 unknownPhaseNames.Add(ph.Trim());
-                                continue;
-                            }
 
-                            var phase = new Phase(nameSet.Id);
+                            var phase = nameSet == null ? new Phase(Guid.Empty) : new Phase(nameSet.Id);
                             phase.ExpRunId = run.Id;
                             run.Phases.Add(phase);
                         }

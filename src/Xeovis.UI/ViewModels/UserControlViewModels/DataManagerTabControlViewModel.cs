@@ -24,6 +24,7 @@ namespace Xeovis.UI.ViewModels
         private List<Experiment> _experiments;
         private List<Phase> _allPhaseInstances;
 
+        public List<Experiment> Experiments => _experiments;
         public List<Phase> ComparedPhases;
 
         public DataManagerTabControlViewModel()
@@ -91,9 +92,11 @@ namespace Xeovis.UI.ViewModels
             if (exp == null) return;
 
             PhaseInExperimentItems.Clear();
-            foreach (var phase in exp.PhasesWithData)
-                PhaseInExperimentItems.Add(new ListableItem(phase.ToString(),
-                    description: phase.KeyName, tag: phase));
+            foreach (var phase in exp.PhasesWithData.Where(x => x != null))
+            {
+                var item = new ListableItem(phase.ToString(), description: phase.KeyName, tag: phase);
+                PhaseInExperimentItems.Add(item);
+            }
         }
 
         public TableModel CreatePhaseInExperimentTableModel(ListableItem experimentItem, ListableItem phaseItem)
@@ -149,7 +152,7 @@ namespace Xeovis.UI.ViewModels
             var expRun = exp.Runs.FirstOrDefault(r => r.Id == expRunItem.PresenterId);
             if (expRun == null) return null;
 
-            var phases = expRun.Phases.Where(x => x.CompositionValues.Count > 0);
+            var phases = expRun.Phases.Where(x => x.NameSet != null && x.CompositionValues.Count > 0);
             var columns = new List<ColumnModel>
             {
                 new ColumnModel("Phase", phases.Select(p => p.NameSet.ToString()).ToList())
@@ -172,7 +175,7 @@ namespace Xeovis.UI.ViewModels
         {
             var phases = _experiments.SelectMany(e => e.PhasesWithData).Distinct().ToList();
             var list = new List<ListableItem>();
-            foreach (var phase in phases)
+            foreach (var phase in phases.Where(x => x != null))
                 list.Add(new ListableItem(phase.ToString(), tag: phase,
                     description: phase.KeyName));
 

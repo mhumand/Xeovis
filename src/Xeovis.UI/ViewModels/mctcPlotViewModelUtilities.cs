@@ -17,6 +17,9 @@ namespace Xeovis.UI.ViewModels
             var yVar = axesSettings.YAxisVariable;
             var xVar = axesSettings.XAxisVariable;
 
+            if (yVar.PhaseNameSet == null || xVar.PhaseNameSet == null)
+                return null;
+
             // Filtering
             var xeosVariables = mctcBundle.xeosVariables.Where(x => x.IsEqualTo(yVar)).ToList();
 
@@ -102,7 +105,8 @@ namespace Xeovis.UI.ViewModels
                         var sampleVarInGroup = xeosVarGroup.FirstOrDefault();
                         var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == sampleVarInGroup.BatchId);
                         if (batch == null) continue;
-                        var phases = batch.PhaseNameSets.Except(batch.PhaseNameSets.Where(x => x.HasName(sampleVarInGroup.PhaseKeyName))).ToList();
+                        var phases = batch.PhaseNameSets.Except(batch.PhaseNameSets.Where(x => x != null && x.HasName(sampleVarInGroup.PhaseKeyName))).ToList();
+                        phases.RemoveAll(x => x == null);
 
                         var phaseAllCations = new List<CationType>();
                         phases.ForEach(x => phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(x.KeyName)));
@@ -129,7 +133,9 @@ namespace Xeovis.UI.ViewModels
                         {
                             var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == modelVar.BatchId);
                             if (batch == null) continue;
-                            var phases = batch.PhaseNameSets.Except(batch.PhaseNameSets.Where(x => x.HasName(modelVar.PhaseKeyName))).ToList();
+                            var phases = batch.PhaseNameSets.Except(
+                                batch.PhaseNameSets.Where(x => x != null && x.HasName(modelVar.PhaseKeyName))).ToList();
+                            phases.RemoveAll(x => x == null);
 
                             var phaseAllCations = new List<CationType>();
                             phases.ForEach(x => phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(x.KeyName)));
@@ -344,7 +350,8 @@ namespace Xeovis.UI.ViewModels
 
         public static TableModel CreateFiltersTableModel(mctcBundle mctcBundle, Dictionary<PhaseNameSet, FilterType> PhaseFilters)
         {
-            var phases = mctcBundle.Batches.SelectMany(x => x.PhaseNameSets).ToList().Distinct();
+            var phases = mctcBundle.Batches.SelectMany(x => x.PhaseNameSets).ToList().Distinct().ToList();
+            phases.RemoveAll(x => x == null);
             var filters = new List<string>();
             foreach (var item in Enum.GetValues(typeof(FilterType)).Cast<FilterType>().ToList())
                 filters.Add(EnumExtensions.GetDescriptionFromValue(item));

@@ -6,8 +6,8 @@
         public Guid Id { get; set; }
         public List<Phase> Phases { get; set; }
         public Dictionary<OxideType, double> BulkComposition { get; set; }
-        public List<double> BulkCompValues => BulkComposition.Values.ToList();
-        public List<OxideType> BulkCompOxides => BulkComposition.Keys.ToList();
+        public List<double> BulkCompValues => BulkComposition?.Values.ToList();
+        public List<OxideType> BulkCompOxides => BulkComposition?.Keys.ToList();
         public double Pressure { get; set; } //Kbar
         public double ErrorP { get; set; } // Kbar
         public double Temperature { get; set; } // °C
@@ -43,7 +43,10 @@
                 excludingPhases = new List<Phase>();
 
             foreach (var phase in Phases.Except(excludingPhases))
-                phaseString += phase.NameSet.KeyName + "+";
+            {
+                var name = phase.NameSet == null ? "?" : phase.NameSet.KeyName;
+                phaseString += name + "+";
+            }
 
             return phaseString.TrimEnd('+');
         }

@@ -119,6 +119,11 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
         return true;
     }
 
+    public void Refresh()
+    {
+        PopulateUI(_viewModel.mctcPlotDto, _viewModel.mctcBundle);
+    }
+
     private void tableFilter_CellValueChanged(object? sender, TableCellValueChangedEventArgs e)
     {
         var column = tableFilter.ViewModel.TableModel.GetColumnById(e.ColumnId);

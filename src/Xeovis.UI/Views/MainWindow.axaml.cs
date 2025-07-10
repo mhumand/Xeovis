@@ -33,8 +33,26 @@ namespace Xeovis.UI.Views
             InitializeComponent();
             Loaded += MainWindow_Loaded;
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            PhaseNameList.PhaseNameListChanged += PhaseNameList_PhaseNameListChanged;
 
             PrepareUI();
+        }
+
+        private void PhaseNameList_PhaseNameListChanged(object? sender, Domain.Definitions.Globals.PhaseNameListChangedEventArgs e)
+        {
+            _viewModel.ProjectSettings.AllowedPhaseNames = e.NameSets;
+
+            foreach (var tab in _viewModel.TabControls)
+            {
+                if (tab == null) continue;
+                var owner = tab.OwnerTabControl;
+                if (owner is mctcPlotSingleViewTabControl mctcSingle)
+                    mctcSingle.Refresh();
+                else if (owner is mctcPlotGridViewTabControl mctcGrid)
+                    mctcGrid.Refresh();
+                else if (owner is DataManagerTabControl dataManager)
+                    dataManager.Refresh();
+            }
         }
 
         private void MainWindow_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
