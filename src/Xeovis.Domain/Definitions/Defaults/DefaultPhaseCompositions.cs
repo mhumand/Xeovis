@@ -1,80 +1,93 @@
-﻿namespace Xeovis.Domain
+﻿using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Experiment;
+
+namespace Xeovis.Domain
 {
     public static class DefaultPhaseCompositions
     {
-        public static List<OxideType> GetOxidesFromPhaseComposition(PhaseType phaseType)
+        public static List<OxideType> GetOxidesFromPhaseComposition(string phaseName)
         {
-            switch (phaseType)
-            {
-                // pure phases
-                case PhaseType.q:
-                case PhaseType.coe:
-                    return new List<OxideType>() { OxideType.SiO2 };
-                case PhaseType.zo:
-                    return new List<OxideType>() { OxideType.H2O, OxideType.SiO2, OxideType.Al2O3, OxideType.CaO };
-                case PhaseType.ky:
-                case PhaseType.and:
-                case PhaseType.sill:
-                    return new List<OxideType>() { OxideType.SiO2, OxideType.Al2O3 };
-                case PhaseType.ru:
-                    return new List<OxideType>() { OxideType.TiO2 };
-                case PhaseType.sph:
-                    return new List<OxideType>() { OxideType.SiO2, OxideType.TiO2, OxideType.CaO };
-                case PhaseType.H2O:
-                    return new List<OxideType>() { OxideType.H2O };
+            var nullSet = new PhaseNameSet();
+            // pure phases
+            if (PhaseNameList.GetNameSetByString("quartz", nullSet).HasName(phaseName)
+                || PhaseNameList.GetNameSetByString("coesite", nullSet).HasName(phaseName))
+                return new List<OxideType>() { OxideType.SiO2 };
 
-                // solid solutions
-                case PhaseType.g:
-                    return new List<OxideType>()
+            if (PhaseNameList.GetNameSetByString("zoisite", nullSet).HasName(phaseName))
+                return new List<OxideType>() { OxideType.H2O, OxideType.SiO2, OxideType.Al2O3, OxideType.CaO };
+
+            if (PhaseNameList.GetNameSetByString("kyanite", nullSet).HasName(phaseName)
+                || PhaseNameList.GetNameSetByString("andalusite", nullSet).HasName(phaseName)
+                || PhaseNameList.GetNameSetByString("sillimanite", nullSet).HasName(phaseName))
+                return new List<OxideType>() { OxideType.SiO2, OxideType.Al2O3 };
+
+            if (PhaseNameList.GetNameSetByString("rutile", nullSet).HasName(phaseName))
+                return new List<OxideType>() { OxideType.TiO2 };
+
+            if (PhaseNameList.GetNameSetByString("sphene", nullSet).HasName(phaseName))
+                return new List<OxideType>() { OxideType.SiO2, OxideType.TiO2, OxideType.CaO };
+
+            if (PhaseNameList.GetNameSetByString("water", nullSet).HasName(phaseName))
+                return new List<OxideType>() { OxideType.H2O };
+
+            // solid solutions
+            if (PhaseNameList.GetNameSetByString("garnet", nullSet).HasName(phaseName))
+                return new List<OxideType>()
                     {
                         OxideType.SiO2, OxideType.MgO, OxideType.FeO, OxideType.CaO, OxideType.Al2O3, OxideType.Fe2O3,
                         OxideType.Cr2O3, OxideType.TiO2
                     };
-                case PhaseType.ol:
-                    return new List<OxideType>() { OxideType.SiO2, OxideType.MgO, OxideType.CaO, OxideType.FeO };
-                case PhaseType.ilm:
-                    return new List<OxideType>() { OxideType.FeO, OxideType.MgO, OxideType.TiO2, OxideType.Fe2O3 };
-                case PhaseType.cpx:
-                    return new List<OxideType>()
+
+            if (PhaseNameList.GetNameSetByString("olivine", nullSet).HasName(phaseName))
+                return new List<OxideType>() { OxideType.SiO2, OxideType.MgO, OxideType.CaO, OxideType.FeO };
+
+            if (PhaseNameList.GetNameSetByString("ilmenite", nullSet).HasName(phaseName))
+                return new List<OxideType>() { OxideType.FeO, OxideType.MgO, OxideType.TiO2, OxideType.Fe2O3 };
+
+            if (PhaseNameList.GetNameSetByString("clinopyroxene", nullSet).HasName(phaseName))
+                return new List<OxideType>()
                     {
                         OxideType.SiO2, OxideType.Na2O, OxideType.K2O, OxideType.CaO, OxideType.MgO, OxideType.FeO,
                         OxideType.Al2O3, OxideType.Fe2O3, OxideType.TiO2, OxideType.Cr2O3
                     };
-                case PhaseType.opx:
-                    return new List<OxideType>()
+
+            if (PhaseNameList.GetNameSetByString("orthopyroxene", nullSet).HasName(phaseName))
+                return new List<OxideType>()
                     {
                         OxideType.SiO2, OxideType.Na2O, OxideType.MgO, OxideType.CaO, OxideType.FeO, OxideType.Al2O3,
                         OxideType.Fe2O3, OxideType.TiO2, OxideType.Cr2O3
                     };
-                case PhaseType.spn:
-                    return new List<OxideType>()
+
+            if (PhaseNameList.GetNameSetByString("spinel", nullSet).HasName(phaseName))
+                return new List<OxideType>()
                     {
                         OxideType.MgO, OxideType.FeO, OxideType.Al2O3, OxideType.Fe2O3, OxideType.Cr2O3, OxideType.TiO2
                     };
-                case PhaseType.ep:
-                    return new List<OxideType>()
-                        { OxideType.SiO2, OxideType.CaO, OxideType.H2O, OxideType.Fe2O3, OxideType.Al2O3 };
-                case PhaseType.bi:
-                    return new List<OxideType>()
+
+            if (PhaseNameList.GetNameSetByString("epidote", nullSet).HasName(phaseName))
+                return new List<OxideType>() { OxideType.SiO2, OxideType.CaO, OxideType.H2O, OxideType.Fe2O3, OxideType.Al2O3 };
+
+            if (PhaseNameList.GetNameSetByString("biotite", nullSet).HasName(phaseName))
+                return new List<OxideType>()
                     {
                         OxideType.SiO2, OxideType.K2O, OxideType.FeO, OxideType.MgO, OxideType.TiO2, OxideType.Fe2O3,
                         OxideType.Al2O3, OxideType.H2O
                     };
-                case PhaseType.pl:
-                    return new List<OxideType>()
+
+            if (PhaseNameList.GetNameSetByString("plagioclase", nullSet).HasName(phaseName))
+                return new List<OxideType>()
                     {
                         OxideType.SiO2, OxideType.CaO, OxideType.Na2O, OxideType.K2O, OxideType.Al2O3
                     };
-                default:
-                    return null;
-            }
+
+            return null;
         }
 
-        public static List<CationType> GetCationsFromPhaseComposition(PhaseType phaseType)
+        public static List<CationType> GetCationsFromPhaseComposition(string phaseType)
         {
             var oxides = GetOxidesFromPhaseComposition(phaseType);
-
             var cations = new List<CationType>();
+            if (oxides == null) return cations;
             foreach (var oxide in oxides)
                 cations.Add(oxide.GetCationType());
 

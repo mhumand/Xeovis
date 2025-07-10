@@ -4,7 +4,7 @@ namespace Xeovis.Persistence.Proxies;
 
 public class Batch01
 {
-    public List<PhaseType> Phases { get; set; }
+    public List<Guid> PhaseNameIds { get; set; }
     public int Index { get; set; }
     public Guid Id { get; set; }
     public Guid mctcBundleId { get; set; }
@@ -24,7 +24,7 @@ public class Batch01
 
     public Batch01(Batch realObject)
     {
-        Phases = new List<PhaseType>(realObject.Phases);
+        PhaseNameIds = new List<Guid>(realObject.PhaseNameIds);
         Index = realObject.Index;
         Id = realObject.Id;
         mctcBundleId = realObject.mctcBundleId;
@@ -43,7 +43,7 @@ public class Batch01
     {
         return new Batch()
         {
-            Phases = [..Phases],
+            PhaseNameIds = [..PhaseNameIds],
             Index = Index,
             Id = Id,
             mctcBundleId = mctcBundleId,

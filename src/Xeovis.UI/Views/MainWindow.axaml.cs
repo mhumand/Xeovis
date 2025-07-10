@@ -12,6 +12,8 @@ using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
 using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.UI.Views.Helpers;
+using Xeovis.Domain.Definitions.Experiment;
+using Xeovis.Domain.Definitions;
 
 namespace Xeovis.UI.Views
 {
@@ -31,8 +33,26 @@ namespace Xeovis.UI.Views
             InitializeComponent();
             Loaded += MainWindow_Loaded;
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            PhaseNameList.PhaseNameListChanged += PhaseNameList_PhaseNameListChanged;
 
             PrepareUI();
+        }
+
+        private void PhaseNameList_PhaseNameListChanged(object? sender, Domain.Definitions.Globals.PhaseNameListChangedEventArgs e)
+        {
+            _viewModel.ProjectSettings.AllowedPhaseNames = e.NameSets;
+
+            foreach (var tab in _viewModel.TabControls)
+            {
+                if (tab == null) continue;
+                var owner = tab.OwnerTabControl;
+                if (owner is mctcPlotSingleViewTabControl mctcSingle)
+                    mctcSingle.Refresh();
+                else if (owner is mctcPlotGridViewTabControl mctcGrid)
+                    mctcGrid.Refresh();
+                else if (owner is DataManagerTabControl dataManager)
+                    dataManager.Refresh();
+            }
         }
 
         private void MainWindow_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -64,7 +84,17 @@ namespace Xeovis.UI.Views
             _viewModel.ClearAll();
             _dataManagerTab = null;
 
-            if (e.Project == null) return;
+            if (e.Project == null)
+            {
+                PhaseNameList.Refresh();
+                this.Title = "Xeovis";
+                return;
+            };
+
+            _viewModel.ProjectSettings = e.Project.ProjectSettings;
+            PhaseNameList.SetPhaseNames(e.Project.ProjectSettings.AllowedPhaseNames, false);
+
+            this.Title = string.IsNullOrWhiteSpace(e.Project.ProjectName) ? "Xeovis" : $"Xeovis - {e.Project.ProjectName}";
             OnExperimentsLoaded(e.Project.Experiments);
             e.Project.mctcBundles.ForEach(x => OnMctcBundleLoaded(x));
             e.Project.mctcPlotDtos.ForEach(x => CreateMctcPlot(x));
@@ -250,7 +280,7 @@ namespace Xeovis.UI.Views
             var openItem = new MenuItem() { Header = "Open" };
             menu.Items.Add(openItem);
 
-            var isExperiment = node.Tag is not PhaseType && _viewModel.Experiments.Any(x => x.Id == node.PresenterId);
+            var isExperiment = node.Tag is not PhaseNameSet && _viewModel.Experiments.Any(x => x.Id == node.PresenterId);
             if (isExperiment)
             {
                 var experiment = _viewModel.Experiments.FirstOrDefault(x => x.Id == node.PresenterId);
@@ -283,7 +313,7 @@ namespace Xeovis.UI.Views
             }
             else
             {
-                openItem.Click += (s, e) => OpenPhaseInExperiment(node.PresenterId, (PhaseType)node.Tag);
+                openItem.Click += (s, e) => OpenPhaseInExperiment(node.PresenterId, (PhaseNameSet)node.Tag);
             }
 
             tvExperiments.ContextMenu = menu;
@@ -573,9 +603,9 @@ namespace Xeovis.UI.Views
             tabControl.SelectedItem = _dataManagerTab?.ViewModel;
         }
 
-        public void OpenPhaseInExperiment(Guid experimentId, PhaseType phaseType, Guid? expRunId = null)
+        public void OpenPhaseInExperiment(Guid experimentId, PhaseNameSet phaseNameSet, Guid? expRunId = null)
         {
-            _dataManagerTab?.OpenPhaseInExperiment(experimentId, phaseType, expRunId);
+            _dataManagerTab?.OpenPhaseInExperiment(experimentId, phaseNameSet, expRunId);
             tabControl.SelectedItem = _dataManagerTab?.ViewModel;
         }
 

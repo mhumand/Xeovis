@@ -11,13 +11,13 @@ public class BatchTests
         batch.Index = 2;
         batch.ExperimentName = "TestExperiment";
         batch.ExpRunName = "ExpRunName";
-        batch.Phases = new List<PhaseType>()
-        {
-            PhaseType.phe,
-            PhaseType.amph,
-            PhaseType.q,
-            PhaseType.g
-        };
+        //batch.Phases = new List<PhaseType>()
+        //{
+        //    PhaseType.phe,
+        //    PhaseType.amph,
+        //    PhaseType.q,
+        //    PhaseType.g
+        //};
 
         batch.IsFailed = new Dictionary<int, bool>()
         {

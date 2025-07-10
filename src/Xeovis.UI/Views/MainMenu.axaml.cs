@@ -18,6 +18,7 @@ using Xeovis.UI.Models.FileReaders;
 using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.UI.Views;
 using Xeovis.UI.Views.Helpers;
+using Xeovis.Domain.Definitions;
 
 namespace Xeovis.UI;
 
@@ -159,8 +160,13 @@ public partial class MainMenu : UserControl
         else
             path = _lastFilePath;
 
+        projectFile.ProjectName = Path.GetFileNameWithoutExtension(path);
         var result = ProjectFileManager.Save(projectFile, path);
-        if (result) Log.Information("Project file saved.");
+        if (result)
+        {
+            ParentWindow.Title = $"Xeovis - {projectFile.ProjectName}";
+            Log.Information("Project file saved.");
+        }
     }
 
     private ProjectFile GetProjectFile()
@@ -170,6 +176,7 @@ public partial class MainMenu : UserControl
         projectFile.Experiments = ParentWindow.ViewModel.Experiments;
         projectFile.mctcBundles = ParentWindow.ViewModel.mctcBundles;
         projectFile.mctcPlotDtos = ParentWindow.ViewModel.mctcPlotDtos;
+        projectFile.ProjectSettings.AllowedPhaseNames = PhaseNameList.PhaseNames;
         return projectFile;
     }
 
@@ -204,7 +211,11 @@ public partial class MainMenu : UserControl
             {
                 var vm = dialog.ViewModel;
                 var expReader = new ExperimentReader(vm.SelectedFolders, vm.SubfolderDirectory, vm.IsSubfolderChecked);
-                var experiments = await Task.Run(() => expReader.GetExperiments(progress, token));
+                var expReaderResults = await Task.Run(() => expReader.GetExperiments(progress, token));
+                
+                // get confirmation
+                
+                var experiments = expReaderResults.Experiments;
                 ExperimentsLoaded?.Invoke(this, new ExperimentsLoadedEventArgs(experiments, dialog.ViewModel));
             }
             catch (Exception ex)
@@ -214,7 +225,7 @@ public partial class MainMenu : UserControl
                 else if (ex is IOException)
                 {
                     Log.Information(ex.Message);
-                    var mb = MessageBoxManager.GetMessageBoxStandard("Failed to Access", 
+                    var mb = MessageBoxManager.GetMessageBoxStandard("Failed to Access",
                         StringUtilities.WrapTextToLines(ex.Message, 100), ButtonEnum.Ok, Icon.Error);
                     mb.ShowWindowDialogAsync(ParentWindow);
                 }
@@ -330,6 +341,14 @@ public partial class MainMenu : UserControl
             dialog.ViewModel.mctcPlotDto.TimeCreated = DateTime.Now;
             ParentWindow.CreateMctcPlot(dialog.ViewModel.mctcPlotDto);
         }
+    }
+
+    // Settingw
+    public async void Settings_PhaseNames()
+    {
+        var vm = new SettingsPhaseNamesViewModel();
+        var dialog = new SettingsPhaseNamesDialog() { ViewModel = vm };
+        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
     }
 
     // View

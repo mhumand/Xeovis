@@ -6,15 +6,19 @@ using Xeovis.Domain;
 using Xeovis.UI.Models.Enums;
 using System.Drawing;
 using Xeovis.Presentation;
+using Xeovis.Domain.Definitions.Experiment;
 
 namespace Xeovis.UI.ViewModels
 {
     public static class mctcPlotViewModelUtilities
     {
-        public static List<IGrouping<object, xeosVariable>> GetGroupedFilteredXeosVariables(mctcBundle mctcBundle, mctcPlotAxesSettings axesSettings, Dictionary<PhaseType, FilterType> PhaseFilters, mctcPlotDto mctcPlotDto)
+        public static List<IGrouping<object, xeosVariable>> GetGroupedFilteredXeosVariables(mctcBundle mctcBundle, mctcPlotAxesSettings axesSettings, Dictionary<PhaseNameSet, FilterType> PhaseFilters, mctcPlotDto mctcPlotDto)
         {
             var yVar = axesSettings.YAxisVariable;
             var xVar = axesSettings.XAxisVariable;
+
+            if (yVar.PhaseNameSet == null || xVar.PhaseNameSet == null)
+                return null;
 
             // Filtering
             var xeosVariables = mctcBundle.xeosVariables.Where(x => x.IsEqualTo(yVar)).ToList();
@@ -32,7 +36,7 @@ namespace Xeovis.UI.ViewModels
                 {
                     var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
                     if (batch == null) continue;
-                    if (batch.Phases.All(x => !phases.Contains(x)))
+                    if (batch.PhaseNameSets.All(x => !phases.Contains(x)))
                         excludedVars.Add(xeosVar);
                 }
             }
@@ -44,7 +48,7 @@ namespace Xeovis.UI.ViewModels
                 {
                     var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
                     if (batch == null) continue;
-                    if (phases.Except(batch.Phases).Any())
+                    if (phases.Except(batch.PhaseNameSets).Any())
                         excludedVars.Add(xeosVar);
                 }
             }
@@ -56,7 +60,7 @@ namespace Xeovis.UI.ViewModels
                 {
                     var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
                     if (batch == null) continue;
-                    if (batch.Phases.Any(x => phases.Contains(x)))
+                    if (batch.PhaseNameSets.Any(x => phases.Contains(x)))
                         excludedVars.Add(xeosVar);
                 }
             }
@@ -68,7 +72,7 @@ namespace Xeovis.UI.ViewModels
                 {
                     var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
                     if (batch == null) continue;
-                    if (phases.All(x => batch.Phases.Contains(x)))
+                    if (phases.All(x => batch.PhaseNameSets.Contains(x)))
                         excludedVars.Add(xeosVar);
                 }
             }
@@ -101,16 +105,17 @@ namespace Xeovis.UI.ViewModels
                         var sampleVarInGroup = xeosVarGroup.FirstOrDefault();
                         var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == sampleVarInGroup.BatchId);
                         if (batch == null) continue;
-                        var phases = batch.Phases.Except([sampleVarInGroup.PhaseType]).ToList();
+                        var phases = batch.PhaseNameSets.Except(batch.PhaseNameSets.Where(x => x != null && x.HasName(sampleVarInGroup.PhaseKeyName))).ToList();
+                        phases.RemoveAll(x => x == null);
 
                         var phaseAllCations = new List<CationType>();
-                        phases.ForEach(x => phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(x)));
+                        phases.ForEach(x => phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(x.KeyName)));
 
                         var phaseCations = phaseAllCations.Distinct().ToList();
-                        var xeosVarCations = DefaultModelDefinitions.GetCationsFromModelVariable(sampleVarInGroup.PhaseType, sampleVarInGroup.VariableType);
+                        var xeosVarCations = DefaultModelDefinitions.GetCationsFromModelVariable(sampleVarInGroup.PhaseKeyName, sampleVarInGroup.VariableType);
                         if (!sampleVarInGroup.IsEqualTo(xVar) && axesSettings.XAxisType == mctcPlotAxisType.Observed)
                         {
-                            xeosVarCations = xeosVarCations.Union(DefaultModelDefinitions.GetCationsFromModelVariable(xVar.PhaseType, xVar.VariableType)).Distinct().ToList();
+                            xeosVarCations = xeosVarCations.Union(DefaultModelDefinitions.GetCationsFromModelVariable(xVar.PhaseKeyName, xVar.VariableType)).Distinct().ToList();
                         }
 
                         if (phaseCations.Count != 0 && xeosVarCations.Count != 0)
@@ -128,16 +133,18 @@ namespace Xeovis.UI.ViewModels
                         {
                             var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == modelVar.BatchId);
                             if (batch == null) continue;
-                            var phases = batch.Phases.Except([modelVar.PhaseType]).ToList();
+                            var phases = batch.PhaseNameSets.Except(
+                                batch.PhaseNameSets.Where(x => x != null && x.HasName(modelVar.PhaseKeyName))).ToList();
+                            phases.RemoveAll(x => x == null);
 
                             var phaseAllCations = new List<CationType>();
-                            phases.ForEach(x => phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(x)));
+                            phases.ForEach(x => phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(x.KeyName)));
 
                             var phaseCations = phaseAllCations.Distinct().ToList();
-                            var xeosVarCations = DefaultModelDefinitions.GetCationsFromModelVariable(modelVar.PhaseType, modelVar.VariableType);
+                            var xeosVarCations = DefaultModelDefinitions.GetCationsFromModelVariable(modelVar.PhaseKeyName, modelVar.VariableType);
                             if (!modelVar.IsEqualTo(xVar) && axesSettings.XAxisType == mctcPlotAxisType.Observed)
                             {
-                                xeosVarCations = xeosVarCations.Union(DefaultModelDefinitions.GetCationsFromModelVariable(xVar.PhaseType, xVar.VariableType)).Distinct().ToList();
+                                xeosVarCations = xeosVarCations.Union(DefaultModelDefinitions.GetCationsFromModelVariable(xVar.PhaseKeyName, xVar.VariableType)).Distinct().ToList();
                             }
 
                             if (phaseCations.Count != 0 && xeosVarCations.Count != 0)
@@ -341,24 +348,25 @@ namespace Xeovis.UI.ViewModels
             return tableModel;
         }
 
-        public static TableModel CreateFiltersTableModel(mctcBundle mctcBundle, Dictionary<PhaseType, FilterType> PhaseFilters)
+        public static TableModel CreateFiltersTableModel(mctcBundle mctcBundle, Dictionary<PhaseNameSet, FilterType> PhaseFilters)
         {
-            var phases = mctcBundle.Batches.SelectMany(x => x.Phases).ToList().Distinct();
+            var phases = mctcBundle.Batches.SelectMany(x => x.PhaseNameSets).ToList().Distinct().ToList();
+            phases.RemoveAll(x => x == null);
             var filters = new List<string>();
             foreach (var item in Enum.GetValues(typeof(FilterType)).Cast<FilterType>().ToList())
                 filters.Add(EnumExtensions.GetDescriptionFromValue(item));
 
             PhaseFilters.Clear();
-            foreach (var phase in phases)
+            foreach (var phase in phases.OrderBy(x => x.KeyName))
                 PhaseFilters.Add(phase, EnumExtensions.GetValueFromDescription<FilterType>(filters[0]));
 
             var columns = new List<ColumnModel>()
             {
-                new ColumnModel("Filter", Enumerable.Range(1, phases.Count()).ToList().Select(x => filters[0]).ToList())
+                new ColumnModel("Filter", Enumerable.Range(1, PhaseFilters.Count()).ToList().Select(x => filters[0]).ToList())
                 {
                     Options = filters.Cast<object>().ToList()
                 },
-                new ColumnModel("Phase", phases.Select(x => x.ToString()).ToList()) {IsReadOnly = true},
+                new ColumnModel("Phase", PhaseFilters.Keys.Select(x => x.KeyName).ToList()) {IsReadOnly = true},
             };
 
             var tableModel = new TableModel("Filter", columns);

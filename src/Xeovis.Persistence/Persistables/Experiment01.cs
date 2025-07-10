@@ -9,7 +9,7 @@ public class Experiment01
     public List<ExpRun01> Runs { get; set; }
     public string Path { get; set; }
     public List<string> FilesPath { get; set; }
-    public List<PhaseType> PhasesWithData { get; set; }
+    public List<Guid> PhaseIdsWithData { get; set; }
 
     public Experiment01()
     {
@@ -23,7 +23,7 @@ public class Experiment01
         Runs = realObject.Runs.Select(x => new ExpRun01(x)).ToList();
         Path = realObject.Path;
         FilesPath = new List<string>(realObject.FilesPath);
-        PhasesWithData = new List<PhaseType>(realObject.PhasesWithData);
+        PhaseIdsWithData = new List<Guid>(realObject.PhaseIdsWithData);
     }
 
     public Experiment ConvertToRealObject()
@@ -35,7 +35,7 @@ public class Experiment01
             Runs = Runs.Select(x => x.ConvertToRealObject()).ToList(),
             Path = Path,
             FilesPath = [..FilesPath],
-            PhasesWithData = [..PhasesWithData]
+            PhaseIdsWithData = [..PhaseIdsWithData]
         };
     }
 }

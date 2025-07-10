@@ -1,9 +1,13 @@
-﻿namespace Xeovis.Domain
+﻿using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Experiment;
+
+namespace Xeovis.Domain
 {
     public class Batch
     {
         public string Name => $"{Index} - {ExperimentName} - {ExpRunName}";
-        public List<PhaseType> Phases { get; set; }
+        public List<Guid> PhaseNameIds { get; set; }
+        public List<PhaseNameSet> PhaseNameSets => PhaseNameIds?.Select(x => PhaseNameList.GetNameSetById(x)).ToList();
         public int Index { get; set; }
         public Guid Id { get; set; }
         public Guid mctcBundleId { get; set; }
@@ -29,7 +33,7 @@
             Id = Guid.NewGuid();
             ExperimentName = string.Empty;
             ExpRunName = string.Empty;
-            Phases = new List<PhaseType>();
+            PhaseNameIds = new List<Guid>();
             BulkComposition = new Dictionary<OxideType, double>();
             xeosVariables = new List<xeosVariable>();
             IsFailed = new Dictionary<int, bool>();
@@ -43,8 +47,11 @@
         public string GetPhaseAssemblageString(string spacer = " ")
         {
             var str = string.Empty;
-            foreach (var phase in Phases)
-                str += phase + spacer;
+            foreach (var phaseName in PhaseNameSets)
+            {
+                var name = phaseName == null ? "?" : phaseName.KeyName;
+                str += name + spacer;
+            }
 
             return str.TrimEnd(spacer.ToCharArray());
         }

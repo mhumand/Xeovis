@@ -13,6 +13,7 @@ using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.Base.Validations;
 using Xeovis.Base.Utilities;
 using Xeovis.Presentation;
+using Xeovis.Domain.Definitions.Experiment;
 
 namespace Xeovis.UI;
 
@@ -145,10 +146,10 @@ public partial class mctcNewPlotDialog : Window
     private void llcPhase_ListSelectionChanged(object? sender, ListSelectionChangedEventArgs e)
     {
         if (e.SelectedItem is not ListableItem item) return;
-        if (item.Tag is not PhaseType phaseType) return;
+        if (item.Tag is not PhaseNameSet phaseNameSet) return;
         var bundle = _bundles.FirstOrDefault(i => i.Id == lcbcMctcBundles.ViewModel.SelectedItem.PresenterId);
         if (bundle == null) return;
-        var xeosVariableItems = _viewModel.AllPhaseVariableItems.FirstOrDefault(i => (PhaseType)i.Key.Tag == phaseType).Value;
+        var xeosVariableItems = _viewModel.AllPhaseVariableItems.FirstOrDefault(i => (PhaseNameSet)i.Key.Tag == phaseNameSet).Value;
         llcXeosVariables.ViewModel.SetItems(xeosVariableItems);
         FetchXeosVariablesCheckStatus();
     }

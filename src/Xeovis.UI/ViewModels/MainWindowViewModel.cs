@@ -8,6 +8,7 @@ using Xeovis.Domain;
 using Xeovis.Presentation;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Events;
+using Xeovis.Persistence;
 
 namespace Xeovis.UI.ViewModels
 {
@@ -25,6 +26,7 @@ namespace Xeovis.UI.ViewModels
         public List<Experiment> Experiments { get; set; }
         public List<mctcBundle> mctcBundles { get; set; }
         public List<mctcPlotDto> mctcPlotDtos { get; set; }
+        public ProjectSettings ProjectSettings { get; set; }
 
         public event EventHandler<ExperimentsDeletedEventArgs>? ExperimentsDeleted;
         public event EventHandler<mctcBundlesDeletedEventArgs>? mctcBundlesDeleted;
@@ -38,6 +40,7 @@ namespace Xeovis.UI.ViewModels
             Experiments = new List<Experiment>();
             mctcBundles = new List<mctcBundle>();
             mctcPlotDtos = new List<mctcPlotDto>();
+            ProjectSettings = new ProjectSettings();
         }
 
         public DataManagerTabControlViewModel CreateDataManagerTabVM()
@@ -61,6 +64,7 @@ namespace Xeovis.UI.ViewModels
             Experiments.Clear();
             mctcBundles.Clear();
             mctcPlotDtos.Clear();
+            ProjectSettings = new ProjectSettings();
         }
 
         public void DeleteExperiment(Guid Id)

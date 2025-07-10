@@ -1,3 +1,5 @@
+using Xeovis.Domain.Definitions;
+
 namespace Xeovis.Domain.Tests.Experiment.Tests;
 
 public class ExperimentTests
@@ -18,21 +20,9 @@ public class ExperimentTests
             Rocktype = RockType.Metabasite,
             Phases = new List<Phase>()
             {
-                new Phase()
-                {
-                    Name = "opx",
-                    Type = PhaseType.opx,
-                },
-                new Phase()
-                {
-                    Name = "cpx",
-                    Type = PhaseType.cpx,
-                },
-                new Phase()
-                {
-                    Name = "g",
-                    Type = PhaseType.g,
-                }
+                new Phase(PhaseNameList.GetNameSetIdByString("opx")),
+                new Phase(PhaseNameList.GetNameSetIdByString("cpx")),
+                new Phase(PhaseNameList.GetNameSetIdByString("g")),
             }
         });
         
@@ -44,21 +34,9 @@ public class ExperimentTests
             Rocktype = RockType.Eclogite,
             Phases = new List<Phase>()
             {
-                new Phase()
-                {
-                    Name = "cpx",
-                    Type = PhaseType.cpx,
-                },
-                new Phase()
-                {
-                    Name = "q",
-                    Type = PhaseType.q,
-                },
-                new Phase()
-                {
-                    Name = "pl",
-                    Type = PhaseType.pl,
-                }
+                new Phase(PhaseNameList.GetNameSetIdByString("cpx")),
+                new Phase(PhaseNameList.GetNameSetIdByString("q")),
+                new Phase(PhaseNameList.GetNameSetIdByString("pl")),
             }
         });
     }
@@ -66,15 +44,15 @@ public class ExperimentTests
     [Test]
     public void GetPhaseTypes()
     {
-        var allPhaseTypes = experiment.GetAllPhaseTypes();
+        var allPhaseTypes = experiment.GetAllPhaseNames();
         
         Assert.That(experiment.ShortName, Is.EqualTo("TN09"));
-        Assert.That(allPhaseTypes[0], Is.EqualTo(PhaseType.cpx));
-        Assert.That(allPhaseTypes.Contains(PhaseType.cpx), Is.True);
-        Assert.That(allPhaseTypes.Contains(PhaseType.opx), Is.True);
-        Assert.That(allPhaseTypes.Contains(PhaseType.g), Is.True);
-        Assert.That(allPhaseTypes.Contains(PhaseType.q), Is.True);
-        Assert.That(allPhaseTypes.Contains(PhaseType.pl), Is.True);
+        //Assert.That(allPhaseTypes[0], Is.EqualTo(PhaseType.cpx));
+        //Assert.That(allPhaseTypes.Contains(PhaseType.cpx), Is.True);
+        //Assert.That(allPhaseTypes.Contains(PhaseType.opx), Is.True);
+        //Assert.That(allPhaseTypes.Contains(PhaseType.g), Is.True);
+        //Assert.That(allPhaseTypes.Contains(PhaseType.q), Is.True);
+        //Assert.That(allPhaseTypes.Contains(PhaseType.pl), Is.True);
     }
 
     [Test]

@@ -9,7 +9,7 @@ public class xeosVariable01
     public Dictionary<int, double> CalcVals { get; set; }
     public Guid BatchId { get; set; }
     public Guid mctcBundleId { get; set; }
-    public PhaseType PhaseType { get; set; }
+    public Guid PhaseNameId { get; set; }
     public ModelVariableType VariableType { get; set; }
     public double DefaultValue { get; set; }
 
@@ -25,7 +25,7 @@ public class xeosVariable01
         CalcVals = new Dictionary<int, double>(realObject.CalcVals);
         BatchId = realObject.BatchId;
         mctcBundleId = realObject.mctcBundleId;
-        PhaseType = realObject.PhaseType;
+        PhaseNameId = realObject.PhaseNameId;
         VariableType = realObject.VariableType;
         DefaultValue = realObject.DefaultValue;
     }
@@ -39,7 +39,7 @@ public class xeosVariable01
             CalcVals = new Dictionary<int, double>(CalcVals),
             BatchId = BatchId,
             mctcBundleId = mctcBundleId,
-            PhaseType = PhaseType,
+            PhaseNameId = PhaseNameId,
             VariableType = VariableType,
             DefaultValue = DefaultValue
         };

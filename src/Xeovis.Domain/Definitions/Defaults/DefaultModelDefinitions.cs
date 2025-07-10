@@ -1,23 +1,45 @@
-﻿namespace Xeovis.Domain
+﻿using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Experiment;
+
+namespace Xeovis.Domain
 {
     public static class DefaultModelDefinitions
     {
-        public static List<CationType> GetCationsFromModelVariable(PhaseType phase, ModelVariableType variable)
+        public static List<CationType> GetCationsFromModelVariable(string phase, ModelVariableType variable)
         {
-            return phase switch
-            {
-                PhaseType.g => GetVariableCations_Garnet(variable),
-                PhaseType.ol => GetVariableCations_Olivine(variable),
-                PhaseType.ilm => GetVariableCations_Ilmenite(variable),
-                PhaseType.cpx => GetVariableCations_Cpx(variable),
-                PhaseType.opx => GetVariableCations_Opx(variable),
-                PhaseType.spn => GetVariableCations_Spinel(variable),
-                PhaseType.ep => GetVariableCations_Epidote(variable),
-                PhaseType.pl => GetVariableCations_Plagioclase(variable),
-                PhaseType.bi => GetVariableCations_Biotite(variable),
-                PhaseType.phe => GetVariableCations_Phengite(variable),
-                _ => null
-            };
+            var nullSet = new PhaseNameSet();
+
+            if (PhaseNameList.GetNameSetByString("garnet", nullSet).HasName(phase))
+                return GetVariableCations_Garnet(variable);
+
+            if (PhaseNameList.GetNameSetByString("olivine", nullSet).HasName(phase))
+                return GetVariableCations_Olivine(variable);
+
+            if (PhaseNameList.GetNameSetByString("ilmenite", nullSet).HasName(phase))
+                return GetVariableCations_Ilmenite(variable);
+
+            if (PhaseNameList.GetNameSetByString("clinopyroxene", nullSet).HasName(phase))
+                return GetVariableCations_Cpx(variable);
+
+            if (PhaseNameList.GetNameSetByString("orthopyroxene", nullSet).HasName(phase))
+                return GetVariableCations_Opx(variable);
+
+            if (PhaseNameList.GetNameSetByString("spinel", nullSet).HasName(phase))
+                return GetVariableCations_Spinel(variable);
+
+            if (PhaseNameList.GetNameSetByString("epidote", nullSet).HasName(phase))
+                return GetVariableCations_Epidote(variable);
+
+            if (PhaseNameList.GetNameSetByString("plagioclase", nullSet).HasName(phase))
+                return GetVariableCations_Plagioclase(variable);
+
+            if (PhaseNameList.GetNameSetByString("biotite", nullSet).HasName(phase))
+                return GetVariableCations_Biotite(variable);
+
+            if (PhaseNameList.GetNameSetByString("phengite", nullSet).HasName(phase))
+                return GetVariableCations_Phengite(variable);
+
+            return new List<CationType>();
         }
 
         private static List<CationType> GetVariableCations_Garnet(ModelVariableType variable)

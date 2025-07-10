@@ -2,8 +2,8 @@ using Avalonia.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xeovis.Base;
 using Xeovis.Domain;
+using Xeovis.Domain.Definitions.Experiment;
 using Xeovis.UI.Models;
 using Xeovis.UI.ViewModels;
 
@@ -18,7 +18,7 @@ public partial class DataManagerTabControl : UserControl
         get { return _viewModel; }
         set
         {
-            _viewModel = value;
+            _viewModel = value ?? new();
         }
     }
 
@@ -52,6 +52,7 @@ public partial class DataManagerTabControl : UserControl
         tableExpRunInExperiment.ClearTable();
         tablePhases.ClearTable();
         tablePhasesSummary.ClearTable();
+        tableCompare.ClearTable();
 
         lcbExperiment.ClearItems();
         lcbPhaseInExperiment.ClearItems();
@@ -61,6 +62,12 @@ public partial class DataManagerTabControl : UserControl
         _viewModel.CreateExperimentItems(experiments);
         lcbExperiment.SetItems(_viewModel.ExperimentItems.ToList());
         lcbPhases.SetItems(_viewModel.GetPhaseTypeItemList());
+    }
+
+    public void Refresh()
+    {
+        SetExperiments(_viewModel.Experiments);
+        _viewModel.ComparedPhases.ForEach(x => AddPhaseToCompare(x.Id));
     }
 
     private void lcbPhases_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
@@ -154,11 +161,11 @@ public partial class DataManagerTabControl : UserControl
         tablePhaseInExperiment.SelectRow(-1);
     }
 
-    public void OpenPhaseInExperiment(Guid experimentId, PhaseType phaseType, Guid? expRunId = null)
+    public void OpenPhaseInExperiment(Guid experimentId, PhaseNameSet phaseNameSet, Guid? expRunId = null)
     {
         OpenExperiment(experimentId);
         tabControlExperimentDetails.SelectedItem = tabPhaseInExperiment;
-        lcbPhaseInExperiment.ViewModel.SelectedItem = _viewModel.PhaseInExperimentItems.FirstOrDefault(x => (PhaseType)x.Tag == phaseType);
+        lcbPhaseInExperiment.ViewModel.SelectedItem = _viewModel.PhaseInExperimentItems.FirstOrDefault(x => (PhaseNameSet)x.Tag == phaseNameSet);
 
         if (expRunId != null)
         {
@@ -169,7 +176,7 @@ public partial class DataManagerTabControl : UserControl
                 tablePhaseInExperiment.SelectRowContainingCellString(expRun.ToString(), 0);
 
                 lcbExpRunInExperiment.ViewModel.SelectedItem = _viewModel.ExpRunInExperimentItems.FirstOrDefault(x => x.PresenterId == expRunId);
-                tableExpRunInExperiment.SelectRowContainingCellString(EnumExtensions.GetDescriptionFromValue(phaseType), 0);
+                tableExpRunInExperiment.SelectRowContainingCellString(phaseNameSet.ToString(), 0);
             }
         }
     }

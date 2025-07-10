@@ -38,7 +38,7 @@
         <Style Selector="DataGridCell TextBox">
             <Setter Property="Height" Value="28" />
             <Setter Property="MinHeight" Value="28" />
-            <Setter Property="Padding" Value="10 0" />
+            <Setter Property="Padding" Value="11 0" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
         

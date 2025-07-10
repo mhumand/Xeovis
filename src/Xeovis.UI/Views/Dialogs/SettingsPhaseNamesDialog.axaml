@@ -1,0 +1,105 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+		MinHeight="500"
+		MinWidth="600"
+		Height="600"
+		Width="800"
+		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+		xmlns:vm="using:Xeovis.UI.ViewModels.DialogsViewModels"
+		xmlns:vmc="using:Xeovis.UI.ViewModels"
+		x:DataType="vm:SettingsPhaseNamesViewModel"
+        x:Class="Xeovis.UI.SettingsPhaseNamesDialog"
+        Title="Settings - Phase Names">
+
+	<Window.Styles>
+		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
+		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+		<StyleInclude Source="/Views/Styles/Textboxes.axaml"/>
+	</Window.Styles>
+
+	<Grid Margin="20 10" RowDefinitions="60, 40, *, 40">
+
+		<Border Grid.Row="0"
+				Margin="0 0 0 10"
+				CornerRadius="5"
+				Background="#20f07f07"
+				BorderThickness="2"
+				BorderBrush="#cc0000">
+			<TextBlock HorizontalAlignment="Center"
+					   VerticalAlignment="Center"
+					   Foreground="#cc0000"
+					   FontSize="16"
+					   FontWeight="SemiBold"
+					   Text="For best performance, set your phases before reading any data." />
+		</Border>
+		
+		<StackPanel Grid.Row="1"
+					HorizontalAlignment="Right"
+					Orientation="Horizontal"
+					Spacing="5">
+			<Button x:Name="btnRemoveSelected"
+					Classes="Primary"
+					Width="90"
+					Click="btnRemoveSelected_Click"
+					Content="× Remove"/>
+
+			<Rectangle Width="2" Height="30" Fill="DarkGray"/>
+			
+			<Button x:Name="btnAddNewRow"
+					Classes="Primary"
+					Width="90"
+					Click="btnAddNewRow_Click"
+					Content="+ Add New"/>
+			
+		</StackPanel>
+		
+		<userControls:TableControl x:Name="tableControl"
+								   Grid.Row="2"/>
+
+		<Grid Grid.Row="3" ColumnDefinitions="1*,1*">
+
+			<StackPanel Grid.Column="0"
+						Spacing="10"
+						VerticalAlignment="Bottom"
+						HorizontalAlignment="Left"
+						Orientation="Horizontal">
+
+				<Button x:Name="btnProjectDefaults"
+						Classes="Primary"
+						Width="120"
+						Click="btnProjectDefaults_Click"
+						Content="Project Defaults"/>
+				<Button x:Name="btnXeovisDefaults"
+						Classes="Primary"
+						Width="120"
+						Click="btnXeovisDefaults_Click"
+						Content="Xeovis Defaults"/>
+			</StackPanel>
+
+			<StackPanel Orientation="Horizontal"
+						Grid.Column="1"
+						Spacing="10"
+						VerticalAlignment="Bottom"
+						HorizontalAlignment="Right">
+
+				<Button x:Name="btnCancel"
+						Classes="Primary"
+						Content="Cancel"
+						Click="btnCancel_Click"/>
+
+				<Button x:Name="btnSave"
+						Classes="Primary"
+						Content="Save"
+						Click="btnSave_Click"/>
+
+			</StackPanel>
+			
+		</Grid>
+		
+	</Grid>
+	
+	
+</Window>

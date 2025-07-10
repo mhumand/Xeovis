@@ -2,13 +2,15 @@
 {
     public class TableSelectionChangedEventArgs : EventArgs
     {
-        public int RowIndex { get; set; }
+        public int TrueRowIndex { get; set; }
+        public int VisualRowIndex { get; set; }
         public int ColumnIndex { get; set; }
         public object? Value { get; set; }
 
-        public TableSelectionChangedEventArgs(int rowIndex, int columnIndex, object? value = null)
+        public TableSelectionChangedEventArgs(int rowIndex, int visualRowIndex, int columnIndex, object? value = null)
         {
-            RowIndex = rowIndex;
+            TrueRowIndex = rowIndex;
+            VisualRowIndex = visualRowIndex;
             ColumnIndex = columnIndex;
             Value = value;
         }

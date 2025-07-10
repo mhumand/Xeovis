@@ -1,10 +1,14 @@
-﻿namespace Xeovis.Domain
+﻿using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Experiment;
+
+namespace Xeovis.Domain
 {
     public class XEOS
     {
         public string Name { get; set; }
         public Guid Id { get; set; }
-        public PhaseType PhaseType { get; set; }
+        public Guid PhaseNameId { get; set; }
+        public PhaseNameSet PhaseNameSet => PhaseNameList.GetNameSetById(PhaseNameId);
         public List<EndMember> EndMembers { get; set; }
         public List<EnergyParameter> Ws { get; set; }
         public List<AlphaParameter> Alphas { get; set; }
@@ -12,6 +16,7 @@
         public XEOS()
         {
             Id = Guid.NewGuid();
+            PhaseNameId = Guid.Empty;
             Name = string.Empty;
             EndMembers = new List<EndMember>();
             Ws = new List<EnergyParameter>();

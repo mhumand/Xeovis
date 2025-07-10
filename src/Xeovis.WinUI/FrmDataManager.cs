@@ -4,6 +4,9 @@ using System.Diagnostics;
 using Xeovis.Domain;
 using Xeovis.WinControls;
 using Xeovis.Base;
+using Xeovis.Domain.Definitions.Experiment;
+using Xeovis.Persistence;
+using Xeovis.Domain.Definitions;
 
 namespace Xeovis.WinUI
 {
@@ -174,7 +177,8 @@ namespace Xeovis.WinUI
                         var phases = cells[phasesIndex].ToString().Split(new char[] { '+', ',' });
                         foreach (var ph in phases)
                         {
-                            var phase = new Phase(ph.Trim());
+                            var phaseNameSet = PhaseNameList.GetNameSetByString(ph.Trim());
+                            var phase = new Phase(phaseNameSet.Id);
                             phase.ExpRunId = run.Id;
                             run.Phases.Add(phase);
                         }
@@ -238,14 +242,14 @@ namespace Xeovis.WinUI
 
             cmbxPhases.Items.Clear();
             foreach (var phase in exp.PhasesWithData)
-                cmbxPhases.Items.Add(EnumExtensions.GetDescriptionFromValue(phase));
+                cmbxPhases.Items.Add(phase);
 
             if (cmbxPhases.Items.Count > 0)
                 cmbxPhases.SelectedIndex = 0;
 
             string str = "";
-            foreach (var phase in exp.GetAllPhaseTypes())
-                str += phase + "+";
+            foreach (var phaseName in exp.GetAllPhaseNames())
+                str += phaseName + "+";
 
             txtAllPhases.Text = str.TrimEnd('+');
         }
@@ -261,10 +265,10 @@ namespace Xeovis.WinUI
             foreach (var file in phaseFiles)
             {
                 string phaseName = Path.GetFileNameWithoutExtension(file);
-                var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(phaseName.ToLower());
+                var phaseNameSet = PhaseNameList.GetNameSetByString(phaseName);
 
-                if (!exp.PhasesWithData.Contains(phaseType))
-                    exp.PhasesWithData.Add(phaseType);
+                if (!exp.PhaseIdsWithData.Contains(phaseNameSet.Id))
+                    exp.PhaseIdsWithData.Add(phaseNameSet.Id);
 
                 using (var stream = File.Open(file, FileMode.Open, FileAccess.Read))
                 {
@@ -291,7 +295,7 @@ namespace Xeovis.WinUI
                             var run =
                                 exp.Runs.FirstOrDefault(r => r.Name == experimentName || r.ReadingIndex == intName);
                             if (run == null) continue;
-                            var runPhase = run.Phases.FirstOrDefault(ph => ph.Type == phaseType);
+                            var runPhase = run.Phases.FirstOrDefault(ph => ph.NameSet == phaseNameSet);
                             if (runPhase == null) continue;
 
                             if (commentIndex >= 0)
@@ -321,11 +325,11 @@ namespace Xeovis.WinUI
         {
             tcPhases.ClearTable();
             var exp = cmbxExperiments.SelectedItem as Experiment;
-            var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(cmbxPhases.SelectedItem.ToString());
+            var phaseNameSet = PhaseNameList.GetNameSetByString(cmbxPhases.SelectedItem.ToString());
 
             var allPhasesInExp = new List<Phase>();
-            foreach (var run in exp.Runs.Where(r => r.Phases.Any(ph => ph.Type == phaseType)))
-                allPhasesInExp.Add(run.Phases.FirstOrDefault(ph => ph.Type == phaseType));
+            foreach (var run in exp.Runs.Where(r => r.Phases.Any(ph => ph.NameSet == phaseNameSet)))
+                allPhasesInExp.Add(run.Phases.FirstOrDefault(ph => ph.NameSet == phaseNameSet));
 
             if (allPhasesInExp.Count == 0) return;
             var allOxides = allPhasesInExp.SelectMany(x => x.CompositionOxides).Distinct();
@@ -421,9 +425,9 @@ namespace Xeovis.WinUI
 
         private void btnSubselectRuns_Click(object sender, EventArgs e)
         {
-            if (GetListOfPhaseTypes().Any(c => c == PhaseType.NULL))
+            if (GetListOfPhaseNames().Any(c => c == null))
             {
-                MessageBox.Show("Unrecognized phase 'NULL'", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Unrecognized phase", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -481,7 +485,7 @@ namespace Xeovis.WinUI
             if (runFilterType == null) return;
 
 
-            var phaseTypes = GetListOfPhaseTypes();
+            var phaseTypes = GetListOfPhaseNames();
             switch (runFilterType)
             {
                 case RunFilterType.None:
@@ -514,7 +518,7 @@ namespace Xeovis.WinUI
                 cmbxRunFilterType.SelectedIndex = 0;
         }
 
-        private List<PhaseType> GetListOfPhaseTypes()
+        private List<PhaseNameSet> GetListOfPhaseNames()
         {
             var experiments = new List<Experiment>();
             foreach (var item in cmbxExperiments.Items)
@@ -524,18 +528,18 @@ namespace Xeovis.WinUI
                 experiments.Add(exp);
             }
 
-            var phaseTypes = experiments.SelectMany(e => e.PhasesWithData);
-            return phaseTypes.Distinct().ToList();
+            var phaseNames = experiments.SelectMany(e => e.PhasesWithData);
+            return phaseNames.Distinct().ToList();
         }
 
-        private void AddRunFilterUI_PhasesList(List<PhaseType> phaseTypes, RunFilterType filterType)
+        private void AddRunFilterUI_PhasesList(List<PhaseNameSet> phaseNameSets, RunFilterType filterType)
         {
             var groupBox = new GroupBox();
             groupBox.Text = filterType.ToString();
 
-            if (phaseTypes == null) return;
+            if (phaseNameSets == null) return;
             var cklbx = new CheckedListBox();
-            foreach (var phaseType in phaseTypes)
+            foreach (var phaseType in phaseNameSets)
                 cklbx.Items.Add(phaseType);
 
             cklbx.Location = new System.Drawing.Point(groupBox.Location.X + 5, groupBox.Location.Y + 15);
@@ -553,7 +557,7 @@ namespace Xeovis.WinUI
             flpFilters.Controls.Add(groupBox);
         }
 
-        private void AddRunFilterUI_PhasesCount(List<PhaseType> phaseTypes, RunFilterType filterType)
+        private void AddRunFilterUI_PhasesCount(List<PhaseNameSet> phaseNameSets, RunFilterType filterType)
         {
             var groupBox = new GroupBox();
             groupBox.Text = filterType.ToString();
@@ -562,7 +566,7 @@ namespace Xeovis.WinUI
             nudCount.Location = new System.Drawing.Point(groupBox.Location.X + 5, groupBox.Location.Y + 15);
             nudCount.Dock = DockStyle.Fill;
             nudCount.Minimum = 3;
-            nudCount.Maximum = phaseTypes.Count;
+            nudCount.Maximum = phaseNameSets.Count;
             nudCount.Value = 3;
             nudCount.Increment = 1;
             nudCount.Tag = filterType;
@@ -625,14 +629,14 @@ namespace Xeovis.WinUI
 
         private void PrepareAdvancedDataManagerUI()
         {
-            var phaseList = GetListOfPhaseTypes();
+            var phaseList = GetListOfPhaseNames();
             cmbxDMAdvancedPhaseList.Items.Clear();
             cklbxDMAdvancedOtherPhases.Items.Clear();
             if (phaseList.Count == 0) return;
 
             var phaseNames = new List<string>();
             foreach (var phase in phaseList)
-                phaseNames.Add(EnumExtensions.GetDescriptionFromValue(phase));
+                phaseNames.Add(phase.ToString());
 
             phaseNames.Sort();
             foreach (var phase in phaseNames)
@@ -668,11 +672,11 @@ namespace Xeovis.WinUI
             var experiments = cmbxExperiments.Items.Cast<Experiment>().ToList();
             foreach (var exp in experiments)
             {
-                var phaseType = PhaseTypeExtensions.GetPhaseTypeByName(cmbxDMAdvancedPhaseList.SelectedItem.ToString());
+                var phaseName = cmbxDMAdvancedPhaseList.SelectedItem.ToString();
 
                 var allInstances = new List<Phase>();
-                foreach (var run in exp.Runs.Where(r => r.Phases.Any(ph => ph.Type == phaseType)))
-                    allInstances.Add(run.Phases.FirstOrDefault(ph => ph.Type == phaseType));
+                foreach (var run in exp.Runs.Where(r => r.Phases.Any(ph => ph.HasName(phaseName))))
+                    allInstances.Add(run.Phases.FirstOrDefault(ph => ph.HasName(phaseName)));
 
                 if (!allInstances.Any()) continue;
                 bool hasData = false;
@@ -772,8 +776,8 @@ namespace Xeovis.WinUI
                 var rockTypes = exp.GetAllRockTypes().Except(new List<RockType>() { RockType.None }).ToList()
                     .ConvertAll(x => x.ToString());
                 var phasesWithComp = exp.PhasesWithData.ConvertAll(x => x.ToString());
-                var allPhases = exp.GetAllPhaseTypes();
-                var purePhases = allPhases.Except(allPhases.Where(p => p.GetPhaseState() != PhaseState.Pure));
+                var allPhaseNames = exp.GetAllPhaseNames();
+                //var purePhases = allPhaseNames.Except(allPhaseNames.Where(p => p.GetPhaseState() != PhaseState.Pure));
 
                 var row = new List<object>
                 {
@@ -783,7 +787,7 @@ namespace Xeovis.WinUI
                     minP == maxP ? $"{minP}" : $"{minP} - {maxP}",
                     string.Join(", ", rockTypes),
                     string.Join(", ", phasesWithComp),
-                    string.Join(", ", purePhases)
+                    //string.Join(", ", purePhases)
                 };
 
                 rows.Add(row);

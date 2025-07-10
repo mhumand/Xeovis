@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xeovis.Base;
 using Xeovis.Base.Comparers;
+using Xeovis.Base.Validations;
 using Xeovis.Presentation;
 using Xeovis.UI.ViewModels;
 
@@ -219,35 +220,68 @@ public partial class TableControl : UserControl
     private void ClearSelection()
     {
         dataGrid.SelectedIndex = -1;
-        SelectionChanged?.Invoke(this, new TableSelectionChangedEventArgs(-1, -1));
+        SelectionChanged?.Invoke(this, new TableSelectionChangedEventArgs(-1, -1, -1));
     }
 
     private void DataGrid_CellEditEnded(object? sender, DataGridCellEditEndedEventArgs e)
     {
-        //if (e.Column.Tag is not ColumnModel columnModel) return;
-        //var rowIndex = dataGrid.ItemsSource.Cast<object>().ToList().IndexOf(dataGrid.SelectedItem);
+        if (e.Column.Tag is not ColumnModel columnModel) return;
+        if (sender is not DataGrid dataGrid) return;
 
-        //var row = e.Row.DataContext as Dictionary<string, object>;
-        //var column = dataGrid.Columns.IndexOf(e.Column);
-        //var value = row.ToList()[column].Value.ToString();
+        var rowIndex = GetTrueRowIndex((Dictionary<string, object>)dataGrid.SelectedItem);
+        if (e.Row.DataContext is not Dictionary<string, object> row) return;
+        var value = row[columnModel.Id.ToString()].ToString();
 
-        //columnModel.Values[rowIndex] = value;
+        if (e.EditAction == DataGridEditAction.Cancel)
+        {
+            var columnIndex = dataGrid.Columns.Where(x => x.Tag is ColumnModel col && col.IsVisible).ToList().IndexOf(e.Column);
+            var cell = dataGrid.Columns[columnIndex].GetCellContent(dataGrid.SelectedItem);
+            if (cell is TextBlock textBox)
+            {
+                textBox.Text = columnModel.Values[rowIndex].ToString();
+            }
+        }
+
+        if (e.EditAction == DataGridEditAction.Commit)
+        {
+            if (columnModel.ValueType == typeof(double))
+                columnModel.Values[rowIndex] = DoubleExtensions.GetDoubleValueFromText(value);
+            else
+                columnModel.Values[rowIndex] = value;
+
+            CellValueChanged?.Invoke(null, new TableCellValueChangedEventArgs(value, rowIndex, columnModel.Id));
+        }
     }
 
     private void DataGrid_CellEditEnding(object? sender, DataGridCellEditEndingEventArgs e)
     {
         if (e.Column.Tag is not ColumnModel columnModel) return;
-        var rowIndex = dataGrid.ItemsSource.Cast<object>().ToList().IndexOf(dataGrid.SelectedItem);
+        if (sender is not DataGrid dataGrid) return;
 
-        var row = e.Row.DataContext as Dictionary<string, object>;
-        var column = dataGrid.Columns.IndexOf(e.Column);
-        var value = row.ToList()[column].Value.ToString();
+        if (e.EditAction == DataGridEditAction.Cancel)
+        {
+            return;
+        }
 
+        var rowIndex = GetTrueRowIndex((Dictionary<string, object>)dataGrid.SelectedItem);
+
+        if (e.Row.DataContext is not Dictionary<string, object> row) return;
+        var value = row[columnModel.Id.ToString()].ToString();
+
+        bool cancel = false;
         foreach (var rule in columnModel.ValidationRules)
         {
-            if (!rule.Validate(value))
+            bool isValid = false;
+            if (rule is DuplicateNameRule duplicateRule)
             {
-                e.Cancel = true;
+                duplicateRule.CurrentNameToSplit = columnModel.Values[rowIndex].ToString();
+                isValid = duplicateRule.Validate(value);
+            }
+            else
+                isValid = rule.Validate(value);
+
+            if (value != columnModel.Values[rowIndex].ToString() && !isValid)
+            {
                 var cell = e.EditingElement as TextBox;
 
                 var popup = new Popup
@@ -263,27 +297,28 @@ public partial class TableControl : UserControl
                         CornerRadius = new CornerRadius(2),
                         Padding = new Thickness(8),
                         Child = new TextBlock { Text = rule.ErrorMessage }
-                    }
+                    },
                 };
 
                 popup.IsOpen = true;
+                cancel = true;
             }
         }
 
-        if (!e.Cancel)
-        {
-            if (columnModel.ValueType == typeof(double))
-                columnModel.Values[rowIndex] = DoubleExtensions.GetDoubleValueFromText(value);
-            else
-                columnModel.Values[rowIndex] = value;
-        }
+        e.Cancel = cancel;
     }
 
     private void DataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        var rowIndex = dataGrid.SelectedIndex;
-        SelectionChanged?.Invoke(this,
-            new TableSelectionChangedEventArgs(10, 0, e.AddedItems.Count > 0 ? e.AddedItems[0] : null));
+        var trueRowIndex = GetTrueRowIndex((Dictionary<string, object>)dataGrid.SelectedItem);
+        var value = e.AddedItems.Count > 0 ? e.AddedItems[0] : null;
+        var args = new TableSelectionChangedEventArgs(trueRowIndex, dataGrid.SelectedIndex, -1, value);
+        SelectionChanged?.Invoke(this, args);
+    }
+
+    private int GetTrueRowIndex(Dictionary<string, object> row)
+    {
+        return dataGrid.ItemsSource.Cast<object>().ToList().IndexOf(row);
     }
 
     private void GridColumn_HeaderPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -329,5 +364,21 @@ public partial class TableControl : UserControl
         var rows = _rows.Select(x => x.Values).ToList();
         var rowIndex = rows.FindIndex(x => x.ToList()[columnIndex].ToString().Contains(cellString));
         SelectRow(rowIndex);
+    }
+
+    public void AddRowToBottom()
+    {
+        _tableModel.Columns.ForEach(x => x.Values.Add(string.Empty));
+        PopulateTable(_tableModel);
+        SelectRow(_tableModel.GetMaxRowCount() - 1);
+    }
+
+    public void DeleteSelectedRow()
+    {
+        var rowIndex = GetTrueRowIndex((Dictionary<string, object>)dataGrid.SelectedItem);
+        if (rowIndex < 0) return;
+        _tableModel.Columns.ForEach(x => x.Values.RemoveAt(rowIndex));
+        PopulateTable(_tableModel);
+        SelectRow(Math.Max(rowIndex - 1, 0));
     }
 }
