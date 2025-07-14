@@ -14,6 +14,8 @@ using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.UI.Views.Helpers;
 using Xeovis.Domain.Definitions.Experiment;
 using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Defaults;
+using Xeovis.Domain.Definitions.Globals;
 
 namespace Xeovis.UI.Views
 {
@@ -31,11 +33,23 @@ namespace Xeovis.UI.Views
         public MainWindow()
         {
             InitializeComponent();
+            InitializeDefaultValues();
             Loaded += MainWindow_Loaded;
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             PhaseNameList.PhaseNameListChanged += PhaseNameList_PhaseNameListChanged;
 
             PrepareUI();
+        }
+
+        private void InitializeDefaultValues()
+        {
+            DefaultPhaseNames.Initialize();
+            PhaseNameList.Initialize();
+            PhaseOxideList.Initialize();
+
+            DefaultXeosVariableNames.Initialize();
+            xeosVariableNameList.Initialize();
+            xeosVariableCationList.Initialize();
         }
 
         private void PhaseNameList_PhaseNameListChanged(object? sender, Domain.Definitions.Globals.PhaseNameListChangedEventArgs e)

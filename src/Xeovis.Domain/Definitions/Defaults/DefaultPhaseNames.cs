@@ -4,9 +4,11 @@ namespace Xeovis.Domain.Definitions
 {
     public static class DefaultPhaseNames
     {
-        public static List<PhaseNameSet> GetDefaultPhaseNames()
+        private static List<PhaseNameSet> _defaultPhaseNames {  get; set; }
+
+        public static void Initialize()
         {
-            var list = new List<PhaseNameSet>()
+            _defaultPhaseNames = new List<PhaseNameSet>()
             {
                 // Amphiboles
                 new("amphibole", "amph", ["amp"]),
@@ -105,8 +107,11 @@ namespace Xeovis.Domain.Definitions
                 new("opaque", "opaque", ["op"]),
 
             };
+        }
 
-            return list;
+        public static List<PhaseNameSet> GetDefaultPhaseNames()
+        {
+            return _defaultPhaseNames;
         }
     }
 }

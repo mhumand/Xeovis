@@ -7,6 +7,7 @@ using Xeovis.UI.Models.Enums;
 using System.Drawing;
 using Xeovis.Presentation;
 using Xeovis.Domain.Definitions.Experiment;
+using Xeovis.Domain.Definitions.Globals;
 
 namespace Xeovis.UI.ViewModels
 {
@@ -109,17 +110,19 @@ namespace Xeovis.UI.ViewModels
                         phases.RemoveAll(x => x == null);
 
                         var phaseAllCations = new List<CationType>();
-                        phases.ForEach(x => phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(x.KeyName)));
+                        phases.ForEach(x => phaseAllCations.AddRange(PhaseOxideList.GetPhaseCations(x.Id)));
 
                         var phaseCations = phaseAllCations.Distinct().ToList();
-                        var xeosVarCations = DefaultModelDefinitions.GetCationsFromModelVariable(sampleVarInGroup.PhaseKeyName, sampleVarInGroup.VariableType);
+                        var res = xeosVariableCationList.CationList.TryGetValue(sampleVarInGroup.NameId, out List<CationType>? sampleVarCations);
+                        if (!res || sampleVarCations == null) continue;
                         if (!sampleVarInGroup.IsEqualTo(xVar) && axesSettings.XAxisType == mctcPlotAxisType.Observed)
                         {
-                            xeosVarCations = xeosVarCations.Union(DefaultModelDefinitions.GetCationsFromModelVariable(xVar.PhaseKeyName, xVar.VariableType)).Distinct().ToList();
+                            if (xeosVariableCationList.CationList.TryGetValue(xVar.NameId, out List<CationType>? xVarCations) && xVarCations != null)
+                                sampleVarCations = sampleVarCations.Union(xVarCations).Distinct().ToList();
                         }
 
-                        if (phaseCations.Count != 0 && xeosVarCations.Count != 0)
-                            if (!phaseCations.Any(c => xeosVarCations.Contains(c))) continue;
+                        if (phaseCations.Count != 0 && sampleVarCations.Count != 0)
+                            if (!phaseCations.Any(c => sampleVarCations.Contains(c))) continue;
 
                         selectedGroups.Add(xeosVarGroup);
                     }
@@ -138,17 +141,19 @@ namespace Xeovis.UI.ViewModels
                             phases.RemoveAll(x => x == null);
 
                             var phaseAllCations = new List<CationType>();
-                            phases.ForEach(x => phaseAllCations.AddRange(DefaultPhaseCompositions.GetCationsFromPhaseComposition(x.KeyName)));
+                            phases.ForEach(x => phaseAllCations.AddRange(PhaseOxideList.GetPhaseCations(x.Id)));
 
                             var phaseCations = phaseAllCations.Distinct().ToList();
-                            var xeosVarCations = DefaultModelDefinitions.GetCationsFromModelVariable(modelVar.PhaseKeyName, modelVar.VariableType);
+                            var res = xeosVariableCationList.CationList.TryGetValue(modelVar.NameId, out List<CationType>? modelVarCations);
+                            if (!res || modelVarCations == null) continue;
                             if (!modelVar.IsEqualTo(xVar) && axesSettings.XAxisType == mctcPlotAxisType.Observed)
                             {
-                                xeosVarCations = xeosVarCations.Union(DefaultModelDefinitions.GetCationsFromModelVariable(xVar.PhaseKeyName, xVar.VariableType)).Distinct().ToList();
+                                if (xeosVariableCationList.CationList.TryGetValue(xVar.NameId, out List<CationType>? xVarCations) && xVarCations != null)
+                                    modelVarCations = modelVarCations.Union(xVarCations).Distinct().ToList();
                             }
 
-                            if (phaseCations.Count != 0 && xeosVarCations.Count != 0)
-                                if (!phaseCations.Any(c => xeosVarCations.Contains(c)))
+                            if (phaseCations.Count != 0 && modelVarCations.Count != 0)
+                                if (!phaseCations.Any(c => modelVarCations.Contains(c)))
                                     excludedVariables.Add(modelVar);
                         }
 

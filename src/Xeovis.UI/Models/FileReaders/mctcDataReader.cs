@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Xeovis.Base;
 using Xeovis.Domain;
 using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Globals;
 
 namespace Xeovis.UI.Models.FileReaders
 {
@@ -148,7 +149,7 @@ namespace Xeovis.UI.Models.FileReaders
 
                 var xeosVariable = new xeosVariable();
                 xeosVariable.PhaseNameId = PhaseNameList.GetNameSetIdByString(varData[1]);
-                xeosVariable.VariableType = EnumExtensions.GetValueFromDescription<ModelVariableType>(varData[0]);
+                xeosVariable.NameId = xeosVariableNameList.GetXeosVariableNameId(varData[0], xeosVariable.PhaseNameId);
 
                 int.TryParse(varData[2].TrimStart(new char[] { 'b' }), out int batchIndex);
                 var batch = _batches.FirstOrDefault(b => b.Index == batchIndex);
@@ -242,7 +243,7 @@ namespace Xeovis.UI.Models.FileReaders
                         var varPhase = PhaseNameList.GetNameSetByString(modVarNameLines[j]);
                         if (varPhase == null) continue;
                         var modelVariable = batch.xeosVariables.FirstOrDefault(v =>
-                            v.VariableType.ToString() == varName && v.PhaseKeyName == varPhase.KeyName);
+                            v.VariableName.Name == varName && v.PhaseKeyName == varPhase.KeyName);
                         if (modelVariable == null) continue;
                         modelVariable.CalcVals.Add(k,
                             DoubleExtensions.GetDoubleValueFromText(modVarValueLines[2 + (j + 1) / 2]));

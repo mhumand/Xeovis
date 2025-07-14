@@ -1,11 +1,13 @@
 ﻿using Xeovis.Domain.Definitions;
 using Xeovis.Domain.Definitions.Experiment;
+using Xeovis.Domain.Definitions.Globals;
+using Xeovis.Domain.Definitions.MCTC;
 
 namespace Xeovis.Domain
 {
     public class xeosVariable
     {
-        public string Name => $"{VariableType}({PhaseKeyName})";
+        public string Name => $"{VariableName}({PhaseKeyName})";
         public double ObsVal { get; set; }
         public Guid Id { get; set; }
         public Dictionary<int, double> CalcVals { get; set; } // int being the index of the results group
@@ -14,9 +16,9 @@ namespace Xeovis.Domain
         public Guid PhaseNameId { get; set; }
         public PhaseNameSet PhaseNameSet => PhaseNameList.GetNameSetById(PhaseNameId);
         public string PhaseKeyName => PhaseNameSet?.KeyName;
-        public ModelVariableType VariableType { get; set; }
+        public Guid NameId { get; set; }
+        public xeosVariableName VariableName => xeosVariableNameList.GetXeosVariableNameById(NameId);
         public double DefaultValue { get; set; }
-        public bool IsOrderVariable => VariableType.IsOrderVariable();
 
         public xeosVariable()
         {
@@ -26,7 +28,7 @@ namespace Xeovis.Domain
 
         public bool IsEqualTo(xeosVariable otherVariable)
         {
-            return PhaseKeyName == otherVariable.PhaseKeyName && VariableType == otherVariable.VariableType;
+            return PhaseKeyName == otherVariable.PhaseKeyName && VariableName.Name == otherVariable.VariableName.Name;
         }
 
         public override string ToString()

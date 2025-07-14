@@ -135,6 +135,23 @@
 					<Image Source=""/>
 				</MenuItem.Icon>
 			</MenuItem>
+
+			<MenuItem x:Name="btnSettingsXeosVariables"
+					  Header="x-eos Variables">
+				
+			</MenuItem>
+
+			<Separator />
+
+			<MenuItem x:Name="btnSettingsPhaseCompositions"
+					  Header="Phase Compositions">
+				
+			</MenuItem>
+
+			<MenuItem x:Name="btnSettingsVariableCations"
+					  Header="Variable Cations">
+				
+			</MenuItem>
 		</MenuItem>
 			
 		<MenuItem Header="View">

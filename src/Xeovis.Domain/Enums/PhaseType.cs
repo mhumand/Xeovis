@@ -2,6 +2,7 @@
 
 namespace Xeovis.Domain
 {
+    [Obsolete]
     public enum PhaseType
     {
         NULL,
@@ -63,6 +64,7 @@ namespace Xeovis.Domain
         [Description("pigeonite")] pig,
     }
 
+    [Obsolete]
     public static class PhaseTypeExtensions
     {
         public static PhaseType GetPhaseTypeByName(string name)
