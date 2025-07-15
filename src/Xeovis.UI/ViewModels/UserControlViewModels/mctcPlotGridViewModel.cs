@@ -30,7 +30,7 @@ namespace Xeovis.UI.ViewModels
         public ChartModel CreateChartModel(mctcPlotAxesSettings axesSettings)
         {
             var groupedVars = mctcPlotViewModelUtilities.GetGroupedFilteredXeosVariables(mctcBundle, axesSettings, PhaseFilters, mctcPlotDto);
-            if (groupedVars == null || groupedVars.Count > 0) return null;
+            if (groupedVars == null || groupedVars.Count == 0) return null;
             var chartModel = mctcPlotViewModelUtilities.CreateChartModel(mctcBundle, mctcPlotDto, groupedVars, axesSettings, mctcRunIndex, _inUseMarkers, _inUseColors);
             if (chartModel == null) return null;
             foreach (var curve in chartModel.Curves)

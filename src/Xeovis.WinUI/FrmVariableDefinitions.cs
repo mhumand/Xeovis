@@ -1,5 +1,6 @@
 ﻿using Xeovis.Base;
 using Xeovis.Domain;
+using Xeovis.Domain.Definitions.Globals;
 using Xeovis.Persistence.Old;
 
 namespace Xeovis.WinUI
@@ -124,8 +125,8 @@ namespace Xeovis.WinUI
                     varParts.RemoveAll(l => string.IsNullOrWhiteSpace(l));
 
                     var variable = new xeosVariable();
-                    variable.VariableType = EnumExtensions.GetValueFromDescription<ModelVariableType>(varParts[0]);
                     variable.PhaseNameId = xeos.PhaseNameId;
+                    variable.NameId = xeosVariableNameList.GetXeosVariableNameId(varParts[0], variable.PhaseNameId);
                     variable.DefaultValue = DoubleExtensions.GetDoubleValueFromText(varParts[2]);
                     xeos.Variables.Add(variable);
                 }
@@ -177,14 +178,14 @@ namespace Xeovis.WinUI
 
             if (!(cmbxPhase.SelectedItem is XEOS xeos)) return;
             lblPhaseFullName.Text = xeos.PhaseNameSet.FullName;
-            var composition = DefaultPhaseCompositions.GetOxidesFromPhaseComposition(xeos.PhaseNameSet.KeyName);
+            var composition = DefaultPhaseOxides.GetPhaseOxides(xeos.PhaseNameSet.KeyName);
             if (composition == null) return;
             for (int i = 0; i < cklbxOxides.Items.Count; i++)
                 if (composition.Contains((OxideType)cklbxOxides.Items[i]))
                     cklbxOxides.SetItemCheckState(i, CheckState.Checked);
 
-            foreach (var item in xeos.Variables.Where(v => !v.IsOrderVariable))
-                cmbxModelVariable.Items.Add(item);
+            //foreach (var item in xeos.Variables.Where(v => !v.IsOrderVariable))
+                //cmbxModelVariable.Items.Add(item);
 
             cmbxModelVariable.SelectedIndex = 0;
 
@@ -245,8 +246,8 @@ namespace Xeovis.WinUI
                 cklbxCations.SetItemCheckState(i, CheckState.Unchecked);
 
             if (!(cmbxModelVariable.SelectedItem is xeosVariable modelVariable)) return;
-            var cations = DefaultModelDefinitions.GetCationsFromModelVariable(modelVariable.PhaseKeyName, modelVariable.VariableType);
-            if (cations == null) return;
+            var res = xeosVariableCationList.CationList.TryGetValue(modelVariable.Id, out var cations);
+            if (!res || cations == null) return;
             for (int i = 0; i < cklbxCations.Items.Count; i++)
                 if (cations.Contains((CationType)cklbxCations.Items[i]))
                     cklbxCations.SetItemCheckState(i, CheckState.Checked);

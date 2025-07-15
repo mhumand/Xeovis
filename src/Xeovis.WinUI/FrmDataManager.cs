@@ -1,12 +1,13 @@
 ﻿using ExcelDataReader;
 using System.Data;
 using System.Diagnostics;
-using Xeovis.Domain;
-using Xeovis.WinControls;
 using Xeovis.Base;
-using Xeovis.Domain.Definitions.Experiment;
-using Xeovis.Persistence;
+using Xeovis.Domain;
 using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Defaults;
+using Xeovis.Domain.Definitions.Experiment;
+using Xeovis.Domain.Definitions.Globals;
+using Xeovis.WinControls;
 
 namespace Xeovis.WinUI
 {
@@ -18,8 +19,20 @@ namespace Xeovis.WinUI
         public FrmDataManager()
         {
             InitializeComponent();
+            InitializeDefaultValues();
             _Experiments = new List<Experiment>();
             SetUpUI();
+        }
+
+        private void InitializeDefaultValues()
+        {
+            DefaultPhaseNames.Initialize();
+            PhaseNameList.Initialize();
+            PhaseOxideList.Initialize();
+
+            DefaultXeosVariableNames.Initialize();
+            xeosVariableNameList.Initialize();
+            xeosVariableCationList.Initialize();
         }
 
         private void SetUpUI()

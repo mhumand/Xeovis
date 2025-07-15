@@ -3,9 +3,23 @@ using Xeovis.Domain.Definitions.Experiment;
 
 namespace Xeovis.Domain
 {
-    public static class DefaultPhaseCompositions
+    public static class DefaultPhaseOxides
     {
-        public static List<OxideType> GetOxidesFromPhaseComposition(string phaseName)
+        public static Dictionary<Guid, List<OxideType>> GetDefaultPhaseOxides()
+        {
+            var phaseOxides = new Dictionary<Guid, List<OxideType>>();
+            var phaseNames = PhaseNameList.PhaseNames;
+            foreach (var phaseName in phaseNames)
+            {
+                var oxides = GetPhaseOxides(phaseName.FullName);
+                if (oxides == null || oxides.Count == 0) continue;
+                phaseOxides.Add(phaseName.Id, oxides);
+            }
+
+            return phaseOxides;
+        }
+
+        public static List<OxideType> GetPhaseOxides(string phaseName)
         {
             var nullSet = new PhaseNameSet();
             // pure phases
@@ -81,17 +95,6 @@ namespace Xeovis.Domain
                     };
 
             return null;
-        }
-
-        public static List<CationType> GetCationsFromPhaseComposition(string phaseType)
-        {
-            var oxides = GetOxidesFromPhaseComposition(phaseType);
-            var cations = new List<CationType>();
-            if (oxides == null) return cations;
-            foreach (var oxide in oxides)
-                cations.Add(oxide.GetCationType());
-
-            return cations;
         }
     }
 }

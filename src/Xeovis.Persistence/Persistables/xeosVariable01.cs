@@ -10,7 +10,7 @@ public class xeosVariable01
     public Guid BatchId { get; set; }
     public Guid mctcBundleId { get; set; }
     public Guid PhaseNameId { get; set; }
-    public ModelVariableType VariableType { get; set; }
+    public Guid NameId { get; set; }
     public double DefaultValue { get; set; }
 
     public xeosVariable01()
@@ -26,7 +26,7 @@ public class xeosVariable01
         BatchId = realObject.BatchId;
         mctcBundleId = realObject.mctcBundleId;
         PhaseNameId = realObject.PhaseNameId;
-        VariableType = realObject.VariableType;
+        NameId = realObject.NameId;
         DefaultValue = realObject.DefaultValue;
     }
 
@@ -40,7 +40,7 @@ public class xeosVariable01
             BatchId = BatchId,
             mctcBundleId = mctcBundleId,
             PhaseNameId = PhaseNameId,
-            VariableType = VariableType,
+            NameId = NameId,
             DefaultValue = DefaultValue
         };
     }

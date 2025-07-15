@@ -14,6 +14,8 @@ using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.UI.Views.Helpers;
 using Xeovis.Domain.Definitions.Experiment;
 using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Defaults;
+using Xeovis.Domain.Definitions.Globals;
 
 namespace Xeovis.UI.Views
 {
@@ -31,17 +33,42 @@ namespace Xeovis.UI.Views
         public MainWindow()
         {
             InitializeComponent();
+            InitializeDefaultValues();
             Loaded += MainWindow_Loaded;
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             PhaseNameList.PhaseNameListChanged += PhaseNameList_PhaseNameListChanged;
+            xeosVariableNameList.xeosVariableNameListChanged += XeosVariableNameList_xeosVariableNameListChanged;
 
             PrepareUI();
+        }
+
+
+
+        private void InitializeDefaultValues()
+        {
+            DefaultPhaseNames.Initialize();
+            PhaseNameList.Initialize();
+            PhaseOxideList.Initialize();
+
+            DefaultXeosVariableNames.Initialize();
+            xeosVariableNameList.Initialize();
+            xeosVariableCationList.Initialize();
+        }
+
+        private void XeosVariableNameList_xeosVariableNameListChanged(object? sender, xeosVariableNameListChangedEventArgs e)
+        {
+            _viewModel.ProjectSettings.PhaseXeosVariables = e.xeosVariableNameList;
+            RefreshAllTabControls();
         }
 
         private void PhaseNameList_PhaseNameListChanged(object? sender, Domain.Definitions.Globals.PhaseNameListChangedEventArgs e)
         {
             _viewModel.ProjectSettings.AllowedPhaseNames = e.NameSets;
+            RefreshAllTabControls();
+        }
 
+        private void RefreshAllTabControls()
+        {
             foreach (var tab in _viewModel.TabControls)
             {
                 if (tab == null) continue;
