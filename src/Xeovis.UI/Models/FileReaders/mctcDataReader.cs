@@ -242,7 +242,7 @@ namespace Xeovis.UI.Models.FileReaders
                         j++;
                         var varPhase = PhaseNameList.GetNameSetByString(modVarNameLines[j]);
                         if (varPhase == null) continue;
-                        var modelVariable = batch.xeosVariables.FirstOrDefault(v =>
+                        var modelVariable = batch.xeosVariables.FirstOrDefault(v => v.VariableName != null &&
                             v.VariableName.Name == varName && v.PhaseKeyName == varPhase.KeyName);
                         if (modelVariable == null) continue;
                         modelVariable.CalcVals.Add(k,

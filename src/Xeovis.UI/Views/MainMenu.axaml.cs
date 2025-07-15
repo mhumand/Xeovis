@@ -351,6 +351,13 @@ public partial class MainMenu : UserControl
         var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
     }
 
+    public async void Settings_XeosVariables()
+    {
+        var vm = new SettingsXeosVariablesViewModel();
+        var dialog = new SettingsXeosVariablesDialog() { ViewModel = vm };
+        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
+    }
+
     // View
     public void View_ShowLeftPanel()
     {

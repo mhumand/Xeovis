@@ -137,7 +137,8 @@
 			</MenuItem>
 
 			<MenuItem x:Name="btnSettingsXeosVariables"
-					  Header="x-eos Variables">
+					  Header="x-eos Variables"
+					  Command="{Binding Settings_XeosVariables}">
 				
 			</MenuItem>
 

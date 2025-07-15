@@ -35,7 +35,7 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
             keyNameCol.ValidationRules.Add(new NotEmptyOrWhitespaceRule());
 
             var allOtherNames = phaseNames.SelectMany(x => x.OtherNames).ToList();
-            var otherNamesCol = new ColumnModel("Other Names (comma-separated)", phaseNames.Select(x => string.Join(", ", x.OtherNames.ToArray())).ToList());
+            var otherNamesCol = new ColumnModel("Other Names (comma-delimited)", phaseNames.Select(x => string.Join(", ", x.OtherNames.ToArray())).ToList());
 
             var allNames = allFullNames.Union(allKeyNames).Union(allOtherNames).ToList();
             var duplicateRule = new DuplicateNameRule(allNames, true);

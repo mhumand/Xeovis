@@ -28,6 +28,10 @@ namespace Xeovis.Domain
 
         public bool IsEqualTo(xeosVariable otherVariable)
         {
+            if (otherVariable == null) return false;
+            if (otherVariable.VariableName == null) return false;
+            if (VariableName == null) return false;
+
             return PhaseKeyName == otherVariable.PhaseKeyName && VariableName.Name == otherVariable.VariableName.Name;
         }
 

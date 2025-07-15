@@ -12,7 +12,7 @@
 		xmlns:vmc="using:Xeovis.UI.ViewModels"
 		x:DataType="vm:SettingsPhaseNamesViewModel"
         x:Class="Xeovis.UI.SettingsPhaseNamesDialog"
-        Title="Settings - Phase Names">
+        Title="Settings | Phase Names">
 
 	<Window.Styles>
 		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
@@ -33,7 +33,7 @@
 					   Foreground="#cc0000"
 					   FontSize="16"
 					   FontWeight="SemiBold"
-					   Text="For best performance, set your phases before reading any data." />
+					   Text="For best performance, set phase names before reading any data." />
 		</Border>
 		
 		<StackPanel Grid.Row="1"
