@@ -38,11 +38,11 @@ namespace Xeovis.UI.Views
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             PhaseNameList.PhaseNameListChanged += PhaseNameList_PhaseNameListChanged;
             xeosVariableNameList.xeosVariableNameListChanged += XeosVariableNameList_xeosVariableNameListChanged;
+            PhaseOxideList.PhaseOxideListChanged += PhaseOxideList_PhaseOxideListChanged;
+            xeosVariableCationList.xeosVariableCationListChanged += XeosVariableCationList_xeosVariableCationListChanged;
 
             PrepareUI();
         }
-
-
 
         private void InitializeDefaultValues()
         {
@@ -64,6 +64,18 @@ namespace Xeovis.UI.Views
         private void PhaseNameList_PhaseNameListChanged(object? sender, Domain.Definitions.Globals.PhaseNameListChangedEventArgs e)
         {
             _viewModel.ProjectSettings.AllowedPhaseNames = e.NameSets;
+            RefreshAllTabControls();
+        }
+
+        private void PhaseOxideList_PhaseOxideListChanged(object? sender, PhaseOxideListChangedEventArgs e)
+        {
+            _viewModel.ProjectSettings.PhaseOxides = e.PhaseOxideList;
+            RefreshAllTabControls();
+        }
+
+        private void XeosVariableCationList_xeosVariableCationListChanged(object? sender, xeosVariableCationListChangedEventArgs e)
+        {
+            _viewModel.ProjectSettings.xeosVariableCations = e.CationList;
             RefreshAllTabControls();
         }
 
@@ -113,13 +125,17 @@ namespace Xeovis.UI.Views
 
             if (e.Project == null)
             {
-                PhaseNameList.Refresh();
+                InitializeDefaultValues();
                 this.Title = "Xeovis";
                 return;
             };
 
-            _viewModel.ProjectSettings = e.Project.ProjectSettings;
-            PhaseNameList.SetPhaseNames(e.Project.ProjectSettings.AllowedPhaseNames, false);
+            var settings = e.Project.ProjectSettings;
+            _viewModel.ProjectSettings = settings;
+            PhaseNameList.SetPhaseNames(settings.AllowedPhaseNames, false);
+            xeosVariableNameList.SetXeosVariableNames(settings.PhaseXeosVariables, false);
+            PhaseOxideList.SetPhaseOxides(settings.PhaseOxides, false);
+            xeosVariableCationList.SetXeosVariableCations(settings.xeosVariableCations, false);
 
             this.Title = string.IsNullOrWhiteSpace(e.Project.ProjectName) ? "Xeovis" : $"Xeovis - {e.Project.ProjectName}";
             OnExperimentsLoaded(e.Project.Experiments);

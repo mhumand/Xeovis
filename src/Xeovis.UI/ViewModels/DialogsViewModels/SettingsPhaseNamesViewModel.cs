@@ -43,7 +43,7 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
             keyNameCol.ValidationRules.Add(duplicateRule);
             otherNamesCol.ValidationRules.Add(new DuplicateNameRule(allNames, true, true, ","));
 
-            var tableModel = new TableModel("Phase Names", new List<ColumnModel>()
+            var tableModel = new TableModel("", new List<ColumnModel>()
             {
                 idCol, fullNameCol, keyNameCol, otherNamesCol
             });

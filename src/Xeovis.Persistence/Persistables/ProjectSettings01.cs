@@ -1,4 +1,5 @@
-﻿using Xeovis.Persistence.Persistables;
+﻿using Xeovis.Domain;
+using Xeovis.Persistence.Persistables;
 
 namespace Xeovis.Persistence
 {
@@ -6,6 +7,8 @@ namespace Xeovis.Persistence
     {
         public List<PhaseNameSet01> AllowedPhaseNames { get; set; }
         public Dictionary<Guid, List<xeosVariableName01>> PhaseXeosVariables { get; set; }
+        public Dictionary<Guid, List<OxideType>> PhaseOxides { get; set; }
+        public Dictionary<Guid, List<CationType>> xeosVariableCations { get; set; }
 
         public ProjectSettings01()
         {
@@ -15,6 +18,8 @@ namespace Xeovis.Persistence
         {
             AllowedPhaseNames = realObject.AllowedPhaseNames.Select(x => new PhaseNameSet01(x)).ToList();
             PhaseXeosVariables = realObject.PhaseXeosVariables.ToDictionary(o => o.Key, o => o.Value.Select(x => new xeosVariableName01(x)).ToList());
+            PhaseOxides = realObject.PhaseOxides.ToDictionary(o => o.Key, o => o.Value.Select(x => x).ToList());
+            xeosVariableCations = realObject.xeosVariableCations.ToDictionary(o => o.Key, o => o.Value.Select(x => x).ToList());
         }
 
         public ProjectSettings ConvertToRealObject()
@@ -22,7 +27,9 @@ namespace Xeovis.Persistence
             return new ProjectSettings()
             {
                 AllowedPhaseNames = AllowedPhaseNames.Select(x => x.ConvertToRealObject()).ToList(),
-                PhaseXeosVariables = PhaseXeosVariables.ToDictionary(o => o.Key, o => o.Value.Select(x => x.ConvertToRealObject()).ToList())
+                PhaseXeosVariables = PhaseXeosVariables.ToDictionary(o => o.Key, o => o.Value.Select(x => x.ConvertToRealObject()).ToList()),
+                PhaseOxides = PhaseOxides.ToDictionary(o => o.Key, o => o.Value.Select(x => x).ToList()),
+                xeosVariableCations = xeosVariableCations.ToDictionary(o => o.Key, o => o.Value.Select(x => x).ToList())
             };
         }
     }

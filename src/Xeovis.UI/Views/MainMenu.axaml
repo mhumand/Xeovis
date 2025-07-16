@@ -145,12 +145,14 @@
 			<Separator />
 
 			<MenuItem x:Name="btnSettingsPhaseCompositions"
-					  Header="Phase Compositions">
+					  Header="Phase Compositions"
+					  Command="{Binding Settings_PhaseCompositions}">
 				
 			</MenuItem>
 
 			<MenuItem x:Name="btnSettingsVariableCations"
-					  Header="Variable Cations">
+					  Header="Variable Cations"
+					  Command="{Binding Settings_VariableCations}">
 				
 			</MenuItem>
 		</MenuItem>

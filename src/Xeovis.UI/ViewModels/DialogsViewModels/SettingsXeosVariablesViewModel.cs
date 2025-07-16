@@ -14,7 +14,7 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
         public TableModel GetProjectValuesTableModel()
         {
             var phases = PhaseNameList.PhaseNames.OrderBy(x => x.FullName).ToList();
-            return GetTableModel(phases, xeosVariableNameList.xeosVariableNames);
+            return GetTableModel(phases, xeosVariableNameList.VariableNames);
         }
 
         public TableModel GetXeovisDefaultsTableModel()
@@ -38,7 +38,7 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
             var xeosVarNamesCol = new ColumnModel("x-eos Variables (comma-delimited)",
                 phaseNames.Select(x => string.Join(", ", GetXeosVarNames(list, x.Id).Select(x => x.Name).ToArray())).ToList());
 
-            var tableModel = new TableModel("Phase Names", new List<ColumnModel>()
+            var tableModel = new TableModel("", new List<ColumnModel>()
             {
                 idCol, fullNameCol, keyNameCol, xeosVarNamesCol
             });
@@ -66,7 +66,7 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
                 var xeosVarNames = varNamesCol.Values[i].ToString().Split(",", StringSplitOptions.TrimEntries).Distinct().ToList();
                 xeosVarNames.RemoveAll(x => string.IsNullOrWhiteSpace(x));
                 if (xeosVarNames.Count == 0) continue;
-                var resVars = xeosVariableNameList.xeosVariableNames.TryGetValue(phaseId, out List<xeosVariableName>? currentVars);
+                var resVars = xeosVariableNameList.VariableNames.TryGetValue(phaseId, out List<xeosVariableName>? currentVars);
                 if (!resVars || currentVars == null) currentVars = new();
                 var overlap = currentVars.Where(x => xeosVarNames.Contains(x.Name));
                 var newXeosVars = xeosVarNames.Where(x => !currentVars.Select(v => v.Name).Contains(x)).Select(x => new xeosVariableName(x, phaseId));

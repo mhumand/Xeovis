@@ -6,8 +6,8 @@ namespace Xeovis.Domain.Definitions.Globals
 {
     public static class xeosVariableNameList
     {
-        private static Dictionary<Guid, List<xeosVariableName>> _xeosVariableNames { get; set; } = new();
-        public static Dictionary<Guid, List<xeosVariableName>> xeosVariableNames => _xeosVariableNames;
+        private static Dictionary<Guid, List<xeosVariableName>> _variableNames { get; set; } = new();
+        public static Dictionary<Guid, List<xeosVariableName>> VariableNames => _variableNames;
 
         private static Dictionary<Guid, List<xeosVariableName>> _xeovisDefaults { get; set; } = new();
         public static Dictionary<Guid, List<xeosVariableName>> XeovisDefaults => _xeovisDefaults;
@@ -16,8 +16,8 @@ namespace Xeovis.Domain.Definitions.Globals
 
         public static void Initialize()
         {
-            _xeosVariableNames = DefaultXeosVariableNames.GetDefaultXeosVariableNames();
-            _xeosVariableNames.ToList().ForEach(x => _xeovisDefaults.Add(x.Key, x.Value.Select(x => x.Copy(true)).ToList()));
+            _variableNames = DefaultXeosVariableNames.GetDefaultXeosVariableNames();
+            _variableNames.ToList().ForEach(x => _xeovisDefaults.Add(x.Key, x.Value.Select(x => x.Copy(true)).ToList()));
         }
 
         public static void SetXeosVariableNames(Dictionary<Guid, List<xeosVariableName>> xeosVariableNames, bool invokeEvent)
@@ -25,15 +25,19 @@ namespace Xeovis.Domain.Definitions.Globals
             if (xeosVariableNames == null || xeosVariableNames.Count == 0)
                 xeosVariableNames = _xeovisDefaults;
 
-            _xeosVariableNames.Clear();
-            _xeosVariableNames = xeosVariableNames;
+            _variableNames.Clear();
+            _variableNames = xeosVariableNames;
             if (invokeEvent)
+            {
+                var xeosVarIds = xeosVariableNames.SelectMany(x => x.Value.Select(v => v.Id));
+                xeosVariableCationList.SetXeosVariableCations(xeosVariableCationList.CationList.Where(x => xeosVarIds.Contains(x.Key)).ToDictionary(), false);
                 xeosVariableNameListChanged?.Invoke(null, new xeosVariableNameListChangedEventArgs(xeosVariableNames));
+            }
         }
 
         public static Guid GetPhaseNameSetIdByVariableId(Guid variableId)
         {
-            return _xeosVariableNames.FirstOrDefault(x => x.Value.Any(v => v.PhaseId == variableId)).Key;
+            return _variableNames.FirstOrDefault(x => x.Value.Any(v => v.Id == variableId)).Key;
         }
 
         public static PhaseNameSet GetPhaseNameSetByVariableId(Guid variableId)
@@ -42,21 +46,21 @@ namespace Xeovis.Domain.Definitions.Globals
             return PhaseNameList.GetNameSetById(nameId);
         }
 
-        public static xeosVariableName GetXeosVariableNameById(Guid id, xeosVariableName defaultValue = null)
+        public static xeosVariableName GetVariableNameById(Guid id, xeosVariableName defaultValue = null)
         {
-            return _xeosVariableNames.SelectMany(x => x.Value).FirstOrDefault(v => v.Id == id, defaultValue);
+            return _variableNames.SelectMany(x => x.Value).FirstOrDefault(v => v.Id == id, defaultValue);
         }
 
-        public static xeosVariableName GetXeosVariableName(string name, Guid phaseId, xeosVariableName defaultValue = null)
+        public static xeosVariableName GetVariableName(string name, Guid phaseId, xeosVariableName defaultValue = null)
         {
             if (string.IsNullOrWhiteSpace(name)) return null;
-            var res = _xeosVariableNames.TryGetValue(phaseId, out List<xeosVariableName> xeosVariableNames);
+            var res = _variableNames.TryGetValue(phaseId, out List<xeosVariableName> xeosVariableNames);
             return res ? xeosVariableNames.FirstOrDefault(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase), defaultValue) : defaultValue;
         }
 
-        public static Guid GetXeosVariableNameId(string name, Guid phaseId)
+        public static Guid GetVariableNameId(string name, Guid phaseId)
         {
-            var xeosVarName = GetXeosVariableName(name, phaseId);
+            var xeosVarName = GetVariableName(name, phaseId);
             return xeosVarName != null ? xeosVarName.Id : Guid.Empty;
         }
     }
