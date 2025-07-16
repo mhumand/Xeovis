@@ -227,6 +227,7 @@ public partial class TableControl : UserControl
     {
         if (e.Column.Tag is not ColumnModel columnModel) return;
         if (sender is not DataGrid dataGrid) return;
+        if (dataGrid.SelectedItem == null) return;
 
         var rowIndex = GetTrueRowIndex((Dictionary<string, object>)dataGrid.SelectedItem);
         if (e.Row.DataContext is not Dictionary<string, object> row) return;
@@ -246,6 +247,10 @@ public partial class TableControl : UserControl
         {
             if (columnModel.ValueType == typeof(double))
                 columnModel.Values[rowIndex] = DoubleExtensions.GetDoubleValueFromText(value);
+            else if (columnModel.ValueType == typeof(bool))
+                columnModel.Values[rowIndex] = bool.Parse(value);
+            else if (columnModel.ValueType == typeof(int))
+                columnModel.Values[rowIndex] = int.Parse(value);
             else
                 columnModel.Values[rowIndex] = value;
 
@@ -327,7 +332,9 @@ public partial class TableControl : UserControl
         var point = e.GetCurrentPoint(dataGrid);
         dataGrid.SelectedIndex = -1;
         if (!point.Properties.IsRightButtonPressed) return;
+        if (gridColumn.Tag is not ColumnModel columnModel) return;
 
+        if (!columnModel.CanSort) return;
         var menu = new ContextMenu();
         var sortItem = new MenuItem() { Header = "Sort" };
         sortItem.Click += (s, e) => gridColumn.Sort();
