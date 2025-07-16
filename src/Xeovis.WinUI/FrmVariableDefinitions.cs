@@ -126,7 +126,7 @@ namespace Xeovis.WinUI
 
                     var variable = new xeosVariable();
                     variable.PhaseNameId = xeos.PhaseNameId;
-                    variable.NameId = xeosVariableNameList.GetXeosVariableNameId(varParts[0], variable.PhaseNameId);
+                    variable.NameId = xeosVariableNameList.GetVariableNameId(varParts[0], variable.PhaseNameId);
                     variable.DefaultValue = DoubleExtensions.GetDoubleValueFromText(varParts[2]);
                     xeos.Variables.Add(variable);
                 }

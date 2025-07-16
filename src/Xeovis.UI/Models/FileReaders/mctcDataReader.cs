@@ -149,7 +149,7 @@ namespace Xeovis.UI.Models.FileReaders
 
                 var xeosVariable = new xeosVariable();
                 xeosVariable.PhaseNameId = PhaseNameList.GetNameSetIdByString(varData[1]);
-                xeosVariable.NameId = xeosVariableNameList.GetXeosVariableNameId(varData[0], xeosVariable.PhaseNameId);
+                xeosVariable.NameId = xeosVariableNameList.GetVariableNameId(varData[0], xeosVariable.PhaseNameId);
 
                 int.TryParse(varData[2].TrimStart(new char[] { 'b' }), out int batchIndex);
                 var batch = _batches.FirstOrDefault(b => b.Index == batchIndex);

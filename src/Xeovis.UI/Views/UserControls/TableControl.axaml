@@ -44,11 +44,11 @@
         
         <Style Selector="DataGrid:focus DataGridCell:current /template/ Grid#FocusVisual"> 
             <Setter Property="IsVisible" Value="False" /> 
-        </Style> 
-        
-        <!-- <Style Selector="DataGridCell:invalid TextBox"> -->
-        <!-- 	<Setter Property="ToolTip.Tip" Value="dsvd" /> -->
-        <!-- </Style> -->
+        </Style>
+
+		<Style Selector="CheckBox:disabled /template/ Path#CheckGlyph">
+			<Setter Property="Fill" Value="Blue"/>
+		</Style>
         
         <Style Selector="ComboBox">
             <Setter Property="MinHeight" Value="28" />

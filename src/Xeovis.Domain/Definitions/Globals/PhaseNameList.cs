@@ -29,7 +29,12 @@ namespace Xeovis.Domain.Definitions
             _phaseNames.Clear();
             _phaseNames = phaseNameList;
             if (invokeEvent)
+            {
+                var phaseIds = phaseNameList.Select(x => x.Id);
+                PhaseOxideList.SetPhaseOxides(PhaseOxideList.OxideList.Where(x => phaseIds.Contains(x.Key)).ToDictionary(), false);
+                xeosVariableNameList.SetXeosVariableNames(xeosVariableNameList.VariableNames.Where(x => phaseIds.Contains(x.Key)).ToDictionary(), false);
                 PhaseNameListChanged?.Invoke(null, new PhaseNameListChangedEventArgs(phaseNameList));
+            }
         }
 
         public static PhaseNameSet GetNameSetByString(string phaseName, PhaseNameSet defaultValue = null)
@@ -49,12 +54,6 @@ namespace Xeovis.Domain.Definitions
             if (!_anyName) return Guid.Empty;
             var nameSet = GetNameSetByString(name);
             return nameSet != null ? nameSet.Id : Guid.Empty;
-        }
-
-        public static void Refresh()
-        {
-            _phaseNames = DefaultPhaseNames.GetDefaultPhaseNames();
-            _xeovisDefaults = _phaseNames.Select(x => x.Copy(true)).ToList();
         }
     }
 }

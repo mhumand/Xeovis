@@ -19,6 +19,7 @@ using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.UI.Views;
 using Xeovis.UI.Views.Helpers;
 using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Globals;
 
 namespace Xeovis.UI;
 
@@ -177,6 +178,9 @@ public partial class MainMenu : UserControl
         projectFile.mctcBundles = ParentWindow.ViewModel.mctcBundles;
         projectFile.mctcPlotDtos = ParentWindow.ViewModel.mctcPlotDtos;
         projectFile.ProjectSettings.AllowedPhaseNames = PhaseNameList.PhaseNames;
+        projectFile.ProjectSettings.PhaseXeosVariables = xeosVariableNameList.VariableNames;
+        projectFile.ProjectSettings.PhaseOxides = PhaseOxideList.OxideList;
+        projectFile.ProjectSettings.xeosVariableCations = xeosVariableCationList.CationList;
         return projectFile;
     }
 
@@ -355,6 +359,20 @@ public partial class MainMenu : UserControl
     {
         var vm = new SettingsXeosVariablesViewModel();
         var dialog = new SettingsXeosVariablesDialog() { ViewModel = vm };
+        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
+    }
+
+    public async void Settings_PhaseCompositions()
+    {
+        var vm = new SettingsPhaseCompositionsViewModel();
+        var dialog = new SettingsPhaseCompositionsDialog() { ViewModel = vm };
+        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
+    }
+
+    public async void Settings_VariableCations()
+    {
+        var vm = new SettingsVariableCationsViewModel();
+        var dialog = new SettingsVariableCationsDialog() { ViewModel = vm };
         var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
     }
 

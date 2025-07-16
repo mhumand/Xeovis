@@ -13,7 +13,7 @@ namespace Xeovis.Domain
             var phaseList = PhaseNameList.PhaseNames;
             foreach ( var phase in phaseList )
             {
-                var res = xeosVariableNameList.xeosVariableNames.TryGetValue(phase.Id, out List<xeosVariableName>? variables);
+                var res = xeosVariableNameList.VariableNames.TryGetValue(phase.Id, out List<xeosVariableName>? variables);
                 if (!res || variables == null) continue;
                 foreach (var variable in variables)
                 {

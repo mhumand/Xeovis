@@ -17,7 +17,7 @@ namespace Xeovis.Domain
         public PhaseNameSet PhaseNameSet => PhaseNameList.GetNameSetById(PhaseNameId);
         public string PhaseKeyName => PhaseNameSet?.KeyName;
         public Guid NameId { get; set; }
-        public xeosVariableName VariableName => xeosVariableNameList.GetXeosVariableNameById(NameId);
+        public xeosVariableName VariableName => xeosVariableNameList.GetVariableNameById(NameId);
         public double DefaultValue { get; set; }
 
         public xeosVariable()
