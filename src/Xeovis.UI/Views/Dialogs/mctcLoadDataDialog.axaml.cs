@@ -85,7 +85,8 @@ public partial class mctcLoadDataDialog : Window
     private async void btnLoad_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         var items = llcTxtFiles.ViewModel.Items;
-        if (_validationList == null || _validationList.Count == 0 || _validationList.Any(i => i.Value == false))
+        if (_validationList == null || _validationList.Count == 0 || 
+            _validationList.Any(i => i.Key.Tag is bool required && required && i.Value == false))
         {
             var msgBox = MessageBoxManager.GetMessageBoxStandard("Warning", "Could not find one or more required files." +
                 "\nNo data will be loaded!" +

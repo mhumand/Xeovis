@@ -68,7 +68,7 @@ public partial class MainMenu : UserControl
     // Project
     public async void File_New()
     {
-        var goAhead = await CheckAndRaiseUnsavedChangesMessage();
+        var goAhead = await CheckAndRaiseUnsavedChangesMessage(askAnyWay: true);
         if (!goAhead) return;
 
         _lastFilePath = string.Empty;
@@ -113,9 +113,9 @@ public partial class MainMenu : UserControl
         Log.Information("Project file opened successfully.");
     }
 
-    private async Task<bool> CheckAndRaiseUnsavedChangesMessage()
+    private async Task<bool> CheckAndRaiseUnsavedChangesMessage(bool askAnyWay = false)
     {
-        if (File.Exists(_lastFilePath) && ParentWindow != null)
+        if ((File.Exists(_lastFilePath) || askAnyWay) && ParentWindow != null)
         {
             var mb = MessageBoxManager.GetMessageBoxStandard("Unsaved Changes",
                 "You have unsaved changes.\nDo you want to save before continuing?", ButtonEnum.YesNoCancel,

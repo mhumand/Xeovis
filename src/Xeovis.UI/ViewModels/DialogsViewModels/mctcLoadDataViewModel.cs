@@ -32,10 +32,10 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
         {
             var txtList = new List<ListableItem>()
             {
-            new ListableItem("batchlines.txt"),
-            new ListableItem("batchbulks.txt"),
-            new ListableItem("observations.txt"),
-            new ListableItem("-dr.txt")
+            new ListableItem("batchlines.txt") { Tag = true },
+            new ListableItem("batchbulks.txt (optional)") { Tag = false},
+            new ListableItem("observations.txt") { Tag = true},
+            new ListableItem("-dr.txt") { Tag = true }
             };
 
             RequiredFiles = txtList;
