@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,7 +44,7 @@ namespace Xeovis.UI.Models.FileReaders
             progressData.PrimaryLabel = $"Loading Batch Bulks";
             progress.Report(progressData);
             if (!ReadBatchBulks())
-                throw new FileLoadException(nameof(ReadBatchBulks));
+                Log.Warning("No batchbulks data was found.");
 
             progressData.PrimaryValue = 50;
             progressData.PrimaryLabel = $"Loading xeos Variables";
