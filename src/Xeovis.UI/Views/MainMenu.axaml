@@ -132,14 +132,16 @@
 					  Header="_Phase Names"
 					  Command="{Binding Settings_PhaseNames}">
 				<MenuItem.Icon>
-					<Image Source=""/>
+					<Image Source="/Assets/MainMenu/names.png"/>
 				</MenuItem.Icon>
 			</MenuItem>
 
 			<MenuItem x:Name="btnSettingsXeosVariables"
 					  Header="x-eos Variables"
 					  Command="{Binding Settings_XeosVariables}">
-				
+				<MenuItem.Icon>
+					<Image Source="/Assets/MainMenu/variables.png"/>
+				</MenuItem.Icon>
 			</MenuItem>
 
 			<Separator />
@@ -147,13 +149,17 @@
 			<MenuItem x:Name="btnSettingsPhaseCompositions"
 					  Header="Phase Compositions"
 					  Command="{Binding Settings_PhaseCompositions}">
-				
+				<MenuItem.Icon>
+					<Image Source="/Assets/MainMenu/oxides.png"/>
+				</MenuItem.Icon>
 			</MenuItem>
 
 			<MenuItem x:Name="btnSettingsVariableCations"
 					  Header="Variable Cations"
 					  Command="{Binding Settings_VariableCations}">
-				
+				<MenuItem.Icon>
+					<Image Source="/Assets/MainMenu/cations.png"/>
+				</MenuItem.Icon>
 			</MenuItem>
 		</MenuItem>
 			
