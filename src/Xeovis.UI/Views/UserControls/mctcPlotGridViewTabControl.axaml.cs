@@ -384,9 +384,9 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
             {
                 for (int j = 0; j < uniformGrid.Columns; j++)
                 {
-                    if (i * uniformGrid.Rows + j >= images.Count) break;
+                    if (counter >= images.Count) break;
 
-                    var image = images[i * uniformGrid.Rows + j];
+                    var image = images[counter];
                     var imageSource = image.Source as RenderTargetBitmap;
                     var width = imageSource.PixelSize.Width;
                     var height = imageSource.PixelSize.Height;
