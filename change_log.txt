@@ -1,0 +1,69 @@
+
+-----------------------------------------------------------
+Sprint 1
+April 10th, 2025 - April 28th, 2025
+
+-	Feat:	Added Table Control
+-	Feat:	Added Chart Control
+-	Feat:	Added Data Manager Tab Control
+-	Feat:	Added mctc Plot Tab Control
+-	Feat:	Added context menu to Label List Control
+-	Feat:	Added mctc Load Data dialog
+-	Fix:	Experiments not loaded completely on mac
+-	Feat:	Added state persistence to Load Data dialog
+-	Feat:	Added mctc New Plot dialog
+-	Feat:	Added Combobox column to TableControl
+-----------------------------------------------------------
+Sprint 2
+April 28th, 2025 - May 12th, 2025
+
+-	Feat:	Added mctc plot grid view tab control
+-	Feat:	Added mctc plot settings dialog
+-	Feat:	Added context menu to tree lists
+-	Feat:	Added "View" to menu to control the visibility of experiments and plots tree lists
+-	Feat:	Implemented project file persistence
+-	Chor:	Reviewed classes in Xeovis.Domain
+-	Feat:	Moveed visualization logic into a separate project
+-	Fix:	Grid splitter not consistent in mctc plot single view
+-	Fix:	ChartControl: point selection crosshair disappears on rectangle zoom
+-	Feat:	Added simple Rename Dialog + name duplication check
+-	Feat:	Implemented input validations
+-	Feat:	Implemented mctc bundle quick reload
+-	Fix:	Tree Lists: Context menu fails to pop up on first right click
+-	Feat:	Completed Chart Control's context menu
+-	Fix:	Open item for phase tree node does not work
+-----------------------------------------------------------
+Sprint 3
+May 12th, 2025 - June 4th, 2025
+
+-	Feat:	Added unit tests to projects
+-	Feat:	Added SeriLog
+-	Feat:	Implemented connection between mctc plots and experiments
+-	Feat:	Added "Go to directory" menu item to tree lists
+-	Feat:	Used compression to reduce project file size
+-	Feat:	Designed the Compare tab in data manager
+-	Feat:	Handled possible exceptions on file reading
+-	Feat:	Better interactive style for tree views and table control
+-	Fix:	MCTC Single Plot: Stack Legend Not Cleared on Filter Change
+-	Feat:	Added Persistence with Backward Compatibility
+-	Feat:	Ignored serializing empty fields on persistence
+-	Feat:	Used dictionary for composition (oxide, value)
+-	Fix:	Gradient curve colors not working
+-	Feat:	Added global exception handler
+-	Fix:	Exception on sorting numeric columns in Table Control
+-	Feat:	Added Clear Sort to Table Control column header context menu
+-	Fix:	Combobox in table control gets open on right click
+-	Feat:	Added Total column to experiment tables	
+-	Feat:	Added Experimental Run table to Data Manager tab
+-----------------------------------------------------------
+Sprint 4
+May 12th, 2025 - June 4th, 2025
+June 10th, 2025 - July 7th, 2025
+
+-	Feat:	Added Export All Plots to mctc grid view
+-	Feat:	Added residual plots
+-	Feat:	Generalized Phase Names	
+-	Feat:	Generalized x-eos variable names
+-	Feat:	Generalized phase oxides and x-eos variable cations	
+-	Feat:	Made reading batchbulks file optional	
+-	Fix:	Exporting all images in mctc plot grid view repeats a plot
