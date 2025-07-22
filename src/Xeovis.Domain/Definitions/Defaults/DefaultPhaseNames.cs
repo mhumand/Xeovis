@@ -4,7 +4,7 @@ namespace Xeovis.Domain.Definitions
 {
     public static class DefaultPhaseNames
     {
-        private static List<PhaseNameSet> _defaultPhaseNames {  get; set; }
+        private static List<PhaseNameSet> _defaultPhaseNames { get; set; }
 
         public static void Initialize()
         {
@@ -15,6 +15,7 @@ namespace Xeovis.Domain.Definitions
                 new("hornblende", "hb", ["hbl", "horn", "hornb"]),
                 new("gedrite", "ged"),
                 new("actinolite", "act",["actino"]),
+                new("pargasite", "parg", ["prg"]),
 
                 // Pyroxenes
                 new("clinopyroxene", "cpx",["clino-pyroxene"]),
