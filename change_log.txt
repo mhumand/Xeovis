@@ -57,7 +57,6 @@ May 12th, 2025 - June 4th, 2025
 -	Feat:	Added Experimental Run table to Data Manager tab
 -----------------------------------------------------------
 Sprint 4
-May 12th, 2025 - June 4th, 2025
 June 10th, 2025 - July 7th, 2025
 
 -	Feat:	Added Export All Plots to mctc grid view
