@@ -110,6 +110,7 @@
 				<Grid RowDefinitions="1*,1*" Margin="5 0">
 					<uc:LabelSpinnerControl x:Name="spinnerColumnNo"
 											HorizontalAlignment="Left"
+											VerticalAlignment="Top"
 											Grid.Row="0"/>
 
 					<Grid Grid.Row="1"
@@ -215,6 +216,7 @@
 									<TextBlock Grid.Row="0"
 											   Margin="3 0"
 											   FontWeight="SemiBold"
+											   VerticalAlignment="Center"
 											   Text="Phase Filters" />
 
 									<uc:TableControl x:Name="tableFilter"
@@ -237,6 +239,7 @@
 									<TextBlock Grid.Row="0"
 											   Margin="3 0"
 											   FontWeight="SemiBold"
+											   VerticalAlignment="Center"
 											   Text="Global Legend" />
 									<ScrollViewer Grid.Row="1">
 										<StackPanel x:Name="stackLegend"/>

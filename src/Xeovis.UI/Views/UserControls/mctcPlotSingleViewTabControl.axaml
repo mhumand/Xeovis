@@ -198,6 +198,7 @@
 									<TextBlock Grid.Row="0"
 											   Margin="3 0"
 											   FontWeight="SemiBold"
+											   VerticalAlignment="Center"
 											   Text="Phase Filters" />
 
 									<uc:TableControl x:Name="tableFilter"
@@ -219,6 +220,7 @@
 									<TextBlock Grid.Row="0"
 											   Margin="3 0"
 											   FontWeight="SemiBold"
+											   VerticalAlignment="Center"
 											   Text="Chart Legend" />
 									<ScrollViewer Grid.Row="1">
 										<StackPanel x:Name="stackLegend"/>
