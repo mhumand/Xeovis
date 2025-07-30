@@ -44,6 +44,7 @@ public partial class SettingsPhaseNamesDialog : Window
     private void btnRemoveSelected_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         tableControl.DeleteSelectedRow();
+        _viewModel.UpdateValidationRules(tableControl.ViewModel.TableModel);
     }
 
     private void btnAddNewRow_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
