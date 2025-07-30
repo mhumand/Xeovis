@@ -57,7 +57,8 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
             {
                 foreach (var key in validations.Keys)
                 {
-                    var file = files.FirstOrDefault(f => f.Contains(key.Label));
+                    var keyLabel = key.Label.Split(".txt").ToList()[0];
+                    var file = files.FirstOrDefault(f => f.Contains(keyLabel));
                     if (file != null)
                     {
                         key.Description = "Found";
