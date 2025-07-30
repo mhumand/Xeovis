@@ -9,6 +9,7 @@
         Fe2O3,
         Cr2O3,
         FeO,
+        FeOt,
         MnO,
         MgO,
         NiO,
