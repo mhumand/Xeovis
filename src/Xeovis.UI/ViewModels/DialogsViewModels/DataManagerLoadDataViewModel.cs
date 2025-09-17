@@ -43,7 +43,8 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
                 {
                     var info = new DirectoryInfo(folder);
                     if (!info.Name.Any(char.IsDigit)) continue;
-                    var files = info.GetFiles("*.xls", searchSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).ToList();
+                    var extensions = new[] { "*.xls", "*.xlsx" };
+                    var files = extensions.SelectMany(x => info.GetFiles(x, searchSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)).ToList();
                     if (files.Count == 0) continue;
                     eligibleFolders.Add(new ListableItem(info.Name, tag: info));
                 }
