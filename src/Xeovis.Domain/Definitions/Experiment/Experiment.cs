@@ -6,7 +6,14 @@ namespace Xeovis.Domain
     public class Experiment
     {
         public string Name { get; set; }
-        public string ShortName => GetShortName();
+
+        private string _shortName { get; set; }
+        public string ShortName
+        {
+            get { return string.IsNullOrWhiteSpace(_shortName) ? GetShortName() : _shortName; }
+            set { _shortName = value; }
+        }
+
         public Guid Id { get; set; }
         public List<ExpRun> Runs { get; set; }
         public string Path { get; set; }
@@ -16,7 +23,8 @@ namespace Xeovis.Domain
 
         public Experiment()
         {
-            Name = "string.Empty";
+            Name = "No Name";
+            ShortName = "No Name";
             Path = string.Empty;
             Id = Guid.NewGuid();
             Runs = new List<ExpRun>();
@@ -32,11 +40,18 @@ namespace Xeovis.Domain
 
         private string GetShortName()
         {
-            if (string.IsNullOrWhiteSpace(Name))
-                return string.Empty;
+            if (string.IsNullOrWhiteSpace(Name)) return string.Empty;
             
             string shortName = new string(Name.Where(c => char.IsUpper(c)).ToArray());
-            shortName += Name.Substring(Name.Length - 2);
+
+            if (Name.Contains('_'))
+            {
+                var split = Name.Split('_');
+                shortName += split[0].Substring(split[0].Length - 2) + "_" + split[1];
+            }
+            else
+                shortName += Name.Substring(Name.Length - 2);
+
             return shortName;
         }
 

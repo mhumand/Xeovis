@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Xeovis.Base;
 using Xeovis.Domain;
 using Xeovis.Domain.Definitions;
@@ -45,6 +46,7 @@ namespace Xeovis.UI.Models.FileReaders
                 progress.Report(progressData);
 
                 var experiment = new Experiment(folder.Label, info.FullName);
+                experiment.ShortName = GetExperimentShortName(experiment.Name, experiments);
                 ReadExperimentFile(experiment, out List<string> unknownPhaseNamesInExperiment);
                 ReadPhasesFile(experiment, out List<string> unknownPhaseFilesInExperiment);
                 experiments.Add(experiment);
@@ -59,6 +61,34 @@ namespace Xeovis.UI.Models.FileReaders
             }
 
             return new ExperimentReaderResults(experiments, unknownPhaseNames, unknownPhaseFiles);
+        }
+
+        private string GetExperimentShortName(string fullName, List<Experiment> experiments)
+        {
+            string shortName = new string(fullName.Where(c => char.IsUpper(c)).ToArray());
+
+            if (fullName.Contains('_'))
+            {
+                var split = fullName.Split('_');
+                shortName += split[0].Substring(split[0].Length - 2) + "_" + split[1];
+            }
+            else
+                shortName += fullName.Substring(fullName.Length - 2);
+
+            int index = 1;
+            var currentShortNames = experiments.Select(x => x.ShortName);
+            Experiment lastSimilarExperiment = null;
+            while (currentShortNames.Contains(shortName))
+            {
+                lastSimilarExperiment = experiments.FirstOrDefault(x => x.ShortName == shortName);
+                shortName = shortName.Insert(index, fullName[index].ToString());
+                index++;
+            }
+
+            if (lastSimilarExperiment != null)
+                lastSimilarExperiment.ShortName = lastSimilarExperiment.ShortName.Insert(index - 1, lastSimilarExperiment.Name[index - 1].ToString());
+
+            return shortName;
         }
 
         private void ReadExperimentFile(Experiment experiment, out List<string> unknownPhaseNames)
