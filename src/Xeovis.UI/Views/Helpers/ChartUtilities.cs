@@ -41,6 +41,49 @@ namespace Xeovis.UI
             ColorTranslator.FromHtml("#9EDAE5"),
         };
 
+        public static List<Color> ColorPalette = new List<Color>()
+        {
+            ColorTranslator.FromHtml("#4E79A7"), // Blue
+            ColorTranslator.FromHtml("#F28E2B"), // Orange
+            ColorTranslator.FromHtml("#E15759"), // Red
+            ColorTranslator.FromHtml("#76B7B2"), // Teal
+            ColorTranslator.FromHtml("#59A14F"), // Green
+            ColorTranslator.FromHtml("#EDC948"), // Yellow
+            ColorTranslator.FromHtml("#B07AA1"), // Purple
+            ColorTranslator.FromHtml("#FF9DA7"), // Pink
+            ColorTranslator.FromHtml("#9C755F"), // Brown
+            ColorTranslator.FromHtml("#BAB0AC"), // Gray
+
+            // --- Tol Bright & Vibrant extensions ---
+            ColorTranslator.FromHtml("#4477AA"), // Deep Blue
+            ColorTranslator.FromHtml("#66CCEE"), // Sky Blue
+            ColorTranslator.FromHtml("#228833"), // Dark Green
+            ColorTranslator.FromHtml("#CCBB44"), // Mustard
+            ColorTranslator.FromHtml("#EE6677"), // Coral Red
+            ColorTranslator.FromHtml("#AA3377"), // Magenta Purple
+            ColorTranslator.FromHtml("#BBBBBB"), // Mid Grey
+            ColorTranslator.FromHtml("#000000"), // Black
+
+            // --- D3 Category20b-like hues ---
+            ColorTranslator.FromHtml("#393B79"), // Indigo
+            ColorTranslator.FromHtml("#637939"), // Olive Green
+            ColorTranslator.FromHtml("#8C6D31"), // Warm Brown
+            ColorTranslator.FromHtml("#843C39"), // Dark Red
+            ColorTranslator.FromHtml("#7B4173"), // Deep Violet
+            ColorTranslator.FromHtml("#5254A3"), // Blue Violet
+            ColorTranslator.FromHtml("#8CA252"), // Olive
+            ColorTranslator.FromHtml("#BD9E39"), // Golden Brown
+            ColorTranslator.FromHtml("#AD494A"), // Muted Crimson
+            ColorTranslator.FromHtml("#A55194"), // Magenta Violet
+
+            // --- Light tint variants for contrast ---
+            ColorTranslator.FromHtml("#9C9EDE"), // Light Periwinkle
+            ColorTranslator.FromHtml("#B5CF6B"), // Light Lime
+            ColorTranslator.FromHtml("#E7BA52"), // Warm Gold
+            ColorTranslator.FromHtml("#E7969C"), // Light Rose
+            ColorTranslator.FromHtml("#DE9ED6"), // Light Pink Purple
+        };
+
         public static List<MarkerType> MarkerTypes = new List<MarkerType>()
         {
             MarkerType.FilledCircle,
@@ -85,7 +128,7 @@ namespace Xeovis.UI
 
         public static void SetColorAndMarker(CurveModel curve, int index)
         {
-            var pallete = ColorPalette_18;
+            var pallete = ColorPalette;
 
             if (index >= MarkerTypes.Count * pallete.Count)
                 throw new IndexOutOfRangeException();
