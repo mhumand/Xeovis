@@ -157,6 +157,7 @@ public partial class MainMenu : UserControl
             var files = await topLevel.StorageProvider.SaveFilePickerAsync(options);
             if (files == null) return;
             path = Uri.UnescapeDataString(files.Path.AbsolutePath);
+            _lastFilePath = path;
         }
         else
             path = _lastFilePath;
