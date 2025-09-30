@@ -16,6 +16,7 @@ using Xeovis.Domain.Definitions.Experiment;
 using Xeovis.Domain.Definitions;
 using Xeovis.Domain.Definitions.Defaults;
 using Xeovis.Domain.Definitions.Globals;
+using System.IO;
 
 namespace Xeovis.UI.Views
 {
@@ -137,7 +138,8 @@ namespace Xeovis.UI.Views
             PhaseOxideList.SetPhaseOxides(settings.PhaseOxides, false);
             xeosVariableCationList.SetXeosVariableCations(settings.xeosVariableCations, false);
 
-            this.Title = string.IsNullOrWhiteSpace(e.Project.ProjectName) ? "Xeovis" : $"Xeovis - {e.Project.ProjectName}";
+            var extension = Path.GetExtension(e.Path);
+            this.Title = string.IsNullOrWhiteSpace(e.Project.ProjectName) ? "Xeovis" : $"Xeovis - {e.Project.ProjectName}{extension}";
             OnExperimentsLoaded(e.Project.Experiments);
             e.Project.mctcBundles.ForEach(x => OnMctcBundleLoaded(x));
             e.Project.mctcPlotDtos.ForEach(x => CreateMctcPlot(x));
