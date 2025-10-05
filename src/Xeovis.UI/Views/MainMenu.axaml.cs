@@ -166,7 +166,8 @@ public partial class MainMenu : UserControl
         var result = ProjectFileManager.Save(projectFile, path);
         if (result)
         {
-            ParentWindow.Title = $"Xeovis - {projectFile.ProjectName}";
+            var extension = Path.GetExtension(path);
+            ParentWindow.Title = $"Xeovis - {projectFile.ProjectName}{extension}";
             Log.Information("Project file saved.");
         }
     }

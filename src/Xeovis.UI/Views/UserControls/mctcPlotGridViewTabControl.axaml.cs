@@ -40,6 +40,8 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
 
     public MainWindow? ParentWindow { get; set; }
 
+    public Rect InitialBounds { get; set; }
+
     public mctcPlotGridViewTabControl()
     {
         InitializeComponent();
@@ -59,7 +61,7 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
 
         slider.ValueChanged += slider_ValueChanged;
         slider.Minimum = uniformGrid.Bounds.Width;
-        slider.Maximum = 5000;
+        slider.Maximum = 10000;
         slider.Value = uniformGrid.Bounds.Width;
         tableFilter.CellValueChanged += tableFilter_CellValueChanged;
 
@@ -107,14 +109,21 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
         _viewModel.mctcBundle = mctcBundle;
 
         spinnerMctcRun.ViewModel.MaxValue = mctcBundle.mctcVariables[0].Values.Count;
+        spinnerMctcRun.ValueChanged -= spinnerMctcRun_ValueChanged;
+        spinnerMctcRun.ViewModel.Value = 1;
+        _viewModel.mctcRunIndex = 0;
+        spinnerMctcRun.ValueChanged += spinnerMctcRun_ValueChanged;
+
         spinnerColumnNo.ViewModel.MaxValue = mctcPlotDto.SampleXeosVariables.Count;
-        spinnerColumnNo.ViewModel.Value = Math.Min(3, mctcPlotDto.SampleXeosVariables.Count);
 
         _viewModel.ClearInUseMarkersAndColors();
         PopulateMctcRunsTable();
         PopulatePhaseFilters();
         lcbcXAxisVariable.SetItems(_viewModel.GetXeosVarItems());
         PopulateGridCharts();
+
+        if (!((int)spinnerColumnNo.ViewModel.Value).IsBetween(4, mctcPlotDto.SampleXeosVariables.Count))
+            spinnerColumnNo.ViewModel.Value = Math.Min(4, mctcPlotDto.SampleXeosVariables.Count);
 
         return true;
     }
@@ -300,8 +309,18 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
 
     private void spinnerColumnNo_ValueChanged(object? sender, Models.Events.SpinnerValueChangedEventArgs e)
     {
-        uniformGrid.Columns = e.Value;
-        uniformGrid.Rows = uniformGrid.Children.Count / e.Value + 1;
+        SetupLayout(e.Value);
+    }
+
+    private void SetupLayout(int columnNo)
+    {
+        uniformGrid.Columns = columnNo;
+        uniformGrid.Rows = uniformGrid.Children.Count / columnNo + 1;
+
+        var width = uniformGrid.Bounds.Width / uniformGrid.Columns;
+        if (width == 0) width = (InitialBounds.Width - splitView.OpenPaneLength) / uniformGrid.Columns;
+        uniformGrid.Height = uniformGrid.Rows * width;
+        slider.Value = uniformGrid.Height;
     }
 
     private async void btnSettings_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
