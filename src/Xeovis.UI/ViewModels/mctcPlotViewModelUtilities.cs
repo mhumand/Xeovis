@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System;
 using Xeovis.Base;
 using Xeovis.Domain;
-using Xeovis.UI.Models.Enums;
-using System.Drawing;
-using Xeovis.Presentation;
 using Xeovis.Domain.Definitions.Experiment;
 using Xeovis.Domain.Definitions.Globals;
+using Xeovis.Presentation;
+using Xeovis.UI.Models.Enums;
 
 namespace Xeovis.UI.ViewModels
 {
@@ -219,6 +219,8 @@ namespace Xeovis.UI.ViewModels
             if (mctcPlotDto.PointsGroupingType != mctcPlotPointsGroupingType.Batch)
                 counter = 0;//todo: temp
 
+            var allXvals = new List<double>();
+            var allYvals = new List<double>();
             foreach (var modelVarGroup in xeosVarGroups)
             {
                 // modelVarGroup contains yVar
@@ -260,6 +262,12 @@ namespace Xeovis.UI.ViewModels
 
                 if (xValues.Count == 0 || yValues.Count == 0) continue;
 
+                if (axesSettings.XAxisType is mctcPlotAxisType.Observed && axesSettings.YAxisType is mctcPlotAxisType.Calculated)
+                {
+                    allXvals.AddRange(xValues);
+                    allYvals.AddRange(yValues);
+                }
+
                 var curve = new CurveModel();
                 curve.Name = modelVarGroup.Key.ToString();
                 curve.Xvals = xValues;
@@ -292,19 +300,38 @@ namespace Xeovis.UI.ViewModels
                 chartModel.Curves.Add(curve);
             }
 
+            if (allXvals.Count > 0 && allXvals.Count == allYvals.Count)
+            {
+                var average = allXvals.Zip(allYvals, 
+                    (obs, calc) => obs != 0 ? Math.Abs(1 - calc / obs) * 100.0 
+                    : Math.Abs(1 - obs / calc) * 100.0).Where(x => !double.IsNaN(x)).Average();
+                chartModel.Title += $" ({average.Round(2)}%)";
+            }
+
             if (chartModel.Curves.Count > 0)
             {
-                var minXVal = chartModel.Curves.Where(c => c.Xvals.Count > 0).Min(c => c.Xvals.Min());
-                var maxXVal = chartModel.Curves.Where(c => c.Xvals.Count > 0).Max(c => c.Xvals.Max());
-                var minYVal = chartModel.Curves.Where(c => c.Yvals.Count > 0).Min(c => c.Yvals.Min());
-                var maxYVal = chartModel.Curves.Where(c => c.Yvals.Count > 0).Max(c => c.Yvals.Max());
+                double minXVal, maxXVal, minYVal, maxYVal;
+                if (mctcPlotDto.ChartSettings.UseAxesLimits)
+                {
+                    minXVal = mctcPlotDto.ChartSettings.AxesMinLimit;
+                    maxXVal = mctcPlotDto.ChartSettings.AxesMaxLimit;
+                    minYVal = mctcPlotDto.ChartSettings.AxesMinLimit;
+                    maxYVal = mctcPlotDto.ChartSettings.AxesMaxLimit;
+                }
+                else
+                {
+                    minXVal = chartModel.Curves.Where(c => c.Xvals.Count > 0).Min(c => c.Xvals.Min());
+                    maxXVal = chartModel.Curves.Where(c => c.Xvals.Count > 0).Max(c => c.Xvals.Max());
+                    minYVal = chartModel.Curves.Where(c => c.Yvals.Count > 0).Min(c => c.Yvals.Min());
+                    maxYVal = chartModel.Curves.Where(c => c.Yvals.Count > 0).Max(c => c.Yvals.Max());
 
-                double differenceX = maxXVal - minXVal;
-                double differenceY = maxYVal - minYVal;
-                minXVal -= differenceX * 0.05;
-                maxXVal += differenceX * 0.05;
-                minYVal -= differenceY * 0.05;
-                maxYVal += differenceY * 0.05;
+                    double differenceX = maxXVal - minXVal;
+                    double differenceY = maxYVal - minYVal;
+                    minXVal -= differenceX * 0.05;
+                    maxXVal += differenceX * 0.05;
+                    minYVal -= differenceY * 0.05;
+                    maxYVal += differenceY * 0.05;
+                }
 
                 if (axesSettings.XAxisType == mctcPlotAxisType.Observed
                     || axesSettings.YAxisType == mctcPlotAxisType.Residual)

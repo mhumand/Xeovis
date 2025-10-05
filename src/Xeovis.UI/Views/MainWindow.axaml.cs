@@ -1,22 +1,23 @@
 using Avalonia.Controls;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
+using Serilog;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Serilog;
+using System.Reflection.Metadata;
 using Xeovis.Domain;
+using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Defaults;
+using Xeovis.Domain.Definitions.Experiment;
+using Xeovis.Domain.Definitions.Globals;
 using Xeovis.Presentation;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
 using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.UI.Views.Helpers;
-using Xeovis.Domain.Definitions.Experiment;
-using Xeovis.Domain.Definitions;
-using Xeovis.Domain.Definitions.Defaults;
-using Xeovis.Domain.Definitions.Globals;
-using System.IO;
 
 namespace Xeovis.UI.Views
 {
@@ -222,10 +223,16 @@ namespace Xeovis.UI.Views
                 menu.Items.Insert(0, addPlotItem);
 
                 var reloadItem = new MenuItem() { Header = "Reload" };
-                ToolTip.SetTip(reloadItem, $"Reloads the bundle from its directory:\n{bundle.FilesDirectory}");
+                ToolTip.SetTip(reloadItem, $"Reloads the bundle's contents from its directory:\n{bundle.FilesDirectory}");
                 reloadItem.Click += reloadItem_Click;
                 reloadItem.Tag = bundle;
                 menu.Items.Insert(1, reloadItem);
+
+                var reloadAndAppendItem = new MenuItem() { Header = "Reload & Append" };
+                ToolTip.SetTip(reloadAndAppendItem, "Reloads the bundle’s contents from its directory and appends them to the existing content.");
+                reloadAndAppendItem.Click += reloadAndAppendItem_Click; ;
+                reloadAndAppendItem.Tag = bundle;
+                menu.Items.Insert(2, reloadAndAppendItem);
 
                 deleteItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteMctcBundle(node.PresenterId), $"{node.Label} and its plots");
                 deleteAllItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteAllMctcBundles(), "all mctc bundles and their plots");
@@ -383,6 +390,46 @@ namespace Xeovis.UI.Views
                     var tab = _viewModel.TabControls.FirstOrDefault(x => x.PresenterId == plotDto.Id);
                     if (tab?.OwnerTabControl is ImctcPlotView mctcPlot)
                         mctcPlot.PopulateUI(plotDto, newBundle);
+                }
+
+                Log.Information("Bundle reloaded: {name}", bundle.Name);
+            }
+            else
+            {
+                Log.Error("Failed to reload mctc bundle: {name}", bundle.Name);
+                var mb = MessageBoxManager.GetMessageBoxStandard("Error", $"Failed to reload {bundle.Name}!", ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
+                await mb.ShowWindowDialogAsync(this);
+            }
+        }
+
+        private async void reloadAndAppendItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (sender is not MenuItem menuItem) return;
+            if (menuItem.Tag is not mctcBundle bundle) return;
+
+            var newBundle = await mainMenu.LoadMctcBundle(bundle.FilesDirectory);
+            if (newBundle != null)
+            {
+                foreach (var newBatch in newBundle.Batches)
+                {
+                    var oldBatch = bundle.Batches.FirstOrDefault(x => x.Name.Equals(newBatch.Name)
+                    && newBatch.PhaseNameIds.SequenceEqual(x.PhaseNameIds));
+                    if (oldBatch == null)
+                        bundle.Batches.Add(newBatch);
+                    else 
+                    {
+                        // overwrites the xeos var in the old batch
+                        var vars = newBundle.xeosVariables.Where(x => x.BatchId == newBatch.Id).ToList();
+                        vars.ForEach(x => x.BatchId = oldBatch.Id);
+                        oldBatch.xeosVariables = vars;
+                    }
+                }
+
+                foreach (var plotDto in _viewModel.mctcPlotDtos.Where(x => x.mctcBundleId == bundle.Id))
+                {
+                    var tab = _viewModel.TabControls.FirstOrDefault(x => x.PresenterId == plotDto.Id);
+                    if (tab?.OwnerTabControl is ImctcPlotView mctcPlot)
+                        mctcPlot.PopulateUI(plotDto, bundle);
                 }
 
                 Log.Information("Bundle reloaded: {name}", bundle.Name);
@@ -583,13 +630,26 @@ namespace Xeovis.UI.Views
             if (mctcPlotDto.IsGridView && mctcPlotDto.SampleXeosVariables.Count > 1)
             {
                 viewModel = new mctcPlotGridViewModel() { Header = mctcPlotDto.Name, PresenterId = mctcPlotDto.Id };
-                plotTab = new mctcPlotGridViewTabControl() { ViewModel = viewModel as mctcPlotGridViewModel, ParentWindow = this };
+                var tabPad = tabControl.Padding;
+                var tabBounds = tabControl.Bounds;
+                plotTab = new mctcPlotGridViewTabControl()
+                {
+                    ViewModel = viewModel as mctcPlotGridViewModel,
+                    ParentWindow = this,
+                    InitialBounds = new Avalonia.Rect(tabBounds.TopLeft.X - tabPad.Left,
+                    tabBounds.TopLeft.Y - tabPad.Top, tabBounds.Width - tabPad.Left - tabPad.Right,
+                    tabBounds.Height - tabPad.Top - tabPad.Bottom)
+                };
                 successful = (plotTab as mctcPlotGridViewTabControl).PopulateUI(mctcPlotDto, mctcBundle);
             }
             else
             {
                 viewModel = new mctcPlotSingleViewModel() { Header = mctcPlotDto.Name, PresenterId = mctcPlotDto.Id };
-                plotTab = new mctcPlotSingleViewTabControl() { ViewModel = viewModel as mctcPlotSingleViewModel, ParentWindow = this };
+                plotTab = new mctcPlotSingleViewTabControl()
+                {
+                    ViewModel = viewModel as mctcPlotSingleViewModel,
+                    ParentWindow = this
+                };
                 successful = (plotTab as mctcPlotSingleViewTabControl).PopulateUI(mctcPlotDto, mctcBundle);
             }
 
