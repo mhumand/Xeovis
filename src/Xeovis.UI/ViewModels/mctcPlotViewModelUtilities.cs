@@ -95,6 +95,10 @@ namespace Xeovis.UI.ViewModels
             {
                 allGroups = xeosVariables.GroupBy(mv => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == mv.BatchId).ExpRunPressure).ToList();
             }
+            else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Experiment)
+            {
+                allGroups = xeosVariables.GroupBy(mv => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == mv.BatchId).ExperimentName).ToList();
+            }
 
             var selectedGroups = new List<IGrouping<object, xeosVariable>>();
             if (mctcPlotDto.ExcludeIrrelevantBatches)
@@ -161,14 +165,17 @@ namespace Xeovis.UI.ViewModels
                         if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Temperature)
                         {
                             var grp = leftXeosVars.GroupBy(x => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == x.BatchId).ExpRunTemperature).FirstOrDefault();
-                            if (grp != null && grp.Count() != 0)
-                                selectedGroups.Add(grp);
+                            if (grp != null && grp.Count() != 0) selectedGroups.Add(grp);
                         }
                         else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Pressure)
                         {
                             var grp = leftXeosVars.GroupBy(x => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == x.BatchId).ExpRunPressure).FirstOrDefault();
-                            if (grp != null && grp.Count() != 0)
-                                selectedGroups.Add(grp);
+                            if (grp != null && grp.Count() != 0) selectedGroups.Add(grp);
+                        }
+                        else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Experiment)
+                        {
+                            var grp = leftXeosVars.GroupBy(x => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == x.BatchId).ExperimentName).FirstOrDefault();
+                            if (grp != null && grp.Count() != 0) selectedGroups.Add(grp);
                         }
                     }
                 }
@@ -216,7 +223,7 @@ namespace Xeovis.UI.ViewModels
             chartModel.IsTitleVisible = mctcPlotDto.ChartSettings.ShowChartTitle;
 
             int counter = inUseMarkers == null || inUseColors == null ? 0 : Math.Max(inUseColors.Count, inUseMarkers.Count);
-            if (mctcPlotDto.PointsGroupingType != mctcPlotPointsGroupingType.Batch)
+            if (mctcPlotDto.PointsGroupingType.IsNumber())
                 counter = 0;//todo: temp
 
             var allXvals = new List<double>();
@@ -274,7 +281,7 @@ namespace Xeovis.UI.ViewModels
                 curve.Yvals = yValues;
                 curve.IsLineVisible = false;
 
-                if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Batch)
+                if (!mctcPlotDto.PointsGroupingType.IsNumber())
                 {
                     if (inUseColors.ContainsKey(curve.Name) && inUseMarkers.ContainsKey(curve.Name))
                     {
@@ -302,8 +309,8 @@ namespace Xeovis.UI.ViewModels
 
             if (allXvals.Count > 0 && allXvals.Count == allYvals.Count)
             {
-                var average = allXvals.Zip(allYvals, 
-                    (obs, calc) => obs != 0 ? Math.Abs(1 - calc / obs) * 100.0 
+                var average = allXvals.Zip(allYvals,
+                    (obs, calc) => obs != 0 ? Math.Abs(1 - calc / obs) * 100.0
                     : Math.Abs(1 - obs / calc) * 100.0).Where(x => !double.IsNaN(x)).Average();
                 chartModel.Title += $" ({average.Round(2)}%)";
             }

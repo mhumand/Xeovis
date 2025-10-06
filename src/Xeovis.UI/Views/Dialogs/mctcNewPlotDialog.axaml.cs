@@ -107,6 +107,7 @@ public partial class mctcNewPlotDialog : Window
         if (e.SelectedItem is not ListableItem item) return;
         var bundle = _bundles.FirstOrDefault(i => i.Id == item.PresenterId);
         if (bundle == null) return;
+        llcSelected.ViewModel.Items.Clear();
         _viewModel.SelectedXeosVariables.Clear();
         _viewModel.SelectedBundleId = bundle.Id;
         var phaseItems = _viewModel.MakePhaseVaribleItemsDictionary(bundle).Keys.ToList();

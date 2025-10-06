@@ -210,7 +210,7 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
             }
         }
 
-        if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Batch)
+        if (!_viewModel.mctcPlotDto.PointsGroupingType.IsNumber())
             stackLegend.Children.AddRange(checkboxes);
         else
             stackLegend.Children.AddRange(checkboxes.OrderBy(x => x.ViewModel.Label, new NumericStringComparer()));
