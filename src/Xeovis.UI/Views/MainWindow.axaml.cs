@@ -195,8 +195,17 @@ namespace Xeovis.UI.Views
 
         private void tvMctcBundles_ContextRequested(object? sender, ContextRequestedEventArgs e)
         {
-            if (sender is not TreeView treeView) return;
-            if (treeView.SelectedItem is not TreeNode node) return;
+            if (_viewModel.mctcBundles.Count == 0)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            if (sender is not TreeView treeView || treeView.SelectedItem is not TreeNode node)
+            {
+                e.Handled = true;
+                return;
+            }
 
             var menu = new ContextMenu();
 
@@ -216,8 +225,11 @@ namespace Xeovis.UI.Views
             {
                 var bundle = _viewModel.mctcBundles.FirstOrDefault(x => x.Id == node.PresenterId);
                 if (bundle == null)
+                {
+                    e.Handled = true;
                     return;
-
+                }
+                
                 var addPlotItem = new MenuItem() { Header = "Add New Plot" };
                 addPlotItem.Click += (s, e) => mainMenu.LoadNewPlotDialog(node.PresenterId);
                 menu.Items.Insert(0, addPlotItem);
@@ -269,6 +281,7 @@ namespace Xeovis.UI.Views
 
                 if (mctcPlotDto == null || bundle == null || tab == null)
                 {
+                    e.Handled = true;
                     return;
                 }
 
@@ -324,8 +337,17 @@ namespace Xeovis.UI.Views
 
         private void tvExperiments_ContextRequested(object? sender, ContextRequestedEventArgs e)
         {
-            if (sender is not TreeView treeView) return;
-            if (treeView.SelectedItem is not TreeNode node) return;
+            if (_viewModel.Experiments.Count == 0)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            if (sender is not TreeView treeView || treeView.SelectedItem is not TreeNode node)
+            {
+                e.Handled = true;
+                return;
+            }
 
             var menu = new ContextMenu();
 
