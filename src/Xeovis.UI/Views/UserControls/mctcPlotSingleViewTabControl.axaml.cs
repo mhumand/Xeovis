@@ -210,7 +210,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
             checkboxes.Add(checkboxControl);
         }
 
-        if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Batch)
+        if (!_viewModel.mctcPlotDto.PointsGroupingType.IsNumber())
             stackLegend.Children.AddRange(checkboxes);
         else
             stackLegend.Children.AddRange(checkboxes.OrderBy(x => x.ViewModel.Label, new NumericStringComparer()));
@@ -297,15 +297,23 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
                 var range = Enumerable.Range(0, columns.Min(c => c.DataCount)).ToList();
                 if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Batch)
                 {
-                    index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y && columns[3].Values[i].ToString() == curve.Name, -1);
+                    index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y 
+                    && columns[3].Values[i].ToString() == curve.Name, -1);
+                }
+                else if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Experiment)
+                {
+                    index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y 
+                    && columns[4].Values[i].ToString().Split(" - ", StringSplitOptions.RemoveEmptyEntries)[1] == curve.Name, -1);
                 }
                 else if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Temperature)
                 {
-                    index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y && columns[6].Values[i].ToString() == curve.Name, -1);
+                    index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y 
+                    && columns[6].Values[i].ToString() == curve.Name, -1);
                 }
                 else if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Pressure)
                 {
-                    index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y && columns[5].Values[i].ToString() == curve.Name, -1);
+                    index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y 
+                    && columns[5].Values[i].ToString() == curve.Name, -1);
                 }
             }
         }
@@ -328,6 +336,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         var name = _viewModel.mctcPlotDto.PointsGroupingType switch
         {
             mctcPlotPointsGroupingType.Batch => values[3].ToString(),
+            mctcPlotPointsGroupingType.Experiment => values[4].ToString().Split(" - ", StringSplitOptions.RemoveEmptyEntries)[1].ToString(),
             mctcPlotPointsGroupingType.Temperature => values[6].ToString(),
             mctcPlotPointsGroupingType.Pressure => values[5].ToString(),
             _ => null
