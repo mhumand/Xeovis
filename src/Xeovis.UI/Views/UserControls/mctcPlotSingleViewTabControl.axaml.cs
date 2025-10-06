@@ -108,6 +108,10 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         _viewModel.mctcBundle = mctcBundle;
 
         spinner.ViewModel.MaxValue = mctcBundle.mctcVariables[0].Values.Count;
+        spinner.ValueChanged -= spinner_ValueChanged;
+        spinner.ViewModel.Value = 1;
+        _viewModel.mctcRunIndex = 0;
+        spinner.ValueChanged += spinner_ValueChanged;
 
         _viewModel.ClearInUseMarkersAndColors();
         PopulateMctcRunsTable();
