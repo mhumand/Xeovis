@@ -1,5 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
+using System.Drawing;
 
 namespace Xeovis.UI.ViewModels
 {
@@ -16,6 +18,9 @@ namespace Xeovis.UI.ViewModels
 
         [ObservableProperty]
         private object? ownerTabControl;
+
+        [ObservableProperty]
+        private IBrush? tabColor;
 
         public Guid Id { get; set; }
 

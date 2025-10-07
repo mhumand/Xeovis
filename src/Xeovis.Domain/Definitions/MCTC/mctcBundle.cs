@@ -1,4 +1,6 @@
-﻿namespace Xeovis.Domain
+﻿using System.Drawing;
+
+namespace Xeovis.Domain
 {
     public class mctcBundle
     {
@@ -9,6 +11,7 @@
         public List<Batch> Batches { get; set; }
         public List<mctcVariable> mctcVariables { get; set; }
         public List<xeosVariable> xeosVariables => Batches?.SelectMany(b => b.xeosVariables).ToList();
+        public Color Color { get; set; }
 
         public mctcBundle()
         {
@@ -17,6 +20,7 @@
             Id = Guid.NewGuid();
             Batches = new List<Batch>();
             mctcVariables = new List<mctcVariable>();
+            Color = Color.Transparent;
         }
 
         public mctcBundle(List<Batch> batches, List<mctcVariable> mctcVariables) : this()

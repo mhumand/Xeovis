@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 
 namespace Xeovis.UI.Models
@@ -10,6 +11,9 @@ namespace Xeovis.UI.Models
 
         [ObservableProperty]
         private bool isExpanded;
+
+        [ObservableProperty]
+        private IBrush borderColor;
 
         public bool HasChildren => Children != null && Children.Count > 0;
 

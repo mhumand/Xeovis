@@ -28,7 +28,7 @@ namespace Xeovis.UI
             return renderTarget;
         }
 
-        private static IBrush GetBrushFromColor(System.Drawing.Color color)
+        public static IBrush GetBrushFromColor(System.Drawing.Color color)
         {
             return (IBrush)new ColorConverter().Convert(color, typeof(IBrush), null, null); ;
         }
