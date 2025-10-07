@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
 using Xeovis.Domain;
 using Xeovis.Domain.Definitions;
 using Xeovis.Domain.Definitions.Defaults;
@@ -117,6 +116,16 @@ namespace Xeovis.UI.Views
             _viewModel.ExperimentsDeleted += _viewModel_ExperimentsDeleted;
             _viewModel.mctcBundlesDeleted += _viewModel_mctcBundlesDeleted;
             _viewModel.mctcPlotsDeleted += _viewModel_mctcPlotsDeleted;
+
+            tabControl.ContextRequested += TabControl_ContextRequested;
+        }
+
+        private void TabControl_ContextRequested(object? sender, ContextRequestedEventArgs e)
+        {
+            if (e.Source is TextBlock txtblock && txtblock.Tag is TabControlViewModelBase tabViewModel)
+            {
+
+            }
         }
 
         #region Events
@@ -140,10 +149,13 @@ namespace Xeovis.UI.Views
             xeosVariableCationList.SetXeosVariableCations(settings.xeosVariableCations, false);
 
             var extension = Path.GetExtension(e.Path);
-            this.Title = string.IsNullOrWhiteSpace(e.Project.ProjectName) ? "Xeovis" : $"Xeovis - {e.Project.ProjectName}{extension}";
+            this.Title = string.IsNullOrWhiteSpace(e.Project.ProjectName) ? "Xeovis" : $"Xeovis | {e.Project.ProjectName}{extension}";
             OnExperimentsLoaded(e.Project.Experiments);
             e.Project.mctcBundles.ForEach(x => OnMctcBundleLoaded(x));
             e.Project.mctcPlotDtos.ForEach(x => CreateMctcPlot(x));
+
+            _viewModel.MctcBundleNodes.ToList().ForEach(x => x.IsExpanded = false);
+            _viewModel.MctcBundleNodes.Last().IsExpanded = true;
         }
 
         private void MainMenu_mctcBundleLoaded(object? sender, Models.Events.mctcBundleLoadedEventArgs e)
@@ -153,8 +165,10 @@ namespace Xeovis.UI.Views
 
         private void OnMctcBundleLoaded(mctcBundle bundle)
         {
+            _viewModel.AssignColorToBundle(bundle);
             _viewModel.mctcBundles.Add(bundle);
             var mctcNode = new TreeNode(bundle.Name) { PresenterId = bundle.Id };
+            mctcNode.BorderColor = GraphicsGenerator.GetBrushFromColor(bundle.Color);
             _viewModel.MctcBundleNodes.Add(mctcNode);
             Log.Information("Bundle loaded: {name}", bundle.Name);
         }
@@ -680,11 +694,13 @@ namespace Xeovis.UI.Views
             {
                 viewModel.OwnerTabControl = plotTab;
                 viewModel.CanBeRemoved = true;
+                viewModel.TabColor = GraphicsGenerator.GetBrushFromColor(_viewModel.GetBundleColor(mctcBundle.Id));
                 _viewModel.TabControls.Add(viewModel);
                 _viewModel.mctcPlotDtos.Add(mctcPlotDto);
                 tabControl.SelectedIndex = tabControl.Items.IndexOf(viewModel);
 
                 var plotNode = new TreeNode(mctcPlotDto.Name) { PresenterId = mctcPlotDto.Id };
+                plotNode.BorderColor = GraphicsGenerator.GetBrushFromColor(mctcBundle.Color);
                 var mctcBundleNode = tvMctcBundles.Items.FirstOrDefault(x => (x as TreeNode).PresenterId == mctcBundle.Id) as TreeNode;
                 if (mctcBundleNode != null)
                 {

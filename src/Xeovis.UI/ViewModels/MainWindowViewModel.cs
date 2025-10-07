@@ -9,6 +9,7 @@ using Xeovis.Presentation;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Events;
 using Xeovis.Persistence;
+using System.Drawing;
 
 namespace Xeovis.UI.ViewModels
 {
@@ -27,6 +28,7 @@ namespace Xeovis.UI.ViewModels
         public List<mctcBundle> mctcBundles { get; set; }
         public List<mctcPlotDto> mctcPlotDtos { get; set; }
         public ProjectSettings ProjectSettings { get; set; }
+        public Dictionary<Guid, Color> mctcBundleColors { get; set; }
 
         public event EventHandler<ExperimentsDeletedEventArgs>? ExperimentsDeleted;
         public event EventHandler<mctcBundlesDeletedEventArgs>? mctcBundlesDeleted;
@@ -41,11 +43,13 @@ namespace Xeovis.UI.ViewModels
             mctcBundles = new List<mctcBundle>();
             mctcPlotDtos = new List<mctcPlotDto>();
             ProjectSettings = new ProjectSettings();
+            mctcBundleColors = new Dictionary<Guid, Color>();
         }
 
         public DataManagerTabControlViewModel CreateDataManagerTabVM()
         {
             var viewModel = new DataManagerTabControlViewModel(Experiments) { Header = "Data Manager" };
+            viewModel.TabColor = GraphicsGenerator.GetBrushFromColor(Color.Black);
             TabControls.Insert(0, viewModel);
             return viewModel;
         }
@@ -65,6 +69,7 @@ namespace Xeovis.UI.ViewModels
             mctcBundles.Clear();
             mctcPlotDtos.Clear();
             ProjectSettings = new ProjectSettings();
+            mctcBundleColors.Clear();
         }
 
         public void DeleteExperiment(Guid Id)
@@ -98,7 +103,9 @@ namespace Xeovis.UI.ViewModels
                 mctcBundles.Remove(bundle);
                 MctcBundleNodes.Remove(node);
                 mctcBundlesDeleted?.Invoke(this, new mctcBundlesDeletedEventArgs(Id));
+                mctcBundleColors.Remove(bundle.Id);
                 Log.Information("Bundle deleted: {name}", bundle.Name);
+                bundle = null;
             }
         }
 
@@ -108,6 +115,7 @@ namespace Xeovis.UI.ViewModels
             mctcBundles.Clear();
             MctcBundleNodes.Clear();
             mctcBundlesDeleted?.Invoke(this, new mctcBundlesDeletedEventArgs(idList));
+            mctcBundleColors.Clear();
             Log.Information("All bundles deleted.");
         }
 
@@ -133,6 +141,24 @@ namespace Xeovis.UI.ViewModels
             bundleNode.Children.Clear();
             mctcPlotsDeleted?.Invoke(this, new mctcPlotsDeletedEventArgs(idList));
             Log.Information("All plots deleted in bundle: {name}}", plotDto.Name);
+        }
+
+        public Color GetBundleColor(Guid bundleId)
+        {
+            var res = mctcBundleColors.TryGetValue(bundleId, out var color);
+            return res ? color : Color.Transparent;
+        }
+
+        public void AssignColorToBundle(mctcBundle mctcBundle)
+        {
+            if (mctcBundle == null) return;
+            if (mctcBundle.Color.IsEmpty || mctcBundle.Color == Color.Transparent)
+            {
+                var colors = ChartUtilities.ColorPalette_18;
+                var index = mctcBundleColors.Count % colors.Count;
+                mctcBundle.Color = colors[index];
+            }
+            mctcBundleColors.Add(mctcBundle.Id, mctcBundle.Color);
         }
     }
 }
