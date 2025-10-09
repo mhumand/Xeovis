@@ -210,9 +210,10 @@ public partial class MainMenu : UserControl
         await Save(isSaveAs: true);
     }
 
-    public void File_Quit()
+    public async Task File_Quit()
     {
-        Environment.Exit(0);
+        if (await CheckAndRaiseUnsavedChangesMessage(askAnyWay: true))
+            Environment.Exit(exitCode: 0);
     }
 
     // Data Manager
