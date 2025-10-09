@@ -51,6 +51,8 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
 
     private void PrepareUI()
     {
+        uniformGrid.SizeChanged += (s, e) => SetupLayout((int)spinnerColumnNo.ViewModel.Value);
+        
         var vmSpinnerMctcRun = new LabelSpinnerControlViewModel("mctc Run No.", 1, 1, 1);
         spinnerMctcRun.ViewModel = vmSpinnerMctcRun;
         spinnerMctcRun.ValueChanged += spinnerMctcRun_ValueChanged;
