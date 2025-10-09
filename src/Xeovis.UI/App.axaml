@@ -4,24 +4,24 @@
              xmlns:local="using:Xeovis.UI"
              Name="Xeovis"
              RequestedThemeVariant="Light">
-    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+	<!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
-    <Application.DataTemplates>
-        <local:ViewLocator />
-    </Application.DataTemplates>
+	<Application.DataTemplates>
+		<local:ViewLocator />
+	</Application.DataTemplates>
 
-    <NativeMenu.Menu>
-        <NativeMenu>
-            <NativeMenuItem Header="About…" Click="about_OnClick"/>
-            <NativeMenuItem Header="Preferences…" />
-        </NativeMenu>
-    </NativeMenu.Menu>
+	<NativeMenu.Menu>
+		<NativeMenu>
+			<NativeMenuItem Header="About…" Click="about_OnClick"/>
+			<NativeMenuItem Header="Preferences…" />
+		</NativeMenu>
+	</NativeMenu.Menu>
 
-    <Application.Styles>
-        <!--https://theme.xaml.live/-->
-        <FluentTheme>
-            <FluentTheme.Palettes>
-                <ColorPaletteResources x:Key="Light" Accent="#ff1c39bb" AltHigh="White" AltLow="White"
+	<Application.Styles>
+		<!--https://theme.xaml.live/-->
+		<FluentTheme>
+			<FluentTheme.Palettes>
+				<ColorPaletteResources x:Key="Light" Accent="#ff1c39bb" AltHigh="White" AltLow="White"
                                        AltMedium="White" AltMediumHigh="White" AltMediumLow="White" BaseHigh="Black"
                                        BaseLow="#ffcccccc" BaseMedium="#ff898989" BaseMediumHigh="#ff5d5d5d"
                                        BaseMediumLow="#ff737373" ChromeAltLow="#ff5d5d5d" ChromeBlackHigh="Black"
@@ -31,7 +31,7 @@
                                        ChromeLow="#ffececec" ChromeMedium="#ffe6e6e6" ChromeMediumLow="#ffececec"
                                        ChromeWhite="White" ListLow="#ffe6e6e6" ListMedium="#ffcccccc"
                                        RegionColor="White" />
-                <ColorPaletteResources x:Key="Dark" Accent="#ff1c39bb" AltHigh="Black" AltLow="Black" AltMedium="Black"
+				<ColorPaletteResources x:Key="Dark" Accent="#ff1c39bb" AltHigh="Black" AltLow="Black" AltMedium="Black"
                                        AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ff333333"
                                        BaseMedium="#ff9a9a9a" BaseMediumHigh="#ffb4b4b4" BaseMediumLow="#ff676767"
                                        ChromeAltLow="#ffb4b4b4" ChromeBlackHigh="Black" ChromeBlackLow="#ffb4b4b4"
@@ -40,17 +40,17 @@
                                        ChromeHigh="Gray" ChromeLow="#ff151515" ChromeMedium="#ff1d1d1d"
                                        ChromeMediumLow="#ff2c2c2c" ChromeWhite="White" ListLow="#ff1d1d1d"
                                        ListMedium="#ff333333" RegionColor="Black" />
-            </FluentTheme.Palettes>
-        </FluentTheme>
+			</FluentTheme.Palettes>
+		</FluentTheme>
 
-        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
 
-        <StyleInclude Source="/Views/Styles/Buttons.axaml" />
-        <StyleInclude Source="/Views/Styles/Dialogs.axaml" />
-        <StyleInclude Source="/Views/Styles/Textboxes.axaml" />
-        <StyleInclude Source="/Views/Styles/UserControls.axaml" />
-        <StyleInclude Source="/Views/Styles/ProgressBars.axaml" />
-        <StyleInclude Source="/Views/Styles/TabItems.axaml" />
-        <StyleInclude Source="/Views/Styles/TreeViews.axaml" />
-    </Application.Styles>
+		<StyleInclude Source="/Views/Styles/Buttons.axaml" />
+		<StyleInclude Source="/Views/Styles/Dialogs.axaml" />
+		<StyleInclude Source="/Views/Styles/Textboxes.axaml" />
+		<StyleInclude Source="/Views/Styles/UserControls.axaml" />
+		<StyleInclude Source="/Views/Styles/ProgressBars.axaml" />
+		<StyleInclude Source="/Views/Styles/TabItems.axaml" />
+		<StyleInclude Source="/Views/Styles/TreeViews.axaml" />
+	</Application.Styles>
 </Application>
