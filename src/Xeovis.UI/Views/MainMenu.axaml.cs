@@ -98,7 +98,19 @@ public partial class MainMenu : UserControl
         var files = await topLevel.StorageProvider.OpenFilePickerAsync(options);
         if (files == null || files.Count == 0) return;
         Log.Information("Opening project file...");
-        var path = Uri.UnescapeDataString(files[0].Path.AbsolutePath);
+        var file = files[0];
+        var path = Uri.UnescapeDataString(file.Path.AbsolutePath);
+        LoadProjectFile(path);
+    }
+
+    public async void LoadProjectFile(string path, bool raiseUnsavedChanges = false)
+    {
+        if (raiseUnsavedChanges)
+        {
+            var goAhead = await CheckAndRaiseUnsavedChangesMessage();
+            if (!goAhead) return;
+        }
+
         var projectFile = ProjectFileManager.Load(path);
         if (projectFile == null)
         {

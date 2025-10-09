@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using Serilog;
@@ -103,6 +104,10 @@ namespace Xeovis.UI.Views
 
         private void PrepareUI()
         {
+            DragDrop.SetAllowDrop(this, true);
+            AddHandler(DragDrop.DropEvent, Drop);
+            AddHandler(DragDrop.DragOverEvent, DragOver);
+
             tvMctcBundles.ItemsSource = _viewModel.MctcBundleNodes;
             tvExperiments.ItemsSource = _viewModel.ExperimentNodes;
 
@@ -129,6 +134,40 @@ namespace Xeovis.UI.Views
         }
 
         #region Events
+
+        private void DragOver(object? sender, DragEventArgs e)
+        {
+            e.DragEffects = IsDraggedObjectValid(e, out _) ? DragDropEffects.Copy : DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void Drop(object? sender, DragEventArgs e)
+        {
+            if (!IsDraggedObjectValid(e, out string absolutePath)) return;
+            var path = Uri.UnescapeDataString(absolutePath);
+            mainMenu.LoadProjectFile(path, raiseUnsavedChanges: true);
+        }
+
+        private bool IsDraggedObjectValid(DragEventArgs e, out string absolutePath)
+        {
+            if (e.Data.Contains(DataFormats.Files))
+            {
+                var files = e.Data.GetFiles()?.ToList();
+                if (files != null && files.Count == 1)
+                {
+                    var file = files.First();
+                    if (Path.GetExtension(file.Path.AbsolutePath).Equals(".xvs", StringComparison.OrdinalIgnoreCase))
+                    {
+                        absolutePath = file.Path.AbsolutePath;
+                        return true;
+                    }
+                }
+            }
+
+            absolutePath = string.Empty;
+            return false;
+        }
+
         private void MainMenu_ProjectLoaded(object? sender, Models.Events.ProjectFileLoadedEventArgs e)
         {
             _viewModel.ClearAll();
@@ -155,7 +194,8 @@ namespace Xeovis.UI.Views
             e.Project.mctcPlotDtos.ForEach(x => CreateMctcPlot(x));
 
             _viewModel.MctcBundleNodes.ToList().ForEach(x => x.IsExpanded = false);
-            _viewModel.MctcBundleNodes.Last().IsExpanded = true;
+            if (_viewModel.MctcBundleNodes.Count > 0)
+                _viewModel.MctcBundleNodes.Last().IsExpanded = true;
         }
 
         private void MainMenu_mctcBundleLoaded(object? sender, Models.Events.mctcBundleLoadedEventArgs e)
