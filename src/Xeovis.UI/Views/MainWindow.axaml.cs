@@ -107,6 +107,7 @@ namespace Xeovis.UI.Views
             DragDrop.SetAllowDrop(this, true);
             AddHandler(DragDrop.DropEvent, Drop);
             AddHandler(DragDrop.DragOverEvent, DragOver);
+            this.Closing += MainWindow_Closing;
 
             tvMctcBundles.ItemsSource = _viewModel.MctcBundleNodes;
             tvExperiments.ItemsSource = _viewModel.ExperimentNodes;
@@ -134,6 +135,11 @@ namespace Xeovis.UI.Views
         }
 
         #region Events
+        private void MainWindow_Closing(object? sender, WindowClosingEventArgs e)
+        {
+            _ = mainMenu.File_Quit();
+            e.Cancel = true;
+        }
 
         private void DragOver(object? sender, DragEventArgs e)
         {
