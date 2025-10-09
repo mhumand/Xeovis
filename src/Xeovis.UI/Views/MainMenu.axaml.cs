@@ -1,16 +1,19 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
+using Serilog;
 using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Serilog;
 using Xeovis.Base.Utilities;
 using Xeovis.Domain;
+using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Globals;
 using Xeovis.Persistence;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.Models.Events;
@@ -18,8 +21,6 @@ using Xeovis.UI.Models.FileReaders;
 using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.UI.Views;
 using Xeovis.UI.Views.Helpers;
-using Xeovis.Domain.Definitions;
-using Xeovis.Domain.Definitions.Globals;
 
 namespace Xeovis.UI;
 
@@ -105,24 +106,30 @@ public partial class MainMenu : UserControl
 
     public async void LoadProjectFile(string path, bool raiseUnsavedChanges = false)
     {
+        bool goAhead = true;
         if (raiseUnsavedChanges)
-        {
-            var goAhead = await CheckAndRaiseUnsavedChangesMessage();
-            if (!goAhead) return;
-        }
+            goAhead = await CheckAndRaiseUnsavedChangesMessage();
 
-        var projectFile = ProjectFileManager.Load(path);
-        if (projectFile == null)
+        if (goAhead)
         {
-            var ms = MessageBoxManager.GetMessageBoxStandard("Error",
-                "Failed to open the project file!", ButtonEnum.Ok, Icon.Error);
-            ms.ShowWindowDialogAsync(ParentWindow);
-            return;
-        }
+            var progBar = new ProgressBarDialog(isIndeterminate: true);
+            progBar.ShowDialog(ParentWindow);
 
-        _lastFilePath = path;
-        ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(projectFile, path));
-        Log.Information("Project file opened successfully.");
+            var projectFile = await Task.Run(() => ProjectFileManager.Load(path));
+            if (projectFile == null)
+            {
+                var ms = MessageBoxManager.GetMessageBoxStandard("Error",
+                    "Failed to open the project file!", ButtonEnum.Ok, Icon.Error);
+                ms.ShowWindowDialogAsync(ParentWindow);
+                return;
+            }
+
+            _lastFilePath = path;
+            ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(projectFile, path));
+            Log.Information("Project file opened successfully.");
+
+            progBar.Close();
+        }
     }
 
     private async Task<bool> CheckAndRaiseUnsavedChangesMessage(bool askAnyWay = false)
@@ -230,9 +237,9 @@ public partial class MainMenu : UserControl
                 var vm = dialog.ViewModel;
                 var expReader = new ExperimentReader(vm.SelectedFolders, vm.SubfolderDirectory, vm.IsSubfolderChecked);
                 var expReaderResults = await Task.Run(() => expReader.GetExperiments(progress, token));
-                
+
                 // get confirmation
-                
+
                 var experiments = expReaderResults.Experiments;
                 ExperimentsLoaded?.Invoke(this, new ExperimentsLoadedEventArgs(experiments, dialog.ViewModel));
             }

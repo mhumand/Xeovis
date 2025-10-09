@@ -37,7 +37,7 @@ namespace Xeovis.Persistence
             }
         }
 
-        public static ProjectFile Load(string fullName)
+        public static async Task<ProjectFile> Load(string fullName)
         {
             try
             {
