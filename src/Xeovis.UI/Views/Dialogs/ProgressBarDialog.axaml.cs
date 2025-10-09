@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using System;
 using System.Threading;
-using Serilog;
 using Xeovis.UI.Models;
 
 namespace Xeovis.UI;
@@ -37,6 +36,16 @@ public partial class ProgressBarDialog : Window
             pbSecondary.IsVisible = data.SecondaryValue != double.NaN && !string.IsNullOrWhiteSpace(data.SecondaryLabel);
             txtSecondary.IsVisible = pbSecondary.IsVisible; 
         });
+    }
+
+    public ProgressBarDialog(bool isIndeterminate) : this()
+    {
+        if (isIndeterminate)
+        {
+            pbPrimary.IsIndeterminate = isIndeterminate;
+            pbPrimary.ShowProgressText = false;
+            btnCancel.IsVisible = false;
+        }
     }
 
     private void btnCancel_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
