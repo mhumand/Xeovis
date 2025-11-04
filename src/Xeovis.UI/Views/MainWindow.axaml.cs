@@ -124,6 +124,27 @@ namespace Xeovis.UI.Views
             _viewModel.mctcPlotsDeleted += _viewModel_mctcPlotsDeleted;
 
             tabControl.ContextRequested += TabControl_ContextRequested;
+            tabControl.SelectionChanged += TabControl_SelectionChanged;
+        }
+
+        private void TabControl_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0 && e.AddedItems[0] is TabControlViewModelBase tabVMbase)
+            {
+                if (tabVMbase is DataManagerTabControlViewModel)
+                {
+                    tvMctcBundles.SelectedItem = null;
+                    return;
+                }
+
+                var mctcPlotID = tabVMbase.PresenterId;
+                var allNodes = tvMctcBundles.Items.Cast<TreeNode>().SelectMany(x => x.Children).ToList();
+                var plotNode = allNodes.FirstOrDefault(x => x.PresenterId == mctcPlotID);
+                tvMctcBundles.SelectedItem = plotNode;
+                _viewModel.MctcBundleNodes.ToList().ForEach(x => x.IsExpanded = false);
+                var bundleNode = _viewModel.MctcBundleNodes.FirstOrDefault(x => x.HasChildren && x.Children.Contains(plotNode));
+                if (bundleNode != null) bundleNode.IsExpanded = true;
+            }
         }
 
         private void TabControl_ContextRequested(object? sender, ContextRequestedEventArgs e)
