@@ -322,7 +322,7 @@ namespace Xeovis.UI.Views
                 menu.Items.Insert(1, reloadItem);
 
                 var reloadAndAppendItem = new MenuItem() { Header = "Reload & Append" };
-                ToolTip.SetTip(reloadAndAppendItem, "Reloads the bundle’s contents from its directory and appends them to the existing content.");
+                ToolTip.SetTip(reloadAndAppendItem, "Reloads the bundle's contents from its directory and appends them to the existing content.");
                 reloadAndAppendItem.Click += reloadAndAppendItem_Click; ;
                 reloadAndAppendItem.Tag = bundle;
                 menu.Items.Insert(2, reloadAndAppendItem);

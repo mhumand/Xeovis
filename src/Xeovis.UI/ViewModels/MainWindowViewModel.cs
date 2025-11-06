@@ -104,6 +104,7 @@ namespace Xeovis.UI.ViewModels
                 MctcBundleNodes.Remove(node);
                 mctcBundlesDeleted?.Invoke(this, new mctcBundlesDeletedEventArgs(Id));
                 mctcBundleColors.Remove(bundle.Id);
+                mctcPlotDtos.RemoveAll(x => x.mctcBundleId == bundle.Id);
                 Log.Information("Bundle deleted: {name}", bundle.Name);
                 bundle = null;
             }
@@ -116,6 +117,7 @@ namespace Xeovis.UI.ViewModels
             MctcBundleNodes.Clear();
             mctcBundlesDeleted?.Invoke(this, new mctcBundlesDeletedEventArgs(idList));
             mctcBundleColors.Clear();
+            mctcPlotDtos.Clear();
             Log.Information("All bundles deleted.");
         }
 
@@ -123,6 +125,7 @@ namespace Xeovis.UI.ViewModels
         {
             var plotDto = mctcPlotDtos.FirstOrDefault(x => x.Id == Id);
             if (plotDto == null) return;
+            mctcPlotDtos.Remove(plotDto);
             var bundleNode = mctcBundleNodes.FirstOrDefault(x => x.PresenterId == plotDto.mctcBundleId);
             if (bundleNode == null) return;
             var plotNode = bundleNode.Children.FirstOrDefault(x => x.PresenterId == Id);
@@ -135,6 +138,7 @@ namespace Xeovis.UI.ViewModels
         {
             var plotDto = mctcPlotDtos.FirstOrDefault(x => x.Id == plotID);
             if (plotDto == null) return;
+            mctcPlotDtos.RemoveAll(x => x.mctcBundleId == plotDto.mctcBundleId);
             var bundleNode = mctcBundleNodes.FirstOrDefault(x => x.PresenterId == plotDto.mctcBundleId);
             if (bundleNode == null) return;
             var idList = bundleNode.Children.Select(x => x.PresenterId).ToList();
