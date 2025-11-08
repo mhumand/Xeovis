@@ -146,6 +146,7 @@
 			<!-- Main Pane -->
 			<Border Grid.Column="2" Padding="0" Classes="Panels" >
 				<TabControl x:Name="tabControl"
+				            Focusable="True"
 							ItemsSource="{Binding TabControls}">
 
 					<TabControl.ItemTemplate>

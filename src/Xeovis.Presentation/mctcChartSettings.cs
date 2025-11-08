@@ -15,7 +15,7 @@
             ShowAxesTitle = true;
             ShowChartTitle = true;
             LockAxesLimits = false;
-            UseAxesLimits = true;
+            UseAxesLimits = false;
             AxesMinLimit = 0;
             AxesMaxLimit = 1;
         }

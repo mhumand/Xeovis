@@ -30,7 +30,7 @@ namespace Xeovis.Presentation
             SampleXeosVariables = new List<xeosVariable>();
             IsGridView = false;
             PointsGroupingType = mctcPlotPointsGroupingType.Batch;
-            ExcludeIrrelevantBatches = false;
+            ExcludeIrrelevantBatches = true;
             ChartSettings = new mctcChartSettings();
         }
 
