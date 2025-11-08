@@ -156,11 +156,12 @@ namespace Xeovis.UI.ViewModels
         public void AssignColorToBundle(mctcBundle mctcBundle)
         {
             if (mctcBundle == null) return;
-            if (mctcBundle.Color.IsEmpty || mctcBundle.Color == Color.Transparent)
+            if (mctcBundle.Color.IsInvisible())
             {
-                var colors = ChartUtilities.ColorPalette_18;
-                var index = mctcBundleColors.Count % colors.Count;
-                mctcBundle.Color = colors[index];
+                var existingColors = mctcBundles.Select(x => x.Color).Where(x => !x.IsInvisible()).ToList();
+                var colors = ChartUtilities.ColorPalette_18
+                    .Union(ChartUtilities.ColorPalette_ColorblindFriendly).ToList();
+                mctcBundle.Color = colors.FirstOrDefault(x => !existingColors.Contains(x));
             }
             mctcBundleColors.Add(mctcBundle.Id, mctcBundle.Color);
         }

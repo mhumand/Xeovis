@@ -138,5 +138,10 @@ namespace Xeovis.UI
             curve.MarkerColor = pallete[colorIndex];
             curve.MarkerType = MarkerTypes[markerIndex];
         }
+
+        public static bool IsInvisible(this Color color)
+        {
+            return color.IsEmpty || color == Color.Transparent || color == Color.White;
+        }
     }
 }
