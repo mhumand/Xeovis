@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Avalonia.Media;
 using Xeovis.Base;
 using Xeovis.Domain;
 using Xeovis.Domain.Definitions;
@@ -493,6 +494,16 @@ namespace Xeovis.UI.Views
                     directoryItem.Click += (s, e) => DirectoryHelper.GoToDirectory(bundle.FilesDirectory);
                     menu.Items.Add(directoryItem);
                 }
+
+                var changeColor = new MenuItem() { Header = "Change Color" };
+                var colorPicker = new ColorPicker();
+                colorPicker.Color = GraphicsGenerator.GetAvaloniaColor(bundle.Color);
+                colorPicker.Palette = new MaterialHalfColorPalette();
+                colorPicker.IsAlphaVisible = false;
+                colorPicker.IsHexInputVisible = false;
+                colorPicker.ColorChanged += (s, e) => ChangeBundleColor(bundle, e.NewColor);
+                changeColor.Items.Add(colorPicker);
+                menu.Items.Add(changeColor);
             }
             else
             {
@@ -556,6 +567,29 @@ namespace Xeovis.UI.Views
             tvMctcBundles.ContextMenu.Open();
         }
 
+        private void ChangeBundleColor(mctcBundle bundle, Color newColor)
+        {
+            if (bundle == null) return;
+            var color = GraphicsGenerator.GetColorFromAvaloniaColor(newColor);
+            if (color.IsInvisible()) return;
+            bundle.Color = color;
+            _viewModel.mctcBundleColors[bundle.Id] = bundle.Color;
+            var bundleNode = tvMctcBundles.Items.FirstOrDefault(x => x is TreeNode node && node.PresenterId == bundle.Id) as TreeNode;
+            if (bundleNode == null) return;
+            bundleNode.BorderColor = GraphicsGenerator.GetBrushFromColor(bundle.Color);
+            foreach (TreeNode child in bundleNode.Children)
+            {
+                child.BorderColor = GraphicsGenerator.GetBrushFromColor(bundle.Color);
+            }
+            
+            var plotsID = _viewModel.mctcPlotDtos.Where(x => x.mctcBundleId == bundle.Id).Select(x => x.Id).ToList();
+            var tabs = _viewModel.TabControls.Where(x => plotsID.Contains(x.PresenterId));
+            foreach (var tab in tabs)
+            {
+                tab.TabColor = GraphicsGenerator.GetBrushFromColor(bundle.Color);
+            }
+        }
+        
         private void tvExperiments_ContextRequested(object? sender, ContextRequestedEventArgs e)
         {
             if (_viewModel.Experiments.Count == 0)
@@ -902,7 +936,7 @@ namespace Xeovis.UI.Views
             {
                 viewModel.OwnerTabControl = plotTab;
                 viewModel.CanBeRemoved = true;
-                viewModel.TabColor = GraphicsGenerator.GetBrushFromColor(_viewModel.GetBundleColor(mctcBundle.Id));
+                viewModel.TabColor = GraphicsGenerator.GetBrushFromColor(mctcBundle.Color);
                 _viewModel.TabControls.Add(viewModel);
                 _viewModel.mctcPlotDtos.Add(mctcPlotDto);
                 tabControl.SelectedIndex = tabControl.Items.IndexOf(viewModel);
