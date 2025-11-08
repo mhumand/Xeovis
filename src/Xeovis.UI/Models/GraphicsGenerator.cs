@@ -118,5 +118,15 @@ namespace Xeovis.UI
 
             return RenderVisualToImage(shape, size, size);
         }
+
+        public static Color GetAvaloniaColor(System.Drawing.Color color)
+        {
+            return Color.FromArgb(color.A, color.R, color.G, color.B);
+        }
+
+        public static System.Drawing.Color GetColorFromAvaloniaColor(Color color)
+        {
+            return System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
+        }
     }
 }
