@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Xeovis.Base;
 using Xeovis.Domain;
 using Xeovis.Domain.Definitions;
 using Xeovis.Domain.Definitions.Defaults;
@@ -125,8 +126,65 @@ namespace Xeovis.UI.Views
 
             tabControl.ContextRequested += TabControl_ContextRequested;
             tabControl.SelectionChanged += TabControl_SelectionChanged;
+            tabControl.KeyDown += tabControl_KeyDown;
         }
 
+        private void tabControl_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyModifiers != KeyModifiers.Control) return;
+
+            if (tabControl.SelectedItem is not TabControlViewModelBase selectedTab) return;
+            if (selectedTab is DataManagerTabControlViewModel) return;
+            if (e.Key == Key.OemComma) // move tab left
+                MovePlotTab(selectedTab, moveLeft: true);
+            else if (e.Key == Key.OemPeriod) // move tab right
+                MovePlotTab(selectedTab, moveLeft: false);
+            else
+                e.Handled = true;
+        }
+
+        private void MovePlotTab(TabControlViewModelBase selectedTab, bool moveLeft)
+        {
+            if (selectedTab is DataManagerTabControlViewModel) return;
+            var tabIndex = _viewModel.TabControls.IndexOf(selectedTab);
+            var firstPlotIndex = _viewModel.TabControls.Any(x => x is DataManagerTabControlViewModel) ? 1 : 0;
+            var plotIndex = tabIndex - firstPlotIndex;
+            if (moveLeft)
+            {
+                if (tabIndex == firstPlotIndex) return;
+                _viewModel.TabControls.Swap(tabIndex, tabIndex - 1);
+                _viewModel.mctcPlotDtos.Swap(plotIndex, plotIndex - 1);
+            }
+            else // move right
+            {
+                if (tabIndex == _viewModel.TabControls.Count - 1) return;
+                _viewModel.TabControls.Swap(tabIndex, tabIndex + 1);
+                _viewModel.mctcPlotDtos.Swap(plotIndex, plotIndex + 1);
+            }
+            
+            selectedTab.IsVisible = true;
+            tabControl.SelectedItem = selectedTab;
+            tabControl.Focus();
+        }
+
+        private void MovePlotTabToPosition(TabControlViewModelBase selectedTab, int positionInTabControl)
+        {
+            if (selectedTab is DataManagerTabControlViewModel) return;
+            var tabIndex = _viewModel.TabControls.IndexOf(selectedTab);
+            if (tabIndex == positionInTabControl) return; // no need to swap
+            
+            var firstPlotIndex = _viewModel.TabControls.Any(x => x is DataManagerTabControlViewModel) ? 1 : 0;
+            if (positionInTabControl < firstPlotIndex) return;
+            if (positionInTabControl > tabIndex) positionInTabControl--;
+            
+            _viewModel.TabControls.Move(tabIndex, positionInTabControl);
+            _viewModel.mctcPlotDtos.Move(tabIndex - firstPlotIndex, positionInTabControl - firstPlotIndex);
+
+            selectedTab.IsVisible = true;
+            tabControl.SelectedItem = selectedTab;
+            tabControl.Focus();
+        }
+        
         private void TabControl_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count > 0 && e.AddedItems[0] is TabControlViewModelBase tabVMbase)
@@ -149,9 +207,91 @@ namespace Xeovis.UI.Views
 
         private void TabControl_ContextRequested(object? sender, ContextRequestedEventArgs e)
         {
-            if (e.Source is TextBlock txtblock && txtblock.Tag is TabControlViewModelBase tabViewModel)
+            if (e.Source is TextBlock txtblock && txtblock.Tag is TabControlViewModelBase selectedTab)
             {
+                if (selectedTab is DataManagerTabControlViewModel)
+                {
+                    e.Handled = true;
+                    return;
+                }
 
+                var plotDto = _viewModel.mctcPlotDtos.FirstOrDefault(x => x.Id == selectedTab.PresenterId);
+                if (plotDto == null) return;
+                
+                var menu = new ContextMenu();
+
+                // general items
+                var renameItem = new MenuItem { Header = "Rename" };
+                var otherNames = _viewModel.mctcPlotDtos.Except(new List<mctcPlotDto> { plotDto }).Select(x => x.Name).ToList();
+                void Rename(mctcPlotDto plotDto, string newName)
+                {
+                    plotDto.Name = newName;
+                    OnMctcPlotRenamed(plotDto);
+                }
+                renameItem.Click += (_, __) => RenameObjectWithDialog(plotDto, otherNames, x => x.Name, Rename);
+                menu.Items.Add(renameItem);
+                
+                // moving tabs
+                menu.Items.Add(new Separator());
+                var firstPlotIndex = _viewModel.TabControls.Any(x => x is DataManagerTabControlViewModel) ? 1 : 0;
+                var tabIndex = _viewModel.TabControls.IndexOf(selectedTab);
+                var plotIndex = tabIndex - firstPlotIndex;
+
+                if (plotIndex >= 1)
+                {
+                    var moveLeftItem = new MenuItem();
+                    moveLeftItem.Header = "Move Left";
+                    moveLeftItem.Click += (_,_) => MovePlotTab(selectedTab, true);
+                    menu.Items.Add(moveLeftItem);
+                }
+
+                if (tabIndex < _viewModel.TabControls.Count - 1)
+                {
+                    var moveRightItem = new MenuItem();
+                    moveRightItem.Header = "Move Right";
+                    moveRightItem.Click += (_, _) => MovePlotTab(selectedTab, false);
+                    menu.Items.Add(moveRightItem);
+                }
+
+                menu.Items.Add(new Separator());
+                
+                var moveBeforeItem = new MenuItem();
+                moveBeforeItem.Header = "Move Before";
+                var moveAfterItem = new MenuItem();
+                moveAfterItem.Header = "Move After";
+                for (var i = firstPlotIndex; i < _viewModel.TabControls.Count; i++)
+                {
+                    var targetTab = _viewModel.TabControls[i];
+                    if (targetTab == selectedTab) continue; // don't show current tab
+
+                    if (i != tabIndex + 1) // don't show the next tab for "Move Before"
+                    {
+                        var item = new MenuItem();
+                        item.Header = targetTab.Header;
+                        item.Tag = targetTab;
+                        item.Click += (_, _) => MovePlotTabToPosition(selectedTab, _viewModel.TabControls.IndexOf(item.Tag as TabControlViewModelBase));
+                        moveBeforeItem.Items.Add(item);
+                    }
+
+                    if (i != tabIndex - 1) // don't show the previous tab for "Move After"
+                    {
+                        var item = new MenuItem();
+                        item.Header = targetTab.Header;
+                        item.Tag = targetTab;
+                        item.Click += (_, _) => MovePlotTabToPosition(selectedTab, _viewModel.TabControls.IndexOf(item.Tag as TabControlViewModelBase) + 1);
+                        moveAfterItem.Items.Add(item);
+                    }
+                }
+                menu.Items.Add(moveBeforeItem);
+                menu.Items.Add(moveAfterItem);
+                
+                tabControl.ContextMenu = menu;
+                tabControl.ContextMenu.Open();
+            }
+            else
+            {
+                e.Handled = true;
+                tabControl.ContextMenu = null;
             }
         }
 
@@ -709,6 +849,7 @@ namespace Xeovis.UI.Views
                 bundleNode.Children.Remove(plotNode);
 
                 var plot = _viewModel.mctcPlotDtos.FirstOrDefault(x => x.Id == plotNode.PresenterId);
+                _viewModel.mctcPlotDtos.Remove(plot);
                 Log.Information("Plot deleted: {name}", plot.Name);
             }
 
