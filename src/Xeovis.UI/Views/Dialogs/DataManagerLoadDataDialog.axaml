@@ -101,6 +101,7 @@
 				<Button x:Name="btnCancel"
 						Classes="Primary"
 						Content="Cancel"
+						IsCancel="True"
 						Click="btnCancel_Click"/>
 
 				<Button x:Name="btnOK"

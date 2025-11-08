@@ -10,5 +10,6 @@
 		<Setter Property="ShowInTaskbar" Value="False"/>
 		<Setter Property="FontFamily" Value="Segoe UI"/>
 		<Setter Property="FontSize" Value="14"/>
+		<Setter Property="Focusable" Value="True"/>
 	</Style>
 </Styles>
