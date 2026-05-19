@@ -68,6 +68,25 @@ namespace Xeovis.UI.Models.FileReaders
             return mctcBundle;
         }
 
+        public mctcBundle ReadData()
+        {
+            if (!Directory.Exists(_directory)) return null;
+
+            _files = Directory.GetFiles(_directory, "*.txt").ToList();
+            if (_files.Count == 0) return null;
+
+            if (!ReadBatchLines()) return null;
+            if (!ReadBatchBulks()) return null;
+            if (!ReadxeosVariables()) return null;
+            if (!ReadmctcResults()) return null;
+
+            var mctcBundle = new mctcBundle(_batches, _mctcVariables);
+            _mctcVariables.ForEach(x => x.mctcBundleId = mctcBundle.Id);
+            _batches.ForEach(x => x.mctcBundleId = mctcBundle.Id);
+            _batches.SelectMany(b => b.xeosVariables).ToList().ForEach(x => x.mctcBundleId = mctcBundle.Id);
+            return mctcBundle;
+        }
+        
         private bool ReadBatchLines()
         {
             var lines = ReadFileLines("batchlines");

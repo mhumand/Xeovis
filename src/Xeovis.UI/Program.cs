@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Serilog;
 using Serilog.Enrichers.CallerInfo;
 using Xeovis.UI.Views.Helpers;
@@ -16,6 +17,10 @@ namespace Xeovis.UI
         public static void Main(string[] args)
         {
             var logPath = SetupLogging();
+            
+            // Start API server in the background
+            ApiHost.Start();
+            
             try
             {
                 Log.Information("Application started.");
