@@ -18,10 +18,30 @@
 			<Setter Property="MinHeight" Value="40" />
 			<Setter Property="Padding" Value="0" />
 		</Style>
+		
+		<Style Selector="TabControl.SidebarTabs TabItem:selected /template/ Border#PART_SelectedPipe">
+			<Setter Property="Background" Value="#AF6A0B"/>
+			<Setter Property="Width" Value="3"/>
+			<Setter Property="Height" Value="20"/> 
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="Margin" Value="0,0,2,0"/>
+		</Style>
+		
+		<Style Selector="TabControl.NormalTabs TabItem:selected /template/ Border#PART_SelectedPipe">
+			<Setter Property="Background" Value="#AF6A0B"/>
+			<Setter Property="Height" Value="3"/>
+			<Setter Property="Width" Value="NaN"/>
+			<Setter Property="HorizontalAlignment" Value="Stretch"/>
+			<Setter Property="VerticalAlignment" Value="Bottom"/>
+			<Setter Property="Margin" Value="0"/>
+		</Style>
 	</UserControl.Styles>
 
 
-	<TabControl x:Name="tabControl" TabStripPlacement="Left">
+	<TabControl x:Name="tabControl"
+	            Classes="SidebarTabs"
+	            TabStripPlacement="Left">
 
 		<!--Experiments Tab-->
 		<TabItem x:Name="tabExperiments" Header="Experiments">
@@ -47,7 +67,10 @@
 							  BorderThickness="3.5"
 							  Margin="0 2"/>
 
-				<TabControl x:Name="tabControlExperimentDetails" Grid.Row="2" Padding="0">
+				<TabControl x:Name="tabControlExperimentDetails"
+				            Classes="NormalTabs"
+				            Grid.Row="2"
+				            Padding="0">
 					<TabItem x:Name="tabPhaseInExperiment" Header="Phases">
 						<Grid RowDefinitions="40,*">
 							<uc:LabelComboBoxControl x:Name="lcbPhaseInExperiment"

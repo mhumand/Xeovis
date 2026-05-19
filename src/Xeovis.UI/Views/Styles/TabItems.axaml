@@ -11,6 +11,9 @@
 		<Setter Property="FontSize" Value="14" />
 		<Setter Property="FontWeight" Value="SemiBold" />
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
-		<Setter Property="Padding" Value="10 5 0 5"/>
+		<!-- <Setter Property="Padding" Value="10 5 0 5"/> -->
+		<Setter Property="MinHeight" Value="25"/>
+		<Setter Property="Margin" Value="2,2,2,2"/>
+		<Setter Property="Padding" Value="0"/>
 	</Style>
 </Styles>

@@ -66,6 +66,7 @@
 
 		<Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
 			<Setter Property="Background" Value="#AF6A0B"/>
+			<Setter Property="Height" Value="3"/>
 		</Style>
 	</Window.Styles>
 
@@ -144,7 +145,7 @@
 						  ResizeDirection="Columns"/>
 
 			<!-- Main Pane -->
-			<Border Grid.Column="2" Padding="0" Classes="Panels" >
+			<Border Grid.Column="2" Padding="0 2" Classes="Panels" >
 				<TabControl x:Name="tabControl"
 				            Focusable="True"
 							ItemsSource="{Binding TabControls}">
@@ -154,8 +155,9 @@
 							<Border IsVisible="{Binding IsVisible}"
 									BorderThickness="1.5"
 									Padding="4 2"
-									Margin="0 0 0 5"
+									Margin="0 0 0 8"
 									CornerRadius="3"
+									Height="25"
 									BorderBrush="{Binding TabColor}">
 								<StackPanel Classes="Tabs" VerticalAlignment="Center">
 									<TextBlock Text="{Binding Header}"
@@ -178,8 +180,13 @@
 
 					<TabControl.ContentTemplate>
 						<DataTemplate DataType="vm:TabControlViewModelBase">
-							<UserControl Content="{Binding OwnerTabControl}"
-										 IsVisible="{Binding IsVisible}"/>
+							<Border BorderBrush="DarkGray"
+							        BorderThickness="0 2 0 0"
+							        Padding="0 8 0 0"
+							        Margin="0">
+								<UserControl Content="{Binding OwnerTabControl}"
+								             IsVisible="{Binding IsVisible}"/>
+							</Border>
 						</DataTemplate>
 					</TabControl.ContentTemplate>
 

@@ -22,7 +22,7 @@
 
 	<Border BorderBrush="#1C39BB"
 			BorderThickness="3"
-			CornerRadius="10 0 10 0">
+			CornerRadius="10">
 		
 		<Grid RowDefinitions="*,40" Margin="15">
 			<StackPanel Grid.Row="0"
