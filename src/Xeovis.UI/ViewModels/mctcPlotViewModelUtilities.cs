@@ -21,9 +21,11 @@ namespace Xeovis.UI.ViewModels
             if (yVar.PhaseNameSet == null || xVar.PhaseNameSet == null)
                 return null;
 
+            var batchDict = mctcBundle.Batches.ToDictionary(b => b.Id, b => b);
+            
             // Filtering
-            var xeosVariables = mctcBundle.xeosVariables.Where(x => x.IsEqualTo(yVar)).ToList();
-
+            var xeosVariables = mctcBundle.xeosVariables.Where(x => x.IsEqualTo(yVar)).ToHashSet();
+            
             var hasIncludesAny = PhaseFilters.Any(x => x.Value == FilterType.IncludesAny);
             var hasIncludesAll = PhaseFilters.Any(x => x.Value == FilterType.IncludesAll);
             var hasExcludesAny = PhaseFilters.Any(x => x.Value == FilterType.ExcludesAny);
@@ -32,11 +34,14 @@ namespace Xeovis.UI.ViewModels
             var excludedVars = new List<xeosVariable>();
             if (hasIncludesAny)
             {
-                var phases = PhaseFilters.Where(x => x.Value == FilterType.IncludesAny).Select(x => x.Key).ToList();
+                var phases = PhaseFilters.Where(x => x.Value == FilterType.IncludesAny)
+                    .Select(x => x.Key).ToHashSet();
                 foreach (var xeosVar in xeosVariables)
                 {
-                    var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
-                    if (batch == null) continue;
+                    // var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
+                    // if (batch == null) continue;
+                    if (!batchDict.TryGetValue(xeosVar.BatchId, out var batch)) continue;
+                    
                     if (batch.PhaseNameSets.All(x => !phases.Contains(x)))
                         excludedVars.Add(xeosVar);
                 }
@@ -44,11 +49,14 @@ namespace Xeovis.UI.ViewModels
 
             if (hasIncludesAll)
             {
-                var phases = PhaseFilters.Where(x => x.Value == FilterType.IncludesAll).Select(x => x.Key).ToList();
+                var phases = PhaseFilters.Where(x => x.Value == FilterType.IncludesAll)
+                    .Select(x => x.Key).ToHashSet();
                 foreach (var xeosVar in xeosVariables)
                 {
-                    var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
-                    if (batch == null) continue;
+                    // var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
+                    // if (batch == null) continue;
+                    if (!batchDict.TryGetValue(xeosVar.BatchId, out var batch)) continue;
+
                     if (phases.Except(batch.PhaseNameSets).Any())
                         excludedVars.Add(xeosVar);
                 }
@@ -56,11 +64,14 @@ namespace Xeovis.UI.ViewModels
 
             if (hasExcludesAny)
             {
-                var phases = PhaseFilters.Where(x => x.Value == FilterType.ExcludesAny).Select(x => x.Key).ToList();
+                var phases = PhaseFilters.Where(x => x.Value == FilterType.ExcludesAny)
+                    .Select(x => x.Key).ToHashSet();
                 foreach (var xeosVar in xeosVariables)
                 {
-                    var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
-                    if (batch == null) continue;
+                    // var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
+                    // if (batch == null) continue;
+                    if (!batchDict.TryGetValue(xeosVar.BatchId, out var batch)) continue;
+
                     if (batch.PhaseNameSets.Any(x => phases.Contains(x)))
                         excludedVars.Add(xeosVar);
                 }
@@ -68,17 +79,20 @@ namespace Xeovis.UI.ViewModels
 
             if (hasExcludesAll)
             {
-                var phases = PhaseFilters.Where(x => x.Value == FilterType.ExcludesAll).Select(x => x.Key).ToList();
+                var phases = PhaseFilters.Where(x => x.Value == FilterType.ExcludesAll)
+                    .Select(x => x.Key).ToHashSet();
                 foreach (var xeosVar in xeosVariables)
                 {
-                    var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
-                    if (batch == null) continue;
+                    // var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
+                    // if (batch == null) continue;
+                    if (!batchDict.TryGetValue(xeosVar.BatchId, out var batch)) continue;
+
                     if (phases.All(x => batch.PhaseNameSets.Contains(x)))
                         excludedVars.Add(xeosVar);
                 }
             }
 
-            xeosVariables = xeosVariables.Except(excludedVars).ToList();
+            xeosVariables = xeosVariables.Except(excludedVars).ToHashSet();
 
             // Grouping
             var allGroups = new List<IGrouping<object, xeosVariable>>();
