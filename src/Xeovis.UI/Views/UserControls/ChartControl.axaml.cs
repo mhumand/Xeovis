@@ -397,6 +397,8 @@ public partial class ChartControl : UserControl
         if (pointer.Properties.IsLeftButtonPressed)
         {
             var plotCoords = _plot.GetCoordinates((float)pointer.Position.X, (float)pointer.Position.Y);
+            if (double.IsNaN(plotCoords.X + plotCoords.Y)) return;
+            if (double.IsInfinity(plotCoords.X + plotCoords.Y)) return;
             var dataPoint = GetNearestPoint(plotCoords, out int IndexInCurve, out Guid CurveId);
             if (!dataPoint.Equals(DataPoint.None))
             {

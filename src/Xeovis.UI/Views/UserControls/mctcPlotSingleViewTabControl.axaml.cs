@@ -409,7 +409,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         // reading data
         var row = tableControl.dataGrid.SelectedItem;
         if (row == null) return;
-        var values = ((Dictionary<string, object>)row).Values.Cast<string>().ToList();
+        var values = ((Dictionary<string, object>)row).Values.Select(x => x.ToString()).ToList();
         if (values.Count == 0) return;
         var phaseNames = values[3].Split(' ', StringSplitOptions.RemoveEmptyEntries);
         var runData = values[4].Split(['-', ' '], StringSplitOptions.RemoveEmptyEntries);
