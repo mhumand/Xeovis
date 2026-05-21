@@ -30,7 +30,7 @@
 
 	<Menu VerticalAlignment="Top" 
 		  BorderBrush="LightGray"
-		  BorderThickness="0 0 0 1">
+		  BorderThickness="0 0 0 0">
 
 		<MenuItem Header="_File">
 

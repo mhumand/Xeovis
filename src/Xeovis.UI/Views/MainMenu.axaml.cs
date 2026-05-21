@@ -132,6 +132,8 @@ public partial class MainMenu : UserControl
                 var ms = MessageBoxManager.GetMessageBoxStandard("Error",
                     "Failed to open the project file!", ButtonEnum.Ok, Icon.Error);
                 ms.ShowWindowDialogAsync(ParentWindow);
+                ParentWindow.Effect = null;
+                ParentWindow.Opacity = 1.0;
                 return;
             }
 

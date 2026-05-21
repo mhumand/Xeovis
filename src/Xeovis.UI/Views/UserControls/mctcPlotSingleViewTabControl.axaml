@@ -15,7 +15,7 @@
 		<Style Selector="Border.Custom">
 			<Setter Property="BorderThickness" Value="1.5"/>
 			<Setter Property="BorderBrush" Value="#AF6A0B"/>
-			<Setter Property="Padding" Value="3" />
+			<Setter Property="Padding" Value="2" />
 			<Setter Property="Margin" Value="0" />
 			<Setter Property="CornerRadius" Value="5"/>
 		</Style>
@@ -34,7 +34,7 @@
 			<Setter Property="HorizontalContentAlignment" Value="Center" />
 			<Setter Property="BorderBrush" Value="DarkGray" />
 			<Setter Property="BorderThickness" Value="0 0 0 1" />
-			<Setter Property="Margin" Value="0 0 0 5" />
+			<Setter Property="Margin" Value="0" />
 			<Setter Property="FontWeight" Value="ExtraBold"></Setter>
 		</Style>
 
@@ -50,7 +50,7 @@
 		<Grid DockPanel.Dock="Top"
 			  Margin="0 0 0 5"
 			  VerticalAlignment="Top"
-			  Height="110"
+			  Height="100"
 			  ColumnDefinitions="400, *">
 			
 			<Border Grid.Column="0"
