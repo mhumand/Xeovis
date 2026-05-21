@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using Serilog;
 using Xeovis.Presentation;
 
 namespace Xeovis.UI
@@ -90,7 +91,9 @@ namespace Xeovis.UI
             MarkerType.FilledSquare,
             MarkerType.FilledTriangleDown,
             MarkerType.FilledTriangleUp,
-            MarkerType.FilledDiamond
+            MarkerType.FilledDiamond,
+            MarkerType.Asterisk,
+            MarkerType.Cross
         };
 
         public static Color GetColorInGradient(Color lowColor, Color highColor, int index, int count)
@@ -120,10 +123,7 @@ namespace Xeovis.UI
 
         public static MarkerType GetMarkerType(int index)
         {
-            if (index < MarkerTypes.Count)
-                return MarkerTypes[index];
-            else
-                return MarkerType.None;
+            return index < MarkerTypes.Count ? MarkerTypes[index] : MarkerType.None;
         }
 
         public static void SetColorAndMarker(CurveModel curve, int index)
@@ -131,7 +131,10 @@ namespace Xeovis.UI
             var pallete = ColorPalette;
 
             if (index >= MarkerTypes.Count * pallete.Count)
-                throw new IndexOutOfRangeException();
+            {
+                Log.Warning($"Index {index} is out of range for available marker+color combinations");
+                return;
+            }
 
             var markerIndex = index / pallete.Count;
             var colorIndex = index % pallete.Count;
