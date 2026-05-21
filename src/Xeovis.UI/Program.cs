@@ -18,8 +18,28 @@ namespace Xeovis.UI
         {
             var logPath = SetupLogging();
             
-            // Start API server in the background
-            ApiHost.Start();
+            // 1. GLOBAL HANDLER: Catches rogue background thread exceptions
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            {
+                var ex = e.ExceptionObject as Exception;
+                LogFatalCrash(ex, logPath, "AppDomain (Background Thread)");
+            };
+            
+            // 2. TASK HANDLER: Catches exceptions in unawaited async Tasks
+            TaskScheduler.UnobservedTaskException += (sender, e) =>
+            {
+                Log.Error(e.Exception, "An unobserved background task threw an exception.");
+                
+                // CRITICAL: This prevents background tasks from crashing the whole application!
+                e.SetObserved(); 
+            };
+            
+            // Safely fire-and-forget the API Host so it doesn't crash the main thread if it fails
+            _ = Task.Run(() => ApiHost.Start()).ContinueWith(t => 
+            {
+                if (t.Exception != null) 
+                    Log.Error(t.Exception, "ApiHost failed to start or crashed.");
+            });
             
             try
             {
@@ -29,13 +49,57 @@ namespace Xeovis.UI
             }
             catch (Exception ex)
             {
-                Log.Fatal("Unhandled exception. Terminating the app...\n{ex}\n\n{contact}", ex.Message,
-                    "Please send this log file to Mohammad Humand:\nhumandm@student.unimelb.edu.au");
-                
-                DirectoryHelper.GoToDirectory(Directory.GetParent(logPath).FullName);
+                // Catches exceptions specifically on the Main UI Thread
+                LogFatalCrash(ex, logPath, "Main UI Thread");
+            }
+            finally
+            {
+                // Ensure all logs are written to disk before the app exits normally
+                Log.CloseAndFlush();
+            }
+            
+            // // Start API server in the background
+            // ApiHost.Start();
+            //
+            // try
+            // {
+            //     Log.Information("Application started.");
+            //     BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            //     Log.Information("Application closed.");
+            // }
+            // catch (Exception ex)
+            // {
+            //     Log.Fatal("Unhandled exception. Terminating the app...\n{ex}\n\n{contact}", ex.Message,
+            //         "Please send this log file to Mohammad Humand:\nhumandm@student.unimelb.edu.au");
+            //     
+            //     DirectoryHelper.GoToDirectory(Directory.GetParent(logPath).FullName);
+            //     DirectoryHelper.GoToDirectory(logPath);
+            // }
+        }
+        
+        private static void LogFatalCrash(Exception ex, string logPath, string source)
+        {
+            Log.Fatal("Unhandled exception in {Source}. Terminating the app...\n{Exception}\n\n{Contact}", 
+                source, 
+                ex?.Message,
+                "Please send this log file to Mohammad Humand:\nhumandm@student.unimelb.edu.au");
+            
+            // CRITICAL: Force Serilog to write to the file IMMEDIATELY. 
+            // If the app crashes hard, buffered logs are lost without this line.
+            Log.CloseAndFlush();
+            
+            try
+            {
+                var parentDir = Directory.GetParent(logPath)?.FullName;
+                if (parentDir != null) DirectoryHelper.GoToDirectory(parentDir);
                 DirectoryHelper.GoToDirectory(logPath);
             }
+            catch 
+            {
+                // If the app is crashing, don't let the directory opener cause a second crash
+            }
         }
+        
         private static string SetupLogging()
         {
             var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

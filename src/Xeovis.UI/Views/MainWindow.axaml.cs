@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -35,6 +36,7 @@ namespace Xeovis.UI.Views
         }
 
         private DataManagerTabControl? _dataManagerTab;
+        private CancellationTokenSource _activityCts;
 
         public MainWindow()
         {
@@ -50,7 +52,36 @@ namespace Xeovis.UI.Views
             ApiHost.BundleReloadCalled += ApiHost_BundleReloadCalled;
             ApiHost.LoadNewBundleCalled += ApiHost_LoadNewBundleCalled;
             ApiHost.RefreshBundleUIAsked += ApiHost_RefreshBundleUIAsked;
+            ApiHost.ApiActivityChanged += OnApiActivityChanged;
             PrepareUI();
+        }
+
+        private void OnApiActivityChanged(object? sender, ApiActivityChangedEventArgs e)
+        {
+            Dispatcher.UIThread.Post(async () =>
+            {
+                txtApiDot.Text = e.Message;
+                stpApiDot.IsVisible = true;
+                
+                // Cancel any previous timer
+                _activityCts?.Cancel();
+                _activityCts = new CancellationTokenSource();
+
+                try
+                {
+                    // Wait 1.5 seconds. If another request comes in, this gets cancelled.
+                    await Task.Delay(2000, _activityCts.Token);
+                
+                    // If we make it here without being cancelled, traffic has stopped.
+                    // IsApiActive = false;
+                    stpApiDot.IsVisible = false;
+                    txtApiDot.Text = string.Empty;
+                }
+                catch (TaskCanceledException)
+                {
+                    // Another request came in, keep blinking!
+                }
+            });
         }
 
         private void ApiHost_RefreshBundleUIAsked(object? sender, RefreshBundleUIAskedEventArgs e)
@@ -726,6 +757,18 @@ namespace Xeovis.UI.Views
             foreach (var plotDto in _viewModel.mctcPlotDtos.Where(x => x.mctcBundleId == mctcBundle.Id))
             {
                 var tab = _viewModel.TabControls.FirstOrDefault(x => x.PresenterId == plotDto.Id);
+                // if (tab?.OwnerTabControl is ImctcPlotView mctcPlot)
+                // {
+                //     // 1. Use InvokeAsync and await it. This ensures we don't start populating 
+                //     // the NEXT tab until this current one is completely finished.
+                //     await Dispatcher.UIThread.InvokeAsync(() => mctcPlot.PopulateUI(plotDto, mctcBundle));
+                //
+                //     // 2. THE YIELD: Pause for 10 milliseconds before looping. 
+                //     // This tiny gap allows Avalonia's Render Engine to step in and update the 
+                //     // blinking green dot on the screen so it stays perfectly smooth!
+                //     await Task.Delay(10);
+                // }
+                
                 if (tab?.OwnerTabControl is ImctcPlotView mctcPlot)
                     Dispatcher.UIThread.Post(() => mctcPlot.PopulateUI(plotDto, mctcBundle));
             }

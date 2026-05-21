@@ -11,6 +11,7 @@ public static class ApiHost
     public static event EventHandler<BundleReloadCalledEventArgs> BundleReloadCalled;
     public static event EventHandler<LoadNewBundleCalledEventArgs> LoadNewBundleCalled;
     public static event EventHandler<RefreshBundleUIAskedEventArgs> RefreshBundleUIAsked;
+    public static event EventHandler<ApiActivityChangedEventArgs> ApiActivityChanged;
     
     private record ReloadRequest(string Name, bool Append);
     private record LoadRequest(string Name, string Directory);
@@ -37,18 +38,21 @@ public static class ApiHost
         // Xeovis
         app.MapPost("/Load", (LoadRequest bundle) =>
         {
+            ApiActivityChanged?.Invoke(null, new  ApiActivityChangedEventArgs($"Loading {bundle.Name}"));
             LoadNewBundleCalled?.Invoke(null, new LoadNewBundleCalledEventArgs(bundle.Name, bundle.Directory));
             return Results.Ok();
         });
         
         app.MapPost("/Reload", (ReloadRequest data) =>
         {
+            ApiActivityChanged?.Invoke(null, new  ApiActivityChangedEventArgs($"Loading {data.Name}"));
             BundleReloadCalled?.Invoke(null, new BundleReloadCalledEventArgs(data.Name, data.Append));
             return Results.Ok(new { status = "ok" });
         });
         
         app.MapPost("/Refresh", (RefreshRequest bundle) =>
         {
+            ApiActivityChanged?.Invoke(null, new  ApiActivityChangedEventArgs($"Refreshing UI for {bundle.Name}"));
             RefreshBundleUIAsked?.Invoke(null, new RefreshBundleUIAskedEventArgs(bundle.Name));
             return Results.Ok(new { status = "ok" });
         });
