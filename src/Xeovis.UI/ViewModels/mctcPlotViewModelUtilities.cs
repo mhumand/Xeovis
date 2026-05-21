@@ -13,7 +13,8 @@ namespace Xeovis.UI.ViewModels
 {
     public static class mctcPlotViewModelUtilities
     {
-        public static List<IGrouping<object, xeosVariable>> GetGroupedFilteredXeosVariables(mctcBundle mctcBundle, mctcPlotAxesSettings axesSettings, Dictionary<PhaseNameSet, FilterType> PhaseFilters, mctcPlotDto mctcPlotDto)
+        public static List<IGrouping<object, xeosVariable>> GetGroupedFilteredXeosVariables(mctcBundle mctcBundle, 
+            mctcPlotAxesSettings axesSettings, Dictionary<PhaseNameSet, FilterType> PhaseFilters, mctcPlotDto mctcPlotDto)
         {
             var yVar = axesSettings.YAxisVariable;
             var xVar = axesSettings.XAxisVariable;
@@ -203,14 +204,9 @@ namespace Xeovis.UI.ViewModels
             return selectedGroups;
         }
 
-        public static ChartModel CreateChartModel(mctcBundle mctcBundle, mctcPlotDto mctcPlotDto, List<IGrouping<object, xeosVariable>> xeosVarGroups, mctcPlotAxesSettings axesSettings, int mctcRunIndex, Dictionary<string, MarkerType> inUseMarkers, Dictionary<string, Color> inUseColors)
+        private static void SetChartAxesLabel(ChartModel chartModel, mctcPlotAxesSettings axesSettings,
+            xeosVariable xVariable, xeosVariable yVariable)
         {
-            var yVariable = axesSettings.YAxisVariable;
-            var xVariable = axesSettings.XAxisVariable;
-
-            var chartModel = new ChartModel();
-            chartModel.HasEqualDimensions = true;
-            chartModel.Title = yVariable.ToString();
             chartModel.XAxis.Label = axesSettings.XAxisType switch
             {
                 mctcPlotAxisType.Calculated => $"Calculated {xVariable}",
@@ -230,6 +226,87 @@ namespace Xeovis.UI.ViewModels
                 mctcPlotAxisType.Pressure => "Pressure [kbar]",
                 _ => throw new Exception("Axis Type Not Supported")
             };
+        }
+
+        private static void SetChartAxesLimits(ChartModel chartModel, mctcPlotDto mctcPlotDto, mctcPlotAxesSettings axesSettings)
+        {
+            if (chartModel.Curves.Count <= 0) return;
+            double minXVal, maxXVal, minYVal, maxYVal;
+            if (mctcPlotDto.ChartSettings.UseAxesLimits)
+            {
+                minXVal = mctcPlotDto.ChartSettings.AxesMinLimit;
+                maxXVal = mctcPlotDto.ChartSettings.AxesMaxLimit;
+                minYVal = mctcPlotDto.ChartSettings.AxesMinLimit;
+                maxYVal = mctcPlotDto.ChartSettings.AxesMaxLimit;
+            }
+            else
+            {
+                minXVal = chartModel.Curves.Where(c => c.Xvals.Count > 0).Min(c => c.Xvals.Min());
+                maxXVal = chartModel.Curves.Where(c => c.Xvals.Count > 0).Max(c => c.Xvals.Max());
+                minYVal = chartModel.Curves.Where(c => c.Yvals.Count > 0).Min(c => c.Yvals.Min());
+                maxYVal = chartModel.Curves.Where(c => c.Yvals.Count > 0).Max(c => c.Yvals.Max());
+
+                double differenceX = maxXVal - minXVal;
+                double differenceY = maxYVal - minYVal;
+                minXVal -= differenceX * 0.05;
+                maxXVal += differenceX * 0.05;
+                minYVal -= differenceY * 0.05;
+                maxYVal += differenceY * 0.05;
+            }
+
+            if (axesSettings.XAxisType == mctcPlotAxisType.Observed
+                || axesSettings.YAxisType == mctcPlotAxisType.Residual)
+            {
+                var xyCurve = new CurveModel();
+                if (axesSettings.YAxisType == mctcPlotAxisType.Calculated)
+                {
+                    var minVal = Math.Min(minXVal, minYVal);
+                    var maxVal = Math.Max(maxXVal, maxYVal);
+                    xyCurve.Name = "1:1 Line";
+                    xyCurve.Xvals = [minVal, maxVal];
+                    xyCurve.Yvals = [minVal, maxVal];
+                }
+                else if (axesSettings.YAxisType == mctcPlotAxisType.Residual)
+                {
+                    xyCurve.Name = "Y = 0 Line";
+                    xyCurve.Xvals = [minXVal, maxXVal];
+                    xyCurve.Yvals = [0, 0];
+                }
+
+                xyCurve.IsMarkerVisible = false;
+                xyCurve.LineWidth = 1;
+                xyCurve.LineColor = Color.DarkRed;
+                xyCurve.CurveType = CurveType.Line;
+                xyCurve.IsVisibleInLegend = false;
+                chartModel.Curves.Insert(0, xyCurve);
+            }
+
+            chartModel.XAxis.MinLimit = minXVal;
+            chartModel.XAxis.MaxLimit = maxXVal;
+            chartModel.YAxis.MinLimit = minYVal;
+            chartModel.YAxis.MaxLimit = maxYVal;
+        }
+
+        private static void SetChartTitle(ChartModel chartModel, List<double> allXvals, List<double> allYvals)
+        {
+            if (allXvals.Count <= 0 || allXvals.Count != allYvals.Count) return;
+            var average = allXvals.Zip(allYvals,
+                (obs, calc) => obs != 0 ? Math.Abs(1 - calc / obs) * 100.0
+                    : Math.Abs(1 - obs / calc) * 100.0).Where(x => !double.IsNaN(x)).Average();
+            chartModel.Title += $" ({average.Round(2)}%)";
+        }
+        
+        public static ChartModel CreateChartModel(mctcBundle mctcBundle, mctcPlotDto mctcPlotDto, 
+            List<IGrouping<object, xeosVariable>> xeosVarGroups, mctcPlotAxesSettings axesSettings, 
+            int mctcRunIndex, Dictionary<string, MarkerType> inUseMarkers, Dictionary<string, Color> inUseColors)
+        {
+            var yVariable = axesSettings.YAxisVariable;
+            var xVariable = axesSettings.XAxisVariable;
+
+            var chartModel = new ChartModel();
+            chartModel.HasEqualDimensions = true;
+            chartModel.Title = yVariable.ToString();
+            SetChartAxesLabel(chartModel, axesSettings, xVariable, yVariable);
 
             chartModel.Legend.IsVisible = false;
             chartModel.YAxis.IsLabelVisible = mctcPlotDto.ChartSettings.ShowAxesTitle;
@@ -321,71 +398,8 @@ namespace Xeovis.UI.ViewModels
                 chartModel.Curves.Add(curve);
             }
 
-            if (allXvals.Count > 0 && allXvals.Count == allYvals.Count)
-            {
-                var average = allXvals.Zip(allYvals,
-                    (obs, calc) => obs != 0 ? Math.Abs(1 - calc / obs) * 100.0
-                    : Math.Abs(1 - obs / calc) * 100.0).Where(x => !double.IsNaN(x)).Average();
-                chartModel.Title += $" ({average.Round(2)}%)";
-            }
-
-            if (chartModel.Curves.Count > 0)
-            {
-                double minXVal, maxXVal, minYVal, maxYVal;
-                if (mctcPlotDto.ChartSettings.UseAxesLimits)
-                {
-                    minXVal = mctcPlotDto.ChartSettings.AxesMinLimit;
-                    maxXVal = mctcPlotDto.ChartSettings.AxesMaxLimit;
-                    minYVal = mctcPlotDto.ChartSettings.AxesMinLimit;
-                    maxYVal = mctcPlotDto.ChartSettings.AxesMaxLimit;
-                }
-                else
-                {
-                    minXVal = chartModel.Curves.Where(c => c.Xvals.Count > 0).Min(c => c.Xvals.Min());
-                    maxXVal = chartModel.Curves.Where(c => c.Xvals.Count > 0).Max(c => c.Xvals.Max());
-                    minYVal = chartModel.Curves.Where(c => c.Yvals.Count > 0).Min(c => c.Yvals.Min());
-                    maxYVal = chartModel.Curves.Where(c => c.Yvals.Count > 0).Max(c => c.Yvals.Max());
-
-                    double differenceX = maxXVal - minXVal;
-                    double differenceY = maxYVal - minYVal;
-                    minXVal -= differenceX * 0.05;
-                    maxXVal += differenceX * 0.05;
-                    minYVal -= differenceY * 0.05;
-                    maxYVal += differenceY * 0.05;
-                }
-
-                if (axesSettings.XAxisType == mctcPlotAxisType.Observed
-                    || axesSettings.YAxisType == mctcPlotAxisType.Residual)
-                {
-                    var xyCurve = new CurveModel();
-                    if (axesSettings.YAxisType == mctcPlotAxisType.Calculated)
-                    {
-                        var minVal = Math.Min(minXVal, minYVal);
-                        var maxVal = Math.Max(maxXVal, maxYVal);
-                        xyCurve.Name = "1:1 Line";
-                        xyCurve.Xvals = [minVal, maxVal];
-                        xyCurve.Yvals = [minVal, maxVal];
-                    }
-                    else if (axesSettings.YAxisType == mctcPlotAxisType.Residual)
-                    {
-                        xyCurve.Name = "Y = 0 Line";
-                        xyCurve.Xvals = [minXVal, maxXVal];
-                        xyCurve.Yvals = [0, 0];
-                    }
-
-                    xyCurve.IsMarkerVisible = false;
-                    xyCurve.LineWidth = 1;
-                    xyCurve.LineColor = Color.DarkRed;
-                    xyCurve.CurveType = CurveType.Line;
-                    xyCurve.IsVisibleInLegend = false;
-                    chartModel.Curves.Insert(0, xyCurve);
-                }
-
-                chartModel.XAxis.MinLimit = minXVal;
-                chartModel.XAxis.MaxLimit = maxXVal;
-                chartModel.YAxis.MinLimit = minYVal;
-                chartModel.YAxis.MaxLimit = maxYVal;
-            }
+            SetChartTitle(chartModel, allXvals, allYvals);
+            SetChartAxesLimits(chartModel, mctcPlotDto, axesSettings);
 
             return chartModel;
         }
