@@ -10,6 +10,9 @@ namespace Xeovis.UI
 {
     internal sealed class Program
     {
+        private static string _logFolder;
+        public static string LogFolder => _logFolder;
+            
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.
@@ -104,6 +107,7 @@ namespace Xeovis.UI
         {
             var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var logsFolder = Path.Combine(appDataFolder, "Xeovis", "Logs");
+            _logFolder = logsFolder;
             if (!Directory.Exists(logsFolder))
                 Directory.CreateDirectory(logsFolder);
 

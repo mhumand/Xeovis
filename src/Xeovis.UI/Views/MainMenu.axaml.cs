@@ -464,6 +464,12 @@ public partial class MainMenu : UserControl
         Log.Information(itemShowLeftPanel.IsChecked.ToString());
     }
 
+    public void View_OpenLogFolder()
+    {
+        if (!Directory.Exists(Program.LogFolder)) return;
+        DirectoryHelper.GoToDirectory(Program.LogFolder);
+    }
+    
     // Help
     public void Help()
     {

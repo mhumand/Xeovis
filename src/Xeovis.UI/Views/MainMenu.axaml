@@ -186,6 +186,15 @@
 				</MenuItem.Icon>
 			</MenuItem>
 
+			<MenuItem x:Name="itemOpenLogFolder"
+			          Header="Open Log Folder"
+			          ToolTip.Tip="Opens the folder containing Xeovis log files."
+			          Command="{Binding View_OpenLogFolder}">
+				<MenuItem.Icon>
+					<Image Source="/Assets/MainMenu/log.png"/>
+				</MenuItem.Icon>
+			</MenuItem>
+			
 		</MenuItem>
 
 		<MenuItem Header="_Help">
