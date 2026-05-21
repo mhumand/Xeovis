@@ -11,6 +11,7 @@
 	<UserControl.Styles>
 		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
 		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+		<StyleInclude Source="/Views/Styles/TabItems.axaml"/>
 
 		<Style Selector="Border.Custom">
 			<Setter Property="BorderThickness" Value="1.5"/>
@@ -36,6 +37,11 @@
 			<Setter Property="BorderThickness" Value="0 0 0 1" />
 			<Setter Property="Margin" Value="0" />
 			<Setter Property="FontWeight" Value="ExtraBold"></Setter>
+		</Style>
+		
+		<Style Selector="TabItem">
+			<Setter Property="MinHeight"  Value="30"/>
+			<Setter Property="Padding"  Value="8 0"/>
 		</Style>
 	</UserControl.Styles>
 
@@ -199,54 +205,26 @@
 								Click="btnClearFilters_Click"
 								Content="Clear Filters"/>
 
-						<Grid Grid.Row="1"
-							  IsVisible="{Binding IsPaneOpen, ElementName=splitView}">
-							<Grid.RowDefinitions>
-								<RowDefinition Height="1*" MinHeight="150"/>
-								<RowDefinition Height="10"/>
-								<RowDefinition Height="1*" MinHeight="150"/>
-							</Grid.RowDefinitions>
-
-							<!--Phase Filters-->
-							<Border Grid.Row="0"
-									Classes="Custom"
-									BorderBrush="Gray"
-									Margin="1">
-								<Grid RowDefinitions="25,*">
-									<TextBlock Grid.Row="0"
-											   Margin="3 0"
-											   FontWeight="SemiBold"
-											   VerticalAlignment="Center"
-											   Text="Phase Filters" />
-
-									<uc:TableControl x:Name="tableFilter"
-													 Grid.Row="1"
-													 MinWidth="100"
-													 MinHeight="70"/>
-
-								</Grid>
-							</Border>
-
-							<GridSplitter Grid.Row="1"
-										  ResizeDirection="Rows"/>
-
-							<!--Global Legend-->
-							<Border Grid.Row="2"
-									Classes="Custom"
-									BorderBrush="Gray"
-									Margin="1">
-								<Grid RowDefinitions="25,*">
-									<TextBlock Grid.Row="0"
-											   Margin="3 0"
-											   FontWeight="SemiBold"
-											   VerticalAlignment="Center"
-											   Text="Global Legend" />
-									<ScrollViewer Grid.Row="1">
+						<Border Grid.Row="1"
+						        Classes="Custom"
+						        BorderBrush="Gray"
+						        Margin="1"
+						        Padding="0 0 0 5"
+						        IsVisible="{Binding IsPaneOpen, ElementName=splitView}">
+							<TabControl IsVisible="{Binding IsPaneOpen, ElementName=splitView}">
+								<TabItem  Header="Global Legend">
+									<ScrollViewer>
 										<StackPanel x:Name="stackLegend"/>
 									</ScrollViewer>
-								</Grid>
-							</Border>
-						</Grid>
+								</TabItem>
+								
+								<TabItem Header="Phase Filter">
+									<uc:TableControl x:Name="tableFilter"
+									                 MinWidth="100"/>
+								</TabItem>
+							</TabControl>
+							
+						</Border>
 
 					</Grid>
 
