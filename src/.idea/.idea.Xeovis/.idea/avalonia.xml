@@ -28,6 +28,7 @@
         <entry key="Xeovis.UI/Views/UserControls/DataManagerTabControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/LabelComboBoxControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/LabelListControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
+        <entry key="Xeovis.UI/Views/UserControls/LabelSpinnerControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/TableControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/mctcPlotGridViewTabControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/mctcPlotSingleViewTabControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
