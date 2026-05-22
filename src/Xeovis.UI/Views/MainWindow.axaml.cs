@@ -542,7 +542,8 @@ namespace Xeovis.UI.Views
 
                 deleteItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteMctcBundle(node.PresenterId), $"{node.Label} and its plots");
                 deleteAllItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteAllMctcBundles(), "all mctc bundles and their plots");
-
+                deleteAllItem.Header = "Delete All Bundles";
+                
                 if (node.HasChildren)
                 {
                     menu.Items.Add(new Separator());
@@ -594,6 +595,7 @@ namespace Xeovis.UI.Views
                 {
                     tab.IsVisible = true;
                     mctcPlotDto.IsVisible = true;
+                    node.HasVisiblePlot = true;
                     tabControl.SelectedItem = tab;
                 };
                 menu.Items.Insert(0, openItem);
@@ -605,12 +607,14 @@ namespace Xeovis.UI.Views
                     //visibleItem.IsChecked = !visibleItem.IsChecked;
                     tab.IsVisible = visibleItem.IsChecked;
                     mctcPlotDto.IsVisible = visibleItem.IsChecked;
+                    node.HasVisiblePlot = visibleItem.IsChecked;
                 };
                 menu.Items.Add(visibleItem);
 
                 deleteItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteMctcPlot(node.PresenterId), $"{node.Label} in {bundle.Name}");
                 deleteAllItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteAllMctcPlotsInBundle(node.PresenterId), $"all plots in {bundle.Name}");
-
+                deleteAllItem.Header = "Delete All Plots";
+                
                 // rename
                 var otherNames = _viewModel.mctcPlotDtos.Except(new List<mctcPlotDto> { mctcPlotDto }).Select(x => x.Name).ToList();
                 void Rename(mctcPlotDto plotDto, string newName)

@@ -9,7 +9,8 @@
 		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
 		xmlns:vm="using:Xeovis.UI.ViewModels"
 		xmlns:vmModels="using:Xeovis.UI.Models"
-        x:DataType="vm:MainWindowViewModel"
+		xmlns:converters="clr-namespace:Xeovis.UI.Views.Helpers.Converters"
+		x:DataType="vm:MainWindowViewModel"
         Title="Xeovis"
 		ShowInTaskbar="True"
 		WindowState="Maximized">
@@ -91,6 +92,10 @@
 		</Style>
 	</Window.Styles>
 
+	<Window.Resources>
+		<converters:BoolToForegroundConverter x:Key="BoolToColor" />
+	</Window.Resources>
+	
 	<DockPanel>
 		<!-- Main Menu -->
 		<Grid x:Name="MenuGrid"
@@ -174,7 +179,8 @@
 											CornerRadius="3"
 											HorizontalAlignment="Left"
 											BorderBrush="{Binding BorderColor}">
-										<TextBlock Text="{Binding Label}"/>
+										<TextBlock Text="{Binding Label}"
+										           Foreground="{Binding HasVisiblePlot, Converter={StaticResource BoolToColor}}"/>
 									</Border>
 								</TreeDataTemplate>
 							</TreeView.ItemTemplate>
@@ -226,7 +232,7 @@
 						<DataTemplate DataType="vm:TabControlViewModelBase">
 							<Border BorderBrush="DarkGray"
 							        BorderThickness="0 2 0 0"
-							        Padding="0 8 0 0"
+							        Padding="0 4 0 0"
 							        Margin="0">
 								<UserControl Content="{Binding OwnerTabControl}"
 								             IsVisible="{Binding IsVisible}"/>
