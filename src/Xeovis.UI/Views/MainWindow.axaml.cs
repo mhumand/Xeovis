@@ -176,7 +176,8 @@ namespace Xeovis.UI.Views
 
             tvExperiments.ContextRequested += tvExperiments_ContextRequested;
             tvMctcBundles.ContextRequested += tvMctcBundles_ContextRequested;
-
+            tvMctcBundles.DoubleTapped += tvMctcBundles_DoubleTapped;
+            
             mainMenu.ExperimentsLoaded += MainMenu_ExperimentsLoaded;
             mainMenu.mctcBundleLoaded += MainMenu_mctcBundleLoaded;
             mainMenu.ProjectLoaded += MainMenu_ProjectLoaded;
@@ -664,6 +665,26 @@ namespace Xeovis.UI.Views
             {
                 tab.TabColor = GraphicsGenerator.GetBrushFromColor(bundle.Color);
             }
+        }
+        
+        private void tvMctcBundles_DoubleTapped(object? sender, TappedEventArgs e)
+        {
+            if (tvMctcBundles.SelectedItem is not TreeNode node) return;
+
+            var isMctcBundle = _viewModel.mctcBundles.Any(x => x.Id == node.PresenterId);
+            if (isMctcBundle) return;
+
+            var mctcPlotDto = _viewModel.mctcPlotDtos.FirstOrDefault(x => x.Id == node.PresenterId);
+            var tab = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase)?.PresenterId == node.PresenterId) as TabControlViewModelBase;
+
+            if (mctcPlotDto == null || tab == null) return;
+
+            tab.IsVisible = true;
+            mctcPlotDto.IsVisible = true;
+            node.HasVisiblePlot = true;
+            tabControl.SelectedItem = tab;
+            
+            e.Handled = true;
         }
         
         private void tvExperiments_ContextRequested(object? sender, ContextRequestedEventArgs e)
