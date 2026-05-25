@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
-using Avalonia.Threading;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using Serilog;
@@ -20,6 +19,7 @@ using Xeovis.UI.Models.Events;
 using Xeovis.UI.Models.FileReaders;
 using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.UI.Views;
+using Xeovis.UI.Views.Dialogs;
 using Xeovis.UI.Views.Helpers;
 
 namespace Xeovis.UI;
@@ -28,8 +28,8 @@ public partial class MainMenu : UserControl
 {
     public event EventHandler<ExperimentsLoadedEventArgs>? ExperimentsLoaded;
     public event EventHandler<mctcBundleLoadedEventArgs>? mctcBundleLoaded;
-    public event EventHandler<ProjectFileLoadedEventArgs>? ProjectLoaded;
-
+    public event Func<object, ProjectFileLoadedEventArgs, Task>? ProjectLoaded;
+    
     public MainWindow? ParentWindow;
 
     private string _lastFilePath;
@@ -40,6 +40,7 @@ public partial class MainMenu : UserControl
         DataContext = this;
         _lastFilePath = string.Empty;
         SetMenuShortcuts();
+        btnMctcCalibration.IsEnabled = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
     }
 
     private void SetMenuShortcuts()
@@ -110,25 +111,58 @@ public partial class MainMenu : UserControl
         if (raiseUnsavedChanges)
             goAhead = await CheckAndRaiseUnsavedChangesMessage();
 
-        if (goAhead)
+        if (!goAhead) return;
+        
+        // Adding a blur effect
+        ParentWindow.Effect = new Avalonia.Media.BlurEffect() { Radius = 15 };
+        ParentWindow.Opacity = 0.6;
+            
+        var progBar = new ProgressBarDialog(isIndeterminate: true);
+        progBar.ShowDialog(ParentWindow);
+            
+        // CRITICAL: Yield to the UI thread so Avalonia actually has time 
+        // to paint the complicated blur effect before the heavy data loading starts!
+        await Task.Delay(50);
+            
+        try
         {
-            var progBar = new ProgressBarDialog(isIndeterminate: true);
-            progBar.ShowDialog(ParentWindow);
-
             var projectFile = await Task.Run(() => ProjectFileManager.Load(path));
             if (projectFile == null)
             {
                 var ms = MessageBoxManager.GetMessageBoxStandard("Error",
                     "Failed to open the project file!", ButtonEnum.Ok, Icon.Error);
                 ms.ShowWindowDialogAsync(ParentWindow);
+                ParentWindow.Effect = null;
+                ParentWindow.Opacity = 1.0;
                 return;
             }
 
             _lastFilePath = path;
-            ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(projectFile, path));
+            // ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(projectFile, path));
+                
+            // NEW: Safely await all subscribers of the async event
+            if (ProjectLoaded != null)
+            {
+                var handlers = ProjectLoaded.GetInvocationList();
+                foreach (Func<object, ProjectFileLoadedEventArgs, Task> handler in handlers)
+                {
+                    // This forces LoadProjectFile to WAIT until the UI is completely finished building
+                    await handler(this, new ProjectFileLoadedEventArgs(projectFile, path)); 
+                }
+            }
             Log.Information("Project file opened successfully.");
-
+        }
+        catch (Exception e)
+        {
+            Log.Information("Failed to open the project file.");
+        }
+        finally
+        {
             progBar.Close();
+                
+            // 2. REMOVE THE BLUR: Reset the effect and opacity
+            ParentWindow.Effect = null;
+            ParentWindow.Opacity = 1.0;
         }
     }
 
@@ -269,7 +303,7 @@ public partial class MainMenu : UserControl
     {
     }
 
-    // MCTC Reader
+    // MCTC
     public async void Mctc_LoadBundle()
     {
         if (ParentWindow == null) return;
@@ -336,6 +370,15 @@ public partial class MainMenu : UserControl
         }
     }
 
+    public mctcBundle SimpleMctcBundleLoad(string folderDirectory)
+    {
+        var mctcReader = new mctcDataReader(folderDirectory);
+        var mctcBundle = mctcReader.ReadData();
+        mctcBundle.TimeLoaded = DateTime.Now;
+        mctcBundle.FilesDirectory = folderDirectory;
+        return mctcBundle;
+    }
+    
     public void Mctc_NewPlot()
     {
         LoadNewPlotDialog(Guid.Empty);
@@ -369,7 +412,23 @@ public partial class MainMenu : UserControl
         }
     }
 
-    // Settingw
+    public void Mctc_Calibration()
+    {
+        if (ParentWindow == null) return;
+        var viewModel = new mctcCalibrationViewModel();
+        
+        string exePath = "/Users/mohammadhumand/Library/CloudStorage/" +
+                         "GoogleDrive-mohammadhumand@gmail.com/" +
+                         "My Drive/PhD @ Unimelb/PhD/PhD - Project/" +
+                         "Project - Calculations/set_up_fitting/TC RUN/tc360";
+        viewModel.RunThermocalc(exePath);
+        
+        return;
+        var dialog = new mctcCalibrationDialog() { ViewModel = viewModel };
+        dialog.ShowDialog(ParentWindow);
+    }
+    
+    // Settings
     public async void Settings_PhaseNames()
     {
         var vm = new SettingsPhaseNamesViewModel();
@@ -405,6 +464,12 @@ public partial class MainMenu : UserControl
         Log.Information(itemShowLeftPanel.IsChecked.ToString());
     }
 
+    public void View_OpenLogFolder()
+    {
+        if (!Directory.Exists(Program.LogFolder)) return;
+        DirectoryHelper.GoToDirectory(Program.LogFolder);
+    }
+    
     // Help
     public void Help()
     {

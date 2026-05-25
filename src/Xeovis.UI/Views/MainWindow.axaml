@@ -9,7 +9,8 @@
 		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
 		xmlns:vm="using:Xeovis.UI.ViewModels"
 		xmlns:vmModels="using:Xeovis.UI.Models"
-        x:DataType="vm:MainWindowViewModel"
+		xmlns:converters="clr-namespace:Xeovis.UI.Views.Helpers.Converters"
+		x:DataType="vm:MainWindowViewModel"
         Title="Xeovis"
 		ShowInTaskbar="True"
 		WindowState="Maximized">
@@ -66,20 +67,69 @@
 
 		<Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
 			<Setter Property="Background" Value="#AF6A0B"/>
+			<Setter Property="Height" Value="3"/>
+		</Style>
+		
+		<!-- <Style Selector="TabItem:selected"> -->
+		<!-- 	<Setter Property="Foreground" Value="Black" /> -->
+		<!-- 	<Setter Property="Background" Value="WhiteSmoke" /> -->
+		<!-- </Style> -->
+		
+		<Style Selector="Ellipse.BlinkingDot">
+			<Style.Animations>
+				<Animation Duration="0:0:1.2" IterationCount="INFINITE">
+					<KeyFrame Cue="0%">
+						<Setter Property="Opacity" Value="1.0"/>
+					</KeyFrame>
+					<KeyFrame Cue="50%">
+						<Setter Property="Opacity" Value="0.1"/>
+					</KeyFrame>
+					<KeyFrame Cue="100%">
+						<Setter Property="Opacity" Value="1.0"/>
+					</KeyFrame>
+				</Animation>
+			</Style.Animations>
 		</Style>
 	</Window.Styles>
 
+	<Window.Resources>
+		<converters:BoolToForegroundConverter x:Key="BoolToColor" />
+	</Window.Resources>
+	
 	<DockPanel>
 		<!-- Main Menu -->
 		<Grid x:Name="MenuGrid"
 			  DockPanel.Dock="Top"
-			  RowDefinitions="*">
-			<userControls:MainMenu x:Name="mainMenu" />
+			  RowDefinitions="*"
+			  ColumnDefinitions="*,*">
+			<userControls:MainMenu Grid.Column="0" x:Name="mainMenu" />
+			
+			<StackPanel Grid.Column="1"
+			            x:Name="stpApiDot"
+			            IsVisible="False"
+			            Orientation="Horizontal"
+			            HorizontalAlignment="Right"
+			            Margin="0,0,10,0">
+                
+				<TextBlock Text="API Status:"
+				           x:Name="txtApiDot"
+				           VerticalAlignment="Center"
+				           FontSize="14"
+				           Foreground="Black"
+				           Margin="0,0,5,0"/>
+                
+				<Ellipse Classes="BlinkingDot"
+				         Width="10" 
+				         Height="10" 
+				         Fill="LimeGreen" 
+				         VerticalAlignment="Center"/>
+                         
+			</StackPanel>
 		</Grid>
 
-		<Grid DockPanel.Dock="Top" x:Name="mainGrid">
+		<Grid DockPanel.Dock="Top" x:Name="mainGrid" >
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="220" MinWidth="150" MaxWidth="400" />
+				<ColumnDefinition Width="250" MinWidth="100" MaxWidth="450" />
 				<ColumnDefinition Width="5" MinWidth="5" />
 				<ColumnDefinition Width="*" MinWidth="500" />
 			</Grid.ColumnDefinitions>
@@ -129,7 +179,8 @@
 											CornerRadius="3"
 											HorizontalAlignment="Left"
 											BorderBrush="{Binding BorderColor}">
-										<TextBlock Text="{Binding Label}"/>
+										<TextBlock Text="{Binding Label}"
+										           Foreground="{Binding HasVisiblePlot, Converter={StaticResource BoolToColor}}"/>
 									</Border>
 								</TreeDataTemplate>
 							</TreeView.ItemTemplate>
@@ -144,7 +195,7 @@
 						  ResizeDirection="Columns"/>
 
 			<!-- Main Pane -->
-			<Border Grid.Column="2" Padding="0" Classes="Panels" >
+			<Border Grid.Column="2" Padding="0 2" Classes="Panels" >
 				<TabControl x:Name="tabControl"
 				            Focusable="True"
 							ItemsSource="{Binding TabControls}">
@@ -153,9 +204,10 @@
 						<DataTemplate>
 							<Border IsVisible="{Binding IsVisible}"
 									BorderThickness="1.5"
-									Padding="4 2"
-									Margin="0 0 0 5"
+									Padding="4 0"
+									Margin="0 0 0 6"
 									CornerRadius="3"
+									Height="25"
 									BorderBrush="{Binding TabColor}">
 								<StackPanel Classes="Tabs" VerticalAlignment="Center">
 									<TextBlock Text="{Binding Header}"
@@ -178,8 +230,13 @@
 
 					<TabControl.ContentTemplate>
 						<DataTemplate DataType="vm:TabControlViewModelBase">
-							<UserControl Content="{Binding OwnerTabControl}"
-										 IsVisible="{Binding IsVisible}"/>
+							<Border BorderBrush="DarkGray"
+							        BorderThickness="0 2 0 0"
+							        Padding="0 4 0 0"
+							        Margin="0">
+								<UserControl Content="{Binding OwnerTabControl}"
+								             IsVisible="{Binding IsVisible}"/>
+							</Border>
 						</DataTemplate>
 					</TabControl.ContentTemplate>
 

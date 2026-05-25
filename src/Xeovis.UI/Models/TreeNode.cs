@@ -15,18 +15,23 @@ namespace Xeovis.UI.Models
         [ObservableProperty]
         private IBrush borderColor;
 
+        [ObservableProperty]
+        private bool hasVisiblePlot;
+        
         public bool HasChildren => Children != null && Children.Count > 0;
 
         public TreeNode(string label)
         {
             Children = new ObservableCollection<TreeNode>();
             Label = label;
+            HasVisiblePlot = true;
         }
 
         public TreeNode(string label, ObservableCollection<TreeNode> children)
         {
             Label = label;
             Children = children;
+            HasVisiblePlot = true;
         }
     }
 }

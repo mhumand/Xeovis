@@ -7,7 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Xeovis.Base;
 using Xeovis.Domain;
 using Xeovis.Domain.Definitions;
@@ -33,6 +36,7 @@ namespace Xeovis.UI.Views
         }
 
         private DataManagerTabControl? _dataManagerTab;
+        private CancellationTokenSource _activityCts;
 
         public MainWindow()
         {
@@ -44,8 +48,64 @@ namespace Xeovis.UI.Views
             xeosVariableNameList.xeosVariableNameListChanged += XeosVariableNameList_xeosVariableNameListChanged;
             PhaseOxideList.PhaseOxideListChanged += PhaseOxideList_PhaseOxideListChanged;
             xeosVariableCationList.xeosVariableCationListChanged += XeosVariableCationList_xeosVariableCationListChanged;
-
+            
+            ApiHost.BundleReloadCalled += ApiHost_BundleReloadCalled;
+            ApiHost.LoadNewBundleCalled += ApiHost_LoadNewBundleCalled;
+            ApiHost.RefreshBundleUIAsked += ApiHost_RefreshBundleUIAsked;
+            ApiHost.ApiActivityChanged += OnApiActivityChanged;
             PrepareUI();
+        }
+
+        private void OnApiActivityChanged(object? sender, ApiActivityChangedEventArgs e)
+        {
+            Dispatcher.UIThread.Post(async () =>
+            {
+                txtApiDot.Text = e.Message;
+                stpApiDot.IsVisible = true;
+                
+                // Cancel any previous timer
+                _activityCts?.Cancel();
+                _activityCts = new CancellationTokenSource();
+
+                try
+                {
+                    // Wait 1.5 seconds. If another request comes in, this gets cancelled.
+                    await Task.Delay(2000, _activityCts.Token);
+                
+                    // If we make it here without being cancelled, traffic has stopped.
+                    // IsApiActive = false;
+                    stpApiDot.IsVisible = false;
+                    txtApiDot.Text = string.Empty;
+                }
+                catch (TaskCanceledException)
+                {
+                    // Another request came in, keep blinking!
+                }
+            });
+        }
+
+        private void ApiHost_RefreshBundleUIAsked(object? sender, RefreshBundleUIAskedEventArgs e)
+        {
+            var bundle = _viewModel.mctcBundles.FirstOrDefault(x => x.Name.Equals(e.BundleName, StringComparison.OrdinalIgnoreCase));
+            if (bundle == null) return;
+            RepopulateBundleUI(bundle);
+        }
+
+        private void ApiHost_LoadNewBundleCalled(object? sender, LoadNewBundleCalledEventArgs e)
+        {
+            if (!Directory.Exists(e.Directory)) return;
+            var bundleName = e.BundleName;
+            //todo
+        }
+
+        private void ApiHost_BundleReloadCalled(object? sender, BundleReloadCalledEventArgs e)
+        {
+            var bundle = _viewModel.mctcBundles.FirstOrDefault(x => x.Name.Equals(e.BundleName, StringComparison.OrdinalIgnoreCase));
+            if (bundle == null) return;
+            if (e.IsReloadAndAppend)
+                ReloadAndAppendBundle(bundle, simpleLoad: true);
+            else
+                ReloadBundle(bundle, simpleLoad: true);
         }
 
         private void InitializeDefaultValues()
@@ -116,7 +176,8 @@ namespace Xeovis.UI.Views
 
             tvExperiments.ContextRequested += tvExperiments_ContextRequested;
             tvMctcBundles.ContextRequested += tvMctcBundles_ContextRequested;
-
+            tvMctcBundles.DoubleTapped += tvMctcBundles_DoubleTapped;
+            
             mainMenu.ExperimentsLoaded += MainMenu_ExperimentsLoaded;
             mainMenu.mctcBundleLoaded += MainMenu_mctcBundleLoaded;
             mainMenu.ProjectLoaded += MainMenu_ProjectLoaded;
@@ -127,21 +188,6 @@ namespace Xeovis.UI.Views
 
             tabControl.ContextRequested += TabControl_ContextRequested;
             tabControl.SelectionChanged += TabControl_SelectionChanged;
-            tabControl.KeyDown += tabControl_KeyDown;
-        }
-
-        private void tabControl_KeyDown(object? sender, KeyEventArgs e)
-        {
-            if (e.KeyModifiers != KeyModifiers.Control) return;
-
-            if (tabControl.SelectedItem is not TabControlViewModelBase selectedTab) return;
-            if (selectedTab is DataManagerTabControlViewModel) return;
-            if (e.Key == Key.OemComma) // move tab left
-                MovePlotTab(selectedTab, moveLeft: true);
-            else if (e.Key == Key.OemPeriod) // move tab right
-                MovePlotTab(selectedTab, moveLeft: false);
-            else
-                e.Handled = true;
         }
 
         private void MovePlotTab(TabControlViewModelBase selectedTab, bool moveLeft)
@@ -242,6 +288,8 @@ namespace Xeovis.UI.Views
                 {
                     var moveLeftItem = new MenuItem();
                     moveLeftItem.Header = "Move Left";
+                    moveLeftItem.HotKey = new KeyGesture(Key.OemComma, KeyModifiers.Control);
+                    moveLeftItem.InputGesture = new KeyGesture(Key.OemComma, KeyModifiers.Control);
                     moveLeftItem.Click += (_,_) => MovePlotTab(selectedTab, true);
                     menu.Items.Add(moveLeftItem);
                 }
@@ -250,6 +298,8 @@ namespace Xeovis.UI.Views
                 {
                     var moveRightItem = new MenuItem();
                     moveRightItem.Header = "Move Right";
+                    moveRightItem.HotKey = new KeyGesture(Key.OemPeriod, KeyModifiers.Control);
+                    moveRightItem.InputGesture = new KeyGesture(Key.OemPeriod, KeyModifiers.Control);
                     moveRightItem.Click += (_, _) => MovePlotTab(selectedTab, false);
                     menu.Items.Add(moveRightItem);
                 }
@@ -336,7 +386,7 @@ namespace Xeovis.UI.Views
             return false;
         }
 
-        private void MainMenu_ProjectLoaded(object? sender, Models.Events.ProjectFileLoadedEventArgs e)
+        private async Task MainMenu_ProjectLoaded(object? sender, Models.Events.ProjectFileLoadedEventArgs e)
         {
             _viewModel.ClearAll();
             _dataManagerTab = null;
@@ -357,10 +407,33 @@ namespace Xeovis.UI.Views
 
             var extension = Path.GetExtension(e.Path);
             this.Title = string.IsNullOrWhiteSpace(e.Project.ProjectName) ? "Xeovis" : $"Xeovis | {e.Project.ProjectName}{extension}";
+            
+            await Task.Delay(10);
             OnExperimentsLoaded(e.Project.Experiments);
-            e.Project.mctcBundles.ForEach(x => OnMctcBundleLoaded(x));
-            e.Project.mctcPlotDtos.ForEach(x => CreateMctcPlot(x));
+            await Task.Delay(10);
+            
+            // e.Project.mctcBundles.ForEach(x => OnMctcBundleLoaded(x));
+            // e.Project.mctcPlotDtos.ForEach(x => CreateMctcPlot(x));
 
+            int counter = 0;
+            foreach(var bundle in e.Project.mctcBundles)
+            {
+                OnMctcBundleLoaded(bundle);
+                counter++;
+                // If you have hundreds of bundles, yield every 10 items.
+                // If you only have a few, just one Task.Delay after the loop is fine.
+                if (counter % 10 == 0) await Task.Delay(1); 
+            }
+            
+            await Task.Delay(10);
+
+            foreach(var plot in e.Project.mctcPlotDtos)
+            {
+                CreateMctcPlot(plot);
+                // Again, yield if you are generating many plots
+                await Task.Delay(1); 
+            }
+            
             _viewModel.MctcBundleNodes.ToList().ForEach(x => x.IsExpanded = false);
             if (_viewModel.MctcBundleNodes.Count > 0)
                 _viewModel.MctcBundleNodes.Last().IsExpanded = true;
@@ -470,7 +543,8 @@ namespace Xeovis.UI.Views
 
                 deleteItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteMctcBundle(node.PresenterId), $"{node.Label} and its plots");
                 deleteAllItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteAllMctcBundles(), "all mctc bundles and their plots");
-
+                deleteAllItem.Header = "Delete All Bundles";
+                
                 if (node.HasChildren)
                 {
                     menu.Items.Add(new Separator());
@@ -522,6 +596,7 @@ namespace Xeovis.UI.Views
                 {
                     tab.IsVisible = true;
                     mctcPlotDto.IsVisible = true;
+                    node.HasVisiblePlot = true;
                     tabControl.SelectedItem = tab;
                 };
                 menu.Items.Insert(0, openItem);
@@ -533,12 +608,14 @@ namespace Xeovis.UI.Views
                     //visibleItem.IsChecked = !visibleItem.IsChecked;
                     tab.IsVisible = visibleItem.IsChecked;
                     mctcPlotDto.IsVisible = visibleItem.IsChecked;
+                    node.HasVisiblePlot = visibleItem.IsChecked;
                 };
                 menu.Items.Add(visibleItem);
 
                 deleteItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteMctcPlot(node.PresenterId), $"{node.Label} in {bundle.Name}");
                 deleteAllItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteAllMctcPlotsInBundle(node.PresenterId), $"all plots in {bundle.Name}");
-
+                deleteAllItem.Header = "Delete All Plots";
+                
                 // rename
                 var otherNames = _viewModel.mctcPlotDtos.Except(new List<mctcPlotDto> { mctcPlotDto }).Select(x => x.Name).ToList();
                 void Rename(mctcPlotDto plotDto, string newName)
@@ -588,6 +665,26 @@ namespace Xeovis.UI.Views
             {
                 tab.TabColor = GraphicsGenerator.GetBrushFromColor(bundle.Color);
             }
+        }
+        
+        private void tvMctcBundles_DoubleTapped(object? sender, TappedEventArgs e)
+        {
+            if (tvMctcBundles.SelectedItem is not TreeNode node) return;
+
+            var isMctcBundle = _viewModel.mctcBundles.Any(x => x.Id == node.PresenterId);
+            if (isMctcBundle) return;
+
+            var mctcPlotDto = _viewModel.mctcPlotDtos.FirstOrDefault(x => x.Id == node.PresenterId);
+            var tab = tabControl.Items.FirstOrDefault(x => (x as TabControlViewModelBase)?.PresenterId == node.PresenterId) as TabControlViewModelBase;
+
+            if (mctcPlotDto == null || tab == null) return;
+
+            tab.IsVisible = true;
+            mctcPlotDto.IsVisible = true;
+            node.HasVisiblePlot = true;
+            tabControl.SelectedItem = tab;
+            
+            e.Handled = true;
         }
         
         private void tvExperiments_ContextRequested(object? sender, ContextRequestedEventArgs e)
@@ -653,22 +750,22 @@ namespace Xeovis.UI.Views
         {
             if (sender is not MenuItem menuItem) return;
             if (menuItem.Tag is not mctcBundle bundle) return;
+            await ReloadBundle(bundle);
+        }
 
-            var newBundle = await mainMenu.LoadMctcBundle(bundle.FilesDirectory);
+        private async Task ReloadBundle(mctcBundle bundle, bool simpleLoad = false)
+        {
+            var newBundle = simpleLoad ? mainMenu.SimpleMctcBundleLoad(bundle.FilesDirectory) :
+                await mainMenu.LoadMctcBundle(bundle.FilesDirectory);
             if (newBundle != null)
             {
                 newBundle.Id = bundle.Id;
                 newBundle.Name = bundle.Name;
+                newBundle.Color = bundle.Color;
                 var index = _viewModel.mctcBundles.FindIndex(x => x.Id == newBundle.Id);
                 _viewModel.mctcBundles[index] = newBundle;
 
-                foreach (var plotDto in _viewModel.mctcPlotDtos.Where(x => x.mctcBundleId == newBundle.Id))
-                {
-                    var tab = _viewModel.TabControls.FirstOrDefault(x => x.PresenterId == plotDto.Id);
-                    if (tab?.OwnerTabControl is ImctcPlotView mctcPlot)
-                        mctcPlot.PopulateUI(plotDto, newBundle);
-                }
-
+                if (!simpleLoad) RepopulateBundleUI(newBundle);
                 Log.Information("Bundle reloaded: {name}", bundle.Name);
             }
             else
@@ -679,12 +776,40 @@ namespace Xeovis.UI.Views
             }
         }
 
+        private async void RepopulateBundleUI(mctcBundle mctcBundle)
+        {
+            if (mctcBundle == null) return;
+            foreach (var plotDto in _viewModel.mctcPlotDtos.Where(x => x.mctcBundleId == mctcBundle.Id))
+            {
+                var tab = _viewModel.TabControls.FirstOrDefault(x => x.PresenterId == plotDto.Id);
+                // if (tab?.OwnerTabControl is ImctcPlotView mctcPlot)
+                // {
+                //     // 1. Use InvokeAsync and await it. This ensures we don't start populating 
+                //     // the NEXT tab until this current one is completely finished.
+                //     await Dispatcher.UIThread.InvokeAsync(() => mctcPlot.PopulateUI(plotDto, mctcBundle));
+                //
+                //     // 2. THE YIELD: Pause for 10 milliseconds before looping. 
+                //     // This tiny gap allows Avalonia's Render Engine to step in and update the 
+                //     // blinking green dot on the screen so it stays perfectly smooth!
+                //     await Task.Delay(10);
+                // }
+                
+                if (tab?.OwnerTabControl is ImctcPlotView mctcPlot)
+                    Dispatcher.UIThread.Post(() => mctcPlot.PopulateUI(plotDto, mctcBundle));
+            }
+        }
+        
         private async void reloadAndAppendItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (sender is not MenuItem menuItem) return;
             if (menuItem.Tag is not mctcBundle bundle) return;
+            await ReloadAndAppendBundle(bundle);
+        }
 
-            var newBundle = await mainMenu.LoadMctcBundle(bundle.FilesDirectory);
+        private async Task ReloadAndAppendBundle(mctcBundle bundle, bool simpleLoad = false)
+        {
+            var newBundle = simpleLoad ? mainMenu.SimpleMctcBundleLoad(bundle.FilesDirectory) :
+                await mainMenu.LoadMctcBundle(bundle.FilesDirectory);
             if (newBundle != null)
             {
                 foreach (var newBatch in newBundle.Batches)
@@ -702,13 +827,7 @@ namespace Xeovis.UI.Views
                     }
                 }
 
-                foreach (var plotDto in _viewModel.mctcPlotDtos.Where(x => x.mctcBundleId == bundle.Id))
-                {
-                    var tab = _viewModel.TabControls.FirstOrDefault(x => x.PresenterId == plotDto.Id);
-                    if (tab?.OwnerTabControl is ImctcPlotView mctcPlot)
-                        mctcPlot.PopulateUI(plotDto, bundle);
-                }
-
+                if (!simpleLoad) RepopulateBundleUI(bundle);
                 Log.Information("Bundle reloaded: {name}", bundle.Name);
             }
             else

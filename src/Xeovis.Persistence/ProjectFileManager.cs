@@ -83,7 +83,7 @@ namespace Xeovis.Persistence
         {
             using (ZipArchive archive = ZipFile.OpenRead(zipPath))
             {
-                var entry = archive.GetEntry(entryName);
+                var entry = archive.Entries.FirstOrDefault(x => x.FullName.EndsWith(".json"));
                 if (entry == null)
                     throw new FileNotFoundException("Entry not found in zip.");
 

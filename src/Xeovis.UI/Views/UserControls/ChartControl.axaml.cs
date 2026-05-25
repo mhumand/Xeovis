@@ -397,6 +397,8 @@ public partial class ChartControl : UserControl
         if (pointer.Properties.IsLeftButtonPressed)
         {
             var plotCoords = _plot.GetCoordinates((float)pointer.Position.X, (float)pointer.Position.Y);
+            if (double.IsNaN(plotCoords.X + plotCoords.Y)) return;
+            if (double.IsInfinity(plotCoords.X + plotCoords.Y)) return;
             var dataPoint = GetNearestPoint(plotCoords, out int IndexInCurve, out Guid CurveId);
             if (!dataPoint.Equals(DataPoint.None))
             {
@@ -632,6 +634,8 @@ public partial class ChartControl : UserControl
             MarkerType.FilledTriangleUp => GraphicsGenerator.GetTriangleUp(size, curve.MarkerColor),
             MarkerType.FilledTriangleDown => GraphicsGenerator.GetTriangleDown(size, curve.MarkerColor),
             MarkerType.FilledDiamond => GraphicsGenerator.GetDiamond(size, curve.MarkerColor),
+            MarkerType.Asterisk => GraphicsGenerator.GetAsterisk(size, curve.MarkerColor),
+            MarkerType.Cross => GraphicsGenerator.GetCross(size, curve.MarkerColor),
             _ => null
         };
         

@@ -16,6 +16,11 @@
 		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
 		<StyleInclude Source="/Views/Styles/TabItems.axaml"/>
 		<StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+		
+		<Style Selector="TabItem">
+			<Setter Property="Height" Value="35" />
+			<Setter Property="Margin" Value="8 0" />
+		</Style>
 	</Window.Styles>
 
 	<Grid RowDefinitions="*, 50">

@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using Avalonia.Controls;
 using Avalonia;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media.Imaging;
@@ -119,6 +120,44 @@ namespace Xeovis.UI
             return RenderVisualToImage(shape, size, size);
         }
 
+        public static Bitmap GetCross(int size, System.Drawing.Color fillColor)
+        {
+            double c = size / 2.0;
+    
+            var shape = new Path()
+            {
+                // Draw vertical line, then horizontal line
+                Data = Geometry.Parse($"M {c},0 L {c},{size} M 0,{c} L {size},{c}"),
+                Stroke = GetBrushFromColor(fillColor),
+                StrokeThickness = Math.Max(1.5, size / 5.0), // Scales nicely with size
+                StrokeLineCap = PenLineCap.Square
+            };
+
+            return RenderVisualToImage(shape, size, size);
+        }
+        
+        public static Bitmap GetAsterisk(int size, System.Drawing.Color fillColor)
+        {
+            double c = size / 2.0;
+            double offset = size * 0.15; // Padding for the diagonal lines
+            double end = size * 0.85;
+    
+            var shape = new Path()
+            {
+                // Vertical, Horizontal, and both Diagonals
+                Data = Geometry.Parse(
+                    $"M {c},0 L {c},{size} " +               
+                    $"M 0,{c} L {size},{c} " +               
+                    $"M {offset},{offset} L {end},{end} " +  
+                    $"M {offset},{end} L {end},{offset}"),   
+                Stroke = GetBrushFromColor(fillColor),
+                StrokeThickness = Math.Max(1.0, size / 8.0), // Slightly thinner lines to prevent crowding
+                StrokeLineCap = PenLineCap.Round
+            };
+
+            return RenderVisualToImage(shape, size, size);
+        }
+        
         public static Color GetAvaloniaColor(System.Drawing.Color color)
         {
             return Color.FromArgb(color.A, color.R, color.G, color.B);

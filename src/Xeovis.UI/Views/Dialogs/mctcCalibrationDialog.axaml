@@ -1,0 +1,51 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
+        Height="450"
+        Width="600"
+        CanResize="False"
+        xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+        xmlns:vm="using:Xeovis.UI.ViewModels.DialogsViewModels"
+        x:Class="Xeovis.UI.Views.Dialogs.mctcCalibrationDialog"
+        Title="MCTC - Calibration">
+    
+    <Window.Styles>
+        <StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
+        <StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+        <StyleInclude Source="/Views/Styles/Textboxes.axaml"/>
+    </Window.Styles>
+    
+    <StackPanel Margin="20" Spacing="20">
+        <Grid ColumnDefinitions="*, 100">
+            <userControls:LabelBrowseDirectoryControl Grid.Column="0"
+                                                      x:Name="lbdcAxFile"
+                                                      VerticalAlignment="Center"/>
+            <Button x:Name="btnReadAxFile"
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Width="90"
+                    Classes="Primary"
+                    Click="btnReadAxFile_OnClick"
+                    Content="Read ax-file"/>
+        </Grid>
+        
+        <userControls:LabelInputControl x:Name="txtMctc"/>
+        
+        <Grid ColumnDefinitions="*, 100">
+            <userControls:LabelBrowseDirectoryControl Grid.Column="0"
+                                                      x:Name="lbdcScriptFile"
+                                                      VerticalAlignment="Center"/>
+            <Button x:Name="btnCalculate"
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Width="90"
+                    Classes="Primary"
+                    Click="btnCalculate_OnClick"
+                    Content="Read ax-file"/>
+        </Grid>
+    </StackPanel>
+</Window>

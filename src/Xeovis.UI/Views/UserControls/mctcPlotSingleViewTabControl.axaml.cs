@@ -3,6 +3,8 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Xeovis.Base;
 using Xeovis.Base.Comparers;
 using Xeovis.Base.Utilities;
@@ -33,6 +35,10 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         }
     }
 
+    private bool _isDraggingLegend = false;
+    private bool _dragTargetState = false;
+    private CheckBoxControl? _lastHoveredCheckbox = null;
+    
     public MainWindow? ParentWindow { get; set; }
 
     private bool _linkVariable;
@@ -98,7 +104,84 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         tableControl.ContextRequested += tableControl_ContextRequested;
         toggleLink.IsCheckedChanged += toggleLink_IsCheckedChanged;
         _linkVariable = (bool)toggleLink.IsChecked;
+        
+        stackLegend.AddHandler(PointerPressedEvent, StackLegend_PointerPressed, RoutingStrategies.Tunnel);
+        stackLegend.AddHandler(PointerMovedEvent, StackLegend_PointerMoved, RoutingStrategies.Tunnel);
+        stackLegend.AddHandler(PointerReleasedEvent, StackLegend_PointerReleased, RoutingStrategies.Tunnel);
     }
+    
+    
+    private void StackLegend_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        var point = e.GetCurrentPoint(stackLegend);
+        
+        // We only want to handle left-click drags. 
+        // Your existing Middle-Click "CheckThisOnly" logic will safely ignore this.
+        if (!point.Properties.IsLeftButtonPressed) return;
+
+        var pos = e.GetPosition(stackLegend);
+        
+        foreach (Control child in stackLegend.Children)
+        {
+            // Find the exact checkbox the user clicked down on
+            if (child is CheckBoxControl chk && chk.Bounds.Contains(pos))
+            {
+                _isDraggingLegend = true;
+                
+                // If it's unchecked, we drag to CHECK. If checked, we drag to UNCHECK.
+                _dragTargetState = !chk.ViewModel.IsChecked;
+                
+                // Toggle the first item immediately
+                chk.ViewModel.IsChecked = _dragTargetState;
+                _lastHoveredCheckbox = chk;
+                
+                // Capture the mouse so we don't lose tracking if the user drags quickly
+                e.Pointer.Capture(stackLegend);
+                
+                // Mark as handled so the inner CheckBox doesn't ALSO process the click 
+                // and accidentally double-toggle itself.
+                e.Handled = true; 
+                break;
+            }
+        }
+    }
+
+    private void StackLegend_PointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (!_isDraggingLegend) return;
+
+        var pos = e.GetPosition(stackLegend);
+        
+        foreach (Control child in stackLegend.Children)
+        {
+            // Find which checkbox the mouse is currently hovering over
+            if (child is CheckBoxControl chk && chk.Bounds.Contains(pos))
+            {
+                // Only update the ViewModel if we moved into a NEW checkbox
+                if (chk != _lastHoveredCheckbox)
+                {
+                    chk.ViewModel.IsChecked = _dragTargetState;
+                    _lastHoveredCheckbox = chk;
+                }
+                break;
+            }
+        }
+    }
+
+    private void StackLegend_PointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        // End the drag only if we own the capture
+        if (_isDraggingLegend && e.Pointer.Captured == stackLegend)
+        {
+            _isDraggingLegend = false;
+            _lastHoveredCheckbox = null;
+            
+            // Release the mouse capture back to the OS
+            e.Pointer.Capture(null); 
+            e.Handled = true;
+        }
+    }
+    
 
     public bool PopulateUI(mctcPlotDto mctcPlotDto, mctcBundle mctcBundle)
     {
@@ -409,7 +492,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         // reading data
         var row = tableControl.dataGrid.SelectedItem;
         if (row == null) return;
-        var values = ((Dictionary<string, object>)row).Values.Cast<string>().ToList();
+        var values = ((Dictionary<string, object>)row).Values.Select(x => x.ToString()).ToList();
         if (values.Count == 0) return;
         var phaseNames = values[3].Split(' ', StringSplitOptions.RemoveEmptyEntries);
         var runData = values[4].Split(['-', ' '], StringSplitOptions.RemoveEmptyEntries);

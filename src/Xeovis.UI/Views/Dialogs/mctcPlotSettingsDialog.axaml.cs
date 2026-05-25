@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using System;
 using System.Linq;
+using Avalonia.Media;
 using Serilog;
 using Xeovis.Base.Validations;
 using Xeovis.Presentation;
@@ -45,6 +46,7 @@ public partial class mctcPlotSettingsDialog : Window
 
         var vmNote = new LabelInputControlViewModel("Note", _mctcPlotDto.Note, isMultiLine: true);
         licNote.ViewModel = vmNote;
+        licNote.tbInput.TextWrapping = TextWrapping.Wrap;
 
         var vmCategoryType = new LabelListControlViewModel(_viewModel.GetCategoryTypeListItems());
         vmCategoryType.Label = "Group points based on";

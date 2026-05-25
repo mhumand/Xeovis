@@ -30,7 +30,7 @@
 
 	<Menu VerticalAlignment="Top" 
 		  BorderBrush="LightGray"
-		  BorderThickness="0 0 0 1">
+		  BorderThickness="0 0 0 0">
 
 		<MenuItem Header="_File">
 
@@ -124,6 +124,16 @@
 					<Image Source="/Assets/MainMenu/newplot.png"/>
 				</MenuItem.Icon>
 			</MenuItem>
+			
+			<Separator/>
+			
+			<MenuItem x:Name="btnMctcCalibration"
+			          Header="_Calibration"
+			          Command="{Binding Mctc_Calibration}">
+				<MenuItem.Icon>
+					<Image Source=""/>
+				</MenuItem.Icon>
+			</MenuItem>
 
 		</MenuItem>
 
@@ -176,6 +186,15 @@
 				</MenuItem.Icon>
 			</MenuItem>
 
+			<MenuItem x:Name="itemOpenLogFolder"
+			          Header="Open Log Folder"
+			          ToolTip.Tip="Opens the folder containing Xeovis log files."
+			          Command="{Binding View_OpenLogFolder}">
+				<MenuItem.Icon>
+					<Image Source="/Assets/MainMenu/log.png"/>
+				</MenuItem.Icon>
+			</MenuItem>
+			
 		</MenuItem>
 
 		<MenuItem Header="_Help">
