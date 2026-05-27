@@ -392,6 +392,11 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
                     index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y 
                     && columns[4].Values[i].ToString().Split(" - ", StringSplitOptions.RemoveEmptyEntries)[1] == curve.Name, -1);
                 }
+                else if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.ExperimentalRun)
+                {
+                    index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y 
+                        && string.Join(" - ", columns[4].Values[i].ToString().Split(" - ").Skip(1)) == curve.Name, -1);
+                }
                 else if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Temperature)
                 {
                     index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y 
@@ -424,6 +429,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         {
             mctcPlotPointsGroupingType.Batch => values[3].ToString(),
             mctcPlotPointsGroupingType.Experiment => values[4].ToString().Split(" - ", StringSplitOptions.RemoveEmptyEntries)[1].ToString(),
+            mctcPlotPointsGroupingType.ExperimentalRun => string.Join(" - ", values[4].ToString().Split(" - ").Skip(1)) ,
             mctcPlotPointsGroupingType.Temperature => values[6].ToString(),
             mctcPlotPointsGroupingType.Pressure => values[5].ToString(),
             _ => null

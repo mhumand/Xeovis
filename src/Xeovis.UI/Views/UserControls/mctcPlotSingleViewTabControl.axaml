@@ -194,7 +194,7 @@
 						        IsVisible="{Binding IsPaneOpen, ElementName=splitView}">
 							<TabControl IsVisible="{Binding IsPaneOpen, ElementName=splitView}">
 								<TabItem  Header="Global Legend">
-									<ScrollViewer>
+									<ScrollViewer HorizontalScrollBarVisibility="Auto">
 										<StackPanel x:Name="stackLegend"/>
 									</ScrollViewer>
 								</TabItem>
