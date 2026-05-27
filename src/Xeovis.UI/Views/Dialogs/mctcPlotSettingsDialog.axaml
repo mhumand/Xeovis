@@ -26,7 +26,7 @@
 	<Grid RowDefinitions="*, 50">
 		<TabControl Grid.Row="0">
 			<TabItem Header="General Settings">
-				<Grid Margin="10" RowDefinitions="80, 80, 200, *">
+				<Grid Margin="10" RowDefinitions="80, 80, 220, *">
 					<uc:LabelInputControl x:Name="licName" Grid.Row="0" />
 					<uc:LabelInputControl x:Name="licNote" Grid.Row="1" />
 					<uc:LabelListControl x:Name="llcCategoryType" Grid.Row="2" />

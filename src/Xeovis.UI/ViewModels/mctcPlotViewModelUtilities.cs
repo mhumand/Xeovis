@@ -102,6 +102,10 @@ namespace Xeovis.UI.ViewModels
             {
                 allGroups = xeosVariables.GroupBy(mv => (object)batchDict[mv.BatchId].ExperimentName).ToList();
             }
+            else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.ExperimentalRun)
+            {
+                allGroups = xeosVariables.GroupBy(mv => (object)batchDict[mv.BatchId].GetExpRunString()).ToList();
+            }
 
             var selectedGroups = new List<IGrouping<object, xeosVariable>>();
             if (mctcPlotDto.ExcludeIrrelevantBatches)
@@ -176,6 +180,11 @@ namespace Xeovis.UI.ViewModels
                         else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Experiment)
                         {
                             var grp = leftXeosVars.GroupBy(x => (object)batchDict[x.BatchId].ExperimentName).FirstOrDefault();
+                            if (grp != null && grp.Count() != 0) selectedGroups.Add(grp);
+                        }
+                        else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.ExperimentalRun)
+                        {
+                            var grp = leftXeosVars.GroupBy(x => (object)batchDict[x.BatchId].GetExpRunString()).FirstOrDefault();
                             if (grp != null && grp.Count() != 0) selectedGroups.Add(grp);
                         }
                     }

@@ -56,6 +56,11 @@ namespace Xeovis.Domain
             return str.TrimEnd(spacer.ToCharArray());
         }
 
+        public string GetExpRunString(string spacer = " - ")
+        {
+            return ExperimentName + spacer + ExpRunName;
+        }
+        
         public bool IsAllFailed()
         {
             return IsFailed.All(i => i.Value == true);
