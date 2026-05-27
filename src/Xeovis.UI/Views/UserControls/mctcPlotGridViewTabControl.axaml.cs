@@ -273,14 +273,14 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
     {
         stackLegend.Children.Clear();
         var checkboxes = new List<CheckBoxControl>();
-        var curveNames = new List<string>();
+        var curveNames = new HashSet<string>();
         foreach (ChartControl chartControl in uniformGrid.Children)
         {
             if (chartControl == null) continue;
             foreach (var curve in chartControl.ViewModel.ChartModel.Curves)
             {
-                if (curveNames.Contains(curve.Name)) continue;
-                curveNames.Add(curve.Name);
+                if (!curveNames.Add(curve.Name)) continue;
+                
                 var markerImage = chartControl.GetMarkerGraphic(curve.Id);
                 if (markerImage == null || !curve.IsVisibleInLegend) continue;
                 var checkboxViewModel = new CheckBoxControlViewModel(curve.Name, isChecked: curve.IsVisible) { Image = markerImage };
