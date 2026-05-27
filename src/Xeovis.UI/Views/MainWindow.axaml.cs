@@ -812,12 +812,26 @@ namespace Xeovis.UI.Views
                 await mainMenu.LoadMctcBundle(bundle.FilesDirectory);
             if (newBundle != null)
             {
+                // 1. Create an O(1) Dictionary by generating a unique string key for each batch
+                var oldBatchesDict = bundle.Batches.ToDictionary(
+                    b => b.Name + "|" + string.Join(",", b.PhaseNameIds.OrderBy(id => id))
+                );
+                
                 foreach (var newBatch in newBundle.Batches)
                 {
-                    var oldBatch = bundle.Batches.FirstOrDefault(x => x.Name.Equals(newBatch.Name)
-                    && newBatch.PhaseNameIds.SequenceEqual(x.PhaseNameIds));
-                    if (oldBatch == null)
+                    // 2. Generate the key for the incoming batch
+                    var key = newBatch.Name + "|" + string.Join(",", newBatch.PhaseNameIds.OrderBy(id => id));
+                    
+                    // var oldBatch = bundle.Batches.FirstOrDefault(x => x.Name.Equals(newBatch.Name)
+                    // && newBatch.PhaseNameIds.SequenceEqual(x.PhaseNameIds));
+                    // if (oldBatch == null)
+                    //     bundle.Batches.Add(newBatch);
+                    
+                    // 3. Instant O(1) lookup
+                    if (!oldBatchesDict.TryGetValue(key, out var oldBatch))
+                    {
                         bundle.Batches.Add(newBatch);
+                    }
                     else 
                     {
                         // overwrites the xeos var in the old batch

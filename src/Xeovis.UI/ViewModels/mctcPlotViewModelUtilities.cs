@@ -39,10 +39,7 @@ namespace Xeovis.UI.ViewModels
                     .Select(x => x.Key).ToHashSet();
                 foreach (var xeosVar in xeosVariables)
                 {
-                    // var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
-                    // if (batch == null) continue;
                     if (!batchDict.TryGetValue(xeosVar.BatchId, out var batch)) continue;
-                    
                     if (batch.PhaseNameSets.All(x => !phases.Contains(x)))
                         excludedVars.Add(xeosVar);
                 }
@@ -54,10 +51,7 @@ namespace Xeovis.UI.ViewModels
                     .Select(x => x.Key).ToHashSet();
                 foreach (var xeosVar in xeosVariables)
                 {
-                    // var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
-                    // if (batch == null) continue;
                     if (!batchDict.TryGetValue(xeosVar.BatchId, out var batch)) continue;
-
                     if (phases.Except(batch.PhaseNameSets).Any())
                         excludedVars.Add(xeosVar);
                 }
@@ -69,10 +63,7 @@ namespace Xeovis.UI.ViewModels
                     .Select(x => x.Key).ToHashSet();
                 foreach (var xeosVar in xeosVariables)
                 {
-                    // var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
-                    // if (batch == null) continue;
                     if (!batchDict.TryGetValue(xeosVar.BatchId, out var batch)) continue;
-
                     if (batch.PhaseNameSets.Any(x => phases.Contains(x)))
                         excludedVars.Add(xeosVar);
                 }
@@ -84,10 +75,7 @@ namespace Xeovis.UI.ViewModels
                     .Select(x => x.Key).ToHashSet();
                 foreach (var xeosVar in xeosVariables)
                 {
-                    // var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == xeosVar.BatchId);
-                    // if (batch == null) continue;
                     if (!batchDict.TryGetValue(xeosVar.BatchId, out var batch)) continue;
-
                     if (phases.All(x => batch.PhaseNameSets.Contains(x)))
                         excludedVars.Add(xeosVar);
                 }
@@ -100,19 +88,19 @@ namespace Xeovis.UI.ViewModels
 
             if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Batch)
             {
-                allGroups = xeosVariables.GroupBy(mv => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == mv.BatchId).GetPhaseAssemblageString()).ToList();
+                allGroups = xeosVariables.GroupBy(mv => (object)batchDict[mv.BatchId].GetPhaseAssemblageString()).ToList();
             }
             else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Temperature)
             {
-                allGroups = xeosVariables.GroupBy(mv => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == mv.BatchId).ExpRunTemperature).ToList();
+                allGroups = xeosVariables.GroupBy(mv => (object)batchDict[mv.BatchId].ExpRunTemperature).ToList();
             }
             else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Pressure)
             {
-                allGroups = xeosVariables.GroupBy(mv => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == mv.BatchId).ExpRunPressure).ToList();
+                allGroups = xeosVariables.GroupBy(mv => (object)batchDict[mv.BatchId].ExpRunPressure).ToList();
             }
             else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Experiment)
             {
-                allGroups = xeosVariables.GroupBy(mv => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == mv.BatchId).ExperimentName).ToList();
+                allGroups = xeosVariables.GroupBy(mv => (object)batchDict[mv.BatchId].ExperimentName).ToList();
             }
 
             var selectedGroups = new List<IGrouping<object, xeosVariable>>();
@@ -123,8 +111,7 @@ namespace Xeovis.UI.ViewModels
                     foreach (var xeosVarGroup in allGroups)
                     {
                         var sampleVarInGroup = xeosVarGroup.FirstOrDefault();
-                        var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == sampleVarInGroup.BatchId);
-                        if (batch == null) continue;
+                        if (!batchDict.TryGetValue(sampleVarInGroup.BatchId, out var batch)) continue;
                         var phases = batch.PhaseNameSets.Except(batch.PhaseNameSets.Where(x => x != null && x.HasName(sampleVarInGroup.PhaseKeyName))).ToList();
                         phases.RemoveAll(x => x == null);
 
@@ -153,8 +140,7 @@ namespace Xeovis.UI.ViewModels
                         var excludedVariables = new List<xeosVariable>();
                         foreach (var modelVar in xeosVarGroup)
                         {
-                            var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == modelVar.BatchId);
-                            if (batch == null) continue;
+                            if (!batchDict.TryGetValue(modelVar.BatchId, out var batch)) continue;
                             var phases = batch.PhaseNameSets.Except(
                                 batch.PhaseNameSets.Where(x => x != null && x.HasName(modelVar.PhaseKeyName))).ToList();
                             phases.RemoveAll(x => x == null);
@@ -179,17 +165,17 @@ namespace Xeovis.UI.ViewModels
                         var leftXeosVars = xeosVarGroup.Except(excludedVariables).ToList();
                         if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Temperature)
                         {
-                            var grp = leftXeosVars.GroupBy(x => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == x.BatchId).ExpRunTemperature).FirstOrDefault();
+                            var grp = leftXeosVars.GroupBy(x => (object)batchDict[x.BatchId].ExpRunTemperature).FirstOrDefault();
                             if (grp != null && grp.Count() != 0) selectedGroups.Add(grp);
                         }
                         else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Pressure)
                         {
-                            var grp = leftXeosVars.GroupBy(x => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == x.BatchId).ExpRunPressure).FirstOrDefault();
+                            var grp = leftXeosVars.GroupBy(x => (object)batchDict[x.BatchId].ExpRunPressure).FirstOrDefault();
                             if (grp != null && grp.Count() != 0) selectedGroups.Add(grp);
                         }
                         else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Experiment)
                         {
-                            var grp = leftXeosVars.GroupBy(x => (object)mctcBundle.Batches.FirstOrDefault(b => b.Id == x.BatchId).ExperimentName).FirstOrDefault();
+                            var grp = leftXeosVars.GroupBy(x => (object)batchDict[x.BatchId].ExperimentName).FirstOrDefault();
                             if (grp != null && grp.Count() != 0) selectedGroups.Add(grp);
                         }
                     }
@@ -317,6 +303,8 @@ namespace Xeovis.UI.ViewModels
             if (mctcPlotDto.PointsGroupingType.IsNumber())
                 counter = 0;//todo: temp
 
+            var batchDict = mctcBundle.Batches.ToDictionary(b => b.Id);
+            
             var allXvals = new List<double>();
             var allYvals = new List<double>();
             foreach (var modelVarGroup in xeosVarGroups)
@@ -332,8 +320,7 @@ namespace Xeovis.UI.ViewModels
                     double x = double.NaN;
                     double y = double.NaN;
 
-                    var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == yVar.BatchId);
-                    if (batch == null) continue;
+                    if (!batchDict.TryGetValue(yVar.BatchId, out var batch)) continue;
                     var xAxisVariable = batch.xeosVariables.FirstOrDefault(x => x.IsEqualTo(xVariable));
                     if (axesSettings.XAxisType == mctcPlotAxisType.Observed && xAxisVariable != null)
                         x = xAxisVariable.ObsVal;
@@ -448,7 +435,8 @@ namespace Xeovis.UI.ViewModels
             var xVariable = axesSettings.XAxisVariable;
 
             var xeosVars = mctcBundle.xeosVariables.Where(x => xeosVarGroups.Any(g => g.Contains(x)) && x.CalcVals.ContainsKey(mctcRunIndex)).ToList();
-
+            var batchDict = mctcBundle.Batches.ToDictionary(b => b.Id);
+            
             var xValues = new List<double>();
             var yValues = new List<double>();
             var assemblages = new List<string>();
@@ -460,8 +448,7 @@ namespace Xeovis.UI.ViewModels
                 double x = double.NaN;
                 double y = double.NaN;
 
-                var batch = mctcBundle.Batches.FirstOrDefault(b => b.Id == yVar.BatchId);
-                if (batch == null) continue;
+                if (!batchDict.TryGetValue(yVar.BatchId, out var batch)) continue;
                 var xAxisVariable = batch.xeosVariables.FirstOrDefault(x => x.IsEqualTo(xVariable));
                 if (axesSettings.XAxisType == mctcPlotAxisType.Observed && xAxisVariable != null)
                     x = xAxisVariable.ObsVal;
