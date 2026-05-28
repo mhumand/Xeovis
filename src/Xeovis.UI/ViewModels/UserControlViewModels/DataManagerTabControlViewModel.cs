@@ -216,14 +216,12 @@ namespace Xeovis.UI.ViewModels
 
             var columns = new List<ColumnModel>
             {
-                new ColumnModel("#",
-                    Enumerable.Range(1, _allPhaseInstances.Count()).ToList()),
+                new ColumnModel("#", Enumerable.Range(1, _allPhaseInstances.Count()).ToList()),
                 new ColumnModel("Study", _allPhaseInstances.Select(i => GetExperimentByPhase(i).ShortName).ToList()),
                 new ColumnModel("Name", _allPhaseInstances.Select(i => GetExpRunByPhase(i).Name).ToList()),
                 new ColumnModel("P [Kbar]", _allPhaseInstances.Select(i => GetExpRunByPhase(i).Pressure).ToList()),
                 new ColumnModel("T [°C]", _allPhaseInstances.Select(i => GetExpRunByPhase(i).Temperature).ToList()),
-                new ColumnModel("Phases",
-                    _allPhaseInstances.Select(i => GetExpRunByPhase(i).GetPhaseAssemblageString()).ToList())
+                new ColumnModel("Phases", _allPhaseInstances.Select(i => GetExpRunByPhase(i).GetPhaseAssemblageString()).ToList())
             };
 
             var allOxides = _allPhaseInstances.SelectMany(i => i.CompositionOxides).Distinct();

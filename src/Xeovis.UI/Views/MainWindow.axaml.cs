@@ -723,9 +723,23 @@ namespace Xeovis.UI.Views
             if (isExperiment)
             {
                 var experiment = _viewModel.Experiments.FirstOrDefault(x => x.Id == node.PresenterId);
-
-                menu.Items.Add(new Separator());
                 openItem.Click += (s, e) => OpenExperiment(node.PresenterId);
+
+                var changeShortNameItem = new MenuItem() { Header = "Change Short Name" };
+                void Rename(Experiment exp, string newName)
+                {
+                    exp.ShortName = newName;
+                    OnExperimentShortNameChanged(exp);
+                }
+                changeShortNameItem.Click += (s, e) =>
+                {
+                    var otherNames = _viewModel.Experiments.Except([experiment]).Select(x => x.ShortName).ToList();
+                    RenameObjectWithDialog(experiment, otherNames, x => x.ShortName, Rename, maxNameLength: 10);
+                };
+                
+                menu.Items.Add(changeShortNameItem);
+                
+                menu.Items.Add(new Separator());
 
                 var deleteItem = new MenuItem() { Header = "Delete" };
                 deleteItem.Click += (s, e) => RequestRemovalConfirmationAndProceed(() => _viewModel.DeleteExperiment(node.PresenterId), node.Label);
@@ -873,11 +887,12 @@ namespace Xeovis.UI.Views
                 action();
         }
 
-        public async void RenameObjectWithDialog<T>(T target, List<string> existingNames, Func<T, string> getName, Action<T, string> setName)
+        public async void RenameObjectWithDialog<T>(T target, List<string> existingNames, 
+            Func<T, string> getName, Action<T, string> setName, int maxNameLength = 100)
         {
             string currentName = getName(target);
 
-            var dialog = new RenameDialog(currentName, existingNames);
+            var dialog = new RenameDialog(currentName, existingNames, maxNameLength);
             var result = await dialog.ShowDialog<DialogResultType>(this);
 
             if (result == DialogResultType.OK && dialog.NewName != currentName)
@@ -956,6 +971,16 @@ namespace Xeovis.UI.Views
             Log.Information("Plot renamed: {old} -> {new}", oldName, plot.Name);
         }
 
+        public void OnExperimentShortNameChanged(Experiment experiment)
+        {
+            var expNode = _viewModel.ExperimentNodes.FirstOrDefault(x => x.PresenterId == experiment.Id);
+            if (expNode == null) return;
+            var oldName = expNode.Description;
+            expNode.Description = experiment.ShortName;
+            _dataManagerTab?.UpdateExperimentShortName(experiment.Id, experiment.ShortName);
+            Log.Information("Experiment short name changed: {old} -> {new}", oldName, experiment.ShortName);
+        }
+        
         private void _viewModel_mctcPlotsDeleted(object? sender, Models.Events.mctcPlotsDeletedEventArgs e)
         {
             foreach (var id in e.PlotIds)
