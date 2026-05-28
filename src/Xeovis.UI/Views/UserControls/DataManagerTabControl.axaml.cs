@@ -140,7 +140,6 @@ public partial class DataManagerTabControl : UserControl
         menu.Items.Add(removeAllItem);
 
         menu.Open(tableCompare);
-
     }
 
     public void DeleteExperiments(List<Guid> Ids)
@@ -201,6 +200,24 @@ public partial class DataManagerTabControl : UserControl
         UpdateCompareTable();
     }
 
+    public void UpdateExperimentShortName(Guid experimentId, string shortName)
+    {
+        var exp = _viewModel.Experiments.FirstOrDefault(x => x.Id == experimentId);
+        if (exp == null) return;
+        exp.ShortName = shortName;
+        var item = _viewModel.ExperimentItems.FirstOrDefault(x => x.PresenterId == experimentId);
+        if (item == null) return;
+        item.Description = shortName;
+
+        if (lcbPhases.ViewModel.SelectedItem != null)
+        {
+            var table = _viewModel.CreatePhasesTableModel(lcbPhases.ViewModel.SelectedItem);
+            tablePhases.PopulateTable(table);
+        }
+
+        UpdateCompareTable();
+    }
+    
     private void UpdateCompareTable()
     {
         var tableModel = _viewModel.GetCompareTableModel();

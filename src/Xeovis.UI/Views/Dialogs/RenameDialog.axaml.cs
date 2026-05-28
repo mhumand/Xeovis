@@ -38,13 +38,14 @@ public partial class RenameDialog : Window
         textBox.FocusAndSelectAll();
     }
 
-    public RenameDialog(string currentName, List<string>? InUseNames = null) : this()
+    public RenameDialog(string currentName, List<string>? inUseNames = null, int maxNameLength = 100) : this()
     {
         _newName = currentName;
-        _inUseNames = InUseNames ?? new List<string>();
+        _inUseNames = inUseNames ?? new List<string>();
         textBox.ViewModel.Value = _newName;
         textBox.ViewModel.ValidationRules.Add(new NotEmptyOrWhitespaceRule());
-        textBox.ViewModel.ValidationRules.Add(new DuplicateNameRule(InUseNames));
+        textBox.ViewModel.ValidationRules.Add(new DuplicateNameRule(_inUseNames));
+        textBox.ViewModel.ValidationRules.Add(new MaxNameLengthRule(maxNameLength));
     }
 
     private void btnCancel_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
