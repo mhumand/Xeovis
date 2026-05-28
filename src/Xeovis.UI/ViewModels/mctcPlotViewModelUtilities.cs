@@ -367,6 +367,7 @@ namespace Xeovis.UI.ViewModels
                 curve.Xvals = xValues;
                 curve.Yvals = yValues;
                 curve.IsLineVisible = false;
+                curve.Tag = modelVarGroup.Key.ToString();
 
                 if (!mctcPlotDto.PointsGroupingType.IsNumber())
                 {
@@ -383,6 +384,11 @@ namespace Xeovis.UI.ViewModels
                 }
                 else
                 {
+                    if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Pressure)
+                        curve.Name += " [kbar]";
+                    else if (mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Temperature)
+                        curve.Name += " [ºC]";
+                    
                     var lowColor = ColorTranslator.FromHtml("#1F77B4");
                     var highColor = ColorTranslator.FromHtml("#D62728");
                     curve.MarkerColor = ChartUtilities.GetColorInGradient(lowColor, highColor, counter, xeosVarGroups.Count);

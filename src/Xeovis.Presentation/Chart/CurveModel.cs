@@ -27,6 +27,8 @@ namespace Xeovis.Presentation
         public bool IsMarkerVisible { get; set; }
 
         public int DataCount => Math.Min(Xvals.Count, Yvals.Count);
+        
+        public object Tag { get; set; }
 
         public CurveModel()
         {

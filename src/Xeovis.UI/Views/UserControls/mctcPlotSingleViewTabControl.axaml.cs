@@ -288,7 +288,11 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         {
             var markerImage = chartControl.GetMarkerGraphic(curve.Id);
             if (markerImage == null || !curve.IsVisibleInLegend) continue;
-            var checkboxViewModel = new CheckBoxControlViewModel(curve.Name, isChecked: curve.IsVisible) { Image = markerImage };
+            var checkboxViewModel = new CheckBoxControlViewModel(curve.Name, isChecked: curve.IsVisible)
+            {
+                Image = markerImage, 
+                Tag = curve.Tag
+            };
             var checkboxControl = new CheckBoxControl() { ViewModel = checkboxViewModel, Tag = curve };
             checkboxControl.CheckStateChanged += checkboxControl_CheckStateChanged;
             checkboxControl.PointerPressed += checkboxControl_PointerPressed;
@@ -300,7 +304,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         if (!_viewModel.mctcPlotDto.PointsGroupingType.IsNumber())
             stackLegend.Children.AddRange(checkboxes);
         else
-            stackLegend.Children.AddRange(checkboxes.OrderBy(x => x.ViewModel.Label, new NumericStringComparer()));
+            stackLegend.Children.AddRange(checkboxes.OrderBy(x => x.ViewModel.Tag.ToString(), new NumericStringComparer()));
     }
 
     private ContextMenu GetLegendCheckboxContextMenu()
@@ -381,35 +385,41 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
             var curve = chartControl.ViewModel.ChartModel.Curves.FirstOrDefault(c => c.Id == e.CurveId);
             if (curve != null)
             {
+                string keyword = curve.Tag != null ? curve.Tag.ToString() : curve.Name;
                 var range = Enumerable.Range(0, columns.Min(c => c.DataCount)).ToList();
                 if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Batch)
                 {
                     index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y 
-                    && columns[3].Values[i].ToString() == curve.Name, -1);
+                    && columns[3].Values[i].ToString() == keyword, -1);
                 }
                 else if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Experiment)
                 {
                     index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y 
-                    && columns[4].Values[i].ToString().Split(" - ", StringSplitOptions.RemoveEmptyEntries)[1] == curve.Name, -1);
+                    && columns[4].Values[i].ToString().Split(" - ", StringSplitOptions.RemoveEmptyEntries)[1] == keyword, -1);
                 }
                 else if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.ExperimentalRun)
                 {
                     index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y 
-                        && string.Join(" - ", columns[4].Values[i].ToString().Split(" - ").Skip(1)) == curve.Name, -1);
+                        && string.Join(" - ", columns[4].Values[i].ToString().Split(" - ").Skip(1)) == keyword, -1);
                 }
                 else if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Temperature)
                 {
                     index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y 
-                    && columns[6].Values[i].ToString() == curve.Name, -1);
+                    && columns[6].Values[i].ToString() == keyword, -1);
                 }
                 else if (_viewModel.mctcPlotDto.PointsGroupingType == mctcPlotPointsGroupingType.Pressure)
                 {
                     index = range.FirstOrDefault(i => (double)columns[1].Values[i] == e.X && (double)columns[2].Values[i] == e.Y 
-                    && columns[5].Values[i].ToString() == curve.Name, -1);
+                    && columns[5].Values[i].ToString() == keyword, -1);
                 }
             }
         }
 
+        if (index < 0)
+        {
+            Log.Warning($"Could not find point index for curve {e.CurveId}");
+        }
+        
         tableControl.SelectRow(index);
     }
 
@@ -435,7 +445,8 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
             _ => null
         };
 
-        var curve = chartControl.ViewModel.ChartModel.Curves.FirstOrDefault(c => c.Name == name);
+        var curve = chartControl.ViewModel.ChartModel.Curves.FirstOrDefault(c => c.Tag != null ? c.Tag.ToString() == name
+            : c.Name == name);
         if (curve == null) return;
         var index = Enumerable.Range(0, Math.Min(curve.Xvals.Count, curve.Yvals.Count)).FirstOrDefault(i => curve.Xvals[i] == x && curve.Yvals[i] == y, -1);
         if (index < 0)
