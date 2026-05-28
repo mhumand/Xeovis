@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="56"
 			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+             xmlns:converters="clr-namespace:Xeovis.UI.Views.Helpers.Converters;assembly=Xeovis.UI"
 			 xmlns:locals="clr-namespace:Xeovis.UI.Views.Helpers.Converters;assembly=Xeovis.UI"
 			 MinWidth="200"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
@@ -12,6 +13,7 @@
 
 	<UserControl.Resources>
 		<locals:BoolToOrientationConverter x:Key="OrientationConverter" />
+		<converters:ColorConverter x:Key="ColorConverter" />
 	</UserControl.Resources>
 
 	<UserControl.Styles>
@@ -59,6 +61,7 @@
 								   HorizontalAlignment="Right"
 								   FontWeight="Light"
 								   Text="{Binding Description}"
+								   Foreground="{Binding DescriptionColor,Converter={StaticResource ColorConverter}}"
 								   IsVisible="{Binding HasDescription}"/>
 					</Grid>
 				</DataTemplate>
