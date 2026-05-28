@@ -465,10 +465,23 @@ namespace Xeovis.UI.Views
             _viewModel.Experiments = experiments;
             foreach (var exp in experiments)
             {
-                var expNode = new TreeNode(exp.Name) { PresenterId = exp.Id };
+                var expNode = new TreeNode(exp.Name)
+                    { 
+                        PresenterId = exp.Id,
+                        Description = exp.ShortName,
+                        DescriptionColor = System.Drawing.Color.Gray
+                    };
+                
                 foreach (var phase in exp.PhasesWithData)
                 {
-                    var phaseNode = new TreeNode(phase.ToString()) { PresenterId = exp.Id, Tag = phase };
+                    var phaseNode = new TreeNode(phase.ToString())
+                    {
+                        PresenterId = exp.Id,
+                        Description = phase.KeyName,
+                        DescriptionColor = System.Drawing.Color.DarkGray,
+                        Tag = phase
+                    };
+                    
                     expNode.Children.Add(phaseNode);
                 }
 

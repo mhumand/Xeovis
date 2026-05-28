@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Linq;
 using Xeovis.Base;
 using Xeovis.Domain;
@@ -53,7 +54,10 @@ namespace Xeovis.UI.ViewModels
             foreach (var experiment in _experiments)
             {
                 ExperimentItems.Add(new ListableItem(experiment.Name, description: experiment.ShortName)
-                { PresenterId = experiment.Id });
+                {
+                    PresenterId = experiment.Id,
+                    DescriptionColor = Color.Gray
+                });
             }
         }
 
@@ -94,7 +98,10 @@ namespace Xeovis.UI.ViewModels
             PhaseInExperimentItems.Clear();
             foreach (var phase in exp.PhasesWithData.Where(x => x != null))
             {
-                var item = new ListableItem(phase.ToString(), description: phase.KeyName, tag: phase);
+                var item = new ListableItem(phase.ToString(), description: phase.KeyName, tag: phase)
+                {
+                    DescriptionColor = Color.Gray
+                };
                 PhaseInExperimentItems.Add(item);
             }
         }
@@ -142,7 +149,10 @@ namespace Xeovis.UI.ViewModels
             ExpRunInExperimentItems.Clear();
             foreach (var run in exp.Runs.Where(r => r.Phases.Any(p => p.CompositionValues.Count > 0)))
                 ExpRunInExperimentItems.Add(new ListableItem($"{run.Index} - {run.Name}", description: $"{run.Pressure} kbar, {run.Temperature} °C")
-                { PresenterId = run.Id });
+                {
+                    PresenterId = run.Id,
+                    DescriptionColor = Color.Gray
+                });
         }
 
         public TableModel CreateExpRunInExperimentTableModel(ListableItem experimentItem, ListableItem expRunItem)
@@ -177,7 +187,10 @@ namespace Xeovis.UI.ViewModels
             var list = new List<ListableItem>();
             foreach (var phase in phases.Where(x => x != null))
                 list.Add(new ListableItem(phase.ToString(), tag: phase,
-                    description: phase.KeyName));
+                    description: phase.KeyName)
+                {
+                    DescriptionColor = Color.Gray
+                });
 
             return list.OrderBy(l => l.Label).ToList();
         }

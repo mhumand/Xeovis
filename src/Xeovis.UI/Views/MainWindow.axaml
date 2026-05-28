@@ -94,6 +94,7 @@
 
 	<Window.Resources>
 		<converters:BoolToForegroundConverter x:Key="BoolToColor" />
+		<converters:ColorConverter x:Key="ColorConverter" />
 	</Window.Resources>
 	
 	<DockPanel>
@@ -154,7 +155,16 @@
 								  ItemsSource="{Binding ExperimentNodes}">
 							<TreeView.ItemTemplate>
 								<TreeDataTemplate ItemsSource="{Binding Children}">
-									<TextBlock Text="{Binding Label}"/>
+									<Grid>
+										<TextBlock Text="{Binding Label}"/>
+										<TextBlock Text="{Binding Description}"
+										           Foreground="{Binding DescriptionColor,Converter={StaticResource ColorConverter}}"
+										           FontWeight="Light"
+										           FontSize="12"
+										           IsVisible="{Binding HasDescription}"
+										           Margin="2 0 10 0"
+										           HorizontalAlignment="Right"/>
+									</Grid>
 								</TreeDataTemplate>
 							</TreeView.ItemTemplate>
 						</TreeView>
