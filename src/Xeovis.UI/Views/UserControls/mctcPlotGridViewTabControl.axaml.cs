@@ -283,7 +283,11 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
                 
                 var markerImage = chartControl.GetMarkerGraphic(curve.Id);
                 if (markerImage == null || !curve.IsVisibleInLegend) continue;
-                var checkboxViewModel = new CheckBoxControlViewModel(curve.Name, isChecked: curve.IsVisible) { Image = markerImage };
+                var checkboxViewModel = new CheckBoxControlViewModel(curve.Name, isChecked: curve.IsVisible)
+                {
+                    Image = markerImage,
+                    Tag = curve.Tag
+                };
                 var checkboxControl = new CheckBoxControl() { ViewModel = checkboxViewModel, Tag = curve.Name };
                 checkboxControl.CheckStateChanged += checkboxControl_CheckStateChanged; ;
                 checkboxControl.PointerPressed += checkboxControl_PointerPressed; ;
@@ -296,7 +300,7 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
         if (!_viewModel.mctcPlotDto.PointsGroupingType.IsNumber())
             stackLegend.Children.AddRange(checkboxes);
         else
-            stackLegend.Children.AddRange(checkboxes.OrderBy(x => x.ViewModel.Label, new NumericStringComparer()));
+            stackLegend.Children.AddRange(checkboxes.OrderBy(x => x.ViewModel.Tag.ToString(), new NumericStringComparer()));
     }
 
     private ContextMenu GetLegendCheckboxContextMenu()
