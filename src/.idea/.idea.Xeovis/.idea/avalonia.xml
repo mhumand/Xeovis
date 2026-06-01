@@ -5,6 +5,7 @@
       <map>
         <entry key="Xeovis.UI/App.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/AboutDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
+        <entry key="Xeovis.UI/Views/Dialogs/ChartDataDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/DataManagerLoadDataDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/ProgressBarDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/RenameDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
@@ -24,6 +25,7 @@
         <entry key="Xeovis.UI/Views/Styles/TabItems.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Styles/TreeViews.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Styles/UserControls.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
+        <entry key="Xeovis.UI/Views/UserControls/ChartControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/CheckBoxControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/DataManagerTabControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/LabelComboBoxControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />

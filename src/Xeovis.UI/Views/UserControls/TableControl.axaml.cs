@@ -204,9 +204,7 @@ public partial class TableControl : UserControl
         dataGrid.CanUserReorderColumns = _tableModel.CanReorderColumns;
         dataGrid.SelectionMode =
             _tableModel.IsMultiSelect ? DataGridSelectionMode.Extended : DataGridSelectionMode.Single;
-        dataGrid.ClipboardCopyMode = _tableModel.CopyToClipboardWithHeaders
-            ? DataGridClipboardCopyMode.IncludeHeader
-            : DataGridClipboardCopyMode.ExcludeHeader;
+        UpdateCopyClipboardMode(_tableModel.CopyToClipboardWithHeaders);
     }
 
     private void DataGrid_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
@@ -387,5 +385,12 @@ public partial class TableControl : UserControl
         _tableModel.Columns.ForEach(x => x.Values.RemoveAt(rowIndex));
         PopulateTable(_tableModel);
         SelectRow(Math.Max(rowIndex - 1, 0));
+    }
+
+    public void UpdateCopyClipboardMode(bool includeHeader)
+    {
+        dataGrid.ClipboardCopyMode = includeHeader
+            ? DataGridClipboardCopyMode.IncludeHeader
+            : DataGridClipboardCopyMode.ExcludeHeader;
     }
 }

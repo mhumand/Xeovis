@@ -11,11 +11,14 @@ using Avalonia;
 using System.IO;
 using Avalonia.Input;
 using System.Text;
+using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Serilog;
 using Xeovis.UI.Views.Helpers;
 using Xeovis.UI.Models.Enums;
 using Xeovis.Base;
+using Xeovis.UI.ViewModels.DialogsViewModels;
+using Xeovis.UI.Views.Dialogs;
 
 namespace Xeovis.UI;
 
@@ -56,6 +59,15 @@ public partial class ChartControl : UserControl
         btnZoomIn.Click += btnZoomIn_Click;
         btnZoomOut.Click += btnZoomOut_Click;
         btnLegend.IsCheckedChanged += btnLegend_IsCheckedChanged;
+        btnChartData.Click += btnChartDataOnClick;
+    }
+
+    private void btnChartDataOnClick(object? sender, RoutedEventArgs e)
+    {
+        var vm = new ChartDataViewModel(_chartModel);
+        var dialog = new ChartDataDialog() { ViewModel = vm };
+        var parentWindow = TopLevel.GetTopLevel(this) as Window;
+        dialog.ShowDialog(parentWindow);
     }
 
     private void scottPlot_PointerPressed(object? sender, PointerPressedEventArgs e)
@@ -350,18 +362,20 @@ public partial class ChartControl : UserControl
 
     public string GetDataString()
     {
-        int maxCurveSpace = _chartModel.Curves.Max(x => x.Name.Length) + 5;
+        int maxNameLength = _chartModel.Curves.Max(x => x.Name.Length) + 4;
         var sb = new StringBuilder();
-        var title = $" {_viewModel.Title} ";
-        sb.AppendLine($"{title.PadLeft(maxCurveSpace, '-').PadRight(maxCurveSpace * 2, '-')}");
-        sb.AppendLine($"{"Name".PadRight(maxCurveSpace)}{"X".PadRight(10)}Y");
+        var xLabel = _chartModel.XAxis.Label;
+        var yLabel = _chartModel.YAxis.Label;
+        int xLabelLength = xLabel.Length;
+        sb.AppendLine($"{_viewModel.Title}");
+        sb.AppendLine($"{"Name".PadRight(maxNameLength)}{xLabel.PadRight(xLabelLength + 4)}{yLabel}");
 
         var visibleCurves = _chartModel.Curves.Where(c => c.IsVisible && c.IsVisibleInLegend).ToList();
         if (visibleCurves.Count == 0) return string.Empty;
         foreach (var curve in visibleCurves)
         {
             for (int i = 0; i < curve.DataCount; i++)
-                sb.AppendLine(($"{curve.Name.PadRight(maxCurveSpace)}{curve.Xvals[i].ToString().PadRight(10)}{curve.Yvals[i]}"));
+                sb.AppendLine(($"{curve.Name.PadRight(maxNameLength)}{curve.Xvals[i].ToString().PadRight(xLabelLength + 4)}{curve.Yvals[i]}"));
         }
         
         return sb.ToString();

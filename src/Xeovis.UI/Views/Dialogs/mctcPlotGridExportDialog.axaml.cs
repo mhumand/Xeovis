@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Data;
+using Serilog;
 using Xeovis.Presentation;
 using Xeovis.UI.Models.Enums;
 
@@ -20,7 +21,9 @@ public partial class mctcPlotGridExportDialog : Window
     public mctcPlotGridExportDialog()
     {
         InitializeComponent();
-        DataContext = this;
+        Log.Information("Dialog opened.");
+        if (this.Content is Control content)
+            content.DataContext = this.DataContext;
 
         ImageFilesName = "Plots";
         DataFilesName = "Tables";
