@@ -19,16 +19,14 @@ public partial class RenameDialog : Window
     {
         InitializeComponent();
         Log.Information("Dialog opened.");
-        DataContext = this;
-        if (this.Content is Control content)
-            content.DataContext = this.DataContext;
         
         this.Loaded += RenameDialog_Loaded;
 
         var vm = new LabelInputControlViewModel();
         vm.Label = "Name";
         textBox.ViewModel = vm;
-
+        textBox.DataContext = vm;
+        
         _newName = string.Empty;
         _inUseNames = new List<string>();
     }
