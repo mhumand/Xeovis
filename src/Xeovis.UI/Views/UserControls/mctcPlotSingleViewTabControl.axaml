@@ -155,7 +155,6 @@
 									Click="btnSettings_Click"
 									Background="Transparent"
 									IsVisible="{Binding IsPaneOpen, ElementName=splitView}"
-									ToolTip.Tip="Settings"
 									Classes="InLine">
 								<Button.Content>
 									<Image Width="16" Height="16" Source="/Assets/settings.png"/>

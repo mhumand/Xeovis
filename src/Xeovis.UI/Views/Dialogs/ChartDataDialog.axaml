@@ -1,0 +1,94 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="600"
+        Height="600"
+        Width="600"
+        MinHeight="400"
+        MinWidth="300"
+        xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+        xmlns:vm="using:Xeovis.UI.ViewModels.DialogsViewModels"
+        x:DataType="vm:ChartDataViewModel"
+        x:Class="Xeovis.UI.Views.Dialogs.ChartDataDialog"
+        Title="Chart Data Dialog">
+    
+    <Window.Styles>
+        <StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
+        <StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+        
+        <Style Selector="TextBlock.Header">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+    </Window.Styles>
+    
+    <DockPanel Margin="10">
+        
+        <TextBlock DockPanel.Dock="Top"
+               Text="{Binding Title}"
+               Classes="Header"
+               HorizontalAlignment="Center"
+               Margin="0 10 0 5"/>
+        
+        <Separator DockPanel.Dock="Top" Margin="0 0 0 10" />
+        
+        <Grid DockPanel.Dock="Top"
+              RowDefinitions="*,50">
+
+            <userControls:TableControl x:Name="tcData"
+                                       Grid.Row="0"/>
+
+            <!-- Bottom Section - Dialog Buttons -->
+            <Grid Grid.Row="1"
+                  ColumnDefinitions="1*,1*">
+                
+                <StackPanel Grid.Column="0"
+                            Spacing="3"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Left">
+                    
+                    <Button x:Name="btnCopy"
+                            Click="btnCopy_OnClick"
+                            Background="Transparent"
+                            ToolTip.Tip="Copy Table to Clipboard"
+                            Classes="InLine">
+                        <Button.Content>
+                            <Image Width="16" Height="16" Source="/Assets/Chart/Copy.png"/>
+                        </Button.Content>
+                    </Button>
+                    
+                    <Button x:Name="btnExport"
+                            Click="btnExport_OnClick"
+                            Background="Transparent"
+                            ToolTip.Tip="Export Table to Text"
+                            Classes="InLine">
+                        <Button.Content>
+                            <Image Width="16" Height="16" Source="/Assets/MainMenu/export.png"/>
+                        </Button.Content>
+                    </Button>
+                    
+                    <userControls:CheckBoxControl x:Name="ckbxIncludeHeader"
+                                                  Margin="10 0"/>
+                    
+                </StackPanel>
+                
+                <StackPanel Orientation="Horizontal"
+                            Grid.Column="1"
+                            Spacing="10"
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Right">
+
+                    <Button x:Name="btnClose"
+                            Classes="Primary"
+                            Content="Close"
+                            IsCancel="True"
+                            Click="btnClose_OnClick"/>
+                </StackPanel>
+            </Grid>
+
+        </Grid>
+        
+    </DockPanel>
+</Window>
