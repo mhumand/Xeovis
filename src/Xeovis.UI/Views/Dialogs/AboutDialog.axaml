@@ -47,7 +47,7 @@
 					   Text="An x-eos visualizer."/>
 
 			<TextBlock Margin="0 5"
-					   Text="Version 2025.2"/>
+					   Text="Version 2026"/>
 			
 			<Separator/>
 

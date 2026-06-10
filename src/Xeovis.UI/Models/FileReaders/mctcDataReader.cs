@@ -210,16 +210,17 @@ namespace Xeovis.UI.Models.FileReaders
                         .Add(DoubleExtensions.GetDoubleValueFromText(valsLines[j].Trim()));
             }
 
+            var equilLineIndex = allRange.FirstOrDefault(j => allLines[j].Contains("equil"));
             for (int i = 0; i < _batches.Count; i++)
             {
                 var batch = _batches[i];
 
                 string batchKey = $"(* {batch.Index} *)";
                 string nextBatchKey = $"(* {batch.Index + 1} *)";
-                var batchLineIndexes = allRange.Where(j => allLines[j].Contains(batchKey)).ToList();
-                var nextBatchLineIndexes = allRange.Where(j => allLines[j].Contains(nextBatchKey)).ToList();
+                var batchLineIndexes = allRange.Where(j => allLines[j].Contains(batchKey) && j > equilLineIndex).ToList();
+                var nextBatchLineIndexes = allRange.Where(j => allLines[j].Contains(nextBatchKey) && j > equilLineIndex).ToList();
 
-                // what data is in lines[batchLinesIndx[0]]? phase proportions?
+                // what data is in lines[batchLinesIndxes[0]]? phase proportions?
                 string modVarNameLine = string.Empty;
                 int cutoff = nextBatchLineIndexes.Count == 0 ? resultsStartIndex[0] - 2 : nextBatchLineIndexes[0] - 1;
                 for (int j = batchLineIndexes[0]; j < cutoff; j++)
@@ -315,11 +316,18 @@ namespace Xeovis.UI.Models.FileReaders
 
             var mcinfoIndex = allRange.Where(i => lines[i].Contains("mcinfo")).ToList()[0];
             var mcrangeIndex = allRange.Where(i => lines[i].Contains("mcrange")).ToList()[0];
+            var mcfuncIndex = allRange.Where(i => lines[i].Contains("mcfunc")).ToList()[0];
             var mctcVarLineCount = mcrangeIndex - mcinfoIndex;
             var mctcVariables = new List<mctcVariable>();
+            
+            // reading from mcinfo section
+            bool isLast = false;
+            var counter = 0;
             for (int i = 0; i < mctcVarLineCount; i++)
             {
+                if (isLast) break;
                 var line = lines[mcinfoIndex + i];
+                isLast = line.EndsWith(';');
                 var parts = line.Split(new char[] { '{', '}', '\\', '"' }).ToList();
                 parts.RemoveAll(l => string.IsNullOrWhiteSpace(l) || l == "," || l == ";");
                 if (parts.Count == 3) parts.RemoveAt(0);
@@ -329,8 +337,32 @@ namespace Xeovis.UI.Models.FileReaders
                 var startingVal = DoubleExtensions.GetDoubleValueFromText(valuesString[0].Trim());
                 var rangeVal = DoubleExtensions.GetDoubleValueFromText(valuesString[1].Trim());
                 var mctcVariable = new mctcVariable()
-                    { Index = i, Name = name, StartingValue = startingVal, Range = rangeVal };
+                    { Index = counter, Name = name, StartingValue = startingVal, Range = rangeVal };
                 mctcVariables.Add(mctcVariable);
+                counter++;
+            }
+            
+            // reading from mcrange section
+            isLast = false;
+            var mcrangeLineCount = mcfuncIndex - mcrangeIndex;
+            for (int i = 0; i < mcrangeLineCount; i++)
+            {
+                if (isLast) break;
+                var line = lines[mcrangeIndex + i];
+                isLast = line.EndsWith(';');
+                var parts = line.Split(new char[] { '{', '}', '\\', '"' }, StringSplitOptions.TrimEntries).ToList();
+                parts.RemoveAll(l => string.IsNullOrWhiteSpace(l) || l == "," || l == ";");
+                if (i == 0) parts.RemoveAt(0);
+                if (parts.Count == 0) continue;
+                var name = parts[0];
+                var valuesString = parts[1].Split(splitters).ToList();
+                valuesString.RemoveAll(l => string.IsNullOrWhiteSpace(l));
+                var startingVal = DoubleExtensions.GetDoubleValueFromText(valuesString[0].Trim());
+                var rangeVal = DoubleExtensions.GetDoubleValueFromText(valuesString[1].Trim());
+                var mctcVariable = new mctcVariable()
+                    { Index = counter, Name = name, StartingValue = startingVal, Range = rangeVal };
+                mctcVariables.Add(mctcVariable);
+                counter++;
             }
 
             return mctcVariables;

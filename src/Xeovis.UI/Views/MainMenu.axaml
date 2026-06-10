@@ -125,10 +125,11 @@
 				</MenuItem.Icon>
 			</MenuItem>
 			
-			<Separator/>
+			<Separator IsVisible="False"/>
 			
 			<MenuItem x:Name="btnMctcCalibration"
 			          Header="_Calibration"
+			          IsVisible="False"
 			          Command="{Binding Mctc_Calibration}">
 				<MenuItem.Icon>
 					<Image Source=""/>
