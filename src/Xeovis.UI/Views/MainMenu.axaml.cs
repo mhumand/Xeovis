@@ -414,6 +414,7 @@ public partial class MainMenu : UserControl
 
     public void Mctc_Calibration()
     {
+        return;
         if (ParentWindow == null) return;
         var viewModel = new mctcCalibrationViewModel();
         
