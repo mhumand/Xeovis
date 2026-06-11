@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:vm="using:Xeovis.UI.ViewModels"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="60"
-			 MinHeight="60"
 			 MinWidth="200"
 			 xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
              x:Class="Xeovis.UI.LabelInputControl"
@@ -16,8 +15,10 @@
 		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
 	</UserControl.Styles>
 
-	<Grid RowDefinitions="25, *" >
-		<StackPanel Grid.Row="0"
+	<DockPanel>
+		<StackPanel DockPanel.Dock="Top"
+		            Margin="0 2"
+		            IsVisible="{Binding IsLabelVisible}"
 					VerticalAlignment="Top"
 					Orientation="Horizontal"
 					Spacing="5">
@@ -28,7 +29,7 @@
 			<userControls:ToolTipControl x:Name="toolTip"/>
 		</StackPanel>
 
-		<Grid x:Name="txtBtnGrid" Grid.Row="1">
+		<Grid x:Name="txtBtnGrid" DockPanel.Dock="Top">
 			<TextBox x:Name="tbInput"
 					 VerticalAlignment="Top"
 					 VerticalContentAlignment="Top"
@@ -40,7 +41,9 @@
 			<Button x:Name="btnClear"
 					Classes="InLine"
 					VerticalAlignment="Top"
-					Margin="0 2 2 0"
+					Margin="5 4 5 2"
+					Width="20"
+					Height="20"
 					Opacity="0.5"
 					Click="btnClear_Click">
 				<Button.Content>
@@ -48,6 +51,6 @@
 				</Button.Content>
 			</Button>
 		</Grid>
-	</Grid>
+	</DockPanel>
 
 </UserControl>
