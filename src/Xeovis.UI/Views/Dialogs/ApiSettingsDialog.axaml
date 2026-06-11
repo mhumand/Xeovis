@@ -1,0 +1,86 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="400"
+        Width="800"
+        Height="400"
+        x:Class="Xeovis.UI.Views.Dialogs.ApiSettingsDialog"
+        xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
+        ShowInTaskbar="False"
+        CanResize="True"
+        Title="Xeovis - API Settings">
+    
+    <Window.Styles>
+        <StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
+        <StyleInclude Source="/Views/Styles/Buttons.axaml"/>
+    </Window.Styles>
+    
+    <DockPanel Margin="10 20">
+        <Grid ColumnDefinitions="*,80,80"
+              Height="70"
+              DockPanel.Dock="Top"
+              VerticalAlignment="Top">
+            
+            <Grid Grid.Column="0"
+                  Margin="5 0"
+                  ColumnDefinitions="35,*">
+                
+                <TextBlock Grid.Column="0"
+                           Text="URL"
+                           Margin="0 8"
+                           VerticalAlignment="Top"/>
+                <userControls:LabelInputControl Grid.Column="1"
+                                                VerticalAlignment="Top"
+                                                x:Name="licApiAddress"/>
+            </Grid>
+            
+
+            <Button Grid.Column="1"
+                    x:Name="btnStart"
+                    VerticalAlignment="Top"
+                    Margin="5 0">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <Image Source="/Assets/start.png" Width="16" Height="16"/>
+                        <TextBlock Text="Start" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            
+            <Button Grid.Column="2"
+                    x:Name="btnStop"
+                    VerticalAlignment="Top"
+                    Margin="5 0">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <Image Source="/Assets/stop.png" Width="16" Height="16"/>
+                        <TextBlock Text="Stop" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            
+        </Grid>
+        
+        <Grid DockPanel.Dock="Top"
+              RowDefinitions="*, 50">
+            
+            <userControls:TableControl Grid.Row="0"
+                                       x:Name="tableEndPoints"/>
+            
+            <StackPanel Orientation="Horizontal"
+                        Grid.Row="1"
+                        Spacing="10"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right">
+
+                <Button x:Name="btnClose"
+                        Classes="Primary"
+                        Content="Close"
+                        IsCancel="True"
+                        Click="btnClose_OnClick"/>
+            </StackPanel>
+        </Grid>
+
+    </DockPanel>
+</Window>

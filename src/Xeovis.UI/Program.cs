@@ -37,12 +37,12 @@ namespace Xeovis.UI
                 e.SetObserved(); 
             };
             
-            // Safely fire-and-forget the API Host so it doesn't crash the main thread if it fails
-            _ = Task.Run(() => ApiHost.Start()).ContinueWith(t => 
-            {
-                if (t.Exception != null) 
-                    Log.Error(t.Exception, "ApiHost failed to start or crashed.");
-            });
+            // // Safely fire-and-forget the API Host so it doesn't crash the main thread if it fails
+            // _ = Task.Run(() => ApiHost.Start()).ContinueWith(t => 
+            // {
+            //     if (t.Exception != null) 
+            //         Log.Error(t.Exception, "ApiHost failed to start or crashed.");
+            // });
             
             try
             {

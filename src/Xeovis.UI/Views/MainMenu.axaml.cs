@@ -458,6 +458,13 @@ public partial class MainMenu : UserControl
         var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
     }
 
+    // Tools
+    public async void Tools_API()
+    {
+        var apiDialog = new ApiSettingsDialog();
+        await apiDialog.ShowDialog(ParentWindow);
+    }
+    
     // View
     public void View_ShowLeftPanel()
     {

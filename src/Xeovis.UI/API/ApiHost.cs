@@ -17,8 +17,15 @@ public static class ApiHost
     private record LoadRequest(string Name, string Directory);
     private record RefreshRequest(string Name);
 
+    private static WebApplication? _app;
+    public static bool IsRunning => _app != null;
+    public static string URL { get; private set; } = "http://localhost:5007";
+    public static void SetURL(string url) => URL = url;
+    
     public static async Task Start()
     {
+        if (_app != null) return;
+        
         var builder = WebApplication.CreateBuilder();
         var app = builder.Build();
 
@@ -57,6 +64,20 @@ public static class ApiHost
             return Results.Ok(new { status = "ok" });
         });
         
-        await app.RunAsync("http://localhost:5007");
+        _app = app;
+        _app.Urls.Add(URL);
+        await _app.StartAsync();
+        ApiActivityChanged?.Invoke(null, new ApiActivityChangedEventArgs("API is running"));
+    }
+    
+    public static async Task Stop()
+    {
+        if (_app != null)
+        {
+            await _app.StopAsync();
+            await _app.DisposeAsync();
+            _app = null;
+            ApiActivityChanged?.Invoke(null, new ApiActivityChangedEventArgs("API stopped"));
+        }
     }
 }
