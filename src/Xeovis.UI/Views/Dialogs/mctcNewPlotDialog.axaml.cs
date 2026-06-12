@@ -86,6 +86,7 @@ public partial class mctcNewPlotDialog : Window
         var vmSelected = new LabelListControlViewModel();
         vmSelected.Label = "Selected Variables";
         vmSelected.IsRemovable = true;
+        vmSelected.CanChangeOrder = true;
         llcSelected.ViewModel = vmSelected;
 
         var vmTileView = new CheckBoxControlViewModel("Grid-view for multiple plots");
@@ -100,6 +101,40 @@ public partial class mctcNewPlotDialog : Window
         var selectedItem = vmMctcBundle.Items.FirstOrDefault(i => i.PresenterId == _viewModel.SelectedBundleId);
         vmMctcBundle.SelectedItem = selectedItem ?? vmMctcBundle.Items[0];
         lcbcMctcBundles.ViewModel = vmMctcBundle;
+
+        if (_mctcPlotDto != null)
+        {
+            btnSettings.IsVisible = false;
+            lcbcMctcBundles.IsEnabled = false;
+            ckbxTileView.ViewModel.IsChecked = _mctcPlotDto.IsGridView;
+            ckbxTileView.IsEnabled = false;
+
+            vmMctcBundle.SelectedItem =
+                vmMctcBundle.Items.FirstOrDefault(x => x.PresenterId == _mctcPlotDto.mctcBundleId);
+            var phaseIds = _mctcPlotDto.SampleXeosVariables.Select(x => x.PhaseNameId);
+            var mostRepeatedPhaseId = phaseIds.GroupBy(x => x).OrderByDescending(x => x.Count()).First().Key;
+            var mostRepeatedPhaseItem =
+                vmPhase.Items.FirstOrDefault(x => (x.Tag as PhaseNameSet).Id == mostRepeatedPhaseId);
+            vmPhase.SelectedIndex = vmPhase.Items.IndexOf(mostRepeatedPhaseItem);
+
+            foreach (var xeosVar in _mctcPlotDto.SampleXeosVariables)
+            {
+                var phaseItem =
+                    vmPhase.Items.FirstOrDefault(x => x.Tag is PhaseNameSet name && name.Id == xeosVar.PhaseNameId);
+                var xeosVariableItems = _viewModel.AllPhaseVariableItems
+                    .FirstOrDefault(i => (PhaseNameSet)i.Key.Tag == phaseItem.Tag).Value;
+                var xeosVarItem =
+                    xeosVariableItems.FirstOrDefault(x => x.Tag is xeosVariable var && var.NameId == xeosVar.NameId);
+
+                llcSelected.ViewModel.Items.Add(xeosVarItem);
+                _viewModel.SelectedXeosVariables.Add(xeosVarItem.Tag as xeosVariable);
+            }
+
+            FetchXeosVariablesCheckStatus();
+            _settingsPlotDto = _mctcPlotDto;
+        }
+        else
+            _viewModel.mctcPlotDto = new();
     }
 
     private void lcbcMctcBundles_ListSelectionChanged(object? sender, ListSelectionChangedEventArgs e)
@@ -157,11 +192,13 @@ public partial class mctcNewPlotDialog : Window
 
     private void FetchXeosVariablesCheckStatus()
     {
+        llcXeosVariables.ViewModel.ItemCheckStateChanged -= llcXeosVariables_ItemCheckStateChanged;
         foreach (var item in llcXeosVariables.ViewModel.Items)
         {
             if (item.Tag is not xeosVariable xeosVar) return;
             item.IsChecked = _viewModel.SelectedXeosVariables.Any(v => v.IsEqualTo(xeosVar));
         }
+        llcXeosVariables.ViewModel.ItemCheckStateChanged += llcXeosVariables_ItemCheckStateChanged;
     }
 
     private async void btnPlot_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -173,7 +210,10 @@ public partial class mctcNewPlotDialog : Window
             if (result != ButtonResult.Yes) return;
             this.Close(DialogResultType.Yes);
         }
-
+        
+        // use list box items order
+        _viewModel.SelectedXeosVariables = llcSelected.ViewModel.Items.Select(x => (xeosVariable)x.Tag).ToList();
+        
         _mctcPlotDto.SampleXeosVariables = _viewModel.SelectedXeosVariables;
         _mctcPlotDto.mctcBundleId = _viewModel.SelectedBundleId;
         _mctcPlotDto.Name = txtName.Value;

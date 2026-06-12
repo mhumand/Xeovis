@@ -14,6 +14,7 @@ using Xeovis.Domain;
 using Xeovis.Domain.Definitions;
 using Xeovis.Domain.Definitions.Globals;
 using Xeovis.Persistence;
+using Xeovis.Presentation;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.Models.Events;
 using Xeovis.UI.Models.FileReaders;
@@ -396,13 +397,7 @@ public partial class MainMenu : UserControl
             return;
         }
 
-        var viewModel = new mctcNewPlotViewModel();
-        viewModel.mctcBundles = ParentWindow.ViewModel.mctcBundles;
-        viewModel.ExistingPlotNames = ParentWindow.ViewModel.MctcBundleNodes
-            .SelectMany(b => b.Children.Select(x => x.Label)).ToList();
-        viewModel.SelectedBundleId = selectedBundleId;
-
-        var dialog = new mctcNewPlotDialog() { ViewModel = viewModel };
+        mctcNewPlotDialog dialog = GetNewMctcPlotDialog(selectedBundleId);
         var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
 
         if (result == DialogResultType.OK)
@@ -410,6 +405,18 @@ public partial class MainMenu : UserControl
             dialog.ViewModel.mctcPlotDto.TimeCreated = DateTime.Now;
             ParentWindow.CreateMctcPlot(dialog.ViewModel.mctcPlotDto);
         }
+    }
+
+    public mctcNewPlotDialog GetNewMctcPlotDialog(Guid selectedBundleId, mctcPlotDto currentMctcPlot = null)
+    {
+        var viewModel = new mctcNewPlotViewModel();
+        viewModel.mctcBundles = ParentWindow.ViewModel.mctcBundles;
+        viewModel.ExistingPlotNames = ParentWindow.ViewModel.MctcBundleNodes
+            .SelectMany(b => b.Children.Select(x => x.Label)).ToList();
+        viewModel.SelectedBundleId = selectedBundleId;
+        viewModel.mctcPlotDto = currentMctcPlot;
+        var dialog = new mctcNewPlotDialog() { ViewModel = viewModel };
+        return dialog;
     }
 
     public void Mctc_Calibration()

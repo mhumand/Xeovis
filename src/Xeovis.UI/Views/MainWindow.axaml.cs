@@ -503,13 +503,7 @@ namespace Xeovis.UI.Views
 
         private void tvMctcBundles_ContextRequested(object? sender, ContextRequestedEventArgs e)
         {
-            if (_viewModel.mctcBundles.Count == 0)
-            {
-                e.Handled = true;
-                return;
-            }
-
-            if (sender is not TreeView treeView || treeView.SelectedItem is not TreeNode node)
+            if (_viewModel.mctcBundles.Count == 0 || sender is not TreeView { SelectedItem: TreeNode node })
             {
                 e.Handled = true;
                 return;
@@ -592,7 +586,7 @@ namespace Xeovis.UI.Views
                 changeColor.Items.Add(colorPicker);
                 menu.Items.Add(changeColor);
             }
-            else
+            else // mctc plot
             {
                 var mctcPlotDto = _viewModel.mctcPlotDtos.FirstOrDefault(x => x.Id == node.PresenterId);
                 var bundle = _viewModel.mctcBundles.FirstOrDefault(x => x.Id == mctcPlotDto.mctcBundleId);
@@ -637,6 +631,22 @@ namespace Xeovis.UI.Views
                     OnMctcPlotRenamed(plotDto);
                 }
                 renameItem.Click += (s, e) => RenameObjectWithDialog(mctcPlotDto, otherNames, x => x.Name, Rename);
+                
+                // change variables
+                var changeVarsItem = new MenuItem() { Header = "Change Selected Variables" };
+                changeVarsItem.Click += async (s, e) =>
+                {
+                    var dialog = mainMenu.GetNewMctcPlotDialog(bundle.Id, mctcPlotDto);
+                    var result = await dialog.ShowDialog<DialogResultType>(this);
+                    if (result == DialogResultType.OK)
+                    {
+                        OnMctcPlotRenamed(mctcPlotDto);
+                        if (tab.OwnerTabControl is ImctcPlotView mctcPlot)
+                            mctcPlot.PopulateUI(mctcPlotDto, bundle);
+                    }
+                };
+                menu.Items.Add(changeVarsItem);
+
             }
 
             menu.Items.Add(new Separator());

@@ -28,6 +28,9 @@ namespace Xeovis.UI.ViewModels
         [ObservableProperty]
         private bool isRemovable;
 
+        [ObservableProperty]
+        private bool canChangeOrder;
+        
         public event EventHandler<CheckStateChangedEventArgs> ItemCheckStateChanged;
 
         public LabelListControlViewModel()
