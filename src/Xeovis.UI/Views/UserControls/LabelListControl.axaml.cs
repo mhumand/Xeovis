@@ -37,26 +37,13 @@ public partial class LabelListControl : UserControl
     {
         toolTip.ToolTipText = _viewModel.ToolTip;
         toolTip.IsVisible = _viewModel.HasToolTip;
-        lbItems.ContextMenu = GetContextMenu();
+        lbItems.ContextRequested += lbItemsOnContextRequested;
     }
 
-    private void lbItems_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private void lbItemsOnContextRequested(object? sender, ContextRequestedEventArgs e)
     {
-        ListSelectionChanged?.Invoke(sender, new ListSelectionChangedEventArgs(lbItems.SelectedItem, lbItems.SelectedIndex));
-    }
-
-    private void btnRemoveItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        if (_viewModel == null) return;
-        if (sender is not Button btn) return;
-        var item = _viewModel.Items.FirstOrDefault(i => i.Tag == btn.Tag);
-        if (item == null) return;
-        _viewModel.Items.Remove(item);
-        ItemRemoved?.Invoke(this, new ListableItemRemovedEventArgs(item));
-    }
-
-    private ContextMenu? GetContextMenu()
-    {
+        if (lbItems.SelectedItem is not ListableItem item) return;
+        
         var menu = new ContextMenu();
 
         var checkAll = new MenuItem();
@@ -79,7 +66,51 @@ public partial class LabelListControl : UserControl
         if (_viewModel.IsRemovable)
             menu.Items.Add(removeAll);
 
-        return menu.ItemCount == 0 ? null : menu;
+        if (_viewModel.CanChangeOrder)
+        {
+            menu.Items.Add(new Separator());
+            var itemIndex = _viewModel.Items.IndexOf(item);
+            
+            var moveUp = new MenuItem();
+            moveUp.Header = "Move Up";
+            moveUp.Click += (s, e) =>
+            {
+                var index = itemIndex;
+                _viewModel.Items.Move(index, index - 1);
+            };
+            
+            if (itemIndex > 0)
+                menu.Items.Add(moveUp);
+            
+            var moveDown = new MenuItem();
+            moveDown.Header = "Move Down";
+            moveDown.Click += (s, e) =>
+            {
+                var index = itemIndex;
+                _viewModel.Items.Move(index, index + 1);
+            };
+            
+            if (itemIndex < _viewModel.Items.Count - 1)
+                menu.Items.Add(moveDown);
+        }
+        
+        menu.Open(this);
+    }
+
+
+    private void lbItems_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        ListSelectionChanged?.Invoke(sender, new ListSelectionChangedEventArgs(lbItems.SelectedItem, lbItems.SelectedIndex));
+    }
+
+    private void btnRemoveItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (_viewModel == null) return;
+        if (sender is not Button btn) return;
+        var item = _viewModel.Items.FirstOrDefault(i => i.Tag == btn.Tag);
+        if (item == null) return;
+        _viewModel.Items.Remove(item);
+        ItemRemoved?.Invoke(this, new ListableItemRemovedEventArgs(item));
     }
 
     private void RemoveAll_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
