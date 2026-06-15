@@ -1,23 +1,13 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Enums;
 using Serilog;
 using System;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Xeovis.Base.Utilities;
-using Xeovis.Domain;
-using Xeovis.Domain.Definitions;
-using Xeovis.Domain.Definitions.Globals;
-using Xeovis.Persistence;
-using Xeovis.Presentation;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.Models.Events;
-using Xeovis.UI.Models.FileReaders;
 using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.UI.Views;
 using Xeovis.UI.Views.Dialogs;
@@ -27,19 +17,10 @@ namespace Xeovis.UI;
 
 public partial class MainMenu : UserControl
 {
-    public event EventHandler<ExperimentsLoadedEventArgs>? ExperimentsLoaded;
-    public event EventHandler<mctcBundleLoadedEventArgs>? mctcBundleLoaded;
-    public event Func<object, ProjectFileLoadedEventArgs, Task>? ProjectLoaded;
-    
-    public MainWindow? ParentWindow;
-
-    private string _lastFilePath;
-
     public MainMenu()
     {
         InitializeComponent();
         DataContext = this;
-        _lastFilePath = string.Empty;
         SetMenuShortcuts();
         btnMctcCalibration.IsEnabled = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
     }
@@ -71,17 +52,17 @@ public partial class MainMenu : UserControl
     // Project
     public async void File_New()
     {
-        var goAhead = await CheckAndRaiseUnsavedChangesMessage(askAnyWay: true);
+        var goAhead = await UIServices.CheckAndRaiseUnsavedChangesMessage(askAnyWay: true);
         if (!goAhead) return;
 
-        _lastFilePath = string.Empty;
-        ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(null));
+        UIServices.LastFilePath = string.Empty;
+        UIServices.InvokeProjectLoaded(this, new ProjectFileLoadedEventArgs(null));
         Log.Information("New project created.");
     }
 
     public async void File_Open()
     {
-        var goAhead = await CheckAndRaiseUnsavedChangesMessage();
+        var goAhead = await UIServices.CheckAndRaiseUnsavedChangesMessage();
         if (!goAhead) return;
 
         var topLevel = TopLevel.GetTopLevel(this);
@@ -103,201 +84,29 @@ public partial class MainMenu : UserControl
         Log.Information("Opening project file...");
         var file = files[0];
         var path = Uri.UnescapeDataString(file.Path.AbsolutePath);
-        LoadProjectFile(path);
-    }
-
-    public async void LoadProjectFile(string path, bool raiseUnsavedChanges = false)
-    {
-        bool goAhead = true;
-        if (raiseUnsavedChanges)
-            goAhead = await CheckAndRaiseUnsavedChangesMessage();
-
-        if (!goAhead) return;
-        
-        // Adding a blur effect
-        ParentWindow.Effect = new Avalonia.Media.BlurEffect() { Radius = 15 };
-        ParentWindow.Opacity = 0.6;
-            
-        var progBar = new ProgressBarDialog(isIndeterminate: true);
-        progBar.ShowDialog(ParentWindow);
-            
-        // CRITICAL: Yield to the UI thread so Avalonia actually has time 
-        // to paint the complicated blur effect before the heavy data loading starts!
-        await Task.Delay(50);
-            
-        try
-        {
-            var projectFile = await Task.Run(() => ProjectFileManager.Load(path));
-            if (projectFile == null)
-            {
-                var ms = MessageBoxManager.GetMessageBoxStandard("Error",
-                    "Failed to open the project file!", ButtonEnum.Ok, Icon.Error);
-                ms.ShowWindowDialogAsync(ParentWindow);
-                ParentWindow.Effect = null;
-                ParentWindow.Opacity = 1.0;
-                return;
-            }
-
-            _lastFilePath = path;
-            // ProjectLoaded?.Invoke(this, new ProjectFileLoadedEventArgs(projectFile, path));
-                
-            // NEW: Safely await all subscribers of the async event
-            if (ProjectLoaded != null)
-            {
-                var handlers = ProjectLoaded.GetInvocationList();
-                foreach (Func<object, ProjectFileLoadedEventArgs, Task> handler in handlers)
-                {
-                    // This forces LoadProjectFile to WAIT until the UI is completely finished building
-                    await handler(this, new ProjectFileLoadedEventArgs(projectFile, path)); 
-                }
-            }
-            Log.Information("Project file opened successfully.");
-        }
-        catch (Exception e)
-        {
-            Log.Information("Failed to open the project file.");
-        }
-        finally
-        {
-            progBar.Close();
-                
-            // 2. REMOVE THE BLUR: Reset the effect and opacity
-            ParentWindow.Effect = null;
-            ParentWindow.Opacity = 1.0;
-        }
-    }
-
-    private async Task<bool> CheckAndRaiseUnsavedChangesMessage(bool askAnyWay = false)
-    {
-        if ((File.Exists(_lastFilePath) || askAnyWay) && ParentWindow != null)
-        {
-            var mb = MessageBoxManager.GetMessageBoxStandard("Unsaved Changes",
-                "You have unsaved changes.\nDo you want to save before continuing?", ButtonEnum.YesNoCancel,
-                Icon.Warning);
-            var result = await mb.ShowWindowDialogAsync(ParentWindow);
-            if (result == ButtonResult.Yes)
-                await Save(isSaveAs: false);
-            else if (result == ButtonResult.No)
-                Log.Information("Project file not saved.");
-            else
-                return false;
-        }
-
-        return true;
+        UIServices.LoadProjectFile(path);
     }
 
     public async void File_Save()
     {
-        await Save(isSaveAs: false);
-    }
-
-    private async Task Save(bool isSaveAs = false)
-    {
-        var projectFile = GetProjectFile();
-        if (projectFile == null) return;
-
-        string path;
-        if (isSaveAs || !File.Exists(_lastFilePath))
-        {
-            var topLevel = TopLevel.GetTopLevel(this);
-            if (topLevel == null) return;
-            var options = new FilePickerSaveOptions()
-            {
-                Title = "Save",
-                ShowOverwritePrompt = true,
-                FileTypeChoices = [FileExtentionHelper.GetFilePickerFileType(FileExtensionType.XVS)]
-            };
-
-            var files = await topLevel.StorageProvider.SaveFilePickerAsync(options);
-            if (files == null) return;
-            path = Uri.UnescapeDataString(files.Path.AbsolutePath);
-            _lastFilePath = path;
-        }
-        else
-            path = _lastFilePath;
-
-        projectFile.ProjectName = Path.GetFileNameWithoutExtension(path);
-        var result = ProjectFileManager.Save(projectFile, path);
-        if (result)
-        {
-            var extension = Path.GetExtension(path);
-            ParentWindow.Title = $"Xeovis | {projectFile.ProjectName}{extension}";
-            Log.Information("Project file saved.");
-        }
-    }
-
-    private ProjectFile GetProjectFile()
-    {
-        if (ParentWindow == null) return null;
-        var projectFile = new ProjectFile();
-        projectFile.Experiments = ParentWindow.ViewModel.Experiments;
-        projectFile.mctcBundles = ParentWindow.ViewModel.mctcBundles;
-        projectFile.mctcPlotDtos = ParentWindow.ViewModel.mctcPlotDtos;
-        projectFile.ProjectSettings.AllowedPhaseNames = PhaseNameList.PhaseNames;
-        projectFile.ProjectSettings.PhaseXeosVariables = xeosVariableNameList.VariableNames;
-        projectFile.ProjectSettings.PhaseOxides = PhaseOxideList.OxideList;
-        projectFile.ProjectSettings.xeosVariableCations = xeosVariableCationList.CationList;
-        return projectFile;
+        await UIServices.Save(isSaveAs: false);
     }
 
     public async void File_SaveAs()
     {
-        await Save(isSaveAs: true);
+        await UIServices.Save(isSaveAs: true);
     }
 
     public async Task File_Quit()
     {
-        if (await CheckAndRaiseUnsavedChangesMessage(askAnyWay: true))
+        if (await UIServices.CheckAndRaiseUnsavedChangesMessage(askAnyWay: true))
             Environment.Exit(exitCode: 0);
     }
 
     // Data Manager
     public async void DataManager_LoadData()
     {
-        if (ParentWindow == null) return;
-        var viewModel = new DataManagerLoadDataViewModel();
-        var dialog = new DataManagerLoadDataDialog();
-        dialog.ViewModel = viewModel;
-        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
-
-        if (result == DialogResultType.OK)
-        {
-            var progressDialog = new ProgressBarDialog();
-            progressDialog.ShowDialog(ParentWindow);
-
-            var progress = progressDialog.ProgressReporter;
-            var token = progressDialog.Token;
-
-            try
-            {
-                var vm = dialog.ViewModel;
-                var expReader = new ExperimentReader(vm.SelectedFolders, vm.SubfolderDirectory, vm.IsSubfolderChecked);
-                var expReaderResults = await Task.Run(() => expReader.GetExperiments(progress, token));
-
-                // get confirmation
-
-                var experiments = expReaderResults.Experiments;
-                ExperimentsLoaded?.Invoke(this, new ExperimentsLoadedEventArgs(experiments, dialog.ViewModel));
-            }
-            catch (Exception ex)
-            {
-                if (ex is OperationCanceledException)
-                    Log.Information("User cancelled loading experiments.");
-                else if (ex is IOException)
-                {
-                    Log.Information(ex.Message);
-                    var mb = MessageBoxManager.GetMessageBoxStandard("Failed to Access",
-                        StringUtilities.WrapTextToLines(ex.Message, 100), ButtonEnum.Ok, Icon.Error);
-                    mb.ShowWindowDialogAsync(ParentWindow);
-                }
-                else
-                    Log.Error(ex.Message);
-            }
-            finally
-            {
-                progressDialog.Close();
-            }
-        }
+        await UIServices.LoadExperiments();
     }
 
     public void DataManager_Export()
@@ -307,122 +116,17 @@ public partial class MainMenu : UserControl
     // MCTC
     public async void Mctc_LoadBundle()
     {
-        if (ParentWindow == null) return;
-        var viewModel = new mctcLoadDataViewModel();
-        viewModel.ExisitingBundleNames = ParentWindow.ViewModel.mctcBundles.Select(x => x.Name).ToList();
-        var dialog = new mctcLoadDataDialog() { ViewModel = viewModel };
-
-        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
-
-        if (result == DialogResultType.OK)
-        {
-            var vm = dialog.ViewModel;
-
-            var mctcBundle = await LoadMctcBundle(vm.FolderDirectory);
-            if (mctcBundle != null)
-            {
-                mctcBundle.Name = vm.MctcBundleName;
-                mctcBundleLoaded?.Invoke(this, new mctcBundleLoadedEventArgs(mctcBundle));
-            }
-        }
+        await UIServices.LoadMctcBundle();
     }
 
-    public async Task<mctcBundle> LoadMctcBundle(string folderDirectory)
-    {
-        if (ParentWindow == null) return null;
-        var progressDialog = new ProgressBarDialog();
-        progressDialog.ShowDialog(ParentWindow);
-
-        var progress = progressDialog.ProgressReporter;
-        var token = progressDialog.Token;
-
-        try
-        {
-            var mctcReader = new mctcDataReader(folderDirectory);
-            var mctcBundle = await Task.Run(() => mctcReader.ReadData(progress, token)) ??
-                             throw new NullReferenceException();
-            mctcBundle.TimeLoaded = DateTime.Now;
-            mctcBundle.FilesDirectory = folderDirectory;
-            return mctcBundle;
-        }
-        catch (Exception ex)
-        {
-            switch (ex)
-            {
-                case OperationCanceledException:
-                    Log.Information("User cancelled loading mctc bundle.");
-                    break;
-                case FileNotFoundException:
-                    Log.Error("Couldn't read files from {ExMessage}", ex.Message);
-                    break;
-                case NullReferenceException:
-                    Log.Error("Couldn't load mctc bundle.");
-                    break;
-                default:
-                    Log.Error(ex.Message);
-                    break;
-            }
-
-            return null;
-        }
-        finally
-        {
-            progressDialog.Close();
-        }
-    }
-
-    public mctcBundle SimpleMctcBundleLoad(string folderDirectory)
-    {
-        var mctcReader = new mctcDataReader(folderDirectory);
-        var mctcBundle = mctcReader.ReadData();
-        mctcBundle.TimeLoaded = DateTime.Now;
-        mctcBundle.FilesDirectory = folderDirectory;
-        return mctcBundle;
-    }
-    
     public void Mctc_NewPlot()
     {
-        LoadNewPlotDialog(Guid.Empty);
-    }
-
-    public async void LoadNewPlotDialog(Guid selectedBundleId)
-    {
-        if (ParentWindow == null) return;
-        var hasMctcBundle = ParentWindow.ViewModel.mctcBundles.Count > 0;
-        if (!hasMctcBundle)
-        {
-            var msgBox = MessageBoxManager.GetMessageBoxStandard("Error",
-                "No mctc bundle was found! Please load a bundle first.", ButtonEnum.Ok, Icon.Error);
-            msgBox.ShowWindowDialogAsync(ParentWindow);
-            return;
-        }
-
-        mctcNewPlotDialog dialog = GetNewMctcPlotDialog(selectedBundleId);
-        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
-
-        if (result == DialogResultType.OK)
-        {
-            dialog.ViewModel.mctcPlotDto.TimeCreated = DateTime.Now;
-            ParentWindow.CreateMctcPlot(dialog.ViewModel.mctcPlotDto);
-        }
-    }
-
-    public mctcNewPlotDialog GetNewMctcPlotDialog(Guid selectedBundleId, mctcPlotDto currentMctcPlot = null)
-    {
-        var viewModel = new mctcNewPlotViewModel();
-        viewModel.mctcBundles = ParentWindow.ViewModel.mctcBundles;
-        viewModel.ExistingPlotNames = ParentWindow.ViewModel.MctcBundleNodes
-            .SelectMany(b => b.Children.Select(x => x.Label)).ToList();
-        viewModel.SelectedBundleId = selectedBundleId;
-        viewModel.mctcPlotDto = currentMctcPlot;
-        var dialog = new mctcNewPlotDialog() { ViewModel = viewModel };
-        return dialog;
+        UIServices.LoadNewPlot(Guid.Empty);
     }
 
     public void Mctc_Calibration()
     {
         return;
-        if (ParentWindow == null) return;
         var viewModel = new mctcCalibrationViewModel();
         
         string exePath = "/Users/mohammadhumand/Library/CloudStorage/" +
@@ -433,7 +137,7 @@ public partial class MainMenu : UserControl
         
         return;
         var dialog = new mctcCalibrationDialog() { ViewModel = viewModel };
-        dialog.ShowDialog(ParentWindow);
+        dialog.ShowDialog(UIServices.ParentWindow);
     }
     
     // Settings
@@ -441,41 +145,41 @@ public partial class MainMenu : UserControl
     {
         var vm = new SettingsPhaseNamesViewModel();
         var dialog = new SettingsPhaseNamesDialog() { ViewModel = vm };
-        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
+        var result = await dialog.ShowDialog<DialogResultType>(UIServices.ParentWindow);
     }
 
     public async void Settings_XeosVariables()
     {
         var vm = new SettingsXeosVariablesViewModel();
         var dialog = new SettingsXeosVariablesDialog() { ViewModel = vm };
-        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
+        var result = await dialog.ShowDialog<DialogResultType>(UIServices.ParentWindow);
     }
 
     public async void Settings_PhaseCompositions()
     {
         var vm = new SettingsPhaseCompositionsViewModel();
         var dialog = new SettingsPhaseCompositionsDialog() { ViewModel = vm };
-        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
+        var result = await dialog.ShowDialog<DialogResultType>(UIServices.ParentWindow);
     }
 
     public async void Settings_VariableCations()
     {
         var vm = new SettingsVariableCationsViewModel();
         var dialog = new SettingsVariableCationsDialog() { ViewModel = vm };
-        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
+        var result = await dialog.ShowDialog<DialogResultType>(UIServices.ParentWindow);
     }
 
     // Tools
     public async void Tools_API()
     {
         var apiDialog = new ApiSettingsDialog();
-        await apiDialog.ShowDialog(ParentWindow);
+        await apiDialog.ShowDialog(UIServices.ParentWindow);
     }
     
     // View
     public void View_ShowLeftPanel()
     {
-        ParentWindow?.ToggleLeftPanelVisibility(itemShowLeftPanel.IsChecked);
+        UIServices.ParentWindow.ToggleLeftPanelVisibility(itemShowLeftPanel.IsChecked);
         Log.Information(itemShowLeftPanel.IsChecked.ToString());
     }
 
@@ -492,8 +196,7 @@ public partial class MainMenu : UserControl
 
     public void About()
     {
-        if (ParentWindow == null) return;
         var dialog = new AboutDialog();
-        dialog.ShowDialog(ParentWindow);
+        dialog.ShowDialog(UIServices.ParentWindow);
     }
 }

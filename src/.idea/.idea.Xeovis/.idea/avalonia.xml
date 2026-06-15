@@ -17,6 +17,7 @@
         <entry key="Xeovis.UI/Views/Dialogs/mctcCalibrationDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/mctcLoadDataDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/mctcNewPlotDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
+        <entry key="Xeovis.UI/Views/Dialogs/mctcPlotGridExportDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/mctcPlotSettingsDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/MainMenu.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/MainWindow.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />

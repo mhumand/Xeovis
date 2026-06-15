@@ -170,6 +170,16 @@
 								</Button.Content>
 							</Button>
 							
+							<Button x:Name="btnChangeVariables"
+							        Click="btnChangeVariables_OnClick"
+							        Background="Transparent"
+							        IsVisible="{Binding IsPaneOpen, ElementName=splitView}"
+							        Classes="InLine">
+								<Button.Content>
+									<Image Width="16" Height="16" Source="/Assets/edit.png"/>
+								</Button.Content>
+							</Button>
+							
 							<Button x:Name="btnSettings"
 									Click="btnSettings_Click"
 									Background="Transparent"
