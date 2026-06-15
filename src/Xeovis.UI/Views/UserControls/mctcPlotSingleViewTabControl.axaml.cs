@@ -13,7 +13,6 @@ using Xeovis.Presentation;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
-using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.UI.Views;
 
 namespace Xeovis.UI;
@@ -39,8 +38,6 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
     private bool _dragTargetState = false;
     private CheckBoxControl? _lastHoveredCheckbox = null;
     
-    public MainWindow? ParentWindow { get; set; }
-
     private bool _linkVariable;
 
     public mctcPlotSingleViewTabControl()
@@ -318,7 +315,7 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         uncheckAllItem.Click += uncheckAllItem_Click;
 
         var checkThisOnly = new MenuItem() { Header = "Check This Only" };
-        checkThisOnly.Click += (s, e) => CheckThisOnly((s as MenuItem).Parent.Parent.Parent as CheckBoxControl);
+        checkThisOnly.Click += (s, e) => CheckThisOnly((s as MenuItem).Parent.Parent.Parent as CheckBoxControl); //todo: is safe?
 
         menu.Items.Add(checkAllItem);
         menu.Items.Add(uncheckAllItem);
@@ -486,24 +483,13 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
 
     private async void btnSettings_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (ParentWindow == null) return;
-        var otherNames = ParentWindow.ViewModel.mctcPlotDtos.Except(new List<mctcPlotDto> { _viewModel.mctcPlotDto }).Select(x => x.Name).ToList();
-        var viewModel = new mctcPlotSettingsViewModel(_viewModel.mctcPlotDto, otherNames);
-        var dialog = new mctcPlotSettingsDialog();
-        dialog.ViewModel = viewModel;
-        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
-
-        if (result == DialogResultType.OK)
-        {
-            PopulateUI(_viewModel.mctcPlotDto, _viewModel.mctcBundle);
-            ParentWindow.OnMctcPlotRenamed(_viewModel.mctcPlotDto);
-        }
+        await UIServices.OpenMctcPlotSettings(this, _viewModel.mctcPlotDto,  _viewModel.mctcBundle);
     }
 
     private void tableControl_ContextRequested(object? sender, ContextRequestedEventArgs e)
     {
-        if (ParentWindow == null) return;
-        var experiments = ParentWindow.ViewModel.Experiments;
+        var parentWindow = UIServices.ParentWindow;
+        var experiments = parentWindow.ViewModel.Experiments;
         if (experiments == null || experiments.Count == 0) return;
 
         // reading data
@@ -538,14 +524,14 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         var menu = new ContextMenu();
 
         var gotoExpItem = new MenuItem() { Header = $"Go to Experiment" };
-        gotoExpItem.Click += (s, e) => ParentWindow.OpenExperiment(experiment.Id);
+        gotoExpItem.Click += (s, e) => parentWindow.OpenExperiment(experiment.Id);
         ToolTip.SetTip(gotoExpItem, experiment.Name);
         menu.Items.Add(gotoExpItem);
 
         if (expRun != null)
         {
             var gotoExpRunItem = new MenuItem() { Header = $"Go to Run" };
-            gotoExpRunItem.Click += (s, e) => ParentWindow.OpenExpRunInExperiment(experiment.Id, expRun.Id);
+            gotoExpRunItem.Click += (s, e) => parentWindow.OpenExpRunInExperiment(experiment.Id, expRun.Id);
             ToolTip.SetTip(gotoExpRunItem, expRun.Name);
             menu.Items.Add(gotoExpRunItem);
         }
@@ -560,11 +546,11 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
                 var phaseInExpRun = expRun.Phases.FirstOrDefault(x => x.NameSet != null && x.NameSet.HasName(phaseName));
                 if (phaseInExpRun == null || phaseInExpRun.Composition.Count == 0) continue;
                 var phaseDataItem = new MenuItem() { Header = phaseName };
-                phaseDataItem.Click += (s, e) => ParentWindow.OpenPhaseInExperiment(experiment.Id, phaseInExpRun.NameSet, expRun.Id);
+                phaseDataItem.Click += (s, e) => parentWindow.OpenPhaseInExperiment(experiment.Id, phaseInExpRun.NameSet, expRun.Id);
                 gotoPhaseItem.Items.Add(phaseDataItem);
 
                 var phaseCompareItem = new MenuItem() { Header = phaseName };
-                phaseCompareItem.Click += (s, e) => ParentWindow.AddPhaseToCompare(phaseInExpRun.Id);
+                phaseCompareItem.Click += (s, e) => parentWindow.AddPhaseToCompare(phaseInExpRun.Id);
                 addToCampareItem.Items.Add(phaseCompareItem);
             }
 
@@ -593,5 +579,10 @@ public partial class mctcPlotSingleViewTabControl : UserControl, ImctcPlotView
         var itemInDestination = destination.ViewModel.Items.FirstOrDefault(x => x.Tag is xeosVariable var && var.IsEqualTo(sampleVar));
         if (itemInDestination == null) return;
         destination.ViewModel.SelectedItem = itemInDestination;
+    }
+
+    private async void btnChangeVariables_OnClick(object? sender, RoutedEventArgs e)
+    {
+        await UIServices.OpenMctcPlotDialog(_viewModel.mctcBundle, _viewModel.mctcPlotDto, this);
     }
 }

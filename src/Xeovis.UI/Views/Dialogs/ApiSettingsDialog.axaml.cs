@@ -15,6 +15,7 @@ public partial class ApiSettingsDialog : Window
     private struct EndPoint
     {
         public string Name = String.Empty;
+        public string Type = string.Empty;
         public string Description= String.Empty;
         public string InputArguments =  String.Empty;
 
@@ -53,12 +54,14 @@ public partial class ApiSettingsDialog : Window
         var epStatus = new EndPoint()
         {
             Name = "/status",
+            Type = "Get",
             Description = "Gives API status"
         };
 
         var epLoad = new EndPoint()
         {
             Name = "/Load",
+            Type = "Post",
             Description = "Loads an mctc bundle",
             InputArguments = "(string Bundle_Name, string Bundle_Path)"
         };
@@ -66,6 +69,7 @@ public partial class ApiSettingsDialog : Window
         var epReload = new EndPoint()
         {
             Name = "/Reload",
+            Type = "Post",
             Description = "Reloads an mctc bundle, and appends data if set",
             InputArguments = "(string Bundle_Name, bool Append)"
         };
@@ -73,6 +77,7 @@ public partial class ApiSettingsDialog : Window
         var epRefresh = new EndPoint()
         {
             Name = "/Refresh",
+            Type = "Post",
             Description = "Refreshs plots and tables for an mctc bundle",
             InputArguments = "(string Bundle_Name)"
         };
@@ -80,12 +85,13 @@ public partial class ApiSettingsDialog : Window
         var endpoints = new List<EndPoint>() { epStatus, epLoad, epReload, epRefresh };
         
         var colEndpoints = new ColumnModel("Endpoint", endpoints.Select(x => x.Name).ToList());
+        var colTypes = new ColumnModel("Type", endpoints.Select(x => x.Type).ToList());
         var colDescriptions = new ColumnModel("Description", endpoints.Select(x => x.Description).ToList());
         var colInputArguments = new ColumnModel("Input Arguments", endpoints.Select(x => x.InputArguments).ToList());
         
         var table = new TableModel("API", new List<ColumnModel>()
         {
-            colEndpoints, colDescriptions, colInputArguments
+            colEndpoints, colTypes, colDescriptions, colInputArguments
         });
         table.IsReadOnly = true;
         

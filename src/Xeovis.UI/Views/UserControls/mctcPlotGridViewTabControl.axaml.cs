@@ -1,14 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Media;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform.Storage;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Xeovis.Base;
@@ -18,7 +12,6 @@ using Xeovis.Presentation;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
-using Xeovis.UI.ViewModels.DialogsViewModels;
 using Xeovis.UI.Views;
 
 namespace Xeovis.UI;
@@ -43,8 +36,6 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
     private bool _isDraggingLegend = false;
     private bool _dragTargetState = false;
     private CheckBoxControl? _lastHoveredCheckbox = null;
-
-    public MainWindow? ParentWindow { get; set; }
 
     public Rect InitialBounds { get; set; }
 
@@ -412,123 +403,12 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
 
     private async void btnSettings_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (ParentWindow == null) return;
-        var otherNames = ParentWindow.ViewModel.mctcPlotDtos.Except(new List<mctcPlotDto> { _viewModel.mctcPlotDto }).Select(x => x.Name).ToList();
-        var viewModel = new mctcPlotSettingsViewModel(_viewModel.mctcPlotDto, otherNames);
-        var dialog = new mctcPlotSettingsDialog();
-        dialog.ViewModel = viewModel;
-        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
-
-        if (result == DialogResultType.OK)
-        {
-            PopulateUI(_viewModel.mctcPlotDto, _viewModel.mctcBundle);
-            ParentWindow.OnMctcPlotRenamed(_viewModel.mctcPlotDto);
-        }
+        await UIServices.OpenMctcPlotSettings(this, _viewModel.mctcPlotDto, _viewModel.mctcBundle);
     }
 
     private async void btnExport_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (ParentWindow == null) return;
-
-        var dialog = new mctcPlotGridExportDialog(_viewModel.mctcPlotDto);
-        var result = await dialog.ShowDialog<DialogResultType>(ParentWindow);
-
-        if (result != DialogResultType.OK) return;
-
-        if (dialog.ExportData || dialog.ExportImages)
-        {
-            var directory = await GetExportDirectory();
-            if (!Directory.Exists(directory)) return;
-            if (dialog.ExportImages) ExportImages(dialog, directory);
-            if (dialog.ExportData) ExportData(dialog, directory);
-        }
-    }
-
-    private async Task<string> GetExportDirectory()
-    {
-        var topLevel = TopLevel.GetTopLevel(this);
-        if (topLevel == null) return string.Empty;
-        var options = new FolderPickerOpenOptions()
-        {
-            Title = "Choose Folder",
-            AllowMultiple = false,
-        };
-
-        var folders = await topLevel.StorageProvider.OpenFolderPickerAsync(options);
-        if (folders.Count > 0)
-            return Uri.UnescapeDataString(folders[0].Path.AbsolutePath);
-        else
-            return string.Empty;
-    }
-
-    private void ExportImages(mctcPlotGridExportDialog dialog, string directory)
-    {
-        var imageFileExtension = dialog.ImageFileType.GetStringExtention();
-        var imageFileName = directory + dialog.ImageFilesName + imageFileExtension;
-        var images = new List<Image>();
-        foreach (ChartControl chartControl in uniformGrid.Children)
-        {
-            var image = chartControl.GetChartImage();
-            image.Tag = chartControl;
-            images.Add(image);
-        }
-
-        var sampleImage = images[0].Source as RenderTargetBitmap;
-        if (sampleImage == null) return;
-        var singleWidth = sampleImage.PixelSize.Width;
-        var singleHeight = sampleImage.PixelSize.Height;
-        int totalWidth = singleWidth * uniformGrid.Columns;
-        int totalHeight = singleHeight * uniformGrid.Rows;
-        var combined = new RenderTargetBitmap(new PixelSize(totalWidth, totalHeight), sampleImage.Dpi);
-        var scale = 300.0 / 96.0;
-        using (var ctx = combined.CreateDrawingContext())
-        {
-            ctx.FillRectangle(Brushes.White, new Rect(0, 0, totalWidth, totalHeight)); // background
-
-            int counter = 0;
-            for (int i = 0; i < uniformGrid.Rows; i++)
-            {
-                for (int j = 0; j < uniformGrid.Columns; j++)
-                {
-                    if (counter >= images.Count) break;
-
-                    var image = images[counter];
-                    var imageSource = image.Source as RenderTargetBitmap;
-                    var width = imageSource.PixelSize.Width;
-                    var height = imageSource.PixelSize.Height;
-                    var imageRec = new Rect(0, 0, width, height);
-                    ctx.DrawImage(imageSource, imageRec, new Rect(width * j / scale, height * i / scale, width / scale, height / scale));
-
-                    if (dialog.IndiviualExport)
-                    {
-                        var chartControl = image.Tag as ChartControl;
-                        imageSource.Save(directory + dialog.ImageFilesName + $" - {chartControl.ViewModel.Title}" + imageFileExtension);
-                    }
-
-                    counter++;
-                }
-            }
-
-            combined.Save(imageFileName);
-        }
-    }
-
-    private void ExportData(mctcPlotGridExportDialog dialog, string directory)
-    {
-        var dataFileExtension = dialog.DataFileType.GetStringExtention();
-        var dataSB = new StringBuilder();
-        foreach (ChartControl chartControl in uniformGrid.Children)
-        {
-            var dataString = chartControl.GetDataString();
-            if (string.IsNullOrWhiteSpace(dataString)) continue;
-            dataSB.AppendLine(dataString);
-
-            if (dialog.IndiviualExport)
-                File.WriteAllText(directory + dialog.DataFilesName + $" - {chartControl.ViewModel.Title}" + dataFileExtension, dataString);
-        }
-
-        if (dataSB.Length > 0)
-            File.WriteAllText(directory + dialog.DataFilesName + dataFileExtension, dataSB.ToString());
+        await UIServices.OpenMctcGridExportDialog(_viewModel.mctcPlotDto, uniformGrid);
     }
 
     private void lcbcYAxisType_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
@@ -547,5 +427,10 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
     private void lcbcXAxisVariable_ListSelectionChanged(object? sender, Models.Events.ListSelectionChangedEventArgs e)
     {
         PopulateGridCharts();
+    }
+
+    private async void btnChangeVariables_OnClick(object? sender, RoutedEventArgs e)
+    {
+        await UIServices.OpenMctcPlotDialog(_viewModel.mctcBundle, _viewModel.mctcPlotDto, this);
     }
 }
