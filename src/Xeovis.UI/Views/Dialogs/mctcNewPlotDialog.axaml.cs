@@ -3,6 +3,7 @@ using MsBox.Avalonia.Enums;
 using MsBox.Avalonia;
 using System.Collections.Generic;
 using System.Linq;
+using Avalonia.Interactivity;
 using Serilog;
 using Xeovis.Domain;
 using Xeovis.UI.Models;
@@ -45,8 +46,12 @@ public partial class mctcNewPlotDialog : Window
             content.DataContext = this.DataContext;
         
         llcSelected.ItemRemoved += llcSelected_ItemRemoved;
+        llcSelected.ListSelectionChanged += llcSelected_ListSelectionChanged;
         lcbcMctcBundles.ListSelectionChanged += lcbcMctcBundles_ListSelectionChanged;
         llcPhase.ListSelectionChanged += llcPhase_ListSelectionChanged;
+        
+        btnMoveUp.Click += btnMoveUp_Click;
+        btnMoveDown.Click += btnMoveDown_Click;
     }
 
     //public mctcNewPlotDialog(List<mctcBundle> mctcBundles) : this()
@@ -66,6 +71,9 @@ public partial class mctcNewPlotDialog : Window
 
     public void PrepareUI()
     {
+        btnMoveDown.IsEnabled = false;
+        btnMoveUp.IsEnabled = false;
+        
         var suggestedName = NameSuggestor.SuggestNewName_Numeric(_viewModel.ExistingPlotNames, "Plot", " ");
         var vmName = new LabelInputControlViewModel("Name", _mctcPlotDto == null || string.IsNullOrWhiteSpace(_mctcPlotDto.Name) ? suggestedName : _mctcPlotDto.Name);
         vmName.ValidationRules.Add(new NotEmptyOrWhitespaceRule());
@@ -158,6 +166,12 @@ public partial class mctcNewPlotDialog : Window
             e.Item.IsChecked = false;
             llcXeosVariables.ViewModel.ItemCheckStateChanged += llcXeosVariables_ItemCheckStateChanged;
         }
+
+        if (llcSelected.ViewModel.Items.Count == 0)
+        {
+            btnMoveDown.IsEnabled = false;
+            btnMoveUp.IsEnabled = false;
+        }
     }
 
     private void llcXeosVariables_ItemCheckStateChanged(object? sender, CheckStateChangedEventArgs e)
@@ -242,6 +256,32 @@ public partial class mctcNewPlotDialog : Window
         {
             _settingsPlotDto = dialog.ViewModel.mctcPlotDto;
             txtName.ViewModel.Value = _settingsPlotDto.Name;
+        }
+    }
+    
+    private void btnMoveDown_Click(object? sender, RoutedEventArgs e)
+    {
+        llcSelected.MoveItemDown(llcSelected.GetSelectedItem());
+    }
+
+    private void btnMoveUp_Click(object? sender, RoutedEventArgs e)
+    {
+        llcSelected.MoveItemUp(llcSelected.GetSelectedItem());
+    }
+    
+    private void llcSelected_ListSelectionChanged(object? sender, ListSelectionChangedEventArgs e)
+    {
+        var selectedItem = e.SelectedItem as ListableItem;
+        if (selectedItem == null)
+        {
+            btnMoveDown.IsEnabled = false;
+            btnMoveUp.IsEnabled = false;
+        }
+        else
+        {
+            var index = llcSelected.ViewModel.SelectedIndex;
+            btnMoveUp.IsEnabled = index > 0;
+            btnMoveDown.IsEnabled = index < llcSelected.ViewModel.Items.Count - 1;
         }
     }
 }

@@ -25,32 +25,53 @@
 			<Setter Property="Margin" Value="5 0"/>
 			<Setter Property="Padding" Value="5 0"/>
 		</Style>
+		
+		<Style Selector="Button.Reorder">
+			<Setter Property="HorizontalAlignment" Value="Stretch"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Setter Property="Margin" Value="5, 0"/>
+			<Setter Property="Padding" Value="5, 5"/>
+		</Style>
 	</Window.Styles>
 
 	<DockPanel Margin="15">
 
 		<!-- Top Section - name + mctc bundle -->
-		<userControls:LabelInputControl x:Name="txtName"
-										Margin="5 0 5 10"
-										DockPanel.Dock="Top"
-										HorizontalAlignment="Left"
-										Width="250"/>
+		<Border DockPanel.Dock="Top"
+		        Classes="Custom"
+		        Padding="10"
+		        BorderBrush="Gray">
+			<Grid ColumnDefinitions="1*,1*"
+			      Height="70">
+				<userControls:LabelInputControl Grid.Column="0"
+				                                x:Name="txtName"
+				                                Margin="5 0 5 10"
+				                                DockPanel.Dock="Top"
+				                                HorizontalAlignment="Left"
+				                                VerticalAlignment="Top"
+				                                Width="250"/>
 		
-		<userControls:LabelComboBoxControl x:Name="lcbcMctcBundles"
-										   Margin="5 0"
-										   DockPanel.Dock="Top"
-										   Width="250"
-										   HorizontalAlignment="Left"
-										   VerticalAlignment="Bottom"/>
+				<userControls:LabelComboBoxControl Grid.Column="1"
+				                                   x:Name="lcbcMctcBundles"
+				                                   Margin="5 0"
+				                                   DockPanel.Dock="Top"
+				                                   Width="250"
+				                                   HorizontalAlignment="Left"
+				                                   VerticalAlignment="Top"/>
+			</Grid>
+		</Border>
+
 
 		<!-- Middle Section - Label List Controls -->
 		<Grid DockPanel.Dock="Top"
 			  VerticalAlignment="Stretch"
-			  Margin="0,20,0,0"
+			  Margin="0,10,0,0"
 			  ColumnDefinitions="2*,1*"
 			  RowDefinitions="*,50">
 
-			<Border Classes="Custom"
+			<Border Grid.Row="0"
+			        Classes="Custom"
 					Grid.Column="0"
 					BorderBrush="#1C39BB">
 
@@ -65,8 +86,31 @@
 
 			</Border>
 
-			<Border Classes="Custom" Grid.Column="1" BorderBrush="Gray">
-				<userControls:LabelListControl x:Name="llcSelected"/>
+			<!-- Selected Variables -->
+			<Border Grid.Row="0"
+			        Classes="Custom"
+			        Grid.Column="1"
+			        BorderBrush="Gray">
+				<Grid RowDefinitions="*,40">
+					<userControls:LabelListControl Grid.Row="0"
+					                               x:Name="llcSelected"
+					                               DockPanel.Dock="Top"/>
+					<Grid Grid.Row="1"
+					      DockPanel.Dock="Bottom"
+					      ColumnDefinitions="1*,1*"
+					      Margin="5"
+					      VerticalAlignment="Bottom">
+						<Button Grid.Column="0"
+						        x:Name="btnMoveUp"
+						        Classes="Reorder"
+						        Content="Move Up"/>
+						<Button Grid.Column="1"
+						        x:Name="btnMoveDown"
+						        Classes="Reorder"
+						        Content="Move Down"/>
+					</Grid>
+					
+				</Grid>
 			</Border>
 
 			<!-- Bottom Section - Dialog Buttons -->

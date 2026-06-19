@@ -73,22 +73,14 @@ public partial class LabelListControl : UserControl
             
             var moveUp = new MenuItem();
             moveUp.Header = "Move Up";
-            moveUp.Click += (s, e) =>
-            {
-                var index = itemIndex;
-                _viewModel.Items.Move(index, index - 1);
-            };
+            moveUp.Click += (s, e) => MoveItemUp(item);
             
             if (itemIndex > 0)
                 menu.Items.Add(moveUp);
             
             var moveDown = new MenuItem();
             moveDown.Header = "Move Down";
-            moveDown.Click += (s, e) =>
-            {
-                var index = itemIndex;
-                _viewModel.Items.Move(index, index + 1);
-            };
+            moveDown.Click += (s, e) => MoveItemDown(item);
             
             if (itemIndex < _viewModel.Items.Count - 1)
                 menu.Items.Add(moveDown);
@@ -97,6 +89,21 @@ public partial class LabelListControl : UserControl
         menu.Open(this);
     }
 
+    public void MoveItemUp(ListableItem item)
+    {
+        if (item == null) return;
+        var itemIndex = _viewModel.Items.IndexOf(item);
+        _viewModel.Items.Move(itemIndex, itemIndex - 1);
+        _viewModel.SelectedIndex = itemIndex - 1;
+    }
+
+    public void MoveItemDown(ListableItem item)
+    {
+        if (item == null) return;
+        var itemIndex = _viewModel.Items.IndexOf(item);
+        _viewModel.Items.Move(itemIndex, itemIndex + 1);
+        _viewModel.SelectedIndex = itemIndex + 1;
+    }
 
     private void lbItems_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
@@ -115,10 +122,10 @@ public partial class LabelListControl : UserControl
 
     private void RemoveAll_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        foreach (var item in _viewModel.Items)
-            ItemRemoved?.Invoke(this, new ListableItemRemovedEventArgs(item));
-
+        var items = _viewModel.Items.ToList();
         _viewModel.Items.Clear();
+        foreach (var item in items)
+            ItemRemoved?.Invoke(this, new ListableItemRemovedEventArgs(item));
     }
 
     private void CheckNone_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
