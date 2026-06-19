@@ -198,6 +198,8 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
 
         if (!((int)spinnerColumnNo.ViewModel.Value).IsBetween(4, mctcPlotDto.SampleXeosVariables.Count))
             spinnerColumnNo.ViewModel.Value = Math.Min(4, mctcPlotDto.SampleXeosVariables.Count);
+        else
+            SetupLayout((int)spinnerColumnNo.ViewModel.Value);
 
         return true;
     }

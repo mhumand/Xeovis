@@ -570,28 +570,17 @@ namespace Xeovis.UI.Views
                 }
                 renameItem.Click += (s, e) => RenameObjectWithDialog(bundle, otherNames, x => x.Name, Rename);
 
+                menu.Items.Add(new Separator());
+                
                 // Go to Directory
                 if (DirectoryHelper.DirectoryExists(bundle.FilesDirectory))
                 {
-                    menu.Items.Add(new Separator());
                     var directoryItem = new MenuItem() { Header = "Go to Directory" };
                     directoryItem.Click += (s, e) => DirectoryHelper.GoToDirectory(bundle.FilesDirectory);
                     menu.Items.Add(directoryItem);
                 }
-
-                // Change Color
-                var changeColor = new MenuItem() { Header = "Change Color" };
-                var colorPicker = new ColorPicker();
-                colorPicker.Color = GraphicsGenerator.GetAvaloniaColor(bundle.Color);
-                colorPicker.Palette = new MaterialHalfColorPalette();
-                colorPicker.IsAlphaVisible = false;
-                colorPicker.IsHexInputVisible = false;
-                colorPicker.ColorChanged += (s, e) => ChangeBundleColor(bundle, e.NewColor);
-                changeColor.Items.Add(colorPicker);
-                menu.Items.Add(changeColor);
                 
                 // Settings & Info
-                menu.Items.Add(new Separator());
                 settingsItem.Header = "Settings & Info";
                 settingsItem.Click += async (s, e) =>
                 {
