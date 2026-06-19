@@ -22,6 +22,9 @@ namespace Xeovis.Domain.Definitions.Globals
         {
             _variableNames = DefaultXeosVariableNames.GetDefaultXeosVariableNames();
             _variableNames.ToList().ForEach(x => _xeovisDefaults.Add(x.Key, x.Value.Select(x => x.Copy(true)).ToList()));
+            _flatVariableNamesCache = _variableNames.SelectMany(x => x.Value).ToDictionary(v => v.Id, v => v);
+            _variableIdToPhaseIdCache = _variableNames.SelectMany(x => x.Value.Select(v => new { PhaseId = x.Key, VarId = v.Id }))
+                .ToDictionary(x => x.VarId, x => x.PhaseId);
         }
 
         public static void SetXeosVariableNames(Dictionary<Guid, List<xeosVariableName>> xeosVariableNames, bool invokeEvent)
