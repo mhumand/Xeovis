@@ -467,4 +467,13 @@ public static class UIServices
         if (dataSB.Length > 0)
             File.WriteAllText(directory + dialog.DataFilesName + dataFileExtension, dataSB.ToString());
     }
+
+    public static bool ChangeBundleColor(mctcBundle bundle, Color newColor)
+    {
+        if (bundle == null) return false;
+        var color = GraphicsGenerator.GetColorFromAvaloniaColor(newColor);
+        if (color.IsInvisible()) return false;
+        bundle.Color = color;
+        return true;
+    }
 }

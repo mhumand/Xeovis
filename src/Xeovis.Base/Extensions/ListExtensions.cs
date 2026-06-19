@@ -24,4 +24,31 @@ public static class ListExtensions
         // if (newIndex > oldIndex) newIndex--;
         list.Insert(newIndex, item);
     }
+    
+    /// <summary>
+    /// Converts any list or collection to a single-line comma-separated string.
+    /// Example output: "Item1, Item2, Item3"
+    /// </summary>
+    public static string ToStringInline<T>(this IEnumerable<T> list)
+    {
+        if (list == null || !list.Any())
+            return string.Empty;
+
+        // string.Join automatically calls .ToString() on each item in the collection
+        return string.Join(", ", list); 
+    }
+
+    /// <summary>
+    /// Converts any list or collection to a multi-line string.
+    /// Example output: 
+    /// Item1
+    /// Item2
+    /// </summary>
+    public static string ToStringMultiline<T>(this IEnumerable<T> list)
+    {
+        if (list == null || !list.Any())
+            return string.Empty;
+
+        return string.Join(Environment.NewLine, list);
+    }
 }

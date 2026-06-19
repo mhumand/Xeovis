@@ -14,6 +14,7 @@
         <entry key="Xeovis.UI/Views/Dialogs/SettingsPhaseNamesDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/SettingsVariableCationsDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/SettingsXeosVariablesDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
+        <entry key="Xeovis.UI/Views/Dialogs/mctcBundleInfoDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/mctcCalibrationDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/mctcLoadDataDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/mctcNewPlotDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />

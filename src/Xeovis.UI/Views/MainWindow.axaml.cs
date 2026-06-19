@@ -21,6 +21,8 @@ using Xeovis.Presentation;
 using Xeovis.UI.Models;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.ViewModels;
+using Xeovis.UI.ViewModels.DialogsViewModels;
+using Xeovis.UI.Views.Dialogs;
 using Xeovis.UI.Views.Helpers;
 
 namespace Xeovis.UI.Views
@@ -568,7 +570,7 @@ namespace Xeovis.UI.Views
                 }
                 renameItem.Click += (s, e) => RenameObjectWithDialog(bundle, otherNames, x => x.Name, Rename);
 
-                // Directory
+                // Go to Directory
                 if (DirectoryHelper.DirectoryExists(bundle.FilesDirectory))
                 {
                     menu.Items.Add(new Separator());
@@ -577,6 +579,7 @@ namespace Xeovis.UI.Views
                     menu.Items.Add(directoryItem);
                 }
 
+                // Change Color
                 var changeColor = new MenuItem() { Header = "Change Color" };
                 var colorPicker = new ColorPicker();
                 colorPicker.Color = GraphicsGenerator.GetAvaloniaColor(bundle.Color);
@@ -587,10 +590,21 @@ namespace Xeovis.UI.Views
                 changeColor.Items.Add(colorPicker);
                 menu.Items.Add(changeColor);
                 
-                // todo: Settings
+                // Settings & Info
                 menu.Items.Add(new Separator());
-                settingsItem.IsEnabled = false;
-                //settingsItem.Click += (s, e)
+                settingsItem.Header = "Settings & Info";
+                settingsItem.Click += async (s, e) =>
+                {
+                    var bundleInfoVM = new mctcBundleInfoViewModel(bundle, otherNames);
+                    var bundleInfoDialog = new mctcBundleInfoDialog() { ViewModel = bundleInfoVM };
+                    var result = await bundleInfoDialog.ShowDialog<DialogResultType>(this);
+                    if (result is DialogResultType.OK)
+                    {
+                        ChangeBundleColor(bundle, bundleInfoDialog.Color);
+                        bundle.FilesDirectory = bundleInfoDialog.Directory;
+                        Rename(bundle, bundleInfoDialog.Name);
+                    }
+                };
                 menu.Items.Add(settingsItem);
             }
             else // mctc plot
@@ -673,11 +687,10 @@ namespace Xeovis.UI.Views
 
         private void ChangeBundleColor(mctcBundle bundle, Color newColor)
         {
-            if (bundle == null) return;
-            var color = GraphicsGenerator.GetColorFromAvaloniaColor(newColor);
-            if (color.IsInvisible()) return;
-            bundle.Color = color;
+            var result = UIServices.ChangeBundleColor(bundle, newColor);
+            if (!result) return;
             _viewModel.mctcBundleColors[bundle.Id] = bundle.Color;
+            
             var bundleNode = tvMctcBundles.Items.FirstOrDefault(x => x is TreeNode node && node.PresenterId == bundle.Id) as TreeNode;
             if (bundleNode == null) return;
             bundleNode.BorderColor = GraphicsGenerator.GetBrushFromColor(bundle.Color);
