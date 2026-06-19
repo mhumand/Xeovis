@@ -393,7 +393,7 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
     private void SetupLayout(int columnNo)
     {
         uniformGrid.Columns = columnNo;
-        uniformGrid.Rows = uniformGrid.Children.Count / columnNo + 1;
+        uniformGrid.Rows = (int)Math.Ceiling(uniformGrid.Children.Count / columnNo * 1.0);
 
         var width = uniformGrid.Bounds.Width / uniformGrid.Columns;
         if (width == 0) width = (InitialBounds.Width - splitView.OpenPaneLength) / uniformGrid.Columns;

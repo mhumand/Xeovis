@@ -130,6 +130,7 @@
 								Grid.Column="1"
 								VerticalAlignment="Bottom"
 								Height="40"
+								IsEnabled="False"
 								IsSnapToTickEnabled="True"
 								TickFrequency="25"
 								LargeChange="50"
@@ -243,6 +244,7 @@
 				<!--Charts-->
 				<ScrollViewer>
 					<UniformGrid x:Name="uniformGrid"
+					             VerticalAlignment="Top"
 								 Height="{Binding Height, ElementName=splitView}"/>
 				</ScrollViewer>
 
