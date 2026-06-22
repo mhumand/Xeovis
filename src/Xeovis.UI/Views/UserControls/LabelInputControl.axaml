@@ -37,19 +37,42 @@
 					 IsReadOnly="{Binding IsReadOnly}"
 					 Focusable="{Binding !IsReadOnly}"
 					 AcceptsReturn="{Binding IsMultiLine}"/>
+			
+			<StackPanel Margin="8 4 5 2"
+			            Spacing="5"
+			            Background="White"
+				        VerticalAlignment="Top"
+				        HorizontalAlignment="Right"
+			            Orientation="Horizontal">
+				
+				<Button x:Name="btnRestore"
+				        Classes="InLine"
+				        Margin="0 2"
+				        Width="16"
+				        Height="16"
+				        Opacity="0.5"
+				        Focusable="False"
+				        ToolTip.Tip="Restore Default"
+				        Click="btnRestore_Click">
+					<Button.Content>
+						<Image Width="16" Height="16" Source="/Assets/Chart/ZoomReset.png"/>
+					</Button.Content>
+				</Button>
+				
+				<Button x:Name="btnClear"
+				        Classes="InLine"
+				        Margin="0 2"
+				        Width="16"
+				        Height="16"
+				        Opacity="0.5"
+				        ToolTip.Tip="Clear"
+				        Click="btnClear_Click">
+					<Button.Content>
+						<Image Width="16" Height="16" Source="/Assets/clear.png"/>
+					</Button.Content>
+				</Button>
+			</StackPanel>
 
-			<Button x:Name="btnClear"
-					Classes="InLine"
-					VerticalAlignment="Top"
-					Margin="5 4 5 2"
-					Width="20"
-					Height="20"
-					Opacity="0.5"
-					Click="btnClear_Click">
-				<Button.Content>
-					<Image x:Name="image" Width="16" Height="16" Source="/Assets/clear.png"/>
-				</Button.Content>
-			</Button>
 		</Grid>
 	</DockPanel>
 

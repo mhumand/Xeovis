@@ -25,17 +25,41 @@
 		</StackPanel>
 
 		<Grid Grid.Row="1" x:Name="txtBtnGrid">
-			<TextBox x:Name="tbInput" 
+			<TextBox x:Name="tbInput"
 					 Text="{Binding Directory, UpdateSourceTrigger=PropertyChanged}"/>
 			
-			<Button x:Name="btnBrowse"
-					Classes="InLine"
-					Click="btnBrowse_Click"
-					ToolTip.Tip="Browse">
-				<Button.Content>
-					<Image x:Name="image" Width="16" Height="16" Source="/Assets/browse.png"/>
-				</Button.Content>
-			</Button>
+			<StackPanel Margin="5 4 5 2"
+			            Spacing="5"
+			            Background="White"
+			            VerticalAlignment="Top"
+			            HorizontalAlignment="Right"
+			            Orientation="Horizontal">
+				
+				<Button x:Name="btnRestore"
+				        Classes="InLine"
+				        Margin="0 2"
+				        Width="16"
+				        Height="16"
+				        Opacity="0.5"
+				        Focusable="False"
+				        ToolTip.Tip="Restore Default"
+				        Click="btnRestore_Click">
+					<Button.Content>
+						<Image Width="16" Height="16" Source="/Assets/Chart/ZoomReset.png"/>
+					</Button.Content>
+				</Button>
+				
+				<Button x:Name="btnBrowse"
+				        Classes="InLine"
+				        Margin="0"
+				        Click="btnBrowse_Click"
+				        ToolTip.Tip="Browse">
+					<Button.Content>
+						<Image x:Name="image" Width="16" Height="16" Source="/Assets/browse.png"/>
+					</Button.Content>
+				</Button>
+			</StackPanel>
+
 		</Grid>
 	</Grid>
 </UserControl>

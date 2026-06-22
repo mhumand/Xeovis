@@ -53,21 +53,7 @@
                         </Grid>
                         
                         <!-- Bundle Directory -->
-                        <Grid ColumnDefinitions="*,30">
-                            <userControls:LabelBrowseDirectoryControl Grid.Column="0" x:Name="lbdcDirectory" />
-                            <Button Grid.Column="1"
-                                    x:Name="btnRestoreDirectory"
-                                    Margin="5 5"
-                                    ToolTip.Tip="Restore"
-                                    VerticalAlignment="Bottom"
-                                    Classes="InLine">
-                                <Button.Content>
-                                    <Image Width="16" Height="16" Source="/Assets/Chart/ZoomReset.png" />
-                                </Button.Content>
-                            </Button>
-                        </Grid>
-                        
-                        
+                        <userControls:LabelBrowseDirectoryControl Grid.Column="0" x:Name="lbdcDirectory" />
                     </StackPanel>
                 </Expander>
 

@@ -14,9 +14,13 @@ namespace Xeovis.UI.ViewModels
         [ObservableProperty]
         private FileExtensionType extensionType;
 
+        private string _originalDirectory;
+        public string OriginalDirectory => _originalDirectory;
+        
         public LabelBrowseDirectoryControlViewModel()
         {
-
+            directory = string.Empty;
+            _originalDirectory = string.Empty;
         }
 
         public LabelBrowseDirectoryControlViewModel(string label, FileExtensionType extensionType, string defaultDirectory = null, bool isFolderBrowser = false)
@@ -25,6 +29,7 @@ namespace Xeovis.UI.ViewModels
             ExtensionType = extensionType;
             IsFolderBrowser = isFolderBrowser;
             Directory = defaultDirectory;
+            _originalDirectory = defaultDirectory;
         }
 
         public LabelBrowseDirectoryControlViewModel(string label, string defaultDirectory = null, bool isFolderBrowser = false)
@@ -32,6 +37,7 @@ namespace Xeovis.UI.ViewModels
             Label = label;
             IsFolderBrowser = isFolderBrowser;
             Directory = defaultDirectory;
+            _originalDirectory = defaultDirectory;
         }
     }
 }
