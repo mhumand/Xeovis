@@ -35,7 +35,9 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
             var oxides = Enum.GetValues(typeof(OxideType)).Cast<OxideType>().ToList();
             foreach (var oxideType in oxides.Except([OxideType.None]))
             {
-                var oxideCol = new ColumnModel(oxideType.ToString(), ids.Select(x => phaseOxides.ContainsKey(x) && phaseOxides[x].Contains(oxideType)).ToList());
+                var vals = ids.Select(x => phaseOxides.ContainsKey(x) && phaseOxides[x].Contains(oxideType)).ToList();
+                var oxideCol = new ColumnModel(oxideType.ToString(), vals);
+                oxideCol.CanSort = false;
                 columns.Add(oxideCol);
             }
 
