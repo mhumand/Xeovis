@@ -32,6 +32,7 @@
         <entry key="Xeovis.UI/Views/UserControls/ChartControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/CheckBoxControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/DataManagerTabControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
+        <entry key="Xeovis.UI/Views/UserControls/LabelBrowseDirectoryControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/LabelComboBoxControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/LabelInputControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/UserControls/LabelListControl.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />

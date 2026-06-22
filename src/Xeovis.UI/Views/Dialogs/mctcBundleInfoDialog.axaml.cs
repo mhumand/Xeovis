@@ -43,7 +43,6 @@ public partial class mctcBundleInfoDialog : Window
         
         btnCancel.Click += btnCancel_Click;
         btnSave.Click += btnSave_Click;
-        btnRestoreDirectory.Click += btnRestoreDirectoryOnClick;
         ckbxSingleExpansion.CheckStateChanged += ckbxSingleExpansionOnCheckStateChanged;
         cmbxBatch.ListSelectionChanged += cmbxBatchOnListSelectionChanged;
     }
@@ -90,11 +89,6 @@ public partial class mctcBundleInfoDialog : Window
     {
         var table = _viewModel.GetXeosVariablesTableModel(cmbxBatch.ViewModel.SelectedItem.PresenterId);
         tableXeosVariables.PopulateTable(table);
-    }
-    
-    private void btnRestoreDirectoryOnClick(object? sender, RoutedEventArgs e)
-    {
-        lbdcDirectory.ViewModel.Directory = _bundle.FilesDirectory;
     }
     
     private void ckbxSingleExpansionOnCheckStateChanged(object? sender, CheckStateChangedEventArgs e)

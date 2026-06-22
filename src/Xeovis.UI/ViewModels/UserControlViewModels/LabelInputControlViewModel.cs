@@ -17,9 +17,13 @@ namespace Xeovis.UI.ViewModels
 
         public List<IValidationRule<string>> ValidationRules { get; set; }
 
+        private string _originalValue;
+        public string OriginalValue => _originalValue;
+
         public LabelInputControlViewModel()
         {
             Value = string.Empty;
+            _originalValue = string.Empty;
             IsMultiLine = false;
             this.PropertyChanged += LabelInputControlViewModel_PropertyChanged;
             ValidationRules = new List<IValidationRule<string>>();
@@ -29,6 +33,7 @@ namespace Xeovis.UI.ViewModels
         {
             Label = label;
             Value = value;
+            _originalValue = value;
             IsReadOnly = isReadOnly;
             IsMultiLine = isMultiLine;
         }

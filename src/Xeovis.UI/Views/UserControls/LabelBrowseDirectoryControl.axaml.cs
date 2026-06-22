@@ -28,8 +28,11 @@ public partial class LabelBrowseDirectoryControl : UserControl
         InitializeComponent();
         Loaded += LabelBrowseDirectoryControl_Loaded;
         toolTip.IsVisible = false;
+        btnRestore.IsVisible = false;
         tbInput.KeyDown += tbInput_KeyDown;
         tbInput.TextChanged += tbInput_TextChanged;
+        txtBtnGrid.PointerEntered += txtBtnGrid_PointerEntered;
+        txtBtnGrid.PointerExited += txtBtnGrid_PointerExited;
     }
 
     private void tbInput_TextChanged(object? sender, TextChangedEventArgs e)
@@ -73,6 +76,21 @@ public partial class LabelBrowseDirectoryControl : UserControl
             if (files.Count > 0)
                 _viewModel.Directory = Uri.UnescapeDataString(files[0].Path.AbsolutePath);
         }
+    }
+        
+    private void btnRestore_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        tbInput.Text = _viewModel.OriginalDirectory;
+    }
+
+    private void txtBtnGrid_PointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
+    {
+        btnRestore.IsVisible = false;
+    }
+
+    private void txtBtnGrid_PointerEntered(object? sender, Avalonia.Input.PointerEventArgs e)
+    {
+        btnRestore.IsVisible = !_viewModel.IsReadOnly;
     }
 
     private void tbInput_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)

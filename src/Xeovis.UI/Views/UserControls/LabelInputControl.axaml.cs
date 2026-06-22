@@ -29,6 +29,7 @@ public partial class LabelInputControl : UserControl
         InitializeComponent();
         Focusable = true;
         btnClear.IsVisible = false;
+        btnRestore.IsVisible = false;
         toolTip.IsVisible = false;
         Loaded += LabelInputControl_Loaded;
         tbInput.KeyDown += tbInput_KeyDown;
@@ -59,17 +60,24 @@ public partial class LabelInputControl : UserControl
     private void txtBtnGrid_PointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
     {
         btnClear.IsVisible = false;
+        btnRestore.IsVisible = false;
     }
 
     private void txtBtnGrid_PointerEntered(object? sender, Avalonia.Input.PointerEventArgs e)
     {
         btnClear.IsVisible = !_viewModel.IsReadOnly;
+        btnRestore.IsVisible = !_viewModel.IsReadOnly;
     }
 
     private void btnClear_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         tbInput.Clear();
         tbInput.Focus();
+    }
+    
+    private void btnRestore_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        tbInput.Text = _viewModel.OriginalValue;
     }
 
     private void tbInput_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
