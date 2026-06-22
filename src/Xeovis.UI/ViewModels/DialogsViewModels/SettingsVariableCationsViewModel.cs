@@ -36,7 +36,10 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
             var cations = Enum.GetValues(typeof(CationType)).Cast<CationType>().ToList();
             foreach (var oxideType in cations.Except([CationType.None]))
             {
-                var cationCol = new ColumnModel(oxideType.ToString(), xeosVarNames.Select(x => variableCations.ContainsKey(x.Id) && variableCations[x.Id].Contains(oxideType)).ToList());
+                var vals = xeosVarNames.Select(x =>
+                    variableCations.ContainsKey(x.Id) && variableCations[x.Id].Contains(oxideType)).ToList();
+                var cationCol = new ColumnModel(oxideType.ToString(), vals);
+                cationCol.CanSort = false;
                 columns.Add(cationCol);
             }
 

@@ -74,6 +74,9 @@
             <Setter Property="FontSize" Value="14" />
         </Style>
         
+        <Style Selector="DataGridColumnHeader:not(:sortascending):not(:sortdescending) ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Grid.ColumnSpan" Value="2"/>
+        </Style>
     </UserControl.Styles>
 
     <Border BorderBrush="LightGray" BorderThickness="1">
