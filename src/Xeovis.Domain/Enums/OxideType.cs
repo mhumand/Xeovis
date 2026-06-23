@@ -1,5 +1,8 @@
-﻿namespace Xeovis.Domain
+﻿using Xeovis.Domain.Definitions.Globals;
+
+namespace Xeovis.Domain
 {
+    [Obsolete($"Use {nameof(Component)} instead")]
     public enum OxideType
     {
         None,

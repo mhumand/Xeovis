@@ -155,17 +155,17 @@ public partial class MainMenu : UserControl
         var result = await dialog.ShowDialog<DialogResultType>(UIServices.ParentWindow);
     }
 
-    public async void Settings_PhaseCompositions()
+    public async void Settings_PhaseComponents()
     {
-        var vm = new SettingsPhaseCompositionsViewModel();
-        var dialog = new SettingsPhaseCompositionsDialog() { ViewModel = vm };
+        var vm = new SettingsPhaseComponentsViewModel();
+        var dialog = new SettingsPhaseComponentsDialog() { ViewModel = vm };
         var result = await dialog.ShowDialog<DialogResultType>(UIServices.ParentWindow);
     }
 
-    public async void Settings_VariableCations()
+    public async void Settings_VariableElements()
     {
-        var vm = new SettingsVariableCationsViewModel();
-        var dialog = new SettingsVariableCationsDialog() { ViewModel = vm };
+        var vm = new SettingsVariableElementsViewModel();
+        var dialog = new SettingsVariableElementsDialog() { ViewModel = vm };
         var result = await dialog.ShowDialog<DialogResultType>(UIServices.ParentWindow);
     }
 

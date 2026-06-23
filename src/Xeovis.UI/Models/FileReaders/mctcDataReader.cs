@@ -137,19 +137,19 @@ namespace Xeovis.UI.Models.FileReaders
             var lines = ReadFileLines("batchbulks");
             if (lines == null || lines.Count == 0) return false;
 
-            var oxidesStr = CleanAndSplitLine(lines[0]);
-            var oxides = new List<OxideType>();
-            foreach (var oxideStr in oxidesStr)
-                oxides.Add(EnumExtensions.GetValueFromDescription<OxideType>(oxideStr));
+            var componentsStr = CleanAndSplitLine(lines[0]);
+            var components = new List<Component>();
+            foreach (var componentStr in componentsStr)
+                components.Add(Component.Get(componentStr));
 
             for (int i = 1; i < lines.Count; i++)
             {
                 var compStr = CleanAndSplitLine(lines[i], includeDot: false);
                 _batches[i - 1].BulkComposition.Clear();
-                for (int j = 1; j <= oxides.Count; j++)
+                for (int j = 1; j <= components.Count; j++)
                 {
                     var value = DoubleExtensions.GetDoubleValueFromText(compStr[j]);
-                    _batches[i - 1].BulkComposition.Add(oxides[j - 1], value);
+                    _batches[i - 1].BulkComposition.Add(components[j - 1], value);
                 }
             }
 

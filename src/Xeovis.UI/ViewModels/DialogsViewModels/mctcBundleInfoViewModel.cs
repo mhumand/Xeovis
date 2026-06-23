@@ -60,7 +60,7 @@ public class mctcBundleInfoViewModel : ViewModelBase
             new ColumnModel("Run", batches.Select(x => x.ExpRunName).ToList()),
             new ColumnModel("T [°C]", batches.Select(x => x.ExpRunTemperature).ToList()),
             new ColumnModel("P [kbar]", batches.Select(x => x.ExpRunPressure).ToList()),
-            new ColumnModel("Oxide : Composition", batches.Select(x => x.BulkComposition.ToStringInline()).ToList())
+            new ColumnModel("Component : Composition", batches.Select(x => x.BulkComposition.ToStringInline()).ToList())
             {
                 IsReadOnly = true
             },

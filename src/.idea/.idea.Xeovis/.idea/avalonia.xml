@@ -10,9 +10,11 @@
         <entry key="Xeovis.UI/Views/Dialogs/DataManagerLoadDataDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/ProgressBarDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/RenameDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
+        <entry key="Xeovis.UI/Views/Dialogs/SettingsPhaseComponentsDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/SettingsPhaseCompositionsDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/SettingsPhaseNamesDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/SettingsVariableCationsDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
+        <entry key="Xeovis.UI/Views/Dialogs/SettingsVariableElementsDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/SettingsXeosVariablesDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/mctcBundleInfoDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />
         <entry key="Xeovis.UI/Views/Dialogs/mctcCalibrationDialog.axaml" value="Xeovis.TestUI/Xeovis.TestUI.csproj" />

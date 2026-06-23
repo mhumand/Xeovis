@@ -10,15 +10,21 @@ namespace Xeovis.Persistence
     {
         public List<PhaseNameSet> AllowedPhaseNames { get; set; }
         public Dictionary<Guid, List<xeosVariableName>> PhaseXeosVariables { get; set; }
-        public Dictionary<Guid, List<OxideType>> PhaseOxides { get; set; }
-        public Dictionary<Guid, List<CationType>> xeosVariableCations { get; set; }
+        public Dictionary<Guid, List<Component>> PhaseComponents { get; set; }
+        public Dictionary<Guid, List<Element>> xeosVariableElements { get; set; }
+        
+        public List<Element> CustomElements { get; set; }
+        public List<Component> CustomComponents { get; set; }
 
         public ProjectSettings()
         {
             AllowedPhaseNames = PhaseNameList.XeovisDefaults;
             PhaseXeosVariables = xeosVariableNameList.XeovisDefaults;
-            PhaseOxides = PhaseOxideList.XeovisDefaults;
-            xeosVariableCations = xeosVariableCationList.XeovisDefaults;
+            PhaseComponents = PhaseComponentList.XeovisDefaults;
+            xeosVariableElements = xeosVariableElementList.XeovisDefaults;
+            
+            CustomElements = new List<Element>();
+            CustomComponents = new List<Component>();
         }
     }
 }

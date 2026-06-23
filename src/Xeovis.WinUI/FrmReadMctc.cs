@@ -38,11 +38,11 @@ namespace Xeovis.WinUI
         {
             DefaultPhaseNames.Initialize();
             PhaseNameList.Initialize();
-            PhaseOxideList.Initialize();
+            PhaseComponentList.Initialize();
 
             DefaultXeosVariableNames.Initialize();
             xeosVariableNameList.Initialize();
-            xeosVariableCationList.Initialize();
+            xeosVariableElementList.Initialize();
         }
 
         private void PrepareUI()
@@ -294,9 +294,9 @@ namespace Xeovis.WinUI
             if (lines == null || lines.Count == 0) return;
 
             var oxidesStr = CleanAndSplitLine(lines[0]);
-            var oxides = new List<OxideType>();
+            var oxides = new List<Component>();
             foreach (var oxideStr in oxidesStr)
-                oxides.Add(EnumExtensions.GetValueFromDescription<OxideType>(oxideStr));
+                oxides.Add(Component.Get(oxideStr));
 
             for (int i = 1; i < lines.Count; i++)
             {
@@ -685,8 +685,8 @@ namespace Xeovis.WinUI
                         var modelVar = modelVarGroup.FirstOrDefault();
                         var phaseNameSets = _batches.FirstOrDefault(x => x.Id == modelVar.BatchId).PhaseNameSets.Except(new List<PhaseNameSet>() { PhaseNameList.GetNameSetByString(modelVar.PhaseKeyName) });
 
-                        var phaseAllCations = phaseNameSets.SelectMany(x => PhaseOxideList.GetPhaseCations(x.Id)).Distinct().ToList();
-                        var res = xeosVariableCationList.CationList.TryGetValue(modelVar.Id, out List<CationType>? modelVarCations);
+                        var phaseAllCations = phaseNameSets.SelectMany(x => PhaseComponentList.GetPhaseElements(x.Id)).Distinct().ToList();
+                        var res = xeosVariableElementList.ElementList.TryGetValue(modelVar.Id, out List<Element>? modelVarCations);
                         if (!res || modelVarCations == null) continue;
 
                         if (phaseAllCations.Count != 0 && modelVarCations.Count != 0)
@@ -705,8 +705,8 @@ namespace Xeovis.WinUI
                         {
                             var phaseNameSets = _batches.FirstOrDefault(x => x.Id == modelVar.BatchId).PhaseNameSets.Except(new List<PhaseNameSet>() { PhaseNameList.GetNameSetByString(modelVar.PhaseKeyName) });
 
-                            var phaseAllCations = phaseNameSets.SelectMany(x => PhaseOxideList.GetPhaseCations(x.Id)).Distinct().ToList();
-                            var res = xeosVariableCationList.CationList.TryGetValue(modelVar.Id, out List<CationType>? modelVarCations);
+                            var phaseAllCations = phaseNameSets.SelectMany(x => PhaseComponentList.GetPhaseElements(x.Id)).Distinct().ToList();
+                            var res = xeosVariableElementList.ElementList.TryGetValue(modelVar.Id, out List<Element>? modelVarCations);
                             if (!res || modelVarCations == null) continue;
 
                             if (phaseAllCations.Count != 0 && modelVarCations.Count != 0)
@@ -751,7 +751,7 @@ namespace Xeovis.WinUI
 
             var modelVar = modelVars.FirstOrDefault();
             var chartModel = new ChartModel();
-            chartModel.Title = modelVar + " ~ " + string.Join(" & ", xeosVariableCationList.CationList[modelVar.NameId]);
+            chartModel.Title = modelVar + " ~ " + string.Join(" & ", xeosVariableElementList.ElementList[modelVar.NameId]);
             chartModel.Title += $" (err = {avgErrorPercent.Round(4)}%)";
             chartModel.XAxisLabel = $"Observed {modelVar}";
             chartModel.YAxisLabel = $"Calculated {modelVar}";

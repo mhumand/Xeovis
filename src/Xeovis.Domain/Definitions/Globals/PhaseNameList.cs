@@ -31,7 +31,7 @@ namespace Xeovis.Domain.Definitions
             if (invokeEvent)
             {
                 var phaseIds = phaseNameList.Select(x => x.Id);
-                PhaseOxideList.SetPhaseOxides(PhaseOxideList.OxideList.Where(x => phaseIds.Contains(x.Key)).ToDictionary(), false);
+                PhaseComponentList.SetPhaseComponents(PhaseComponentList.ComponentList.Where(x => phaseIds.Contains(x.Key)).ToDictionary(), false);
                 xeosVariableNameList.SetXeosVariableNames(xeosVariableNameList.VariableNames.Where(x => phaseIds.Contains(x.Key)).ToDictionary(), false);
                 PhaseNameListChanged?.Invoke(null, new PhaseNameListChangedEventArgs(phaseNameList));
             }

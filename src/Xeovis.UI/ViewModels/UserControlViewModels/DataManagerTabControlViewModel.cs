@@ -77,15 +77,15 @@ namespace Xeovis.UI.ViewModels
                 new ColumnModel("Phases", exp.Runs.Select(r => r.GetPhaseAssemblageString()).ToList())
             };
 
-            var allOxides = exp.Runs.SelectMany(x => x.BulkCompOxides).Distinct();
-            foreach (var oxide in allOxides)
+            var allComponents = exp.Runs.SelectMany(x => x.BulkCompositionComponents).Distinct();
+            foreach (var component in allComponents)
             {
                 var values = exp.Runs.Select(r =>
-                    r.BulkComposition.TryGetValue(oxide, out double value) ? value.Round(6) : 0).ToList();
-                var columnModel = new ColumnModel(oxide.ToString(), values);
+                    r.BulkComposition.TryGetValue(component, out double value) ? value.Round(6) : 0).ToList();
+                var columnModel = new ColumnModel(component.ToString(), values);
                 columns.Add(columnModel);
             }
-            columns.Add(new ColumnModel("Total", exp.Runs.Select(r => r.BulkCompValues.Sum().Round(6)).ToList()));
+            columns.Add(new ColumnModel("Total", exp.Runs.Select(r => r.BulkCompositionValues.Sum().Round(6)).ToList()));
 
             return new TableModel(exp.Name, columns) { IsReadOnly = true, FrozenColumnCount = 2 };
         }
@@ -120,7 +120,7 @@ namespace Xeovis.UI.ViewModels
             allPhasesInExp.RemoveAll(i => i.Composition.Count == 0);
 
             if (allPhasesInExp.Count == 0) return null;
-            var allOxides = allPhasesInExp.SelectMany(x => x.CompositionOxides).Distinct();
+            var allComponents = allPhasesInExp.SelectMany(x => x.CompositionComponents).Distinct();
 
             var columns = new List<ColumnModel>
             {
@@ -128,11 +128,11 @@ namespace Xeovis.UI.ViewModels
                     allPhasesInExp.Select(i => exp.Runs.FirstOrDefault(r => r.Id == i.ExpRunId).ToString()).ToList()),
             };
 
-            foreach (var oxide in allOxides)
+            foreach (var component in allComponents)
             {
                 var values = allPhasesInExp.Select(i =>
-                    i.Composition.TryGetValue(oxide, out double value) ? value.Round(6) : 0).ToList();
-                var columnModel = new ColumnModel(oxide.ToString(), values);
+                    i.Composition.TryGetValue(component, out double value) ? value.Round(6) : 0).ToList();
+                var columnModel = new ColumnModel(component.ToString(), values);
                 columns.Add(columnModel);
             }
             columns.Add(new ColumnModel("Total", allPhasesInExp.Select(i => i.CompositionValues.Sum().Round(6)).ToList()));
@@ -168,11 +168,11 @@ namespace Xeovis.UI.ViewModels
                 new ColumnModel("Phase", phases.Select(p => p.NameSet.ToString()).ToList())
             };
 
-            var allOxides = phases.SelectMany(p => p.CompositionOxides).Distinct();
-            foreach (var oxide in allOxides)
+            var allComponents = phases.SelectMany(p => p.CompositionComponents).Distinct();
+            foreach (var component in allComponents)
             {
-                var values = phases.Select(i => i.Composition.TryGetValue(oxide, out double value) ? value.Round(6) : 0).ToList();
-                var columnModel = new ColumnModel(oxide.ToString(), values);
+                var values = phases.Select(i => i.Composition.TryGetValue(component, out double value) ? value.Round(6) : 0).ToList();
+                var columnModel = new ColumnModel(component.ToString(), values);
                 columns.Add(columnModel);
             }
             columns.Add(new ColumnModel("Total", phases.Select(i => i.CompositionValues.Sum().Round(6)).ToList()));
@@ -224,12 +224,12 @@ namespace Xeovis.UI.ViewModels
                 new ColumnModel("Phases", _allPhaseInstances.Select(i => GetExpRunByPhase(i).GetPhaseAssemblageString()).ToList())
             };
 
-            var allOxides = _allPhaseInstances.SelectMany(i => i.CompositionOxides).Distinct();
-            foreach (var oxide in allOxides)
+            var allComponents = _allPhaseInstances.SelectMany(i => i.CompositionComponents).Distinct();
+            foreach (var component in allComponents)
             {
                 var values = _allPhaseInstances.Select(i =>
-                    i.Composition.TryGetValue(oxide, out double value) ? value.Round(6) : 0).ToList();
-                var columnModel = new ColumnModel(oxide.ToString(), values);
+                    i.Composition.TryGetValue(component, out double value) ? value.Round(6) : 0).ToList();
+                var columnModel = new ColumnModel(component.ToString(), values);
                 columns.Add(columnModel);
             }
             columns.Add(new ColumnModel("Total", _allPhaseInstances.Select(i => i.CompositionValues.Sum().Round(6)).ToList()));
@@ -246,13 +246,13 @@ namespace Xeovis.UI.ViewModels
                 new ColumnModel("", new List<string>() { "Minimum", "Average", "Maximum" })
             };
 
-            var allOxides = _allPhaseInstances.SelectMany(i => i.CompositionOxides).Distinct();
-            foreach (var oxide in allOxides)
+            var allComponents = _allPhaseInstances.SelectMany(i => i.CompositionComponents).Distinct();
+            foreach (var component in allComponents)
             {
                 var allVals = _allPhaseInstances.Select(i =>
-                    i.Composition.TryGetValue(oxide, out double value) ? value : 0).ToList();
+                    i.Composition.TryGetValue(component, out double value) ? value : 0).ToList();
                 var colVals = new List<double> { allVals.Min(), allVals.Average(), allVals.Max() };
-                columns.Add(new ColumnModel(oxide.ToString(), colVals.Select(x => x.Round(6)).ToList()));
+                columns.Add(new ColumnModel(component.ToString(), colVals.Select(x => x.Round(6)).ToList()));
             }
             var totals = _allPhaseInstances.Select(i => i.CompositionValues.Sum()).ToList();
             var lastColVals = new List<double> { totals.Min(), totals.Average(), totals.Max() };
@@ -306,12 +306,12 @@ namespace Xeovis.UI.ViewModels
                 new ColumnModel("T [°C]", ComparedPhases.Select(x => GetExpRunByPhase(x).Temperature).ToList()),
             };
 
-            var allOxides = ComparedPhases.SelectMany(x => x.CompositionOxides).Distinct().ToList();
+            var allComponents = ComparedPhases.SelectMany(x => x.CompositionComponents).Distinct().ToList();
 
-            foreach (var oxide in allOxides)
+            foreach (var component in allComponents)
             {
-                var values = ComparedPhases.Select(i => i.Composition.TryGetValue(oxide, out double value) ? value.Round(6) : 0).ToList();
-                var columnModel = new ColumnModel(oxide.ToString(), values);
+                var values = ComparedPhases.Select(i => i.Composition.TryGetValue(component, out double value) ? value.Round(6) : 0).ToList();
+                var columnModel = new ColumnModel(component.ToString(), values);
                 columns.Add(columnModel);
             }
             columns.Add(new ColumnModel("Total", ComparedPhases.Select(i => i.CompositionValues.Sum().Round(6)).ToList()));

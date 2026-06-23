@@ -1,5 +1,6 @@
 ﻿using Xeovis.Domain.Definitions;
 using Xeovis.Domain.Definitions.Experiment;
+using Xeovis.Domain.Definitions.Globals;
 
 namespace Xeovis.Domain
 {
@@ -19,7 +20,7 @@ namespace Xeovis.Domain
         public double ExpRunPressure { get; set; }
         public double ExpRunTemperature { get; set; }
         public Guid ExpRunId { get; set; }
-        public Dictionary<OxideType, double> BulkComposition { get; set; }
+        public Dictionary<Component, double> BulkComposition { get; set; }
 
         /// <summary>
         /// int is the index of mctc run => shows in which run group the batch has failed
@@ -34,7 +35,7 @@ namespace Xeovis.Domain
             ExperimentName = string.Empty;
             ExpRunName = string.Empty;
             PhaseNameIds = new List<Guid>();
-            BulkComposition = new Dictionary<OxideType, double>();
+            BulkComposition = new Dictionary<Component, double>();
             xeosVariables = new List<xeosVariable>();
             IsFailed = new Dictionary<int, bool>();
         }

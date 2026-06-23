@@ -1,4 +1,5 @@
 using Xeovis.Domain;
+using Xeovis.Domain.Definitions.Globals;
 
 namespace Xeovis.Persistence.Proxies;
 
@@ -8,7 +9,7 @@ public class Phase01
     public Guid Id { get; set; }
     public PhaseState State { get; set; }
     public List<EndMember> EndMembers { get; set; }
-    public Dictionary<OxideType, double> Composition { get; set; }
+    public Dictionary<string, double> Composition { get; set; }
     public Guid ExpRunId { get; set; }
     public string Comment { get; set; }
 
@@ -22,7 +23,7 @@ public class Phase01
         Id = realObject.Id;
         State = realObject.State;
         EndMembers = new List<EndMember>(realObject.EndMembers);
-        Composition = new Dictionary<OxideType, double>(realObject.Composition);
+        Composition = realObject.Composition.ToDictionary(k => k.Key.Formula, v => v.Value);
         ExpRunId = realObject.ExpRunId;
         Comment = realObject.Comment;
     }
@@ -35,7 +36,9 @@ public class Phase01
             Id = Id,
             State = State,
             EndMembers = [..EndMembers],
-            Composition = new Dictionary<OxideType, double>(Composition),
+            Composition = Composition.ToDictionary(
+                k => Component.GetOrRegister(k.Key, "Unknown"), 
+                v => v.Value),
             ExpRunId = ExpRunId,
             Comment = Comment
         };
