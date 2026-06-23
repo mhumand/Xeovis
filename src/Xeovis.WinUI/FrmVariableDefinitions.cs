@@ -149,16 +149,16 @@ namespace Xeovis.WinUI
 
         private void PopulateUI()
         {
-            var oxideList = new List<OxideType>() { OxideType.SiO2, OxideType.Al2O3, OxideType.FeO, OxideType.Fe2O3, OxideType.MgO, OxideType.CaO, OxideType.K2O, OxideType.Na2O, OxideType.Cr2O3, OxideType.TiO2, OxideType.H2O };
+            var oxideList = new List<Component>() { Component.SiO2, Component.Al2O3, Component.FeO, Component.Fe2O3, Component.MgO, Component.CaO, Component.K2O, Component.Na2O, Component.Cr2O3, Component.TiO2, Component.H2O };
 
             cklbxOxides.Items.Clear();
             foreach (var item in oxideList)
                 cklbxOxides.Items.Add(item);
 
-            var cationList = new List<CationType> { CationType.Si, CationType.Al, CationType.Fe2, CationType.Fe3, CationType.Mg, CationType.Ca, CationType.K, CationType.Na, CationType.Cr, CationType.Ti };
+            var elementList = new List<Element> { Element.Si, Element.Al, Element.Fe2, Element.Fe3, Element.Mg, Element.Ca, Element.K, Element.Na, Element.Cr, Element.Ti };
 
             cklbxCations.Items.Clear();
-            foreach (var item in cationList)
+            foreach (var item in elementList)
                 cklbxCations.Items.Add(item);
 
             cmbxPhase.Items.Clear();
@@ -178,10 +178,10 @@ namespace Xeovis.WinUI
 
             if (!(cmbxPhase.SelectedItem is XEOS xeos)) return;
             lblPhaseFullName.Text = xeos.PhaseNameSet.FullName;
-            var composition = DefaultPhaseOxides.GetPhaseOxides(xeos.PhaseNameSet.KeyName);
+            var composition = DefaultPhaseComponents.GetPhaseComponents(xeos.PhaseNameSet.KeyName);
             if (composition == null) return;
             for (int i = 0; i < cklbxOxides.Items.Count; i++)
-                if (composition.Contains((OxideType)cklbxOxides.Items[i]))
+                if (composition.Contains((Component)cklbxOxides.Items[i]))
                     cklbxOxides.SetItemCheckState(i, CheckState.Checked);
 
             //foreach (var item in xeos.Variables.Where(v => !v.IsOrderVariable))
@@ -246,10 +246,10 @@ namespace Xeovis.WinUI
                 cklbxCations.SetItemCheckState(i, CheckState.Unchecked);
 
             if (!(cmbxModelVariable.SelectedItem is xeosVariable modelVariable)) return;
-            var res = xeosVariableCationList.CationList.TryGetValue(modelVariable.Id, out var cations);
+            var res = xeosVariableElementList.ElementList.TryGetValue(modelVariable.Id, out var cations);
             if (!res || cations == null) return;
             for (int i = 0; i < cklbxCations.Items.Count; i++)
-                if (cations.Contains((CationType)cklbxCations.Items[i]))
+                if (cations.Contains((Element)cklbxCations.Items[i]))
                     cklbxCations.SetItemCheckState(i, CheckState.Checked);
         }
     }

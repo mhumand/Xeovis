@@ -4,10 +4,10 @@ using Xeovis.UI.ViewModels.DialogsViewModels;
 
 namespace Xeovis.UI;
 
-public partial class SettingsPhaseCompositionsDialog : Window
+public partial class SettingsVariableElementsDialog : Window
 {
-    private SettingsPhaseCompositionsViewModel _viewModel = new();
-    public SettingsPhaseCompositionsViewModel ViewModel
+    private SettingsVariableElementsViewModel _viewModel = new();
+    public SettingsVariableElementsViewModel ViewModel
     {
         get { return _viewModel; }
         set
@@ -18,10 +18,11 @@ public partial class SettingsPhaseCompositionsDialog : Window
         }
     }
 
-    public SettingsPhaseCompositionsDialog()
+    public SettingsVariableElementsDialog()
     {
         InitializeComponent();
     }
+
 
     private void PrepareUI()
     {
@@ -36,7 +37,7 @@ public partial class SettingsPhaseCompositionsDialog : Window
 
     private async void btnSave_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        _viewModel.SavePhaseOxides(tableControl.ViewModel.TableModel);
+        _viewModel.SaveVariableElements(tableControl.ViewModel.TableModel);
         this.Close(DialogResultType.OK);
     }
 

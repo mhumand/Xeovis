@@ -1,5 +1,6 @@
 ﻿using Xeovis.Domain.Definitions;
 using Xeovis.Domain.Definitions.Experiment;
+using Xeovis.Domain.Definitions.Globals;
 
 namespace Xeovis.Domain
 {
@@ -10,8 +11,8 @@ namespace Xeovis.Domain
         public Guid Id { get; set; }
         public PhaseState State { get; set; }
         public List<EndMember> EndMembers { get; set; }
-        public Dictionary<OxideType, double> Composition { get; set; }
-        public List<OxideType> CompositionOxides => Composition?.Keys.ToList();
+        public Dictionary<Component, double> Composition { get; set; }
+        public List<Component> CompositionComponents => Composition?.Keys.ToList();
         public List<double> CompositionValues => Composition?.Values.ToList();
         public Guid ExpRunId { get; set; }
         public string Comment { get; set; }
@@ -21,7 +22,7 @@ namespace Xeovis.Domain
             NameId = Guid.Empty;
             Id = Guid.NewGuid();
             Comment = string.Empty;
-            Composition = new Dictionary<OxideType, double>();
+            Composition = new Dictionary<Component, double>();
             EndMembers = new List<EndMember>();
         }
 

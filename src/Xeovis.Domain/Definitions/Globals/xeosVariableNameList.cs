@@ -43,7 +43,7 @@ namespace Xeovis.Domain.Definitions.Globals
             if (invokeEvent)
             {
                 var xeosVarIds = _flatVariableNamesCache.Keys; // Faster than recalculating
-                xeosVariableCationList.SetXeosVariableCations(xeosVariableCationList.CationList.Where(x => xeosVarIds.Contains(x.Key)).ToDictionary(), false);
+                xeosVariableElementList.SetXeosVariableElements(xeosVariableElementList.ElementList.Where(x => xeosVarIds.Contains(x.Key)).ToDictionary(), false);
                 xeosVariableNameListChanged?.Invoke(null, new xeosVariableNameListChangedEventArgs(xeosVariableNames));
             }
         }

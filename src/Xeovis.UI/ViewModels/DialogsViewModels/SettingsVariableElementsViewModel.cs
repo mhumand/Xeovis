@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xeovis.Domain;
 using Xeovis.Domain.Definitions;
 using Xeovis.Domain.Definitions.Globals;
 using Xeovis.Presentation;
 
 namespace Xeovis.UI.ViewModels.DialogsViewModels
 {
-    public class SettingsVariableCationsViewModel : ViewModelBase
+    public class SettingsVariableElementsViewModel : ViewModelBase
     {
         public TableModel GetProjectValuesTableModel()
         {
-            var phaseOxides = xeosVariableCationList.CationList;
-            return GetTableModel(phaseOxides);
+            var phaseComponents = xeosVariableElementList.ElementList;
+            return GetTableModel(phaseComponents);
         }
 
-        private TableModel GetTableModel(Dictionary<Guid, List<CationType>> variableCations)
+        private TableModel GetTableModel(Dictionary<Guid, List<Element>> variableElements)
         {
             var columns = new List<ColumnModel>();
 
@@ -33,14 +32,14 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
             variableNameCol.IsReadOnly = true;
             columns.Add(variableNameCol);
 
-            var cations = Enum.GetValues(typeof(CationType)).Cast<CationType>().ToList();
-            foreach (var oxideType in cations.Except([CationType.None]))
+            var elements = Element.GetAll();
+            foreach (var element in elements.Except([Element.None]))
             {
                 var vals = xeosVarNames.Select(x =>
-                    variableCations.ContainsKey(x.Id) && variableCations[x.Id].Contains(oxideType)).ToList();
-                var cationCol = new ColumnModel(oxideType.ToString(), vals);
-                cationCol.CanSort = false;
-                columns.Add(cationCol);
+                    variableElements.ContainsKey(x.Id) && variableElements[x.Id].Contains(element)).ToList();
+                var elementCol = new ColumnModel(element.ToString(), vals);
+                elementCol.CanSort = false;
+                columns.Add(elementCol);
             }
 
             var tableModel = new TableModel("", columns);
@@ -51,33 +50,33 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
 
         public TableModel GetXeovisDefaultsTableModel()
         {
-            var phaseOxides = xeosVariableCationList.XeovisDefaults;
-            return GetTableModel(phaseOxides);
+            var phaseComponents = xeosVariableElementList.XeovisDefaults;
+            return GetTableModel(phaseComponents);
         }
 
-        public void SaveVariableCations(TableModel tableModel)
+        public void SaveVariableElements(TableModel tableModel)
         {
             var idCol = tableModel.Columns[0];
 
-            var cationCols = new Dictionary<CationType, ColumnModel>();
+            var elementCols = new Dictionary<Element, ColumnModel>();
             for (int i = 3; i < tableModel.Columns.Count; i++)
             {
-                var cationType = Enum.Parse<CationType>(tableModel.Columns[i].Header, true);
-                cationCols.Add(cationType, tableModel.Columns[i]);
+                var element = Element.GetOrRegister(tableModel.Columns[i].Header);
+                elementCols.Add(element, tableModel.Columns[i]);
             }
 
-            var variableCations = new Dictionary<Guid, List<CationType>>();
+            var variableElements = new Dictionary<Guid, List<Element>>();
             for (int i = 0; i < idCol.DataCount; i++)
             {
                 var res = Guid.TryParse(idCol.Values[i].ToString(), out Guid xeosVarId);
                 if (!res || xeosVarId == Guid.Empty) continue;
-                var cationsBool = cationCols.Values.Select(x => bool.Parse(x.Values[i].ToString())).ToList();
-                if (!cationsBool.Any(x => x == true)) continue;
-                var oxides = cationCols.Keys.Where(x => bool.Parse(cationCols[x].Values[i].ToString())).ToList();
-                variableCations.Add(xeosVarId, oxides);
+                var elementsBool = elementCols.Values.Select(x => bool.Parse(x.Values[i].ToString())).ToList();
+                if (!elementsBool.Any(x => x == true)) continue;
+                var elements = elementCols.Keys.Where(x => bool.Parse(elementCols[x].Values[i].ToString())).ToList();
+                variableElements.Add(xeosVarId, elements);
             }
 
-            xeosVariableCationList.SetXeosVariableCations(variableCations, true);
+            xeosVariableElementList.SetXeosVariableElements(variableElements, true);
         }
     }
 }

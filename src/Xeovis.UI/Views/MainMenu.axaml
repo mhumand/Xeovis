@@ -157,19 +157,19 @@
 
 			<Separator />
 
-			<MenuItem x:Name="btnSettingsPhaseCompositions"
-					  Header="Phase Compositions"
-					  Command="{Binding Settings_PhaseCompositions}">
+			<MenuItem x:Name="btnSettingsPhaseComponents"
+					  Header="Phase Components"
+					  Command="{Binding Settings_PhaseComponents}">
 				<MenuItem.Icon>
-					<Image Source="/Assets/MainMenu/oxides.png"/>
+					<Image Source="/Assets/MainMenu/components.png"/>
 				</MenuItem.Icon>
 			</MenuItem>
 
-			<MenuItem x:Name="btnSettingsVariableCations"
-					  Header="Variable Cations"
-					  Command="{Binding Settings_VariableCations}">
+			<MenuItem x:Name="btnSettingsVariableElements"
+					  Header="Variable Elements"
+					  Command="{Binding Settings_VariableElements}">
 				<MenuItem.Icon>
-					<Image Source="/Assets/MainMenu/cations.png"/>
+					<Image Source="/Assets/MainMenu/elements.png"/>
 				</MenuItem.Icon>
 			</MenuItem>
 		</MenuItem>

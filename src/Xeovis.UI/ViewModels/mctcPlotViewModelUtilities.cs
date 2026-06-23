@@ -119,20 +119,20 @@ namespace Xeovis.UI.ViewModels
                         var phases = batch.PhaseNameSets.Except(batch.PhaseNameSets.Where(x => x != null && x.HasName(sampleVarInGroup.PhaseKeyName))).ToList();
                         phases.RemoveAll(x => x == null);
 
-                        var phaseAllCations = new List<CationType>();
-                        phases.ForEach(x => phaseAllCations.AddRange(PhaseOxideList.GetPhaseCations(x.Id)));
+                        var phaseAllElements = new List<Element>();
+                        phases.ForEach(x => phaseAllElements.AddRange(PhaseComponentList.GetPhaseElements(x.Id)));
 
-                        var phaseCations = phaseAllCations.Distinct().ToList();
-                        var res = xeosVariableCationList.CationList.TryGetValue(sampleVarInGroup.NameId, out List<CationType>? sampleVarCations);
-                        if (!res || sampleVarCations == null) continue;
+                        var phaseElements = phaseAllElements.Distinct().ToList();
+                        var res = xeosVariableElementList.ElementList.TryGetValue(sampleVarInGroup.NameId, out List<Element>? sampleVarElements);
+                        if (!res || sampleVarElements == null) continue;
                         if (!sampleVarInGroup.IsEqualTo(xVar) && axesSettings.XAxisType == mctcPlotAxisType.Observed)
                         {
-                            if (xeosVariableCationList.CationList.TryGetValue(xVar.NameId, out List<CationType>? xVarCations) && xVarCations != null)
-                                sampleVarCations = sampleVarCations.Union(xVarCations).Distinct().ToList();
+                            if (xeosVariableElementList.ElementList.TryGetValue(xVar.NameId, out List<Element>? xVarElements) && xVarElements != null)
+                                sampleVarElements = sampleVarElements.Union(xVarElements).Distinct().ToList();
                         }
 
-                        if (phaseCations.Count != 0 && sampleVarCations.Count != 0)
-                            if (!phaseCations.Any(c => sampleVarCations.Contains(c))) continue;
+                        if (phaseElements.Count != 0 && sampleVarElements.Count != 0)
+                            if (!phaseElements.Any(c => sampleVarElements.Contains(c))) continue;
 
                         selectedGroups.Add(xeosVarGroup);
                     }
@@ -149,20 +149,20 @@ namespace Xeovis.UI.ViewModels
                                 batch.PhaseNameSets.Where(x => x != null && x.HasName(modelVar.PhaseKeyName))).ToList();
                             phases.RemoveAll(x => x == null);
 
-                            var phaseAllCations = new List<CationType>();
-                            phases.ForEach(x => phaseAllCations.AddRange(PhaseOxideList.GetPhaseCations(x.Id)));
+                            var phaseAllElements = new List<Element>();
+                            phases.ForEach(x => phaseAllElements.AddRange(PhaseComponentList.GetPhaseElements(x.Id)));
 
-                            var phaseCations = phaseAllCations.Distinct().ToList();
-                            var res = xeosVariableCationList.CationList.TryGetValue(modelVar.NameId, out List<CationType>? modelVarCations);
-                            if (!res || modelVarCations == null) continue;
+                            var phaseElements = phaseAllElements.Distinct().ToList();
+                            var res = xeosVariableElementList.ElementList.TryGetValue(modelVar.NameId, out List<Element>? modelVarElements);
+                            if (!res || modelVarElements == null) continue;
                             if (!modelVar.IsEqualTo(xVar) && axesSettings.XAxisType == mctcPlotAxisType.Observed)
                             {
-                                if (xeosVariableCationList.CationList.TryGetValue(xVar.NameId, out List<CationType>? xVarCations) && xVarCations != null)
-                                    modelVarCations = modelVarCations.Union(xVarCations).Distinct().ToList();
+                                if (xeosVariableElementList.ElementList.TryGetValue(xVar.NameId, out List<Element>? xVarElements) && xVarElements != null)
+                                    modelVarElements = modelVarElements.Union(xVarElements).Distinct().ToList();
                             }
 
-                            if (phaseCations.Count != 0 && modelVarCations.Count != 0)
-                                if (!phaseCations.Any(c => modelVarCations.Contains(c)))
+                            if (phaseElements.Count != 0 && modelVarElements.Count != 0)
+                                if (!phaseElements.Any(c => modelVarElements.Contains(c)))
                                     excludedVariables.Add(modelVar);
                         }
 

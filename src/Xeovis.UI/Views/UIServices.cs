@@ -175,8 +175,8 @@ public static class UIServices
         projectFile.mctcPlotDtos = ParentWindow.ViewModel.mctcPlotDtos;
         projectFile.ProjectSettings.AllowedPhaseNames = PhaseNameList.PhaseNames;
         projectFile.ProjectSettings.PhaseXeosVariables = xeosVariableNameList.VariableNames;
-        projectFile.ProjectSettings.PhaseOxides = PhaseOxideList.OxideList;
-        projectFile.ProjectSettings.xeosVariableCations = xeosVariableCationList.CationList;
+        projectFile.ProjectSettings.PhaseComponents = PhaseComponentList.ComponentList;
+        projectFile.ProjectSettings.xeosVariableElements = xeosVariableElementList.ElementList;
         return projectFile;
     }
 

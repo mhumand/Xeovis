@@ -1,4 +1,5 @@
 using Xeovis.Domain;
+using Xeovis.Domain.Definitions.Globals;
 
 namespace Xeovis.Persistence.Proxies;
 
@@ -14,7 +15,7 @@ public class Batch01
     public double ExpRunPressure { get; set; }
     public double ExpRunTemperature { get; set; }
     public Guid ExpRunId { get; set; }
-    public Dictionary<OxideType, double> BulkComposition { get; set; }
+    public Dictionary<string, double> BulkComposition { get; set; }
     public Dictionary<int, bool> IsFailed { get; set; }
     public List<xeosVariable01> xeosVariables { get; set; }
 
@@ -34,7 +35,7 @@ public class Batch01
         ExpRunPressure = realObject.ExpRunPressure;
         ExpRunTemperature = realObject.ExpRunTemperature;
         ExpRunId = realObject.ExpRunId;
-        BulkComposition = new Dictionary<OxideType, double>(realObject.BulkComposition);
+        BulkComposition = realObject.BulkComposition.ToDictionary(k => k.Key.Formula, v => v.Value);
         IsFailed = new Dictionary<int, bool>(realObject.IsFailed);
         xeosVariables = realObject.xeosVariables.Select(x => new xeosVariable01(x)).ToList();
     }
@@ -53,7 +54,9 @@ public class Batch01
             ExpRunPressure = ExpRunPressure,
             ExpRunTemperature = ExpRunTemperature,
             ExpRunId = ExpRunId,
-            BulkComposition = new Dictionary<OxideType, double>(BulkComposition),
+            BulkComposition = BulkComposition.ToDictionary(
+                k => Component.GetOrRegister(k.Key, "Unknown"), 
+                v => v.Value),
             IsFailed = new Dictionary<int, bool>(IsFailed),
             xeosVariables = xeosVariables.Select(x => x.ConvertToRealObject()).ToList()
         };

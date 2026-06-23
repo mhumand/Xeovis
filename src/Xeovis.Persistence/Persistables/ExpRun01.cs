@@ -1,4 +1,5 @@
 using Xeovis.Domain;
+using Xeovis.Domain.Definitions.Globals;
 
 namespace Xeovis.Persistence.Proxies;
 
@@ -7,7 +8,7 @@ public class ExpRun01
     public string Name { get; set; }
     public Guid Id { get; set; }
     public List<Phase01> Phases { get; set; }
-    public Dictionary<OxideType, double> BulkComposition { get; set; }
+    public Dictionary<string, double> BulkComposition { get; set; }
     public double Pressure { get; set; } //Kbar
     public double ErrorP { get; set; } // Kbar
     public double Temperature { get; set; } // °C
@@ -32,7 +33,7 @@ public class ExpRun01
         Name = realObject.Name;
         Id = realObject.Id;
         Phases = realObject.Phases.Select(x => new Phase01(x)).ToList();
-        BulkComposition = new Dictionary<OxideType, double>(realObject.BulkComposition);
+        BulkComposition = realObject.BulkComposition.ToDictionary(k=> k.Key.Formula, v => v.Value);
         Pressure = realObject.Pressure;
         ErrorP = realObject.ErrorP;
         Temperature = realObject.Temperature;
@@ -64,7 +65,9 @@ public class ExpRun01
             Name = Name,
             Id = Id,
             Phases = Phases.Select(x => x.ConvertToRealObject()).ToList(),
-            BulkComposition = new Dictionary<OxideType, double>(BulkComposition),
+            BulkComposition = BulkComposition.ToDictionary(
+                k => Component.GetOrRegister(k.Key, "Unknown"), 
+                v => v.Value),
             Pressure = Pressure,
             ErrorP = ErrorP,
             Temperature = Temperature,

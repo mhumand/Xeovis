@@ -6,10 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Xeovis.Base;
 using Xeovis.Domain;
 using Xeovis.Domain.Definitions;
+using Xeovis.Domain.Definitions.Globals;
 
 namespace Xeovis.UI.Models.FileReaders
 {
@@ -190,18 +190,18 @@ namespace Xeovis.UI.Models.FileReaders
                             run.Phases.Add(phase);
                         }
 
-                        var oxides = Enum.GetValues(typeof(OxideType));
+                        var components = Component.GetAll();
                         run.BulkComposition.Clear();
                         var indx = 0;
-                        foreach (OxideType oxide in oxides)
+                        foreach (Component component in components)
                         {
-                            if (oxide == OxideType.O) continue;
+                            if (component == Component.O) continue;
                             var index = headerRow.IndexOf(headerRow.FirstOrDefault(c =>
-                                c.ToString().Contains(oxide.ToString()) && !c.ToString().Contains("err")));
+                                c.ToString().Contains(component.ToString()) && !c.ToString().Contains("err")));
                             if (index < 0) continue;
                             var value = DoubleExtensions.GetDoubleValueFromText(cells[index].ToString());
                             if (!double.IsNaN(value) && value > 0)
-                                run.BulkComposition.Add(oxide, value);
+                                run.BulkComposition.Add(component, value);
                         }
 
                         run.Index = i;
@@ -319,19 +319,19 @@ namespace Xeovis.UI.Models.FileReaders
                             if (commentIndex >= 0)
                                 runPhase.Comment = cells[commentIndex].ToString();
 
-                            //todo: oxides index can be save only once
-                            var oxides = Enum.GetValues(typeof(OxideType));
+                            //todo: components index can be saved only once
+                            var components = Component.GetAll();
                             runPhase.Composition.Clear();
                             var indx = 0;
-                            foreach (OxideType oxide in oxides)
+                            foreach (Component component in components)
                             {
-                                if (oxide == OxideType.O) continue;
-                                var oxideIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c =>
-                                    c.ToString().Contains(oxide.ToString()) && !c.ToString().Contains("err")));
-                                if (oxideIndex < 0) continue;
-                                var value = DoubleExtensions.GetDoubleValueFromText(cells[oxideIndex].ToString());
+                                if (component == Component.O) continue;
+                                var componentIndex = headerRow.IndexOf(headerRow.FirstOrDefault(c =>
+                                    c.ToString().Contains(component.ToString()) && !c.ToString().Contains("err")));
+                                if (componentIndex < 0) continue;
+                                var value = DoubleExtensions.GetDoubleValueFromText(cells[componentIndex].ToString());
                                 if (!double.IsNaN(value) && value > 0)
-                                    runPhase.Composition.Add(oxide, value);
+                                    runPhase.Composition.Add(component, value);
                             }
 
                             if (runPhase.CompositionValues.All(x => x == 0))

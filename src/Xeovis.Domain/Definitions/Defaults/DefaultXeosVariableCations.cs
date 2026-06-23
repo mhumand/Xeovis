@@ -7,9 +7,9 @@ namespace Xeovis.Domain
 {
     public static class DefaultXeosVariableCations
     {
-        public static Dictionary<Guid, List<CationType>> GetDefaultXeosVariableCations()
+        public static Dictionary<Guid, List<Element>> GetDefaultXeosVariableCations()
         {
-            var variableCations = new Dictionary<Guid, List<CationType>>();
+            var variableCations = new Dictionary<Guid, List<Element>>();
             var phaseList = PhaseNameList.PhaseNames;
             foreach ( var phase in phaseList )
             {
@@ -26,7 +26,7 @@ namespace Xeovis.Domain
             return variableCations;
         }
 
-        private static List<CationType> GetCationsFromModelVariable(string phaseName, string variableName)
+        private static List<Element> GetCationsFromModelVariable(string phaseName, string variableName)
         {
             var nullSet = new PhaseNameSet();
 
@@ -57,204 +57,204 @@ namespace Xeovis.Domain
             if (PhaseNameList.GetNameSetByString("biotite", nullSet).HasName(phaseName))
                 return GetVariableCations_Biotite(variableName);
 
-            return new List<CationType>();
+            return new List<Element>();
         }
 
-        private static List<CationType> GetVariableCations_Garnet(string variable)
+        private static List<Element> GetVariableCations_Garnet(string variable)
         {
-            var list = new List<CationType>();
+            var list = new List<Element>();
             switch (variable)
             {
                 case "x":
-                    list.Add(CationType.Fe2);
-                    list.Add(CationType.Mg);
+                    list.Add(Element.Fe2);
+                    list.Add(Element.Mg);
                     break;
                 case "c":
-                    list.Add(CationType.Ca);
+                    list.Add(Element.Ca);
                     break;
                 case "f":
-                    list.Add(CationType.Fe3);
+                    list.Add(Element.Fe3);
                     break;
                 case "cr":
-                    list.Add(CationType.Cr);
+                    list.Add(Element.Cr);
                     break;
                 case "t":
-                    list.Add(CationType.Ti);
+                    list.Add(Element.Ti);
                     break;
             }
 
             return list;
         }
 
-        private static List<CationType> GetVariableCations_Olivine(string variable)
+        private static List<Element> GetVariableCations_Olivine(string variable)
         {
-            var list = new List<CationType>();
+            var list = new List<Element>();
             switch (variable)
             {
                 case "x":
-                    list.Add(CationType.Fe2);
-                    list.Add(CationType.Mg);
+                    list.Add(Element.Fe2);
+                    list.Add(Element.Mg);
                     break;
                 case "c":
-                    list.Add(CationType.Ca);
+                    list.Add(Element.Ca);
                     break;
             }
 
             return list;
         }
 
-        private static List<CationType> GetVariableCations_Ilmenite(string variable)
+        private static List<Element> GetVariableCations_Ilmenite(string variable)
         {
-            var list = new List<CationType>();
+            var list = new List<Element>();
             switch (variable)
             {
                 case "i":
-                    list.Add(CationType.Fe3);
+                    list.Add(Element.Fe3);
                     break;
                 case "m":
-                    list.Add(CationType.Mg);
-                    list.Add(CationType.Fe2);
+                    list.Add(Element.Mg);
+                    list.Add(Element.Fe2);
                     break;
             }
 
             return list;
         }
 
-        private static List<CationType> GetVariableCations_Cpx(string variable)
+        private static List<Element> GetVariableCations_Cpx(string variable)
         {
-            var list = new List<CationType>();
+            var list = new List<Element>();
             switch (variable)
             {
                 case "x":
                 case "o":
-                    list.Add(CationType.Fe2);
-                    list.Add(CationType.Mg);
+                    list.Add(Element.Fe2);
+                    list.Add(Element.Mg);
                     break;
                 case "y":
-                    list.Add(CationType.Al);
+                    list.Add(Element.Al);
                     break;
                 case "n":
-                    list.Add(CationType.Na);
+                    list.Add(Element.Na);
                     break;
                 case "f":
-                    list.Add(CationType.Fe3);
+                    list.Add(Element.Fe3);
                     break;
                 case "cr":
-                    list.Add(CationType.Cr);
+                    list.Add(Element.Cr);
                     break;
                 case "t":
-                    list.Add(CationType.Ti);
+                    list.Add(Element.Ti);
                     break;
                 case "k":
-                    list.Add(CationType.K);
+                    list.Add(Element.K);
                     break;
             }
 
             return list;
         }
 
-        private static List<CationType> GetVariableCations_Opx(string variable)
+        private static List<Element> GetVariableCations_Opx(string variable)
         {
-            var list = new List<CationType>();
+            var list = new List<Element>();
             switch (variable)
             {
                 case "x":
-                    list.Add(CationType.Fe2);
-                    list.Add(CationType.Mg);
+                    list.Add(Element.Fe2);
+                    list.Add(Element.Mg);
                     break;
                 case "y":
-                    list.Add(CationType.Al);
+                    list.Add(Element.Al);
                     break;
                 case "c":
-                    list.Add(CationType.Ca);
+                    list.Add(Element.Ca);
                     break;
                 case "f":
-                    list.Add(CationType.Fe3);
+                    list.Add(Element.Fe3);
                     break;
                 case "cr":
-                    list.Add(CationType.Cr);
+                    list.Add(Element.Cr);
                     break;
                 case "t":
-                    list.Add(CationType.Ti);
+                    list.Add(Element.Ti);
                     break;
                 case "j":
-                    list.Add(CationType.Na);
+                    list.Add(Element.Na);
                     break;
             }
 
             return list;
         }
 
-        private static List<CationType> GetVariableCations_Spinel(string variable)
+        private static List<Element> GetVariableCations_Spinel(string variable)
         {
-            var list = new List<CationType>();
+            var list = new List<Element>();
             switch (variable)
             {
                 case "x":
-                    list.Add(CationType.Fe2);
-                    list.Add(CationType.Mg);
+                    list.Add(Element.Fe2);
+                    list.Add(Element.Mg);
                     break;
                 case "y":
-                    list.Add(CationType.Fe3);
-                    list.Add(CationType.Al);
+                    list.Add(Element.Fe3);
+                    list.Add(Element.Al);
                     break;
                 case "c":
-                    list.Add(CationType.Cr);
+                    list.Add(Element.Cr);
                     break;
                 case "t":
-                    list.Add(CationType.Ti);
+                    list.Add(Element.Ti);
                     break;
             }
 
             return list;
         }
 
-        private static List<CationType> GetVariableCations_Epidote(string variable)
+        private static List<Element> GetVariableCations_Epidote(string variable)
         {
-            var list = new List<CationType>();
+            var list = new List<Element>();
             switch (variable)
             {
                 case "f":
-                    list.Add(CationType.Fe3);
+                    list.Add(Element.Fe3);
                     break;
             }
 
             return list;
         }
 
-        private static List<CationType> GetVariableCations_Biotite(string variable)
+        private static List<Element> GetVariableCations_Biotite(string variable)
         {
-            var list = new List<CationType>();
+            var list = new List<Element>();
             switch (variable)
             {
                 case "x":
-                    list.Add(CationType.Fe2);
-                    list.Add(CationType.Mg);
+                    list.Add(Element.Fe2);
+                    list.Add(Element.Mg);
                     break;
                 case "y":
-                    list.Add(CationType.Al);
+                    list.Add(Element.Al);
                     break;
                 case "f":
-                    list.Add(CationType.Fe3);
+                    list.Add(Element.Fe3);
                     break;
                 case "t":
-                    list.Add(CationType.Ti);
+                    list.Add(Element.Ti);
                     break;
             }
 
             return list;
         }
 
-        private static List<CationType> GetVariableCations_Plagioclase(string variable)
+        private static List<Element> GetVariableCations_Plagioclase(string variable)
         {
-            var list = new List<CationType>();
+            var list = new List<Element>();
             switch (variable)
             {
                 case "ca":
-                    list.Add(CationType.Ca);
+                    list.Add(Element.Ca);
                     break;
                 case "k":
-                    list.Add(CationType.K);
+                    list.Add(Element.K);
                     break;
             }
 

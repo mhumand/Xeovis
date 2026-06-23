@@ -1,13 +1,15 @@
-﻿namespace Xeovis.Domain
+﻿using Xeovis.Domain.Definitions.Globals;
+
+namespace Xeovis.Domain
 {
     public class ExpRun
     {
         public string Name { get; set; }
         public Guid Id { get; set; }
         public List<Phase> Phases { get; set; }
-        public Dictionary<OxideType, double> BulkComposition { get; set; }
-        public List<double> BulkCompValues => BulkComposition?.Values.ToList();
-        public List<OxideType> BulkCompOxides => BulkComposition?.Keys.ToList();
+        public Dictionary<Component, double> BulkComposition { get; set; }
+        public List<double> BulkCompositionValues => BulkComposition?.Values.ToList();
+        public List<Component> BulkCompositionComponents => BulkComposition?.Keys.ToList();
         public double Pressure { get; set; } //Kbar
         public double ErrorP { get; set; } // Kbar
         public double Temperature { get; set; } // °C
@@ -32,7 +34,7 @@
             Container = string.Empty;
             Method = string.Empty;
             Phases = new List<Phase>();
-            BulkComposition = new Dictionary<OxideType, double>();
+            BulkComposition = new Dictionary<Component, double>();
             ReadingIndex = -999;
         }
 

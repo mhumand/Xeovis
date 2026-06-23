@@ -10,9 +10,9 @@
 		xmlns:userControls="clr-namespace:Xeovis.UI;assembly=Xeovis.UI"
 		xmlns:vm="using:Xeovis.UI.ViewModels.DialogsViewModels"
 		xmlns:vmc="using:Xeovis.UI.ViewModels"
-		x:DataType="vm:SettingsPhaseCompositionsViewModel"
-        x:Class="Xeovis.UI.SettingsPhaseCompositionsDialog"
-        Title="Settings | Phase Compositions">
+		x:DataType="vm:SettingsVariableElementsViewModel"
+        x:Class="Xeovis.UI.SettingsVariableElementsDialog"
+        Title="Settings | x-eos Variable Elements">
 
 	<Window.Styles>
 		<StyleInclude Source="/Views/Styles/Dialogs.axaml"/>
@@ -68,6 +68,7 @@
 		</Grid>
 
 	</Grid>
+
 
 
 </Window>

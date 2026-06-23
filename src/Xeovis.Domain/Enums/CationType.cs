@@ -1,5 +1,8 @@
-﻿namespace Xeovis.Domain
+﻿using Xeovis.Domain.Definitions.Globals;
+
+namespace Xeovis.Domain
 {
+    [Obsolete($"Use {nameof(Element)} instead")]
     public enum CationType
     {
         None,

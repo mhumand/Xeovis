@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xeovis.Domain;
 using Xeovis.Domain.Definitions;
 using Xeovis.Domain.Definitions.Globals;
 using Xeovis.Presentation;
 
 namespace Xeovis.UI.ViewModels.DialogsViewModels
 {
-    public class SettingsPhaseCompositionsViewModel : ViewModelBase
+    public class SettingsPhaseComponentsViewModel : ViewModelBase
     {
         public TableModel GetProjectValuesTableModel()
         {
-            var phaseOxides = PhaseOxideList.OxideList;
-            return GetTableModel(phaseOxides);
+            var phaseComponents = PhaseComponentList.ComponentList;
+            return GetTableModel(phaseComponents);
         }
 
-        private TableModel GetTableModel(Dictionary<Guid, List<OxideType>> phaseOxides)
+        private TableModel GetTableModel(Dictionary<Guid, List<Component>> phaseComponents)
         {
             var columns = new List<ColumnModel>();
 
@@ -32,13 +31,13 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
             keyNameCol.IsReadOnly = true;
             columns.Add(keyNameCol);
 
-            var oxides = Enum.GetValues(typeof(OxideType)).Cast<OxideType>().ToList();
-            foreach (var oxideType in oxides.Except([OxideType.None]))
+            var components = Component.GetAll();
+            foreach (var component in components.Except([Component.None]))
             {
-                var vals = ids.Select(x => phaseOxides.ContainsKey(x) && phaseOxides[x].Contains(oxideType)).ToList();
-                var oxideCol = new ColumnModel(oxideType.ToString(), vals);
-                oxideCol.CanSort = false;
-                columns.Add(oxideCol);
+                var vals = ids.Select(x => phaseComponents.ContainsKey(x) && phaseComponents[x].Contains(component)).ToList();
+                var componentCol = new ColumnModel(component.ToString(), vals);
+                componentCol.CanSort = false;
+                columns.Add(componentCol);
             }
 
             var tableModel = new TableModel("", columns);
@@ -49,33 +48,33 @@ namespace Xeovis.UI.ViewModels.DialogsViewModels
 
         public TableModel GetXeovisDefaultsTableModel()
         {
-            var phaseOxides = PhaseOxideList.XeovisDefaults;
-            return GetTableModel(phaseOxides);
+            var phaseComponents = PhaseComponentList.XeovisDefaults;
+            return GetTableModel(phaseComponents);
         }
 
-        public void SavePhaseOxides(TableModel tableModel)
+        public void SavePhaseComponents(TableModel tableModel)
         {
             var idCol = tableModel.Columns[0];
 
-            var oxideCols = new Dictionary<OxideType, ColumnModel>();
+            var compCols = new Dictionary<Component, ColumnModel>();
             for (int i = 3; i < tableModel.Columns.Count; i++)
             {
-                var oxideType = Enum.Parse<OxideType>(tableModel.Columns[i].Header, true);
-                oxideCols.Add(oxideType, tableModel.Columns[i]);
+                var component = Component.Get(tableModel.Columns[i].Header);
+                compCols.Add(component, tableModel.Columns[i]);
             }
 
-            var phaseOxides = new Dictionary<Guid, List<OxideType>>();
+            var phaseComponents = new Dictionary<Guid, List<Component>>();
             for (int i = 0; i < idCol.DataCount; i++)
             {
                 var res = Guid.TryParse(idCol.Values[i].ToString(), out Guid phaseId);
                 if (!res || phaseId == Guid.Empty) continue;
-                var oxidesBool = oxideCols.Values.Select(x => bool.Parse(x.Values[i].ToString())).ToList();
-                if (!oxidesBool.Any(x => x == true)) continue;
-                var oxides = oxideCols.Keys.Where(x => bool.Parse(oxideCols[x].Values[i].ToString())).ToList();
-                phaseOxides.Add(phaseId, oxides);
+                var compsBool = compCols.Values.Select(x => bool.Parse(x.Values[i].ToString())).ToList();
+                if (!compsBool.Any(x => x == true)) continue;
+                var components = compCols.Keys.Where(x => bool.Parse(compCols[x].Values[i].ToString())).ToList();
+                phaseComponents.Add(phaseId, components);
             }
 
-            PhaseOxideList.SetPhaseOxides(phaseOxides, true);
+            PhaseComponentList.SetPhaseComponents(phaseComponents, true);
         }
     }
 }

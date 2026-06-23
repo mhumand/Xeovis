@@ -4,10 +4,10 @@ using Xeovis.UI.ViewModels.DialogsViewModels;
 
 namespace Xeovis.UI;
 
-public partial class SettingsVariableCationsDialog : Window
+public partial class SettingsPhaseComponentsDialog : Window
 {
-    private SettingsVariableCationsViewModel _viewModel = new();
-    public SettingsVariableCationsViewModel ViewModel
+    private SettingsPhaseComponentsViewModel _viewModel = new();
+    public SettingsPhaseComponentsViewModel ViewModel
     {
         get { return _viewModel; }
         set
@@ -18,11 +18,10 @@ public partial class SettingsVariableCationsDialog : Window
         }
     }
 
-    public SettingsVariableCationsDialog()
+    public SettingsPhaseComponentsDialog()
     {
         InitializeComponent();
     }
-
 
     private void PrepareUI()
     {
@@ -37,7 +36,7 @@ public partial class SettingsVariableCationsDialog : Window
 
     private async void btnSave_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        _viewModel.SaveVariableCations(tableControl.ViewModel.TableModel);
+        _viewModel.SavePhaseComponents(tableControl.ViewModel.TableModel);
         this.Close(DialogResultType.OK);
     }
 

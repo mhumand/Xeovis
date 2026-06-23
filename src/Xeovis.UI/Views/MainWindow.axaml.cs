@@ -47,8 +47,8 @@ namespace Xeovis.UI.Views
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             PhaseNameList.PhaseNameListChanged += PhaseNameList_PhaseNameListChanged;
             xeosVariableNameList.xeosVariableNameListChanged += XeosVariableNameList_xeosVariableNameListChanged;
-            PhaseOxideList.PhaseOxideListChanged += PhaseOxideList_PhaseOxideListChanged;
-            xeosVariableCationList.xeosVariableCationListChanged += XeosVariableCationList_xeosVariableCationListChanged;
+            PhaseComponentList.PhaseComponentListChanged += PhaseComponentListPhaseComponentListChanged;
+            xeosVariableElementList.xeosVariableElementListChanged += XeosVariableElementListChanged;
             
             ApiHost.BundleReloadCalled += ApiHost_BundleReloadCalled;
             ApiHost.LoadNewBundleCalled += ApiHost_LoadNewBundleCalled;
@@ -113,11 +113,11 @@ namespace Xeovis.UI.Views
         {
             DefaultPhaseNames.Initialize();
             PhaseNameList.Initialize();
-            PhaseOxideList.Initialize();
+            PhaseComponentList.Initialize();
 
             DefaultXeosVariableNames.Initialize();
             xeosVariableNameList.Initialize();
-            xeosVariableCationList.Initialize();
+            xeosVariableElementList.Initialize();
         }
 
         private void XeosVariableNameList_xeosVariableNameListChanged(object? sender, xeosVariableNameListChangedEventArgs e)
@@ -132,15 +132,15 @@ namespace Xeovis.UI.Views
             RefreshAllTabControls();
         }
 
-        private void PhaseOxideList_PhaseOxideListChanged(object? sender, PhaseOxideListChangedEventArgs e)
+        private void PhaseComponentListPhaseComponentListChanged(object? sender, PhaseComponentListChangedEventArgs e)
         {
-            _viewModel.ProjectSettings.PhaseOxides = e.PhaseOxideList;
+            _viewModel.ProjectSettings.PhaseComponents = e.PhaseComponentList;
             RefreshAllTabControls();
         }
 
-        private void XeosVariableCationList_xeosVariableCationListChanged(object? sender, xeosVariableCationListChangedEventArgs e)
+        private void XeosVariableElementListChanged(object? sender, xeosVariableElementListChangedEventArgs e)
         {
-            _viewModel.ProjectSettings.xeosVariableCations = e.CationList;
+            _viewModel.ProjectSettings.xeosVariableElements = e.ElementList;
             RefreshAllTabControls();
         }
 
@@ -403,8 +403,8 @@ namespace Xeovis.UI.Views
             _viewModel.ProjectSettings = settings;
             PhaseNameList.SetPhaseNames(settings.AllowedPhaseNames, false);
             xeosVariableNameList.SetXeosVariableNames(settings.PhaseXeosVariables, false);
-            PhaseOxideList.SetPhaseOxides(settings.PhaseOxides, false);
-            xeosVariableCationList.SetXeosVariableCations(settings.xeosVariableCations, false);
+            PhaseComponentList.SetPhaseComponents(settings.PhaseComponents, false);
+            xeosVariableElementList.SetXeosVariableElements(settings.xeosVariableElements, false);
 
             var extension = Path.GetExtension(e.Path);
             this.Title = string.IsNullOrWhiteSpace(e.Project.ProjectName) ? "Xeovis" : $"Xeovis | {e.Project.ProjectName}{extension}";
