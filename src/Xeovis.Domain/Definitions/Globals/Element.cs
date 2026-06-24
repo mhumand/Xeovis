@@ -40,7 +40,7 @@ public class Element
     public static Element GetOrRegister(string symbol)
     {
         if (string.IsNullOrWhiteSpace(symbol)) return None;
-            
+
         if (_registry.TryGetValue(symbol, out var existing))
             return existing;
 
@@ -48,12 +48,29 @@ public class Element
         return new Element(symbol);
     }
 
-    public static IEnumerable<Element> GetAll() => _registry.Values;
+    public static List<Element> GetAll() => _registry.Values.ToList();
+    public static void ClearAll() => _registry.Clear();
 
     public override string ToString() => Symbol;
-        
+
     public static bool operator ==(Element a, Element b) => a?.Symbol == b?.Symbol;
     public static bool operator !=(Element a, Element b) => !(a == b);
     public override bool Equals(object? obj) => obj is Element c && c.Symbol == Symbol;
     public override int GetHashCode() => Symbol.GetHashCode();
+
+    public static void Initialize()
+    {
+        ClearAll();
+        GetXeovisDefaults().ForEach(x => new Element(x));
+    }
+
+    public static List<string> GetXeovisDefaults()
+    {
+        return
+        [
+            "None", "Si", "Ti", "Al", "Fe2", "Fe3", "Cr",
+            "Mg", "Ca", "Mn", "Ni", "Na", "K", "P", "Ba",
+            "Cl", "F", "C", "O", "H"
+        ];
+    }
 }

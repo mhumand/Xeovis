@@ -4,8 +4,10 @@ using Avalonia.Platform.Storage;
 using Serilog;
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Xeovis.Domain.Definitions.Globals;
 using Xeovis.UI.Models.Enums;
 using Xeovis.UI.Models.Events;
 using Xeovis.UI.ViewModels.DialogsViewModels;
@@ -54,7 +56,11 @@ public partial class MainMenu : UserControl
     {
         var goAhead = await UIServices.CheckAndRaiseUnsavedChangesMessage(askAnyWay: true);
         if (!goAhead) return;
-
+        
+        // Component.RestoreAllDefaults(); // temp - should be here?
+        Element.Initialize();
+        Component.Initialize();
+        
         UIServices.LastFilePath = string.Empty;
         UIServices.InvokeProjectLoaded(this, new ProjectFileLoadedEventArgs(null));
         Log.Information("New project created.");
@@ -81,6 +87,11 @@ public partial class MainMenu : UserControl
 
         var files = await topLevel.StorageProvider.OpenFilePickerAsync(options);
         if (files == null || files.Count == 0) return;
+        
+        // Component.RestoreAllDefaults(); // temp - should be here?
+        Element.Initialize();
+        Component.Initialize();
+        
         Log.Information("Opening project file...");
         var file = files[0];
         var path = Uri.UnescapeDataString(file.Path.AbsolutePath);
@@ -141,6 +152,29 @@ public partial class MainMenu : UserControl
     }
     
     // Settings
+    public async void Settings_ElementsAndComponents()
+    {
+        var dialog = new ElementsAndComponentsDialog()
+        {
+            ViewModel = new ElementsAndComponentsViewModel()
+        };
+        
+        var res = await dialog.ShowDialog<DialogResultType>(UIServices.ParentWindow);
+        if (res == DialogResultType.OK)
+        {
+            var elmnts = dialog.ViewModel.Elements;
+            var cmpnnts = dialog.ViewModel.Components;
+
+            Element.ClearAll();
+            elmnts.ForEach(el => Element.GetOrRegister(el));
+            xeosVariableElementList.UpdateFromProjectElements();
+            
+            Component.ClearAll();
+            cmpnnts.ToList().ForEach(c => Component.GetOrRegister(c.Key, c.Value));
+            PhaseComponentList.UpdateFromProjectComponents();
+        }
+    }
+    
     public async void Settings_PhaseNames()
     {
         var vm = new SettingsPhaseNamesViewModel();

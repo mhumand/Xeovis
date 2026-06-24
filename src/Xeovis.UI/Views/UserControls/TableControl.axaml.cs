@@ -352,15 +352,15 @@ public partial class TableControl : UserControl
         dataGrid.ContextMenu = null;
     }
 
-    public void SelectRow(int rowIndex)
+    public void SelectRow(int rowIndex, bool invokeEvent = false)
     {
         Dispatcher.UIThread.Post(() =>
         {
-            dataGrid.SelectionChanged -= DataGrid_SelectionChanged;
+            if (!invokeEvent) dataGrid.SelectionChanged -= DataGrid_SelectionChanged;
             dataGrid.SelectedIndex = rowIndex;
             if (rowIndex >= 0)
                 dataGrid.ScrollIntoView(dataGrid.SelectedItem, dataGrid.Columns[0]);
-            dataGrid.SelectionChanged += DataGrid_SelectionChanged;
+            if (!invokeEvent) dataGrid.SelectionChanged += DataGrid_SelectionChanged;
         });
     }
 

@@ -35,7 +35,9 @@
 				</StackPanel>
 			</CheckBox.Content>
 		</CheckBox>
-		<userControls:ToolTipControl x:Name="toolTip"/>
+		<userControls:ToolTipControl x:Name="toolTip"
+		                             ToolTipText="{Binding ToolTip}"
+		                             IsVisible="{Binding HasToolTip}"/>
 	</StackPanel>
 
 </UserControl>

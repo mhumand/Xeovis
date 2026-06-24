@@ -22,8 +22,8 @@
 		<StyleInclude Source="/Views/Styles/UserControls.axaml"/>
 
 		<Style Selector="ListBoxItem">
-			<Setter Property="Height" Value="35"></Setter>
-			<Setter Property="Padding" Value="10,0,5,0"></Setter>
+			<Setter Property="Height" Value="30" />
+			<Setter Property="Padding" Value="10,0" />
 		</Style>
 		
 	</UserControl.Styles>
@@ -74,6 +74,7 @@
 									Background="Transparent"
 									Opacity="0.75"
 									Tag="{Binding Tag}"
+									ToolTip.Tip="Remove"
 									Click="btnRemoveItem_Click"
 									IsVisible="{Binding #control.((vm:LabelListControlViewModel)DataContext).IsRemovable}">
 								<Button.Content>

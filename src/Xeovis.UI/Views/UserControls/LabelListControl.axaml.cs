@@ -86,6 +86,7 @@ public partial class LabelListControl : UserControl
                 menu.Items.Add(moveDown);
         }
         
+        if (menu.Items.Count == 0) return;
         menu.Open(this);
     }
 

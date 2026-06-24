@@ -33,5 +33,21 @@
             if (!res || components == null || components.Count == 0) return new();
             return components.SelectMany(x => x.AssociatedElements).ToList();
         }
+
+        public static void UpdateFromProjectComponents()
+        {
+            var components = Component.GetAll();
+            var anyRemoved = false;
+            foreach (var kvp in _componentList)
+            {
+                var removedCount = kvp.Value.RemoveAll(x => !components.Contains(x));
+                if (removedCount > 0) anyRemoved = true;
+            }
+
+            if (anyRemoved)
+                PhaseComponentListChanged?.Invoke(null, new PhaseComponentListChangedEventArgs(_componentList));
+            
+            // _xeovisDefaults.ToList().ForEach(c => c.Value.RemoveAll(x => !components.Contains(x)));
+        }
     }
 }

@@ -134,13 +134,17 @@ namespace Xeovis.UI.Views
 
         private void PhaseComponentListPhaseComponentListChanged(object? sender, PhaseComponentListChangedEventArgs e)
         {
-            _viewModel.ProjectSettings.PhaseComponents = e.PhaseComponentList;
+            _viewModel.ProjectSettings.PhaseComponents = e.PhaseComponentList.ToDictionary(
+                k => k.Key,
+                v => v.Value.Select(x => x.Formula).ToList());
             RefreshAllTabControls();
         }
 
         private void XeosVariableElementListChanged(object? sender, xeosVariableElementListChangedEventArgs e)
         {
-            _viewModel.ProjectSettings.xeosVariableElements = e.ElementList;
+            _viewModel.ProjectSettings.xeosVariableElements = e.ElementList.ToDictionary(
+                k => k.Key,
+                v => v.Value.Select(x => x.Symbol).ToList());
             RefreshAllTabControls();
         }
 
@@ -401,11 +405,29 @@ namespace Xeovis.UI.Views
 
             var settings = e.Project.ProjectSettings;
             _viewModel.ProjectSettings = settings;
+            
+            if (settings.Elements?.Count > 0 && settings.Components.Count > 0)
+            {
+                Element.ClearAll();
+                settings.Elements.ForEach(el => Element.GetOrRegister(el));
+                
+                Component.ClearAll();
+                settings.Components.ToList().ForEach(p => Component.GetOrRegister(p.Key, p.Value));
+            }
+            
             PhaseNameList.SetPhaseNames(settings.AllowedPhaseNames, false);
             xeosVariableNameList.SetXeosVariableNames(settings.PhaseXeosVariables, false);
-            PhaseComponentList.SetPhaseComponents(settings.PhaseComponents, false);
-            xeosVariableElementList.SetXeosVariableElements(settings.xeosVariableElements, false);
 
+            var xeosVariableElements = settings.xeosVariableElements.ToDictionary(
+                k => k.Key,
+                v => v.Value.Select(el => Element.GetOrRegister(el)).ToList());
+            xeosVariableElementList.SetXeosVariableElements(xeosVariableElements, false);
+            
+            var phaseComponents = settings.PhaseComponents.ToDictionary(
+                k => k.Key,
+                v => v.Value.Select(c => Component.Get(c)).ToList());
+            PhaseComponentList.SetPhaseComponents(phaseComponents, false);
+            
             var extension = Path.GetExtension(e.Path);
             this.Title = string.IsNullOrWhiteSpace(e.Project.ProjectName) ? "Xeovis" : $"Xeovis | {e.Project.ProjectName}{extension}";
             
