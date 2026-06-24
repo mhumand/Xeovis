@@ -173,10 +173,22 @@ public static class UIServices
         projectFile.Experiments = ParentWindow.ViewModel.Experiments;
         projectFile.mctcBundles = ParentWindow.ViewModel.mctcBundles;
         projectFile.mctcPlotDtos = ParentWindow.ViewModel.mctcPlotDtos;
+        
         projectFile.ProjectSettings.AllowedPhaseNames = PhaseNameList.PhaseNames;
         projectFile.ProjectSettings.PhaseXeosVariables = xeosVariableNameList.VariableNames;
-        projectFile.ProjectSettings.PhaseComponents = PhaseComponentList.ComponentList;
-        projectFile.ProjectSettings.xeosVariableElements = xeosVariableElementList.ElementList;
+        
+        projectFile.ProjectSettings.PhaseComponents = PhaseComponentList.ComponentList.ToDictionary(
+            k => k.Key,
+            v => v.Value.Select(x => x.Formula).ToList());
+        projectFile.ProjectSettings.xeosVariableElements = xeosVariableElementList.ElementList.ToDictionary(
+            k => k.Key,
+            v => v.Value.Select(x => x.Symbol).ToList());
+        
+        projectFile.ProjectSettings.Elements = Element.GetAll().Select(el => el.Symbol).ToList();
+        projectFile.ProjectSettings.Components = Component.GetAll().ToDictionary(
+                k => k.Formula,
+                v => v.AssociatedElements.Select(el => el.Symbol).ToList());
+        
         return projectFile;
     }
 

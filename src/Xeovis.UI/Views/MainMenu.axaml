@@ -32,6 +32,7 @@
 		  BorderBrush="LightGray"
 		  BorderThickness="0 0 0 0">
 
+		<!-- File -->
 		<MenuItem Header="_File">
 
 			<MenuItem x:Name="btnNew"
@@ -86,6 +87,7 @@
 
 		</MenuItem>
 
+		<!-- Data Manager -->
 		<MenuItem Header="_Data Manager">
 
 			<MenuItem x:Name="btnDMLoadData"
@@ -107,6 +109,7 @@
 
 		</MenuItem>
 
+		<!-- MCTC -->
 		<MenuItem Header="_MCTC">
 
 			<MenuItem x:Name="btnMctcLoadBundle"
@@ -138,6 +141,7 @@
 
 		</MenuItem>
 
+		<!-- Settings -->
 		<MenuItem Header="Settings">
 			<MenuItem x:Name="btnSettingsPhaseNames"
 					  Header="_Phase Names"
@@ -156,6 +160,14 @@
 			</MenuItem>
 
 			<Separator />
+			
+			<MenuItem x:Name="btnElementsAndComponents"
+			          Header="_Elements &amp; Components"
+			          Command="{Binding Settings_ElementsAndComponents}">
+				<MenuItem.Icon>
+					<Image Source="/Assets/MainMenu/element.png"/>
+				</MenuItem.Icon>
+			</MenuItem>
 
 			<MenuItem x:Name="btnSettingsPhaseComponents"
 					  Header="Phase Components"
@@ -173,7 +185,8 @@
 				</MenuItem.Icon>
 			</MenuItem>
 		</MenuItem>
-			
+		
+		<!-- Tools -->
 		<MenuItem Header="_Tools">
 			<MenuItem x:Name="btnAPI"
 			          Header="_API"
@@ -185,6 +198,7 @@
 			</MenuItem>
 		</MenuItem>
 		
+		<!-- View -->
 		<MenuItem Header="View">
 
 			<MenuItem x:Name="itemShowLeftPanel"
@@ -209,6 +223,7 @@
 			
 		</MenuItem>
 
+		<!-- Help -->
 		<MenuItem Header="_Help">
 
 			<MenuItem Header="_Help"

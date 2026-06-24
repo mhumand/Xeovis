@@ -39,11 +39,11 @@
 						Width="120"
 						Click="btnProjectDefaults_Click"
 						Content="Project Defaults"/>
-				<Button x:Name="btnXeovisDefaults"
-						Classes="Primary"
-						Width="120"
-						Click="btnXeovisDefaults_Click"
-						Content="Xeovis Defaults"/>
+				<!-- <Button x:Name="btnXeovisDefaults" -->
+				<!-- 		Classes="Primary" -->
+				<!-- 		Width="120" -->
+				<!-- 		Click="btnXeovisDefaults_Click" -->
+				<!-- 		Content="Xeovis Defaults"/> -->
 			</StackPanel>
 
 			<StackPanel Orientation="Horizontal"

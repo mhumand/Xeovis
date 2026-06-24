@@ -5,7 +5,7 @@ using Xeovis.Domain.Definitions.MCTC;
 
 namespace Xeovis.Domain
 {
-    public static class DefaultXeosVariableCations
+    public static class DefaultXeosVariableElements
     {
         public static Dictionary<Guid, List<Element>> GetDefaultXeosVariableCations()
         {
