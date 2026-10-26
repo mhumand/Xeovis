@@ -54,6 +54,7 @@ namespace Xeovis.UI.Views
             ApiHost.LoadNewBundleCalled += ApiHost_LoadNewBundleCalled;
             ApiHost.RefreshBundleUIAsked += ApiHost_RefreshBundleUIAsked;
             ApiHost.ApiActivityChanged += OnApiActivityChanged;
+            ApiHost.MainWindow = this;
             PrepareUI();
         }
 
@@ -92,11 +93,11 @@ namespace Xeovis.UI.Views
             RepopulateBundleUI(bundle);
         }
 
-        private void ApiHost_LoadNewBundleCalled(object? sender, LoadNewBundleCalledEventArgs e)
+        private async void ApiHost_LoadNewBundleCalled(object? sender, LoadNewBundleCalledEventArgs e)
         {
             if (!Directory.Exists(e.Directory)) return;
             var bundleName = e.BundleName;
-            //todo
+            UIServices.SimpleMctcBundleLoad(e.Directory, bundleName, invokeEvent: true);
         }
 
         private void ApiHost_BundleReloadCalled(object? sender, BundleReloadCalledEventArgs e)

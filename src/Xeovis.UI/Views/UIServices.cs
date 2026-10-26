@@ -236,12 +236,14 @@ public static class UIServices
         }
     }
     
-    public static mctcBundle SimpleMctcBundleLoad(string folderDirectory)
+    public static mctcBundle SimpleMctcBundleLoad(string folderDirectory, string bundleName = "", bool invokeEvent = false)
     {
         var mctcReader = new mctcDataReader(folderDirectory);
         var mctcBundle = mctcReader.ReadData();
         mctcBundle.TimeLoaded = DateTime.Now;
         mctcBundle.FilesDirectory = folderDirectory;
+        mctcBundle.Name = bundleName;
+        if (invokeEvent) InvokeMctcBundleLoaded(ParentWindow, new mctcBundleLoadedEventArgs(mctcBundle));
         return mctcBundle;
     }
 

@@ -258,7 +258,8 @@ public partial class mctcPlotGridViewTabControl : UserControl, ImctcPlotView
         uniformGrid.Columns = (int)spinnerColumnNo.ViewModel.Value;
         uniformGrid.Rows = chartControls.Count / uniformGrid.Columns + 1;
         chartControls.ForEach(x => uniformGrid.Children.Add(x));
-
+        SetupLayout((int)spinnerColumnNo.ViewModel.Value);
+        
         PopulateLegend();
     }
 

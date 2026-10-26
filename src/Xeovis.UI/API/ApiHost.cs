@@ -1,8 +1,10 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Xeovis.UI.Views;
 
 namespace Xeovis.UI;
 
@@ -21,6 +23,7 @@ public static class ApiHost
     public static bool IsRunning => _app != null;
     public static string URL { get; private set; } = "http://localhost:5007";
     public static void SetURL(string url) => URL = url;
+    public static MainWindow MainWindow { get; set; }
     
     public static async Task Start()
     {
@@ -43,6 +46,13 @@ public static class ApiHost
         });
         
         // Xeovis
+        app.MapGet("/CheckBundle", (string name) =>
+        {
+            var bundles = MainWindow.ViewModel.mctcBundles;
+            var bundleExists = bundles.Any(x => x.Name == name);
+            return bundleExists ? Results.Ok() : Results.NotFound();
+        });
+        
         app.MapPost("/Load", (LoadRequest bundle) =>
         {
             ApiActivityChanged?.Invoke(null, new  ApiActivityChangedEventArgs($"Loading {bundle.Name}"));
